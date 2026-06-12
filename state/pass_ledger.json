@@ -7,7 +7,6 @@
       "title": "clean product foundation and read-only local app shell",
       "claimState": "staged",
       "reportPath": "docs/passes/PASS_001_REPORT.md",
-      "commit": "a83f99b",
       "proof": [
         "project verifier passed",
         "pytest passed",
@@ -21,7 +20,6 @@
       "title": "workspace state and durable status records",
       "claimState": "staged",
       "reportPath": "docs/passes/PASS_002_REPORT.md",
-      "commit": "pending",
       "proof": [
         "durable status JSON added",
         "pass ledger JSON added",
