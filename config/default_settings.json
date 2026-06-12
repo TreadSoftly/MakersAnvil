@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "makers-anvil.config.local-settings.v1",
+  "claimState": "staged",
+  "runtimeRoot": ".makers-anvil",
+  "directories": [
+    {
+      "id": "settings",
+      "relativePath": "settings",
+      "purpose": "local user settings"
+    },
+    {
+      "id": "intake",
+      "relativePath": "intake",
+      "purpose": "future staged file metadata"
+    },
+    {
+      "id": "jobs",
+      "relativePath": "jobs",
+      "purpose": "future job records"
+    },
+    {
+      "id": "outputs",
+      "relativePath": "outputs",
+      "purpose": "future output bundles"
+    },
+    {
+      "id": "logs",
+      "relativePath": "logs",
+      "purpose": "local diagnostic logs"
+    },
+    {
+      "id": "tmp",
+      "relativePath": "tmp",
+      "purpose": "temporary app-owned working data"
+    }
+  ],
+  "safety": {
+    "userUploadEnabled": false,
+    "routeExecutionEnabled": false,
+    "toolLaunchEnabled": false,
+    "archiveExtractionEnabled": false,
+    "folderImportEnabled": false,
+    "deleteUserDataEnabled": false,
+    "releasePackagingEnabled": false
+  }
+}

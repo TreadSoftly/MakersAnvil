@@ -27,6 +27,19 @@
         "pass-ledger API added",
         "frontend status panel added"
       ]
+    },
+    {
+      "id": "PASS-003",
+      "title": "workspace data directory and safe local settings",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_003_REPORT.md",
+      "proof": [
+        "default local settings added",
+        "workspace layout API added",
+        "workspace init script added",
+        "frontend local workspace panel added",
+        "unsafe actions remain disabled"
+      ]
     }
   ]
 }

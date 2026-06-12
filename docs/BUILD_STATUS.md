@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-002 — workspace state and durable status records.
+PASS-003 — workspace data directory and safe local settings.
 
 ## Track Percentages
 
-- Real app completion: `5.0000%`
-- Windows local app: `5.0000%`
+- Real app completion: `7.5000%`
+- Windows local app: `7.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -19,11 +19,15 @@ PASS-002 — workspace state and durable status records.
 - Reference material is ignored and not required by runtime source.
 - Read-only Python backend exposes `GET /api/health`, `GET /api/state`, and `GET /api/claim-states`.
 - Read-only Python backend exposes `GET /api/workspace/status` and `GET /api/passes/ledger`.
+- Read-only Python backend exposes `GET /api/workspace/config` and `GET /api/workspace/layout`.
 - State-changing API methods return a blocked response.
 - Browser dashboard renders app state from the read-only API.
 - Browser dashboard renders current pass, next pass, and source-truth path from durable status records.
+- Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
+- Default local settings keep upload, route execution, tool launch, archive extraction, folder import, deletion, and packaging disabled.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
+- PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
 
 ## Blocked Or Not Proven
 
@@ -41,4 +45,4 @@ PASS-002 — workspace state and durable status records.
 
 ## Next Pass
 
-PASS-003 — workspace data directory and safe local settings.
+PASS-004 — safe runtime file intake staging.

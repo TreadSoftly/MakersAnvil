@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-002",
-    "title": "workspace state and durable status records",
+    "id": "PASS-003",
+    "title": "workspace data directory and safe local settings",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_002_REPORT.md"
+    "reportPath": "docs/passes/PASS_003_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 5.0,
-    "windowsLocal": 5.0,
+    "realApp": 7.5,
+    "windowsLocal": 7.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -33,9 +33,10 @@
     "purpose": "reference-only"
   },
   "proven": [
-    "Read-only local API exposes health, state, claim-state, workspace-status, and pass-ledger records.",
+    "Read-only local API exposes health, state, claim-state, workspace-status, pass-ledger, workspace-config, and workspace-layout records.",
     "Durable status files are committed product source and parse as JSON.",
     "Browser dashboard renders current pass and source-truth paths from the API.",
+    "Default local settings define an app-owned runtime data directory without importing user files.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -53,8 +54,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-003",
-    "title": "workspace data directory and safe local settings",
+    "id": "PASS-004",
+    "title": "safe runtime file intake staging",
     "claimState": "planned"
   }
 }

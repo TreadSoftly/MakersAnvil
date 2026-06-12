@@ -46,8 +46,18 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-002"
-    assert current["trackPercentages"]["realApp"] == 5.0
+    assert current["currentPass"]["id"] == "PASS-003"
+    assert current["trackPercentages"]["realApp"] == 7.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-002"
+    assert ledger["passes"][-1]["id"] == "PASS-003"
+
+
+def test_default_settings_are_safe_and_relative() -> None:
+    import json
+
+    settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
+
+    assert settings["runtimeRoot"] == ".makers-anvil"
+    assert all(value is False for value in settings["safety"].values())
+    assert all(".." not in item["relativePath"] for item in settings["directories"])

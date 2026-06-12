@@ -20,18 +20,23 @@ REQUIRED_FILES = [
     "pyproject.toml",
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
+    "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
+    "config/default_settings.json",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/styles.css",
     "schemas/claim-state.schema.json",
     "schemas/app-state.schema.json",
     "schemas/current-status.schema.json",
+    "schemas/local-settings.schema.json",
+    "scripts/init_workspace.py",
     "state/current_status.json",
     "state/pass_ledger.json",
     "docs/BUILD_STATUS.md",
     "docs/passes/PASS_001_REPORT.md",
     "docs/passes/PASS_002_REPORT.md",
+    "docs/passes/PASS_003_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -47,7 +52,7 @@ FORBIDDEN_PRODUCT_TEXT = [
 
 
 def product_files() -> list[Path]:
-    ignored_parts = {".git", "__pycache__", ".pytest_cache", "node_modules"}
+    ignored_parts = {".git", ".makers-anvil", "__pycache__", ".pytest_cache", "node_modules"}
     ignored_parts.update(REFERENCE_FOLDERS)
     files: list[Path] = []
     for path in ROOT.rglob("*"):
@@ -91,6 +96,8 @@ def check_api() -> list[str]:
     state = api.handle("GET", "/api/state")
     workspace = api.handle("GET", "/api/workspace/status")
     ledger = api.handle("GET", "/api/passes/ledger")
+    config = api.handle("GET", "/api/workspace/config")
+    layout = api.handle("GET", "/api/workspace/layout")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -99,12 +106,18 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-002":
-        errors.append("GET /api/state does not report PASS-002")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-002":
-        errors.append("GET /api/workspace/status does not report PASS-002")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-002":
-        errors.append("GET /api/passes/ledger does not report PASS-002 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-003":
+        errors.append("GET /api/state does not report PASS-003")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-003":
+        errors.append("GET /api/workspace/status does not report PASS-003")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-003":
+        errors.append("GET /api/passes/ledger does not report PASS-003 as latest")
+    if config.status != 200 or config.body.get("runtimeRoot") != ".makers-anvil":
+        errors.append("GET /api/workspace/config does not report .makers-anvil")
+    if any(config.body.get("safety", {}).values()):
+        errors.append("one or more workspace config safety flags unexpectedly enable unsafe actions")
+    if layout.status != 200 or layout.body.get("creationAction", {}).get("enabledInApi") is not False:
+        errors.append("GET /api/workspace/layout does not keep API init action disabled")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -116,14 +129,19 @@ def check_status_records() -> list[str]:
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-002":
-        errors.append("current status does not report PASS-002")
-    if status.get("trackPercentages", {}).get("realApp") != 5.0:
-        errors.append("real app completion is not 5.0 for PASS-002")
+    settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-003":
+        errors.append("current status does not report PASS-003")
+    if status.get("trackPercentages", {}).get("realApp") != 7.5:
+        errors.append("real app completion is not 7.5 for PASS-003")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-002":
-        errors.append("pass ledger latest pass is not PASS-002")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-003":
+        errors.append("pass ledger latest pass is not PASS-003")
+    if settings.get("runtimeRoot") != ".makers-anvil":
+        errors.append("default settings runtime root is not .makers-anvil")
+    if any(settings.get("safety", {}).values()):
+        errors.append("default settings unexpectedly enable an unsafe action")
     return errors
 
 

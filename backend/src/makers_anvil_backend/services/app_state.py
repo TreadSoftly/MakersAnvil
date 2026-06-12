@@ -5,16 +5,22 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 
 
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-002-workspace-status"
+    api_build = "makers-anvil-real-pass-003-workspace-settings"
 
-    def __init__(self, workspace_status: WorkspaceStatusService | None = None) -> None:
+    def __init__(
+        self,
+        workspace_status: WorkspaceStatusService | None = None,
+        workspace_config: WorkspaceConfigService | None = None,
+    ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
+        self._workspace_config = workspace_config or WorkspaceConfigService()
 
     def health(self) -> dict[str, Any]:
         return {
@@ -38,6 +44,7 @@ class AppStateService:
             "completion": current_status["trackPercentages"],
             "currentPass": current_status["currentPass"],
             "sourceTruth": current_status["sourceTruth"],
+            "workspaceConfig": self._workspace_config.layout(),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -50,13 +57,19 @@ class AppStateService:
     def pass_ledger(self) -> dict[str, Any]:
         return self._workspace_status.pass_ledger()
 
+    def workspace_config(self) -> dict[str, Any]:
+        return self._workspace_config.config()
+
+    def workspace_layout(self) -> dict[str, Any]:
+        return self._workspace_config.layout()
+
     def _tracks(self) -> list[dict[str, Any]]:
         return [
             {
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server, browser shell, and status records are present.",
+                "summary": "Read-only local server, browser shell, status records, and app-owned workspace settings are present.",
             },
             {
                 "id": "mac-linux",
@@ -93,6 +106,13 @@ class AppStateService:
                 "label": "Workspace status",
                 "claimState": "proven",
                 "summary": "Committed status files are exposed through read-only API records.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "workspace-settings",
+                "label": "Workspace settings",
+                "claimState": "staged",
+                "summary": "Default local settings define an app-owned data directory without importing user files.",
                 "actionsEnabled": False,
             },
             {

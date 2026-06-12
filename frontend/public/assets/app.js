@@ -1,6 +1,7 @@
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";
+const layoutUrl = "/api/workspace/layout";
 
 const fallbackState = {
   appName: "Makers Anvil",
@@ -13,6 +14,7 @@ const fallbackState = {
   currentPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
   nextPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
   sourceTruth: {},
+  workspaceConfig: { runtimeRoot: "unknown", directories: [], creationAction: { enabledInApi: false } },
 };
 
 const claimClass = (state) => String(state || "unknown").replace(/\s+/g, "-");
@@ -65,12 +67,26 @@ function renderWorkspace(state, workspace) {
   document.querySelector("#status-source").textContent = sourceTruth.statusPath || "not proven";
 }
 
-function renderState(state, health, workspace = {}) {
+function renderLayout(state, layout = {}) {
+  const workspaceConfig = layout.runtimeRoot ? layout : state.workspaceConfig || fallbackState.workspaceConfig;
+  const layoutState = document.querySelector("#layout-state");
+  layoutState.textContent = workspaceConfig.claimState || "unknown";
+  layoutState.className = `badge ${claimClass(layoutState.textContent)}`;
+  document.querySelector("#runtime-root").textContent = workspaceConfig.runtimeRoot || "not proven";
+  const directories = workspaceConfig.directories || [];
+  const existingCount = directories.filter((directory) => directory.exists).length;
+  document.querySelector("#runtime-directories").textContent = `${existingCount}/${directories.length} detected`;
+  const creation = workspaceConfig.creationAction || {};
+  document.querySelector("#runtime-init").textContent = creation.enabledInApi === false ? `${creation.script} · API disabled` : "not proven";
+}
+
+function renderState(state, health, workspace = {}, layout = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
   document.querySelector("#build-label").textContent = `${state.apiBuild || health.apiBuild || "unknown build"} · ${state.claimState}`;
   renderWorkspace(state, workspace);
+  renderLayout(state, layout);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -78,15 +94,16 @@ function renderState(state, health, workspace = {}) {
 
 async function loadState() {
   try {
-    const [stateResponse, healthResponse, workspaceResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
+      fetch(layoutUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok) {
       throw new Error("state request failed");
     }
-    renderState(await stateResponse.json(), await healthResponse.json(), await workspaceResponse.json());
+    renderState(await stateResponse.json(), await healthResponse.json(), await workspaceResponse.json(), await layoutResponse.json());
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });
   }

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/local-settings.schema.json",
+  "title": "Makers Anvil local settings",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "runtimeRoot", "directories", "safety"],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.config.local-settings.v1" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "runtimeRoot": {
+      "type": "string",
+      "pattern": "^\\.makers-anvil$"
+    },
+    "directories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "relativePath", "purpose"],
+        "properties": {
+          "id": { "type": "string" },
+          "relativePath": { "type": "string" },
+          "purpose": { "type": "string" }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "userUploadEnabled",
+        "routeExecutionEnabled",
+        "toolLaunchEnabled",
+        "archiveExtractionEnabled",
+        "folderImportEnabled",
+        "deleteUserDataEnabled",
+        "releasePackagingEnabled"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "userUploadEnabled": { "const": false },
+        "routeExecutionEnabled": { "const": false },
+        "toolLaunchEnabled": { "const": false },
+        "archiveExtractionEnabled": { "const": false },
+        "folderImportEnabled": { "const": false },
+        "deleteUserDataEnabled": { "const": false },
+        "releasePackagingEnabled": { "const": false }
+      }
+    }
+  }
+}
