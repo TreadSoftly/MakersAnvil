@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Makers Anvil</title>
+    <link rel="icon" href="/assets/mark.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/assets/styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img src="/assets/mark.svg" alt="" class="brand-mark">
+          <div>
+            <h1>Makers Anvil</h1>
+            <p id="build-label">Loading local state</p>
+          </div>
+        </div>
+        <button id="refresh" class="icon-button" type="button" title="Refresh state" aria-label="Refresh state">↻</button>
+      </header>
+
+      <main>
+        <section class="status-band" aria-label="Application status">
+          <div>
+            <span class="eyebrow">Real App Completion</span>
+            <strong id="completion">0.0000%</strong>
+          </div>
+          <div class="meter" aria-hidden="true"><span id="completion-bar"></span></div>
+        </section>
+
+        <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
+        <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
+        <section class="panel" aria-label="Blocked actions">
+          <div class="panel-head">
+            <h2>Blocked Actions</h2>
+            <span class="badge blocked">blocked</span>
+          </div>
+          <ul id="blocked-actions" class="blocked-list"></ul>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/assets/app.js"></script>
+  </body>
+</html>

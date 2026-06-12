@@ -1,0 +1,19 @@
+{
+  "name": "makers-anvil",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first control panel for DIY maker workflows.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TreadSoftly/MakersAnvil.git"
+  },
+  "scripts": {
+    "dev": "python scripts/run_dev.py",
+    "test": "python -m pytest -q",
+    "verify": "python scripts/verify_project.py"
+  },
+  "engines": {
+    "node": ">=22",
+    "python": ">=3.11"
+  }
+}

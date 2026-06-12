@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Makers Anvil mark">
+  <rect width="64" height="64" rx="8" fill="#17211c"/>
+  <path d="M14 39h36v6H14z" fill="#f4f1ea"/>
+  <path d="M20 28h24l6 11H14z" fill="#1f7a4f"/>
+  <path d="M28 12h8v16h-8z" fill="#d9a441"/>
+  <path d="M24 16h16v6H24z" fill="#f4f1ea"/>
+</svg>

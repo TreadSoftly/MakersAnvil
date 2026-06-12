@@ -1,0 +1,30 @@
+# Reference-only planning material. The app must not depend on this folder.
+Refrences For Makers Anvil Application/
+References For Makers Anvil Application/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+.venv/
+venv/
+
+# Node/frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# Local runtime data
+.makers-anvil/
+runtime-data/
+logs/
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/claim-state.schema.json",
+  "title": "claim-state",
+  "type": "string",
+  "enum": [
+    "proven",
+    "detected",
+    "staged",
+    "preview-only",
+    "planned",
+    "blocked",
+    "failed",
+    "unknown",
+    "not proven"
+  ]
+}
