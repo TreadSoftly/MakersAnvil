@@ -29,6 +29,18 @@
           <div class="meter" aria-hidden="true"><span id="completion-bar"></span></div>
         </section>
 
+        <section class="panel workspace-panel" aria-label="Workspace status">
+          <div class="panel-head">
+            <h2>Workspace Status</h2>
+            <span id="workspace-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Current pass</strong><span id="current-pass">loading</span></p>
+            <p><strong>Next pass</strong><span id="next-pass">loading</span></p>
+            <p><strong>Status source</strong><span id="status-source">loading</span></p>
+          </div>
+        </section>
+
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
         <section class="panel" aria-label="Blocked actions">

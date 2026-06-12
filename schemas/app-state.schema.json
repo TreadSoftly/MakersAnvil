@@ -3,7 +3,7 @@
   "$id": "https://schemas.makers-anvil.local/app-state.schema.json",
   "title": "Makers Anvil app state",
   "type": "object",
-  "required": ["schemaVersion", "appName", "apiBuild", "claimState", "completion", "capabilities", "blockedActions"],
+  "required": ["schemaVersion", "appName", "apiBuild", "claimState", "completion", "currentPass", "sourceTruth", "capabilities", "blockedActions"],
   "properties": {
     "schemaVersion": { "const": "makers-anvil.api.state.v1" },
     "appName": { "const": "Makers Anvil" },
@@ -12,6 +12,19 @@
     "completion": {
       "type": "object",
       "additionalProperties": { "type": "number", "minimum": 0, "maximum": 100 }
+    },
+    "currentPass": {
+      "type": "object",
+      "required": ["id", "title", "claimState"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "claimState": { "$ref": "claim-state.schema.json" }
+      }
+    },
+    "sourceTruth": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
     },
     "capabilities": {
       "type": "array",

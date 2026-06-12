@@ -38,3 +38,16 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
         if forbidden in path.read_text(encoding="utf-8", errors="ignore")
     ]
     assert offenders == []
+
+
+def test_durable_status_records_are_current_and_relative() -> None:
+    import json
+
+    current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
+    ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
+
+    assert current["currentPass"]["id"] == "PASS-002"
+    assert current["trackPercentages"]["realApp"] == 5.0
+    assert current["product"]["sourceRoot"] == "."
+    assert current["referencePolicy"]["runtimeDependency"] is False
+    assert ledger["passes"][-1]["id"] == "PASS-002"

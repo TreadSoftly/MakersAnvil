@@ -1,15 +1,20 @@
-"""Current read-only app state for the first real Makers Anvil build."""
+"""Current read-only app state for the real Makers Anvil build."""
 
 from __future__ import annotations
 
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
+
 
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-001-clean-foundation"
+    api_build = "makers-anvil-real-pass-002-workspace-status"
+
+    def __init__(self, workspace_status: WorkspaceStatusService | None = None) -> None:
+        self._workspace_status = workspace_status or WorkspaceStatusService()
 
     def health(self) -> dict[str, Any]:
         return {
@@ -23,29 +28,27 @@ class AppStateService:
         }
 
     def state(self) -> dict[str, Any]:
+        current_status = self._workspace_status.current_status()
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
             "apiBuild": self.api_build,
-            "claimState": "staged",
+            "claimState": current_status["claimState"],
             "mode": "local-read-only",
-            "completion": {
-                "realApp": 2.5,
-                "windowsLocal": 2.5,
-                "macLinux": 0.0,
-                "webHosted": 0.0,
-                "packagedRelease": 0.0,
-                "cleanMachineProof": 0.0,
-            },
+            "completion": current_status["trackPercentages"],
+            "currentPass": current_status["currentPass"],
+            "sourceTruth": current_status["sourceTruth"],
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
-            "blockedActions": self._blocked_actions(),
-            "nextPass": {
-                "id": "PASS-002",
-                "title": "workspace state and durable status",
-                "claimState": "planned",
-            },
+            "blockedActions": current_status["blockedOrNotProven"],
+            "nextPass": current_status["nextPass"],
         }
+
+    def workspace_status(self) -> dict[str, Any]:
+        return self._workspace_status.workspace_status()
+
+    def pass_ledger(self) -> dict[str, Any]:
+        return self._workspace_status.pass_ledger()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -53,7 +56,7 @@ class AppStateService:
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server and browser shell are present.",
+                "summary": "Read-only local server, browser shell, and status records are present.",
             },
             {
                 "id": "mac-linux",
@@ -86,6 +89,13 @@ class AppStateService:
                 "actionsEnabled": False,
             },
             {
+                "id": "workspace-status",
+                "label": "Workspace status",
+                "claimState": "proven",
+                "summary": "Committed status files are exposed through read-only API records.",
+                "actionsEnabled": False,
+            },
+            {
                 "id": "file-intake",
                 "label": "File intake",
                 "claimState": "planned",
@@ -113,18 +123,4 @@ class AppStateService:
                 "summary": "No packaged release or installer has been built.",
                 "actionsEnabled": False,
             },
-        ]
-
-    def _blocked_actions(self) -> list[str]:
-        return [
-            "runtime user upload",
-            "route execution",
-            "output open action",
-            "external tool launch",
-            "selected-file handoff",
-            "software install/update/uninstall/repair",
-            "archive extraction",
-            "folder import",
-            "release packaging",
-            "clean-machine claim",
         ]

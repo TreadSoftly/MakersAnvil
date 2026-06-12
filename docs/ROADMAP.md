@@ -4,7 +4,8 @@
 
 1. Clean local app foundation.
 2. Durable workspace state.
-3. Safe runtime file intake.
+3. Workspace data directory and safe local settings.
+4. Safe runtime file intake.
 4. Route preview.
 5. Output bundle and proof panels.
 6. Tool detection.

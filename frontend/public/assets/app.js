@@ -1,5 +1,6 @@
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
+const workspaceUrl = "/api/workspace/status";
 
 const fallbackState = {
   appName: "Makers Anvil",
@@ -9,6 +10,9 @@ const fallbackState = {
   tracks: [],
   capabilities: [],
   blockedActions: ["state unavailable"],
+  currentPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
+  nextPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
+  sourceTruth: {},
 };
 
 const claimClass = (state) => String(state || "unknown").replace(/\s+/g, "-");
@@ -49,11 +53,24 @@ function renderBlocked(actions) {
   target.innerHTML = actions.map((action) => `<li><span>■</span>${action}</li>`).join("");
 }
 
-function renderState(state, health) {
+function renderWorkspace(state, workspace) {
+  const current = workspace.currentPass || state.currentPass || fallbackState.currentPass;
+  const next = workspace.nextPass || state.nextPass || fallbackState.nextPass;
+  const sourceTruth = workspace.sourceTruth || state.sourceTruth || {};
+  const workspaceState = document.querySelector("#workspace-state");
+  workspaceState.textContent = workspace.claimState || state.claimState || "unknown";
+  workspaceState.className = `badge ${claimClass(workspaceState.textContent)}`;
+  document.querySelector("#current-pass").textContent = `${current.id} · ${current.title}`;
+  document.querySelector("#next-pass").textContent = `${next.id} · ${next.title}`;
+  document.querySelector("#status-source").textContent = sourceTruth.statusPath || "not proven";
+}
+
+function renderState(state, health, workspace = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
   document.querySelector("#build-label").textContent = `${state.apiBuild || health.apiBuild || "unknown build"} · ${state.claimState}`;
+  renderWorkspace(state, workspace);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -61,14 +78,15 @@ function renderState(state, health) {
 
 async function loadState() {
   try {
-    const [stateResponse, healthResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
+      fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok) {
       throw new Error("state request failed");
     }
-    renderState(await stateResponse.json(), await healthResponse.json());
+    renderState(await stateResponse.json(), await healthResponse.json(), await workspaceResponse.json());
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });
   }

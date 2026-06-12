@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "makers-anvil.status.current.v1",
+  "claimState": "staged",
+  "product": {
+    "name": "Makers Anvil",
+    "repository": "https://github.com/TreadSoftly/MakersAnvil",
+    "sourceRoot": "."
+  },
+  "currentPass": {
+    "id": "PASS-002",
+    "title": "workspace state and durable status records",
+    "claimState": "staged",
+    "reportPath": "docs/passes/PASS_002_REPORT.md"
+  },
+  "trackPercentages": {
+    "realApp": 5.0,
+    "windowsLocal": 5.0,
+    "macLinux": 0.0,
+    "webHosted": 0.0,
+    "packagedRelease": 0.0,
+    "cleanMachineProof": 0.0
+  },
+  "sourceTruth": {
+    "statusPath": "state/current_status.json",
+    "passLedgerPath": "state/pass_ledger.json",
+    "buildStatusPath": "docs/BUILD_STATUS.md",
+    "continueProtocolPath": "docs/CONTINUE_PROTOCOL.md"
+  },
+  "referencePolicy": {
+    "folder": "Refrences For Makers Anvil Application",
+    "runtimeDependency": false,
+    "gitTracked": false,
+    "purpose": "reference-only"
+  },
+  "proven": [
+    "Read-only local API exposes health, state, claim-state, workspace-status, and pass-ledger records.",
+    "Durable status files are committed product source and parse as JSON.",
+    "Browser dashboard renders current pass and source-truth paths from the API.",
+    "State-changing API methods remain blocked."
+  ],
+  "blockedOrNotProven": [
+    "runtime user upload",
+    "route execution",
+    "output open action",
+    "external tool launch",
+    "selected-file handoff",
+    "software install/update/uninstall/repair",
+    "archive extraction",
+    "folder import",
+    "packaged release",
+    "clean-machine proof",
+    "macOS/Linux runtime proof",
+    "browser-hosted runtime proof"
+  ],
+  "nextPass": {
+    "id": "PASS-003",
+    "title": "workspace data directory and safe local settings",
+    "claimState": "planned"
+  }
+}

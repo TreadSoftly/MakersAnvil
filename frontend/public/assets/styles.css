@@ -109,6 +109,29 @@ p {
   padding: 16px;
 }
 
+.workspace-panel {
+  margin-bottom: 14px;
+}
+
+.status-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.status-rows p {
+  align-items: start;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(110px, 0.35fr) 1fr;
+  padding-top: 8px;
+}
+
+.status-rows strong {
+  color: var(--ink);
+  font-size: 0.88rem;
+}
+
 .eyebrow {
   color: var(--cyan);
   display: block;

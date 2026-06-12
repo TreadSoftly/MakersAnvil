@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "makers-anvil.status.pass-ledger.v1",
+  "claimState": "staged",
+  "passes": [
+    {
+      "id": "PASS-001",
+      "title": "clean product foundation and read-only local app shell",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_001_REPORT.md",
+      "commit": "a83f99b",
+      "proof": [
+        "project verifier passed",
+        "pytest passed",
+        "local HTTP smoke passed",
+        "browser smoke passed",
+        "GitHub CI passed after workflow fixes"
+      ]
+    },
+    {
+      "id": "PASS-002",
+      "title": "workspace state and durable status records",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_002_REPORT.md",
+      "commit": "pending",
+      "proof": [
+        "durable status JSON added",
+        "pass ledger JSON added",
+        "workspace-status API added",
+        "pass-ledger API added",
+        "frontend status panel added"
+      ]
+    }
+  ]
+}

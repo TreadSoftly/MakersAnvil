@@ -20,13 +20,18 @@ REQUIRED_FILES = [
     "pyproject.toml",
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
+    "backend/src/makers_anvil_backend/services/workspace_status.py",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/styles.css",
     "schemas/claim-state.schema.json",
     "schemas/app-state.schema.json",
+    "schemas/current-status.schema.json",
+    "state/current_status.json",
+    "state/pass_ledger.json",
     "docs/BUILD_STATUS.md",
     "docs/passes/PASS_001_REPORT.md",
+    "docs/passes/PASS_002_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -84,6 +89,8 @@ def check_api() -> list[str]:
     errors: list[str] = []
     health = api.handle("GET", "/api/health")
     state = api.handle("GET", "/api/state")
+    workspace = api.handle("GET", "/api/workspace/status")
+    ledger = api.handle("GET", "/api/passes/ledger")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -92,10 +99,31 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
+    if state.body.get("currentPass", {}).get("id") != "PASS-002":
+        errors.append("GET /api/state does not report PASS-002")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-002":
+        errors.append("GET /api/workspace/status does not report PASS-002")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-002":
+        errors.append("GET /api/passes/ledger does not report PASS-002 as latest")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
         errors.append("unknown API request did not return not proven")
+    return errors
+
+
+def check_status_records() -> list[str]:
+    errors: list[str] = []
+    status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
+    ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-002":
+        errors.append("current status does not report PASS-002")
+    if status.get("trackPercentages", {}).get("realApp") != 5.0:
+        errors.append("real app completion is not 5.0 for PASS-002")
+    if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
+        errors.append("reference policy must keep runtimeDependency false")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-002":
+        errors.append("pass ledger latest pass is not PASS-002")
     return errors
 
 
@@ -118,6 +146,7 @@ def main() -> int:
         "forbidden_text": check_forbidden_text(),
         "api": check_api(),
         "json_files": check_json_files(),
+        "status_records": check_status_records(),
     }
     failures = [message for messages in checks.values() for message in messages]
     result = {

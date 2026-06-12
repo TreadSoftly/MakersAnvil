@@ -32,6 +32,8 @@ class MakersAnvilApi:
             "/api/health": self._state_service.health,
             "/api/state": self._state_service.state,
             "/api/claim-states": self._claim_states,
+            "/api/workspace/status": self._state_service.workspace_status,
+            "/api/passes/ledger": self._state_service.pass_ledger,
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:
