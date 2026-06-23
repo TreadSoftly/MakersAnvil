@@ -1,3 +1,5 @@
+# Cross-platform proof gate: every pull request must pass governance and tests
+# on Windows, Ubuntu, and macOS before platform behavior can be claimed.
 name: CI
 
 on:

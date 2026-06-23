@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-005",
-    "title": "portable runtime paths and relocation safety",
+    "id": "PASS-006",
+    "title": "durable explainability and handoff contract",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_005_REPORT.md"
+    "reportPath": "docs/passes/PASS_006_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 12.5,
-    "windowsLocal": 12.5,
+    "realApp": 15.0,
+    "windowsLocal": 15.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -40,6 +40,9 @@
     "Metadata-only intake records omit source paths and contents and do not copy, move, delete, extract, execute, or launch source files.",
     "Runtime data resolves through OS user-data conventions or an explicit absolute override and never depends on the source checkout path.",
     "API and dashboard records expose logical location metadata instead of resolved personal filesystem paths.",
+    "Every tracked source file has a machine-readable purpose and maintenance record.",
+    "Python modules and public components plus frontend and workflow file headers are protected by an explainability verifier.",
+    "A durable start guide, architecture guide, file map, and code-explanation standard let a new human or model resume from repository truth.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -57,7 +60,7 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-006",
+    "id": "PASS-007",
     "title": "route preview foundation",
     "claimState": "planned"
   }

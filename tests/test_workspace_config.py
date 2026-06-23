@@ -1,3 +1,5 @@
+"""Examples for portable workspace initialization and policy enforcement."""
+
 import json
 from pathlib import Path
 
@@ -8,6 +10,8 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigError,
 
 
 def write_settings(root: Path, source_root_dependency: bool = False) -> None:
+    """Write isolated settings, optionally weakening one field for rejection tests."""
+
     config_dir = root / "config"
     config_dir.mkdir(parents=True)
     (config_dir / "default_settings.json").write_text(
@@ -42,6 +46,8 @@ def write_settings(root: Path, source_root_dependency: bool = False) -> None:
 
 
 def build_service(source_root: Path, data_root: Path) -> WorkspaceConfigService:
+    """Build a workspace service with deliberately unrelated source and data roots."""
+
     paths = RuntimePathsService(
         source_root=source_root,
         environ={DATA_DIR_ENV: str(data_root)},
@@ -52,6 +58,8 @@ def build_service(source_root: Path, data_root: Path) -> WorkspaceConfigService:
 
 
 def test_initialize_keeps_runtime_data_outside_source_checkout(tmp_path: Path) -> None:
+    """Initialization writes only to user data and returns a path-redacted manifest."""
+
     source_root = tmp_path / "copied-anywhere" / "makers-anvil"
     data_root = tmp_path / "unrelated-user-data"
     write_settings(source_root)
@@ -73,6 +81,8 @@ def test_initialize_keeps_runtime_data_outside_source_checkout(tmp_path: Path) -
 
 
 def test_workspace_relative_path_cannot_escape_user_data_root(tmp_path: Path) -> None:
+    """Workspace child paths reject traversal outside app-owned user data."""
+
     source_root = tmp_path / "source"
     write_settings(source_root)
     service = build_service(source_root, tmp_path / "data")
@@ -82,6 +92,8 @@ def test_workspace_relative_path_cannot_escape_user_data_root(tmp_path: Path) ->
 
 
 def test_settings_cannot_reintroduce_source_root_dependency(tmp_path: Path) -> None:
+    """A changed setting cannot reconnect runtime data to the source checkout."""
+
     source_root = tmp_path / "source"
     write_settings(source_root, source_root_dependency=True)
     service = build_service(source_root, tmp_path / "data")

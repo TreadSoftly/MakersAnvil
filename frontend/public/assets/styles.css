@@ -1,3 +1,12 @@
+/*
+ * Makers Anvil dashboard presentation.
+ *
+ * The layout favors a compact operational dashboard, keeps cards at an 8px
+ * radius, and includes a true narrow-screen layout with no horizontal overflow.
+ * Styling never communicates an unsafe action as enabled.
+ */
+
+/* Shared color, spacing, and surface tokens. */
 :root {
   --bg: #f4f1ea;
   --panel: #fffdf8;
@@ -36,6 +45,7 @@ textarea {
   padding: 18px;
 }
 
+/* Product identity and the single read-only refresh command. */
 .topbar {
   align-items: center;
   display: flex;
@@ -122,6 +132,7 @@ p {
   margin-bottom: 14px;
 }
 
+/* Reusable status rows keep labels aligned while allowing values to wrap. */
 .status-rows {
   display: grid;
   gap: 8px;
@@ -188,6 +199,7 @@ p {
   margin-bottom: 10px;
 }
 
+/* Claim-state colors mirror the shared domain vocabulary. */
 .badge {
   border: 1px solid currentColor;
   border-radius: 999px;
@@ -251,6 +263,7 @@ p {
 }
 
 @media (max-width: 620px) {
+  /* Narrow screens stack status labels above values to prevent clipping. */
   .app-shell {
     padding: 12px;
   }

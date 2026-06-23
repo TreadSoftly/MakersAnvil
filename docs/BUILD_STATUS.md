@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-005 — portable runtime paths and relocation safety.
+PASS-006 - durable explainability and handoff contract.
 
 ## Track Percentages
 
-- Real app completion: `12.5000%`
-- Windows local app: `12.5000%`
+- Real app completion: `15.0000%`
+- Windows local app: `15.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -31,11 +31,17 @@ PASS-005 — portable runtime paths and relocation safety.
 - Runtime data uses OS-standard per-user locations or an explicit absolute override, never the source checkout location.
 - API and dashboard records expose logical storage metadata without resolved personal filesystem paths.
 - Source discovery is based on installed module/script locations rather than the current working directory.
+- Every tracked file has a machine-readable purpose and maintenance record.
+- Python modules and public components are required to have docstrings.
+- Frontend and workflow source files are required to have purpose comments.
+- A start guide, architecture guide, file map, and code-explanation standard are committed repository truth.
+- The explainability verifier prevents future passes from silently dropping documentation coverage.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
 - PASS-004 verifier, 20 tests, metadata staging smoke, HTTP smoke, and desktop/mobile browser smoke passed.
 - PASS-005 verifier, 29 tests, relocated-checkout smoke, external-working-directory launch, HTTP smoke, and desktop/mobile browser smoke passed.
+- PASS-006 explainability checker covers all 63 tracked files; verifier, 31 tests, HTTP smoke, and desktop/mobile browser regression passed.
 
 ## Blocked Or Not Proven
 
@@ -53,4 +59,4 @@ PASS-005 — portable runtime paths and relocation safety.
 
 ## Next Pass
 
-PASS-006 — route preview foundation.
+PASS-007 - route preview foundation.

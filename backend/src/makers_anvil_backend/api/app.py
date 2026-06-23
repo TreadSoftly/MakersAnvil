@@ -41,6 +41,8 @@ class MakersAnvilApi:
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:
+        """Return a deterministic response while rejecting every non-GET API request."""
+
         path = urlparse(raw_path).path
         normalized_method = method.upper()
         if normalized_method != "GET":

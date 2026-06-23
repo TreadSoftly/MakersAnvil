@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 005 is staged. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, project governance, schemas, tests, and verification scripts. Browser/API upload, route execution, tool launch, installers, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: real application build pass 006 is staged at `15.0000%`. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, project governance, schemas, tests, verification scripts, and a machine-enforced source-explainability contract. Browser/API upload, route execution, tool launch, installers, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
 
 ## Run Locally
 
@@ -25,6 +25,7 @@ http://127.0.0.1:8765
 ## Verify
 
 ```powershell
+python scripts/check_explainability.py
 python scripts/verify_project.py
 python -m pytest -q
 ```
@@ -62,3 +63,13 @@ Set `MAKERS_ANVIL_DATA_DIR` to an absolute directory to use an explicit data loc
 The folder `Refrences For Makers Anvil Application/` is reference-only. It is ignored by git and must not be required by runtime code, tests, or packaged app files.
 
 Makers Anvil is built Windows-first, with macOS, Linux, and browser-hosted support kept as planned targets until their own proof gates exist.
+
+## Understanding And Continuing The Build
+
+Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/ARCHITECTURE.md` explains data flow and safety boundaries, `docs/CODE_EXPLAINABILITY_STANDARD.md` defines required comments and docstrings, and `state/source_manifest.json` explains every tracked file.
+
+Documentation quality is machine-checked:
+
+```powershell
+python scripts/check_explainability.py
+```

@@ -24,6 +24,8 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
+        """Serve an API response or a static dashboard asset for one GET request."""
+
         if self.path.startswith("/api/"):
             self._send_api(self.api.handle("GET", self.path))
             return
@@ -32,12 +34,18 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
+        """Send the API's standard blocked response for a POST request."""
+
         self._send_api(self.api.handle("POST", self.path))
 
     def do_PUT(self) -> None:  # noqa: N802 - stdlib handler API
+        """Send the API's standard blocked response for a PUT request."""
+
         self._send_api(self.api.handle("PUT", self.path))
 
     def do_DELETE(self) -> None:  # noqa: N802 - stdlib handler API
+        """Send the API's standard blocked response for a DELETE request."""
+
         self._send_api(self.api.handle("DELETE", self.path))
 
     def _send_api(self, response: ApiResponse) -> None:
@@ -60,6 +68,8 @@ def run(host: str = "127.0.0.1", port: int = 8765) -> None:
 
 
 def main() -> int:
+    """Parse host and port arguments, then run the loopback development server."""
+
     parser = argparse.ArgumentParser(description="Run the Makers Anvil local app.")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", default=8765, type=int)

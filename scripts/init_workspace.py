@@ -14,6 +14,8 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigServic
 
 
 def main() -> int:
+    """Create the portable app-owned directory layout and print its redacted manifest."""
+
     manifest = WorkspaceConfigService(ROOT).initialize()
     print(json.dumps(manifest, indent=2, sort_keys=True))
     return 0

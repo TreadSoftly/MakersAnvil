@@ -19,12 +19,18 @@ class WorkspaceStatusService:
         self.ledger_path = self.root / "state" / "pass_ledger.json"
 
     def current_status(self) -> dict[str, Any]:
+        """Load the committed machine-readable current status record."""
+
         return self._read_json(self.status_path)
 
     def pass_ledger(self) -> dict[str, Any]:
+        """Load the committed ordered pass ledger."""
+
         return self._read_json(self.ledger_path)
 
     def workspace_status(self) -> dict[str, Any]:
+        """Combine current status and ledger summary for the read-only API."""
+
         current = self.current_status()
         ledger = self.pass_ledger()
         return {

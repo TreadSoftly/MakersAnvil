@@ -1,9 +1,19 @@
+/**
+ * Read-only dashboard controller.
+ *
+ * Inputs: JSON from the loopback API's GET endpoints.
+ * Outputs: text, badges, meters, capability cards, and blocked-action rows.
+ * Safety: this file performs no POST, PUT, DELETE, file, route, or tool action.
+ */
+
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";
 const layoutUrl = "/api/workspace/layout";
 const intakeUrl = "/api/intake/catalog";
 
+// The fallback preserves the page structure when the server is unavailable;
+// it never converts missing evidence into a successful or enabled state.
 const fallbackState = {
   appName: "Makers Anvil",
   apiBuild: "offline",
@@ -42,6 +52,7 @@ function badge(state) {
 }
 
 function renderTracks(tracks) {
+  // Tracks are high-level platform targets, not executable workflow actions.
   const target = document.querySelector("#tracks");
   target.innerHTML = tracks.map((track) => `
     <article class="panel">
@@ -55,6 +66,7 @@ function renderTracks(tracks) {
 }
 
 function renderCapabilities(capabilities) {
+  // Capability buttons remain disabled until a later pass proves an action gate.
   const target = document.querySelector("#capabilities");
   target.innerHTML = capabilities.map((capability) => `
     <article class="panel capability">
@@ -134,6 +146,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}) {
 }
 
 async function loadState() {
+  // Fetch related records together so one refresh renders a coherent snapshot.
   try {
     const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),

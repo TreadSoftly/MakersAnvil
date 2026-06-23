@@ -1,4 +1,9 @@
 <!doctype html>
+<!--
+  Static read-only Makers Anvil dashboard shell.
+  JavaScript fills status regions from loopback GET endpoints; this document
+  contains no upload, execution, tool-launch, or other mutating controls.
+-->
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -9,6 +14,7 @@
   </head>
   <body>
     <div class="app-shell">
+      <!-- Product identity and state refresh. -->
       <header class="topbar">
         <div class="brand">
           <img src="/assets/mark.svg" alt="" class="brand-mark">
@@ -21,6 +27,7 @@
       </header>
 
       <main>
+        <!-- Overall build completion from durable status truth. -->
         <section class="status-band" aria-label="Application status">
           <div>
             <span class="eyebrow">Real App Completion</span>
@@ -29,6 +36,7 @@
           <div class="meter" aria-hidden="true"><span id="completion-bar"></span></div>
         </section>
 
+        <!-- Current/next pass and committed truth-file location. -->
         <section class="panel workspace-panel" aria-label="Workspace status">
           <div class="panel-head">
             <h2>Workspace Status</h2>
@@ -41,6 +49,7 @@
           </div>
         </section>
 
+        <!-- Portable runtime policy; resolved personal paths are never rendered. -->
         <section class="panel workspace-panel" aria-label="Local workspace settings">
           <div class="panel-head">
             <h2>Local Workspace</h2>
@@ -55,6 +64,7 @@
           </div>
         </section>
 
+        <!-- Metadata-only intake status with all mutation gates blocked. -->
         <section class="panel workspace-panel" aria-label="File intake status">
           <div class="panel-head">
             <h2>File Intake</h2>
@@ -68,6 +78,7 @@
           </div>
         </section>
 
+        <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
         <section class="panel" aria-label="Blocked actions">

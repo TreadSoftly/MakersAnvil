@@ -1,3 +1,5 @@
+"""Governance examples that keep product source portable, safe, and current."""
+
 from pathlib import Path
 
 
@@ -5,6 +7,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_reference_folder_is_not_tracked_product_source() -> None:
+    """Both known reference-folder spellings remain outside product history."""
+
     gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
     assert "Refrences For Makers Anvil Application/" in gitignore
@@ -12,6 +16,8 @@ def test_reference_folder_is_not_tracked_product_source() -> None:
 
 
 def test_frontend_has_no_mutating_api_calls() -> None:
+    """Browser code may fetch state but cannot call mutation or tool routes."""
+
     app_js = (ROOT / "frontend" / "public" / "assets" / "app.js").read_text(encoding="utf-8")
 
     assert 'method: "GET"' in app_js
@@ -21,6 +27,8 @@ def test_frontend_has_no_mutating_api_calls() -> None:
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
+    """Historical reference-build identifiers cannot leak into product runtime code."""
+
     product_files = [
         path
         for path in ROOT.rglob("*")
@@ -43,19 +51,23 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
 
 
 def test_durable_status_records_are_current_and_relative() -> None:
+    """Current status and pass history agree on the active bounded pass."""
+
     import json
 
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-005"
-    assert current["trackPercentages"]["realApp"] == 12.5
+    assert current["currentPass"]["id"] == "PASS-006"
+    assert current["trackPercentages"]["realApp"] == 15.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-005"
+    assert ledger["passes"][-1]["id"] == "PASS-006"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
+    """Committed defaults preserve user-data portability and disabled actions."""
+
     import json
 
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
@@ -68,6 +80,8 @@ def test_default_settings_are_safe_and_relative() -> None:
 
 
 def test_product_source_contains_no_personal_machine_paths() -> None:
+    """Tracked product text contains no username, home, or cloud-folder path."""
+
     markers = [
         "C:" + "\\Users\\",
         "/" + "Users/",
@@ -90,6 +104,8 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
 
 
 def test_intake_policy_never_enables_data_or_action_mutations() -> None:
+    """Every intake safety flag remains false in committed policy."""
+
     import json
 
     policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))

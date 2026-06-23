@@ -8,10 +8,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND_SRC = ROOT / "backend" / "src"
+sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(BACKEND_SRC))
 
 from makers_anvil_backend.api.app import MakersAnvilApi  # noqa: E402
 from makers_anvil_backend.domain.claim_state import ALLOWED_CLAIM_STATES  # noqa: E402
+from scripts.check_explainability import run_checks as check_explainability  # noqa: E402
 
 REQUIRED_FILES = [
     ".gitignore",
@@ -37,15 +39,22 @@ REQUIRED_FILES = [
     "schemas/intake-policy.schema.json",
     "schemas/intake-record.schema.json",
     "scripts/init_workspace.py",
+    "scripts/check_explainability.py",
     "scripts/stage_intake.py",
     "state/current_status.json",
     "state/pass_ledger.json",
+    "state/source_manifest.json",
+    "docs/ARCHITECTURE.md",
     "docs/BUILD_STATUS.md",
+    "docs/CODE_EXPLAINABILITY_STANDARD.md",
+    "docs/FILE_MAP.md",
+    "docs/START_HERE.md",
     "docs/passes/PASS_001_REPORT.md",
     "docs/passes/PASS_002_REPORT.md",
     "docs/passes/PASS_003_REPORT.md",
     "docs/passes/PASS_004_REPORT.md",
     "docs/passes/PASS_005_REPORT.md",
+    "docs/passes/PASS_006_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -65,6 +74,8 @@ FORBIDDEN_PRODUCT_TEXT = [
 
 
 def product_files() -> list[Path]:
+    """Return committed-style product files while excluding generated and reference data."""
+
     ignored_parts = {".git", ".makers-anvil", "__pycache__", ".pytest_cache", "node_modules"}
     ignored_parts.update(REFERENCE_FOLDERS)
     files: list[Path] = []
@@ -78,10 +89,14 @@ def product_files() -> list[Path]:
 
 
 def check_required_files() -> list[str]:
+    """Report every required architecture, schema, status, and pass file that is missing."""
+
     return [f"missing required file: {name}" for name in REQUIRED_FILES if not (ROOT / name).exists()]
 
 
 def check_reference_policy() -> list[str]:
+    """Ensure both historical spellings of the reference-only folder remain ignored."""
+
     gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
     errors = []
     for folder in REFERENCE_FOLDERS:
@@ -91,6 +106,8 @@ def check_reference_policy() -> list[str]:
 
 
 def check_forbidden_text() -> list[str]:
+    """Reject personal paths and stale reference-build markers from product source."""
+
     errors: list[str] = []
     for path in product_files():
         if path.suffix.lower() not in {".py", ".js", ".html", ".css", ".json", ".md", ".toml", ".yml", ".yaml"}:
@@ -103,6 +120,8 @@ def check_forbidden_text() -> list[str]:
 
 
 def check_api() -> list[str]:
+    """Exercise read-only API contracts and confirm every mutation remains blocked."""
+
     api = MakersAnvilApi()
     errors: list[str] = []
     health = api.handle("GET", "/api/health")
@@ -121,12 +140,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-005":
-        errors.append("GET /api/state does not report PASS-005")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-005":
-        errors.append("GET /api/workspace/status does not report PASS-005")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-005":
-        errors.append("GET /api/passes/ledger does not report PASS-005 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-006":
+        errors.append("GET /api/state does not report PASS-006")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-006":
+        errors.append("GET /api/workspace/status does not report PASS-006")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-006":
+        errors.append("GET /api/passes/ledger does not report PASS-006 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -160,19 +179,21 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
+    """Keep status, pass ledger, settings, and intake policy synchronized."""
+
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
     intake_policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-005":
-        errors.append("current status does not report PASS-005")
-    if status.get("trackPercentages", {}).get("realApp") != 12.5:
-        errors.append("real app completion is not 12.5 for PASS-005")
+    if status.get("currentPass", {}).get("id") != "PASS-006":
+        errors.append("current status does not report PASS-006")
+    if status.get("trackPercentages", {}).get("realApp") != 15.0:
+        errors.append("real app completion is not 15.0 for PASS-006")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-005":
-        errors.append("pass ledger latest pass is not PASS-005")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-006":
+        errors.append("pass ledger latest pass is not PASS-006")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -200,6 +221,8 @@ def _string_values(value: object) -> list[str]:
 
 
 def check_portable_paths() -> list[str]:
+    """Fail when an API payload exposes the resolved source or user home path."""
+
     api = MakersAnvilApi()
     payloads = [
         api.handle("GET", "/api/state").body,
@@ -218,6 +241,8 @@ def check_portable_paths() -> list[str]:
 
 
 def check_json_files() -> list[str]:
+    """Parse every product JSON file so malformed contracts fail verification."""
+
     errors = []
     for path in product_files():
         if path.suffix.lower() != ".json":
@@ -230,6 +255,8 @@ def check_json_files() -> list[str]:
 
 
 def main() -> int:
+    """Run all project gates, print one machine-readable result, and set the exit code."""
+
     checks = {
         "required_files": check_required_files(),
         "reference_policy": check_reference_policy(),
@@ -238,6 +265,7 @@ def main() -> int:
         "json_files": check_json_files(),
         "status_records": check_status_records(),
         "portable_paths": check_portable_paths(),
+        "explainability": check_explainability(),
     }
     failures = [message for messages in checks.values() for message in messages]
     result = {

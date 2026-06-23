@@ -1,3 +1,5 @@
+"""Executable examples for metadata-only intake privacy and containment."""
+
 import json
 from pathlib import Path
 
@@ -9,6 +11,8 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigServic
 
 
 def write_config(root: Path) -> None:
+    """Write the smallest safe settings and intake policy used by isolated tests."""
+
     config_dir = root / "config"
     config_dir.mkdir()
     (config_dir / "default_settings.json").write_text(
@@ -70,6 +74,8 @@ def write_config(root: Path) -> None:
 
 
 def build_service(root: Path, data_root: Path) -> IntakeCatalogService:
+    """Build an intake service whose source and runtime roots are deliberately separate."""
+
     paths = RuntimePathsService(
         source_root=root,
         environ={DATA_DIR_ENV: str(data_root)},
@@ -81,6 +87,8 @@ def build_service(root: Path, data_root: Path) -> IntakeCatalogService:
 
 
 def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> None:
+    """Staging records metadata while preserving bytes and withholding source paths."""
+
     write_config(tmp_path)
     source_dir = tmp_path / "user-files"
     source_dir.mkdir()
@@ -108,6 +116,8 @@ def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> N
 
 
 def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
+    """Intake accepts one regular file and rejects folder import."""
+
     write_config(tmp_path)
     source_dir = tmp_path / "folder"
     source_dir.mkdir()
@@ -117,6 +127,8 @@ def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
 
 
 def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
+    """Archive classification does not imply or perform extraction."""
+
     write_config(tmp_path)
     source = tmp_path / "bundle.zip"
     source.write_bytes(b"not extracted")
@@ -129,6 +141,8 @@ def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
 
 
 def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -> None:
+    """Malformed records are counted as invalid and never returned as usable data."""
+
     write_config(tmp_path)
     data_root = tmp_path / "runtime-data"
     records_root = data_root / "intake" / "records"

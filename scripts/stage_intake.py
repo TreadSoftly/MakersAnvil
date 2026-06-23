@@ -16,6 +16,8 @@ from makers_anvil_backend.services.intake_catalog import IntakeCatalogError, Int
 
 
 def main() -> int:
+    """Parse one explicit file path and stage only its privacy-safe metadata."""
+
     parser = argparse.ArgumentParser(description="Stage metadata for one local file without copying its contents.")
     parser.add_argument("--path", required=True, help="Path to one regular local file.")
     args = parser.parse_args()

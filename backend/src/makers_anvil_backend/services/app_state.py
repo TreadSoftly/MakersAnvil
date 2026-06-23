@@ -13,7 +13,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-005-portable-runtime-paths"
+    api_build = "makers-anvil-real-pass-006-explainable-source"
 
     def __init__(
         self,
@@ -26,6 +26,8 @@ class AppStateService:
         self._intake_catalog = intake_catalog or IntakeCatalogService()
 
     def health(self) -> dict[str, Any]:
+        """Describe the live API build without claiming that mutations are enabled."""
+
         return {
             "schemaVersion": "makers-anvil.api.health.v1",
             "appName": "Makers Anvil",
@@ -37,6 +39,8 @@ class AppStateService:
         }
 
     def state(self) -> dict[str, Any]:
+        """Compose the complete dashboard record from durable and runtime services."""
+
         current_status = self._workspace_status.current_status()
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
@@ -56,21 +60,33 @@ class AppStateService:
         }
 
     def workspace_status(self) -> dict[str, Any]:
+        """Return committed current-pass truth through the workspace status service."""
+
         return self._workspace_status.workspace_status()
 
     def pass_ledger(self) -> dict[str, Any]:
+        """Return the ordered durable pass history without modifying it."""
+
         return self._workspace_status.pass_ledger()
 
     def workspace_config(self) -> dict[str, Any]:
+        """Return safe workspace policy with resolved personal paths withheld."""
+
         return self._workspace_config.config()
 
     def workspace_layout(self) -> dict[str, Any]:
+        """Report app-owned directory presence using relative and logical identifiers."""
+
         return self._workspace_config.layout()
 
     def intake_policy(self) -> dict[str, Any]:
+        """Return metadata-intake rules and their blocked action boundaries."""
+
         return self._intake_catalog.policy_response()
 
     def intake_catalog(self) -> dict[str, Any]:
+        """Return validated app-owned intake records through a read-only response."""
+
         return self._intake_catalog.catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
@@ -130,6 +146,13 @@ class AppStateService:
                 "label": "File intake",
                 "claimState": "staged",
                 "summary": "Local metadata records can be staged without storing paths, copying content, importing folders, or enabling uploads.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "source-explainability",
+                "label": "Source explainability",
+                "claimState": "proven",
+                "summary": "Every tracked file is mapped and Python/frontend explanation coverage is machine-verified.",
                 "actionsEnabled": False,
             },
             {

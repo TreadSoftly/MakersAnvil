@@ -25,8 +25,12 @@ class WorkspaceConfigService:
         self.settings_path = self.root / "config" / "default_settings.json"
 
     def settings(self) -> dict[str, Any]:
+        """Load defaults and reject any policy that reconnects data to source."""
+
         settings = json.loads(self.settings_path.read_text(encoding="utf-8"))
         runtime_data = settings.get("runtimeData", {})
+        # Exact equality is intentional: adding a permissive field must not
+        # weaken source independence or path-redaction without a new schema.
         expected = {
             "mode": "platform-user-data",
             "logicalRoot": LOGICAL_DATA_ROOT,
@@ -39,6 +43,8 @@ class WorkspaceConfigService:
         return settings
 
     def config(self) -> dict[str, Any]:
+        """Return public workspace policy, safety flags, and portable directory metadata."""
+
         settings = self.settings()
         return {
             "schemaVersion": "makers-anvil.api.workspace-config.v1",
@@ -57,6 +63,8 @@ class WorkspaceConfigService:
         }
 
     def layout(self) -> dict[str, Any]:
+        """Report which app-owned directories exist without exposing their absolute root."""
+
         settings = self.settings()
         runtime_root = self.runtime_paths.location().root
         directories = []
@@ -87,6 +95,8 @@ class WorkspaceConfigService:
         }
 
     def initialize(self) -> dict[str, Any]:
+        """Create only configured app-owned directories and a path-redacted manifest."""
+
         settings = self.settings()
         runtime_root = self.runtime_paths.location().root
         runtime_root.mkdir(parents=True, exist_ok=True)

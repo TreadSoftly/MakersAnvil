@@ -1,3 +1,5 @@
+"""Cross-platform examples for portable runtime path selection and redaction."""
+
 import json
 from pathlib import Path
 
@@ -7,6 +9,8 @@ from makers_anvil_backend.services.runtime_paths import DATA_DIR_ENV, RuntimePat
 
 
 def test_windows_uses_vendor_scoped_local_app_data(tmp_path: Path) -> None:
+    """Windows defaults to vendor-scoped local application data."""
+
     local_app_data = tmp_path / "windows-local"
     service = RuntimePathsService(
         source_root=tmp_path / "source",
@@ -20,6 +24,8 @@ def test_windows_uses_vendor_scoped_local_app_data(tmp_path: Path) -> None:
 
 
 def test_macos_uses_application_support(tmp_path: Path) -> None:
+    """macOS defaults to the vendor/product Application Support directory."""
+
     home = tmp_path / "home"
     service = RuntimePathsService(tmp_path / "source", {}, home, "darwin")
 
@@ -27,6 +33,8 @@ def test_macos_uses_application_support(tmp_path: Path) -> None:
 
 
 def test_linux_uses_xdg_data_home(tmp_path: Path) -> None:
+    """Linux honors the XDG per-user data convention."""
+
     xdg = tmp_path / "xdg-data"
     service = RuntimePathsService(
         source_root=tmp_path / "source",
@@ -39,6 +47,8 @@ def test_linux_uses_xdg_data_home(tmp_path: Path) -> None:
 
 
 def test_absolute_environment_override_is_independent_from_source(tmp_path: Path) -> None:
+    """An absolute override can place runtime data independently from source."""
+
     source_root = tmp_path / "source-copy"
     data_root = tmp_path / "data-somewhere-else"
     service = RuntimePathsService(
@@ -54,6 +64,8 @@ def test_absolute_environment_override_is_independent_from_source(tmp_path: Path
 
 
 def test_relative_environment_override_is_rejected(tmp_path: Path) -> None:
+    """Relative overrides are rejected because they depend on working directory."""
+
     service = RuntimePathsService(
         source_root=tmp_path / "source",
         environ={DATA_DIR_ENV: "relative-data"},
@@ -66,6 +78,8 @@ def test_relative_environment_override_is_rejected(tmp_path: Path) -> None:
 
 
 def test_public_runtime_info_never_exposes_resolved_paths(tmp_path: Path) -> None:
+    """Public location metadata contains policy labels but no private path."""
+
     data_root = tmp_path / "private-data"
     service = RuntimePathsService(
         source_root=tmp_path / "private-source",
@@ -84,6 +98,8 @@ def test_public_runtime_info_never_exposes_resolved_paths(tmp_path: Path) -> Non
 
 
 def test_runtime_child_paths_remain_contained(tmp_path: Path) -> None:
+    """Runtime child paths resolve inside user data and reject traversal."""
+
     service = RuntimePathsService(
         source_root=tmp_path / "source",
         environ={DATA_DIR_ENV: str(tmp_path / "data")},

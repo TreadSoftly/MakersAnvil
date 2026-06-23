@@ -40,9 +40,13 @@ class IntakeCatalogService:
         self.policy_path = self.root / "config" / "intake_policy.json"
 
     def policy(self) -> dict[str, Any]:
+        """Load the committed metadata-only intake policy from the source package."""
+
         return json.loads(self.policy_path.read_text(encoding="utf-8"))
 
     def policy_response(self) -> dict[str, Any]:
+        """Expose intake policy through logical paths and explicit safety boundaries."""
+
         policy = self.policy()
         return {
             **policy,
@@ -56,10 +60,14 @@ class IntakeCatalogService:
         }
 
     def catalog(self) -> dict[str, Any]:
+        """Read valid runtime records, count rejected records, and expose no source paths."""
+
         policy = self.policy()
         records_root = self._records_root(policy)
         records: list[dict[str, Any]] = []
         invalid_record_count = 0
+        # Runtime records are untrusted local data. Invalid JSON or weakened
+        # safety flags are counted but never returned as usable intake records.
         if records_root.exists():
             for path in sorted(records_root.glob("*.json")):
                 try:
@@ -99,6 +107,8 @@ class IntakeCatalogService:
         }
 
     def stage_file_metadata(self, source_path: str | Path) -> dict[str, Any]:
+        """Write metadata for one regular file without storing its path or changing it."""
+
         source = Path(source_path).expanduser()
         if not source.exists():
             raise IntakeCatalogError("source file does not exist")
@@ -140,6 +150,8 @@ class IntakeCatalogService:
         destination = records_root / f"{record['id']}.json"
         temporary = records_root / f".{record['id']}.tmp"
         temporary.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
+        # Replace only after a complete write so readers never observe a
+        # partially-written JSON record if the process stops unexpectedly.
         temporary.replace(destination)
         return record
 

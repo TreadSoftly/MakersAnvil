@@ -70,6 +70,20 @@
         "resolved personal paths are not exposed through API or UI",
         "relocated checkout verification added"
       ]
+    },
+    {
+      "id": "PASS-006",
+      "title": "durable explainability and handoff contract",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_006_REPORT.md",
+      "proof": [
+        "every tracked file has a source-manifest entry",
+        "every Python module and public component has a docstring",
+        "frontend and workflow files have purpose comments",
+        "start guide, architecture guide, file map, and explanation standard added",
+        "continue protocol requires explanation maintenance",
+        "explainability coverage is machine-verified"
+      ]
     }
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/source-manifest.schema.json",
+  "title": "Makers Anvil source explanation manifest",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "standardPath", "entrypointPath", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.source-manifest.v1" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "standardPath": { "const": "docs/CODE_EXPLAINABILITY_STANDARD.md" },
+    "entrypointPath": { "const": "docs/START_HERE.md" },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "category", "purpose", "maintenanceNotes"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "category": {
+            "enum": ["automation", "backend", "config", "documentation", "frontend", "governance", "metadata", "schema", "script", "state", "test"]
+          },
+          "purpose": { "type": "string", "minLength": 20 },
+          "maintenanceNotes": { "type": "string", "minLength": 20 }
+        }
+      }
+    }
+  }
+}

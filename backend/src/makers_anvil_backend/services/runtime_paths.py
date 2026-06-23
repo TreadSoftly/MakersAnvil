@@ -44,11 +44,17 @@ class RuntimePathsService:
         self.platform_name = platform_name or sys.platform
 
     def location(self) -> RuntimeLocation:
+        """Resolve the private data root from an override or OS convention."""
+
         override = self.environ.get(DATA_DIR_ENV)
         if override:
+            # Overrides must be absolute so moving the current working
+            # directory cannot silently redirect user data.
             root = self._absolute_path(override, DATA_DIR_ENV)
             return RuntimeLocation(root, "environment-override", "Environment override", True)
 
+        # Each default follows the host operating system's per-user data
+        # convention. Vendor scoping avoids collisions with unrelated apps.
         if self.platform_name.startswith("win"):
             local_app_data = self.environ.get("LOCALAPPDATA")
             base = self._absolute_path(local_app_data, "LOCALAPPDATA") if local_app_data else self.home / "AppData" / "Local"
@@ -80,6 +86,8 @@ class RuntimePathsService:
         )
 
     def public_info(self) -> dict[str, object]:
+        """Return location metadata that deliberately omits the resolved filesystem path."""
+
         location = self.location()
         return {
             "schemaVersion": "makers-anvil.runtime-location.v1",
@@ -94,6 +102,8 @@ class RuntimePathsService:
         }
 
     def data_path(self, relative_path: str | Path) -> Path:
+        """Resolve one contained child path and reject absolute or escaping input."""
+
         candidate = Path(relative_path)
         if candidate.is_absolute() or ".." in candidate.parts or not candidate.parts:
             raise RuntimePathError("runtime data path must be relative and contained")
@@ -104,6 +114,8 @@ class RuntimePathsService:
         return target
 
     def logical_path(self, relative_path: str | Path) -> str:
+        """Return a stable API-safe identifier for a contained runtime child path."""
+
         candidate = Path(relative_path)
         self.data_path(candidate)
         return f"{LOGICAL_DATA_ROOT}/{candidate.as_posix()}"
