@@ -54,6 +54,22 @@
         "frontend intake status panel added",
         "source paths, contents, and unsafe actions remain disabled"
       ]
+    },
+    {
+      "id": "PASS-005",
+      "title": "portable runtime paths and relocation safety",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_005_REPORT.md",
+      "proof": [
+        "committed source contains no personal machine paths",
+        "runtime data is independent from source location",
+        "Windows local app data path policy added",
+        "macOS Application Support path policy added",
+        "Linux XDG data path policy added",
+        "absolute environment override is supported",
+        "resolved personal paths are not exposed through API or UI",
+        "relocated checkout verification added"
+      ]
     }
   ]
 }

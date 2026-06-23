@@ -27,7 +27,11 @@
       "additionalProperties": { "type": "string" }
     },
     "workspaceConfig": {
-      "type": "object"
+      "type": "object",
+      "required": ["runtimeLocation"],
+      "properties": {
+        "runtimeLocation": { "$ref": "runtime-location.schema.json" }
+      }
     },
     "intakeCatalog": {
       "type": "object"

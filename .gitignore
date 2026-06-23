@@ -18,7 +18,7 @@ dist/
 build/
 .vite/
 
-# Local runtime data
+# OS-managed runtime data; legacy source-adjacent locations remain ignored
 .makers-anvil/
 runtime-data/
 logs/

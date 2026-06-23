@@ -21,6 +21,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
+    "backend/src/makers_anvil_backend/services/runtime_paths.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
@@ -32,6 +33,7 @@ REQUIRED_FILES = [
     "schemas/app-state.schema.json",
     "schemas/current-status.schema.json",
     "schemas/local-settings.schema.json",
+    "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
     "schemas/intake-record.schema.json",
     "scripts/init_workspace.py",
@@ -43,6 +45,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_002_REPORT.md",
     "docs/passes/PASS_003_REPORT.md",
     "docs/passes/PASS_004_REPORT.md",
+    "docs/passes/PASS_005_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -52,6 +55,10 @@ REFERENCE_FOLDERS = [
 
 FORBIDDEN_PRODUCT_TEXT = [
     "C:" + "\\Users\\",
+    "/" + "Users/",
+    "/" + "home/",
+    "One" + "Drive",
+    "Mr" + "Dra",
     "BUILD" + "_PASS_009_IMAGE_ROUTE_UI_OUTPUT_PROOF_COMPLETE",
     "makers" + "_anvil_build_pass_012_release_backup_uninstall_dry_run",
 ]
@@ -114,18 +121,29 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-004":
-        errors.append("GET /api/state does not report PASS-004")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-004":
-        errors.append("GET /api/workspace/status does not report PASS-004")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-004":
-        errors.append("GET /api/passes/ledger does not report PASS-004 as latest")
-    if config.status != 200 or config.body.get("runtimeRoot") != ".makers-anvil":
-        errors.append("GET /api/workspace/config does not report .makers-anvil")
+    if state.body.get("currentPass", {}).get("id") != "PASS-005":
+        errors.append("GET /api/state does not report PASS-005")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-005":
+        errors.append("GET /api/workspace/status does not report PASS-005")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-005":
+        errors.append("GET /api/passes/ledger does not report PASS-005 as latest")
+    runtime_location = config.body.get("runtimeLocation", {})
+    if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
+        errors.append("GET /api/workspace/config does not report platform user-data mode")
+    if runtime_location.get("sourceRootDependency") is not False:
+        errors.append("workspace config unexpectedly depends on the source root")
+    if runtime_location.get("absolutePathExposed") is not False:
+        errors.append("workspace config unexpectedly exposes an absolute path")
+    if "runtimeRoot" in config.body:
+        errors.append("workspace config exposes legacy source-adjacent runtimeRoot")
     if any(config.body.get("safety", {}).values()):
         errors.append("one or more workspace config safety flags unexpectedly enable unsafe actions")
     if layout.status != 200 or layout.body.get("creationAction", {}).get("enabledInApi") is not False:
         errors.append("GET /api/workspace/layout does not keep API init action disabled")
+    if layout.body.get("runtimeLocation", {}).get("logicalRoot") != "makers-anvil-data://user":
+        errors.append("GET /api/workspace/layout does not report the logical user-data root")
+    if any(Path(item.get("relativePath", "")).is_absolute() for item in layout.body.get("directories", [])):
+        errors.append("workspace layout exposes an absolute directory path")
     if intake_policy.status != 200 or intake_policy.body.get("mode") != "metadata-only":
         errors.append("GET /api/intake/policy does not report metadata-only mode")
     if any(intake_policy.body.get("safety", {}).values()):
@@ -147,22 +165,55 @@ def check_status_records() -> list[str]:
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
     intake_policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-004":
-        errors.append("current status does not report PASS-004")
-    if status.get("trackPercentages", {}).get("realApp") != 10.0:
-        errors.append("real app completion is not 10.0 for PASS-004")
+    if status.get("currentPass", {}).get("id") != "PASS-005":
+        errors.append("current status does not report PASS-005")
+    if status.get("trackPercentages", {}).get("realApp") != 12.5:
+        errors.append("real app completion is not 12.5 for PASS-005")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-004":
-        errors.append("pass ledger latest pass is not PASS-004")
-    if settings.get("runtimeRoot") != ".makers-anvil":
-        errors.append("default settings runtime root is not .makers-anvil")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-005":
+        errors.append("pass ledger latest pass is not PASS-005")
+    runtime_data = settings.get("runtimeData", {})
+    if runtime_data.get("mode") != "platform-user-data":
+        errors.append("default settings do not use platform user-data mode")
+    if runtime_data.get("sourceRootDependency") is not False:
+        errors.append("default settings unexpectedly depend on the source root")
+    if runtime_data.get("absolutePathExposed") is not False:
+        errors.append("default settings unexpectedly expose absolute paths")
     if any(settings.get("safety", {}).values()):
         errors.append("default settings unexpectedly enable an unsafe action")
     if intake_policy.get("mode") != "metadata-only":
         errors.append("intake policy is not metadata-only")
     if any(intake_policy.get("safety", {}).values()):
         errors.append("intake policy unexpectedly enables an unsafe action")
+    return errors
+
+
+def _string_values(value: object) -> list[str]:
+    if isinstance(value, str):
+        return [value]
+    if isinstance(value, dict):
+        return [text for child in value.values() for text in _string_values(child)]
+    if isinstance(value, list):
+        return [text for child in value for text in _string_values(child)]
+    return []
+
+
+def check_portable_paths() -> list[str]:
+    api = MakersAnvilApi()
+    payloads = [
+        api.handle("GET", "/api/state").body,
+        api.handle("GET", "/api/workspace/config").body,
+        api.handle("GET", "/api/workspace/layout").body,
+        api.handle("GET", "/api/intake/catalog").body,
+    ]
+    values = [text for payload in payloads for text in _string_values(payload)]
+    private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}
+    errors = []
+    for private_path in private_paths:
+        if any(private_path and private_path in value for value in values):
+            errors.append("read-only API exposes a resolved source or home path")
+            break
     return errors
 
 
@@ -186,6 +237,7 @@ def main() -> int:
         "api": check_api(),
         "json_files": check_json_files(),
         "status_records": check_status_records(),
+        "portable_paths": check_portable_paths(),
     }
     failures = [message for messages in checks.values() for message in messages]
     result = {

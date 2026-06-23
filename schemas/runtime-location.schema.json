@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/runtime-location.schema.json",
+  "title": "Makers Anvil public runtime location",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "mode",
+    "provider",
+    "label",
+    "logicalRoot",
+    "environmentOverride",
+    "environmentOverrideUsed",
+    "sourceRootDependency",
+    "absolutePathExposed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.runtime-location.v1" },
+    "mode": { "const": "platform-user-data" },
+    "provider": {
+      "enum": [
+        "environment-override",
+        "windows-local-app-data",
+        "macos-application-support",
+        "linux-xdg-data"
+      ]
+    },
+    "label": { "type": "string" },
+    "logicalRoot": { "const": "makers-anvil-data://user" },
+    "environmentOverride": { "const": "MAKERS_ANVIL_DATA_DIR" },
+    "environmentOverrideUsed": { "type": "boolean" },
+    "sourceRootDependency": { "const": false },
+    "absolutePathExposed": { "const": false }
+  }
+}

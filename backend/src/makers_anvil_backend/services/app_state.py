@@ -13,7 +13,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-004-metadata-intake"
+    api_build = "makers-anvil-real-pass-005-portable-runtime-paths"
 
     def __init__(
         self,
@@ -79,13 +79,13 @@ class AppStateService:
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server, browser shell, status records, app-owned settings, and metadata intake are present.",
+                "summary": "Read-only local server, browser shell, portable user-data paths, status records, and metadata intake are present.",
             },
             {
                 "id": "mac-linux",
                 "label": "macOS and Linux",
                 "claimState": "planned",
-                "summary": "Architecture keeps these targets separate until tested.",
+                "summary": "Portable runtime paths are CI-tested; full macOS and Linux app runtime proof remains planned.",
             },
             {
                 "id": "web-hosted",
@@ -122,7 +122,7 @@ class AppStateService:
                 "id": "workspace-settings",
                 "label": "Workspace settings",
                 "claimState": "staged",
-                "summary": "Default local settings define an app-owned data directory without importing user files.",
+                "summary": "Runtime data uses OS user-data locations or an absolute override, independent from the source checkout.",
                 "actionsEnabled": False,
             },
             {

@@ -1,7 +1,13 @@
 {
   "schemaVersion": "makers-anvil.config.local-settings.v1",
   "claimState": "staged",
-  "runtimeRoot": ".makers-anvil",
+  "runtimeData": {
+    "mode": "platform-user-data",
+    "logicalRoot": "makers-anvil-data://user",
+    "environmentOverride": "MAKERS_ANVIL_DATA_DIR",
+    "sourceRootDependency": false,
+    "absolutePathExposed": false
+  },
   "directories": [
     {
       "id": "settings",
@@ -11,7 +17,7 @@
     {
       "id": "intake",
       "relativePath": "intake",
-      "purpose": "future staged file metadata"
+      "purpose": "metadata-only intake records"
     },
     {
       "id": "jobs",

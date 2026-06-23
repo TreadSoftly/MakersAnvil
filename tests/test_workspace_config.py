@@ -1,18 +1,27 @@
 import json
 from pathlib import Path
 
+import pytest
+
+from makers_anvil_backend.services.runtime_paths import DATA_DIR_ENV, RuntimePathsService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigError, WorkspaceConfigService
 
 
-def write_settings(root: Path, runtime_root: str = ".makers-anvil") -> None:
+def write_settings(root: Path, source_root_dependency: bool = False) -> None:
     config_dir = root / "config"
-    config_dir.mkdir()
+    config_dir.mkdir(parents=True)
     (config_dir / "default_settings.json").write_text(
         json.dumps(
             {
                 "schemaVersion": "makers-anvil.config.local-settings.v1",
                 "claimState": "staged",
-                "runtimeRoot": runtime_root,
+                "runtimeData": {
+                    "mode": "platform-user-data",
+                    "logicalRoot": "makers-anvil-data://user",
+                    "environmentOverride": DATA_DIR_ENV,
+                    "sourceRootDependency": source_root_dependency,
+                    "absolutePathExposed": False,
+                },
                 "directories": [
                     {"id": "settings", "relativePath": "settings", "purpose": "local user settings"},
                     {"id": "jobs", "relativePath": "jobs", "purpose": "future job records"},
@@ -32,27 +41,50 @@ def write_settings(root: Path, runtime_root: str = ".makers-anvil") -> None:
     )
 
 
-def test_initialize_creates_only_app_owned_workspace(tmp_path: Path) -> None:
-    write_settings(tmp_path)
-    service = WorkspaceConfigService(tmp_path)
+def build_service(source_root: Path, data_root: Path) -> WorkspaceConfigService:
+    paths = RuntimePathsService(
+        source_root=source_root,
+        environ={DATA_DIR_ENV: str(data_root)},
+        home=source_root.parent / "home",
+        platform_name="linux",
+    )
+    return WorkspaceConfigService(source_root, paths)
+
+
+def test_initialize_keeps_runtime_data_outside_source_checkout(tmp_path: Path) -> None:
+    source_root = tmp_path / "copied-anywhere" / "makers-anvil"
+    data_root = tmp_path / "unrelated-user-data"
+    write_settings(source_root)
+    service = build_service(source_root, data_root)
 
     manifest = service.initialize()
 
-    assert manifest["runtimeRoot"] == ".makers-anvil"
-    assert (tmp_path / ".makers-anvil" / "settings").is_dir()
-    assert (tmp_path / ".makers-anvil" / "jobs").is_dir()
-    written = json.loads((tmp_path / ".makers-anvil" / "workspace_manifest.json").read_text(encoding="utf-8"))
-    assert written["claimState"] == "staged"
-    assert all(path.startswith(".makers-anvil/") for path in written["directories"])
+    assert (data_root / "settings").is_dir()
+    assert (data_root / "jobs").is_dir()
+    assert not (source_root / ".makers-anvil").exists()
+    written = json.loads((data_root / "workspace_manifest.json").read_text(encoding="utf-8"))
+    assert written["schemaVersion"] == "makers-anvil.runtime-workspace-manifest.v2"
+    assert written["runtimeLocation"]["sourceRootDependency"] is False
+    assert written["runtimeLocation"]["absolutePathExposed"] is False
+    assert written["directories"] == ["settings", "jobs"]
+    serialized = json.dumps(manifest)
+    assert str(source_root) not in serialized
+    assert str(data_root) not in serialized
 
 
-def test_workspace_root_cannot_escape_source_root(tmp_path: Path) -> None:
-    write_settings(tmp_path, "../outside")
-    service = WorkspaceConfigService(tmp_path)
+def test_workspace_relative_path_cannot_escape_user_data_root(tmp_path: Path) -> None:
+    source_root = tmp_path / "source"
+    write_settings(source_root)
+    service = build_service(source_root, tmp_path / "data")
 
-    try:
+    with pytest.raises(WorkspaceConfigError):
+        service.runtime_path("../outside")
+
+
+def test_settings_cannot_reintroduce_source_root_dependency(tmp_path: Path) -> None:
+    source_root = tmp_path / "source"
+    write_settings(source_root, source_root_dependency=True)
+    service = build_service(source_root, tmp_path / "data")
+
+    with pytest.raises(WorkspaceConfigError, match="portable user-data policy"):
         service.layout()
-    except WorkspaceConfigError:
-        return
-
-    raise AssertionError("unsafe workspace root was not rejected")

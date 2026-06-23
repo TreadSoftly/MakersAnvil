@@ -4,6 +4,8 @@ from pathlib import Path
 import pytest
 
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogError, IntakeCatalogService
+from makers_anvil_backend.services.runtime_paths import DATA_DIR_ENV, RuntimePathsService
+from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 
 
 def write_config(root: Path) -> None:
@@ -14,7 +16,13 @@ def write_config(root: Path) -> None:
             {
                 "schemaVersion": "makers-anvil.config.local-settings.v1",
                 "claimState": "staged",
-                "runtimeRoot": ".makers-anvil",
+                "runtimeData": {
+                    "mode": "platform-user-data",
+                    "logicalRoot": "makers-anvil-data://user",
+                    "environmentOverride": DATA_DIR_ENV,
+                    "sourceRootDependency": False,
+                    "absolutePathExposed": False,
+                },
                 "directories": [
                     {"id": "intake", "relativePath": "intake", "purpose": "metadata-only intake records"}
                 ],
@@ -61,6 +69,17 @@ def write_config(root: Path) -> None:
     )
 
 
+def build_service(root: Path, data_root: Path) -> IntakeCatalogService:
+    paths = RuntimePathsService(
+        source_root=root,
+        environ={DATA_DIR_ENV: str(data_root)},
+        home=root.parent / "home",
+        platform_name="linux",
+    )
+    workspace = WorkspaceConfigService(root, paths)
+    return IntakeCatalogService(root, workspace)
+
+
 def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> None:
     write_config(tmp_path)
     source_dir = tmp_path / "user-files"
@@ -68,7 +87,8 @@ def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> N
     source = source_dir / "fixture.STL"
     original = b"solid fixture\nendsolid fixture\n"
     source.write_bytes(original)
-    service = IntakeCatalogService(tmp_path)
+    data_root = tmp_path / "runtime-data"
+    service = build_service(tmp_path, data_root)
 
     record = service.stage_file_metadata(source)
 
@@ -77,11 +97,14 @@ def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> N
     assert record["source"]["kind"] == "mesh"
     assert record["privacy"] == {"sourcePathStored": False, "sourceContentStored": False}
     assert str(source.resolve()) not in json.dumps(record)
-    records_root = tmp_path / ".makers-anvil" / "intake" / "records"
+    records_root = data_root / "intake" / "records"
     record_files = list(records_root.iterdir())
     assert len(record_files) == 1
     assert record_files[0].suffix == ".json"
-    assert service.catalog()["summary"]["recordCount"] == 1
+    catalog = service.catalog()
+    assert catalog["summary"]["recordCount"] == 1
+    assert catalog["recordsPath"] == "makers-anvil-data://user/intake/records"
+    assert str(data_root) not in json.dumps(catalog)
 
 
 def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
@@ -90,7 +113,7 @@ def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
     source_dir.mkdir()
 
     with pytest.raises(IntakeCatalogError, match="not a folder"):
-        IntakeCatalogService(tmp_path).stage_file_metadata(source_dir)
+        build_service(tmp_path, tmp_path / "runtime-data").stage_file_metadata(source_dir)
 
 
 def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
@@ -98,7 +121,7 @@ def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
     source = tmp_path / "bundle.zip"
     source.write_bytes(b"not extracted")
 
-    record = IntakeCatalogService(tmp_path).stage_file_metadata(source)
+    record = build_service(tmp_path, tmp_path / "runtime-data").stage_file_metadata(source)
 
     assert record["source"]["kind"] == "archive"
     assert record["safety"]["archiveExtracted"] is False
@@ -107,7 +130,8 @@ def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
 
 def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -> None:
     write_config(tmp_path)
-    records_root = tmp_path / ".makers-anvil" / "intake" / "records"
+    data_root = tmp_path / "runtime-data"
+    records_root = data_root / "intake" / "records"
     records_root.mkdir(parents=True)
     (records_root / "invalid.json").write_text(
         json.dumps(
@@ -122,7 +146,7 @@ def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -
         encoding="utf-8",
     )
 
-    catalog = IntakeCatalogService(tmp_path).catalog()
+    catalog = build_service(tmp_path, data_root).catalog()
 
     assert catalog["claimState"] == "failed"
     assert catalog["summary"]["recordCount"] == 0

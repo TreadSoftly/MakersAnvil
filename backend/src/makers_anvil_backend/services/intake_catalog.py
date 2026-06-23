@@ -30,9 +30,13 @@ class IntakeCatalogError(ValueError):
 class IntakeCatalogService:
     """Stage and list app-owned metadata records without copying source files."""
 
-    def __init__(self, root: Path | None = None) -> None:
+    def __init__(
+        self,
+        root: Path | None = None,
+        workspace_config: WorkspaceConfigService | None = None,
+    ) -> None:
         self.root = root or ROOT
-        self.workspace_config = WorkspaceConfigService(self.root)
+        self.workspace_config = workspace_config or WorkspaceConfigService(self.root)
         self.policy_path = self.root / "config" / "intake_policy.json"
 
     def policy(self) -> dict[str, Any]:
@@ -40,10 +44,9 @@ class IntakeCatalogService:
 
     def policy_response(self) -> dict[str, Any]:
         policy = self.policy()
-        runtime_root = self.workspace_config.settings()["runtimeRoot"]
         return {
             **policy,
-            "recordsPath": f"{runtime_root}/{policy['recordsDirectory']}",
+            "recordsPath": self.workspace_config.logical_runtime_path(policy["recordsDirectory"]),
             "boundaries": [
                 "Intake stores app-owned metadata records only.",
                 "Source paths and source file contents are not stored.",

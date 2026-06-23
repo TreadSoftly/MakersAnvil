@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-004 — safe runtime file intake staging.
+PASS-005 — portable runtime paths and relocation safety.
 
 ## Track Percentages
 
-- Real app completion: `10.0000%`
-- Windows local app: `10.0000%`
+- Real app completion: `12.5000%`
+- Windows local app: `12.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -28,10 +28,14 @@ PASS-004 — safe runtime file intake staging.
 - Default local settings keep upload, route execution, tool launch, archive extraction, folder import, deletion, and packaging disabled.
 - Metadata-only intake records do not store source paths or contents and do not copy, move, delete, extract, execute, or launch source files.
 - Browser dashboard renders intake mode, record counts, source-data privacy, and API action status.
+- Runtime data uses OS-standard per-user locations or an explicit absolute override, never the source checkout location.
+- API and dashboard records expose logical storage metadata without resolved personal filesystem paths.
+- Source discovery is based on installed module/script locations rather than the current working directory.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
 - PASS-004 verifier, 20 tests, metadata staging smoke, HTTP smoke, and desktop/mobile browser smoke passed.
+- PASS-005 verifier, 29 tests, relocated-checkout smoke, external-working-directory launch, HTTP smoke, and desktop/mobile browser smoke passed.
 
 ## Blocked Or Not Proven
 
@@ -49,4 +53,4 @@ PASS-004 — safe runtime file intake staging.
 
 ## Next Pass
 
-PASS-005 — route preview foundation.
+PASS-006 — route preview foundation.

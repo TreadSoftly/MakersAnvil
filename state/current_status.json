@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-004",
-    "title": "safe runtime file intake staging",
+    "id": "PASS-005",
+    "title": "portable runtime paths and relocation safety",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_004_REPORT.md"
+    "reportPath": "docs/passes/PASS_005_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 10.0,
-    "windowsLocal": 10.0,
+    "realApp": 12.5,
+    "windowsLocal": 12.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -38,6 +38,8 @@
     "Browser dashboard renders current pass and source-truth paths from the API.",
     "Default local settings define an app-owned runtime data directory without importing user files.",
     "Metadata-only intake records omit source paths and contents and do not copy, move, delete, extract, execute, or launch source files.",
+    "Runtime data resolves through OS user-data conventions or an explicit absolute override and never depends on the source checkout path.",
+    "API and dashboard records expose logical location metadata instead of resolved personal filesystem paths.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -55,7 +57,7 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-005",
+    "id": "PASS-006",
     "title": "route preview foundation",
     "claimState": "planned"
   }

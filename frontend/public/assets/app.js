@@ -15,7 +15,17 @@ const fallbackState = {
   currentPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
   nextPass: { id: "unknown", title: "state unavailable", claimState: "unknown" },
   sourceTruth: {},
-  workspaceConfig: { runtimeRoot: "unknown", directories: [], creationAction: { enabledInApi: false } },
+  workspaceConfig: {
+    runtimeLocation: {
+      mode: "unknown",
+      label: "not proven",
+      logicalRoot: "not proven",
+      sourceRootDependency: false,
+      absolutePathExposed: false,
+    },
+    directories: [],
+    creationAction: { enabledInApi: false },
+  },
   intakeCatalog: {
     claimState: "unknown",
     mode: "not proven",
@@ -76,14 +86,21 @@ function renderWorkspace(state, workspace) {
 }
 
 function renderLayout(state, layout = {}) {
-  const workspaceConfig = layout.runtimeRoot ? layout : state.workspaceConfig || fallbackState.workspaceConfig;
+  const workspaceConfig = layout.runtimeLocation ? layout : state.workspaceConfig || fallbackState.workspaceConfig;
   const layoutState = document.querySelector("#layout-state");
   layoutState.textContent = workspaceConfig.claimState || "unknown";
   layoutState.className = `badge ${claimClass(layoutState.textContent)}`;
-  document.querySelector("#runtime-root").textContent = workspaceConfig.runtimeRoot || "not proven";
+  const runtimeLocation = workspaceConfig.runtimeLocation || fallbackState.workspaceConfig.runtimeLocation;
+  document.querySelector("#runtime-mode").textContent = runtimeLocation.mode || "not proven";
+  document.querySelector("#runtime-location").textContent = runtimeLocation.label && runtimeLocation.logicalRoot
+    ? `${runtimeLocation.label} · ${runtimeLocation.logicalRoot}`
+    : "not proven";
   const directories = workspaceConfig.directories || [];
   const existingCount = directories.filter((directory) => directory.exists).length;
   document.querySelector("#runtime-directories").textContent = `${existingCount}/${directories.length} detected`;
+  document.querySelector("#runtime-source-dependency").textContent = runtimeLocation.sourceRootDependency === false
+    ? "none"
+    : "not proven";
   const creation = workspaceConfig.creationAction || {};
   document.querySelector("#runtime-init").textContent = creation.enabledInApi === false ? `${creation.script} · API disabled` : "not proven";
 }
