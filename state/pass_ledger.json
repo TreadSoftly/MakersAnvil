@@ -98,6 +98,20 @@
         "route, tool, archive, source-open, and output actions remain disabled",
         "route preview service, API, verifier, and browser regression coverage added"
       ]
+    },
+    {
+      "id": "PASS-008",
+      "title": "output bundle and proof preview panels",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_008_REPORT.md",
+      "proof": [
+        "committed output policy covers every configured route exactly once",
+        "output service derives bundle, artifact, and proof plans from coherent route previews",
+        "read-only output preview API and composed app state added",
+        "dashboard output bundle and proof panels added",
+        "logical destinations replace resolved filesystem paths",
+        "output creation, opening, proof capture, route execution, and tool launch remain disabled"
+      ]
     }
   ]
 }

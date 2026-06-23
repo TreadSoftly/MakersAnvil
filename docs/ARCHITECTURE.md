@@ -8,7 +8,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders current completion, workspace state, portable runtime-location policy, intake status, route previews, capabilities, and blocked actions.
+`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders current completion, workspace state, portable runtime-location policy, intake status, route previews, output/proof plans, capabilities, and blocked actions.
 
 ### HTTP Boundary
 
@@ -26,6 +26,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 - `WorkspaceConfigService` validates settings and creates contained app-owned directories.
 - `IntakeCatalogService` records metadata for one explicit regular file without storing its path or contents.
 - `RoutePreviewService` maps validated intake metadata to deterministic candidate steps without reopening files or enabling actions.
+- `OutputProofService` maps route previews to expected artifacts and required evidence without creating, opening, or proving outputs.
 
 ### Schemas And Durable State
 
@@ -44,6 +45,7 @@ Browser
   -> AppStateService and focused services
   -> committed config/state plus app-owned runtime metadata
   -> RoutePreviewService derives non-executing candidate steps
+  -> OutputProofService derives non-writing bundle and proof plans
   -> JSON response
   -> browser render
 ```
@@ -77,4 +79,4 @@ The browser and HTTP API do not participate in this mutation flow yet.
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route preview is now a read-only planning layer. The next planned capability is output bundle and proof-panel structure; it must describe intended evidence without creating or opening outputs until separate gates pass.
+Route and output/proof previews are now read-only planning layers. The next capability is tool detection; detection must remain separate from installation, launch, file handoff, and route execution.

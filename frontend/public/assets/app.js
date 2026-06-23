@@ -12,6 +12,7 @@ const workspaceUrl = "/api/workspace/status";
 const layoutUrl = "/api/workspace/layout";
 const intakeUrl = "/api/intake/catalog";
 const routePreviewUrl = "/api/routes/preview";
+const outputProofUrl = "/api/outputs/preview";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -51,6 +52,14 @@ const fallbackState = {
     previews: [],
     safety: { sourcePathUsed: false, sourceContentRead: false },
     executionAction: { enabledInApi: false },
+  },
+  outputProof: {
+    claimState: "unknown",
+    mode: "not proven",
+    logicalRoot: "not proven",
+    summary: { bundleCount: 0, artifactCount: 0, requiredProofCount: 0, completedProofCount: 0 },
+    bundles: [],
+    actions: { create: { enabledInApi: false }, open: { enabledInApi: false } },
   },
 };
 
@@ -206,7 +215,90 @@ function renderRoutePreview(state, response = {}) {
   });
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}) {
+function renderOutputProof(state, response = {}) {
+  const outputProof = response.schemaVersion ? response : state.outputProof || fallbackState.outputProof;
+  const outputState = document.querySelector("#output-proof-state");
+  outputState.textContent = outputProof.claimState || "unknown";
+  outputState.className = `badge ${claimClass(outputState.textContent)}`;
+  document.querySelector("#output-proof-mode").textContent = outputProof.mode || "not proven";
+  const summary = outputProof.summary || {};
+  const bundleCount = summary.bundleCount || 0;
+  const bundleLabel = bundleCount === 1 ? "bundle" : "bundles";
+  document.querySelector("#output-bundle-count").textContent = `${bundleCount} ${bundleLabel} · ${summary.artifactCount || 0} artifacts`;
+  document.querySelector("#output-proof-count").textContent = `${summary.completedProofCount || 0}/${summary.requiredProofCount || 0} complete`;
+  document.querySelector("#output-logical-root").textContent = outputProof.logicalRoot || "not proven";
+  const actions = outputProof.actions || {};
+  document.querySelector("#output-actions").textContent = actions.create?.enabledInApi === false && actions.open?.enabledInApi === false
+    ? "create and open blocked"
+    : "not proven";
+
+  const target = document.querySelector("#output-bundle-list");
+  target.replaceChildren();
+  if (!outputProof.bundles?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No output bundle previews available.";
+    target.append(empty);
+    return;
+  }
+
+  // Bundle labels and source names remain text nodes because they can include
+  // untrusted local metadata and must never become markup or executable UI.
+  outputProof.bundles.forEach((bundle) => {
+    const item = document.createElement("article");
+    item.className = "output-bundle-item";
+    const heading = document.createElement("div");
+    heading.className = "output-bundle-head";
+    const title = document.createElement("h3");
+    title.textContent = bundle.output.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(bundle.claimState)}`;
+    stateBadge.textContent = bundle.claimState;
+    heading.append(title, stateBadge);
+
+    const source = document.createElement("p");
+    source.className = "output-bundle-source";
+    source.textContent = `${bundle.source.displayName} · ${bundle.source.kind}`;
+    const destination = document.createElement("p");
+    destination.className = "output-bundle-destination";
+    destination.textContent = bundle.output.logicalDirectory;
+
+    const columns = document.createElement("div");
+    columns.className = "output-proof-columns";
+    const artifactColumn = document.createElement("div");
+    const artifactTitle = document.createElement("h4");
+    artifactTitle.textContent = "Expected artifacts";
+    const artifacts = document.createElement("ul");
+    artifacts.className = "output-proof-list";
+    bundle.artifacts.forEach((artifact) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `${artifact.label} · ${artifact.suggestedExtension} · ${artifact.claimState}`;
+      artifacts.append(listItem);
+    });
+    artifactColumn.append(artifactTitle, artifacts);
+
+    const proofColumn = document.createElement("div");
+    const proofTitle = document.createElement("h4");
+    proofTitle.textContent = "Required proof";
+    const proof = document.createElement("ul");
+    proof.className = "output-proof-list";
+    bundle.proof.forEach((proofItem) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `${proofItem.label} · ${proofItem.claimState}`;
+      proof.append(listItem);
+    });
+    proofColumn.append(proofTitle, proof);
+    columns.append(artifactColumn, proofColumn);
+
+    const blockers = document.createElement("p");
+    blockers.className = "output-proof-blockers";
+    blockers.textContent = `Blocked by: ${bundle.readiness.blockers.join(", ")}`;
+    item.append(heading, source, destination, columns, blockers);
+    target.append(item);
+  });
+}
+
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -215,6 +307,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderLayout(state, layout);
   renderIntake(state, intake);
   renderRoutePreview(state, routePreview);
+  renderOutputProof(state, outputProof);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -223,15 +316,16 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
       fetch(layoutUrl, { method: "GET", cache: "no-store" }),
       fetch(intakeUrl, { method: "GET", cache: "no-store" }),
       fetch(routePreviewUrl, { method: "GET", cache: "no-store" }),
+      fetch(outputProofUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -241,6 +335,7 @@ async function loadState() {
       await layoutResponse.json(),
       await intakeResponse.json(),
       await routePreviewResponse.json(),
+      await outputProofResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

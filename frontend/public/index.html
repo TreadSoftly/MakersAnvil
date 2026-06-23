@@ -93,6 +93,22 @@
           <div id="route-preview-list" class="route-preview-list" aria-live="polite"></div>
         </section>
 
+        <!-- Planned output artifacts and required proof; creation and opening stay blocked. -->
+        <section class="panel workspace-panel" aria-label="Output bundle and proof status">
+          <div class="panel-head">
+            <h2>Output &amp; Proof</h2>
+            <span id="output-proof-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Mode</strong><span id="output-proof-mode">loading</span></p>
+            <p><strong>Bundles</strong><span id="output-bundle-count">loading</span></p>
+            <p><strong>Proof</strong><span id="output-proof-count">loading</span></p>
+            <p><strong>Location</strong><span id="output-logical-root">loading</span></p>
+            <p><strong>Actions</strong><span id="output-actions">loading</span></p>
+          </div>
+          <div id="output-bundle-list" class="output-bundle-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>

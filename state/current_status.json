@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-007",
-    "title": "metadata-derived route preview foundation",
+    "id": "PASS-008",
+    "title": "output bundle and proof preview panels",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_007_REPORT.md"
+    "reportPath": "docs/passes/PASS_008_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 17.5,
-    "windowsLocal": 17.5,
+    "realApp": 20.0,
+    "windowsLocal": 20.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -46,12 +46,17 @@
     "Validated intake metadata maps deterministically to read-only route previews with planned steps and explicit blockers.",
     "Route previews do not use source paths, read contents, open files, extract archives, execute routes, launch tools, or create outputs.",
     "The dashboard renders route-preview status and candidates without treating preview state as execution readiness.",
+    "Route previews map to planned output bundles, expected artifacts, logical destinations, and required proof checklists.",
+    "Every output artifact remains planned and nonexistent, every proof item remains not proven, and create/open actions remain blocked.",
+    "Output planning exposes only logical app-owned locations and never creates directories, writes files, captures proof, or opens outputs.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
     "runtime user upload",
     "route execution",
+    "output creation",
     "output open action",
+    "proof capture",
     "external tool launch",
     "selected-file handoff",
     "software install/update/uninstall/repair",
@@ -63,8 +68,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-008",
-    "title": "output bundle and proof panels",
+    "id": "PASS-009",
+    "title": "tool detection foundation",
     "claimState": "planned"
   }
 }

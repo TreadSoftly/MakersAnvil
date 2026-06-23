@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-007 - metadata-derived route preview foundation.
+PASS-008 - output bundle and proof preview panels.
 
 ## Track Percentages
 
-- Real app completion: `17.5000%`
-- Windows local app: `17.5000%`
+- Real app completion: `20.0000%`
+- Windows local app: `20.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -40,6 +40,11 @@ PASS-007 - metadata-derived route preview foundation.
 - Preview records expose planned steps, tool-family requirements, and explicit readiness blockers.
 - Preview generation does not reopen source files or enable source access, archive extraction, execution, tool launch, or output creation.
 - Browser route-preview status and candidate rows render untrusted display names as text rather than HTML.
+- Read-only `GET /api/outputs/preview` maps route previews to planned bundles, artifacts, and proof requirements.
+- Output plans use logical app-owned destinations and expose no resolved personal filesystem paths.
+- Expected artifacts remain nonexistent and unopened; required proof remains incomplete and not proven.
+- Output creation, opening, proof capture, route execution, and tool launch remain disabled.
+- Browser output and proof rows render metadata through text nodes and stack responsively on narrow screens.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -47,12 +52,15 @@ PASS-007 - metadata-derived route preview foundation.
 - PASS-005 verifier, 29 tests, relocated-checkout smoke, external-working-directory launch, HTTP smoke, and desktop/mobile browser smoke passed.
 - PASS-006 explainability checker covers all 63 tracked files; verifier, 31 tests, HTTP smoke, and desktop/mobile browser regression passed.
 - PASS-007 explainability covers 69 files; verifier, 40 tests, normal/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
+- PASS-008 explainability covers 75 files; verifier, 47 tests, non-writing HTTP smoke, and four desktop/mobile browser regressions passed.
 
 ## Blocked Or Not Proven
 
 - Browser/API file upload and direct selected-file handoff.
 - Route execution.
+- Output creation.
 - Output open actions.
+- Proof capture.
 - External tool launch.
 - Selected-file handoff.
 - Install, update, uninstall, or repair actions.
@@ -64,4 +72,4 @@ PASS-007 - metadata-derived route preview foundation.
 
 ## Next Pass
 
-PASS-008 - output bundle and proof panels.
+PASS-009 - tool detection foundation.

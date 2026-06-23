@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/output-proof.schema.json",
+  "title": "Makers Anvil output bundle and proof preview",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "logicalRoot", "summary", "bundles", "safety", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.output-proof.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "route-derived-read-only"},
+    "logicalRoot": {"const": "makers-anvil-data://user/outputs"},
+    "summary": {
+      "type": "object",
+      "required": ["routePreviewCount", "bundleCount", "unmatchedRouteCount", "artifactCount", "requiredProofCount", "completedProofCount"],
+      "additionalProperties": false,
+      "properties": {
+        "routePreviewCount": {"type": "integer", "minimum": 0},
+        "bundleCount": {"type": "integer", "minimum": 0},
+        "unmatchedRouteCount": {"type": "integer", "minimum": 0},
+        "artifactCount": {"type": "integer", "minimum": 0},
+        "requiredProofCount": {"type": "integer", "minimum": 0},
+        "completedProofCount": {"const": 0}
+      }
+    },
+    "bundles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claimState", "routePreviewId", "source", "output", "artifacts", "proof", "readiness"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "claimState": {"const": "preview-only"},
+          "routePreviewId": {"type": "string"},
+          "source": {
+            "type": "object",
+            "required": ["intakeId", "displayName", "kind", "extension"],
+            "additionalProperties": false,
+            "properties": {
+              "intakeId": {"type": "string"},
+              "displayName": {"type": "string"},
+              "kind": {"type": "string"},
+              "extension": {"type": "string"}
+            }
+          },
+          "output": {
+            "type": "object",
+            "required": ["bundleType", "label", "logicalDirectory"],
+            "additionalProperties": false,
+            "properties": {
+              "bundleType": {"type": "string"},
+              "label": {"type": "string"},
+              "logicalDirectory": {"type": "string", "pattern": "^makers-anvil-data://user/outputs/"}
+            }
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "role", "suggestedExtension", "claimState", "exists", "openEnabled"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string"},
+                "label": {"type": "string"},
+                "role": {"enum": ["primary", "manifest", "proof"]},
+                "suggestedExtension": {"type": "string", "pattern": "^\\.[a-z0-9]+$"},
+                "claimState": {"const": "planned"},
+                "exists": {"const": false},
+                "openEnabled": {"const": false}
+              }
+            }
+          },
+          "proof": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "evidenceType", "claimState", "complete"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string"},
+                "label": {"type": "string"},
+                "evidenceType": {"enum": ["record", "log", "digest"]},
+                "claimState": {"const": "not proven"},
+                "complete": {"const": false}
+              }
+            }
+          },
+          "readiness": {
+            "type": "object",
+            "required": ["bundlePlanAvailable", "creationReady", "openReady", "proofComplete", "blockers"],
+            "additionalProperties": false,
+            "properties": {
+              "bundlePlanAvailable": {"const": true},
+              "creationReady": {"const": false},
+              "openReady": {"const": false},
+              "proofComplete": {"const": false},
+              "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "safety": {"$ref": "output-policy.schema.json#/$defs/safety"},
+    "actions": {
+      "type": "object",
+      "required": ["create", "open"],
+      "additionalProperties": false,
+      "properties": {
+        "create": {"$ref": "#/$defs/blockedAction"},
+        "open": {"$ref": "#/$defs/blockedAction"}
+      }
+    }
+  },
+  "$defs": {
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  }
+}

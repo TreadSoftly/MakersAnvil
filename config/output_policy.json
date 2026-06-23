@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "makers-anvil.config.output-policy.v1",
+  "claimState": "staged",
+  "mode": "route-derived-read-only",
+  "logicalRoot": "makers-anvil-data://user/outputs",
+  "bundles": [
+    {
+      "id": "mesh-toolpath-bundle",
+      "routeId": "mesh-to-toolpath",
+      "label": "Mesh toolpath bundle",
+      "artifacts": [
+        {"id": "machine-toolpath", "label": "Machine toolpath", "role": "primary", "suggestedExtension": ".gcode"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"},
+        {"id": "verification-report", "label": "Verification report", "role": "proof", "suggestedExtension": ".json"}
+      ]
+    },
+    {
+      "id": "cad-mesh-bundle",
+      "routeId": "cad-to-mesh",
+      "label": "CAD mesh bundle",
+      "artifacts": [
+        {"id": "manufacturing-mesh", "label": "Manufacturing mesh", "role": "primary", "suggestedExtension": ".stl"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"},
+        {"id": "verification-report", "label": "Verification report", "role": "proof", "suggestedExtension": ".json"}
+      ]
+    },
+    {
+      "id": "image-reference-bundle",
+      "routeId": "image-reference-review",
+      "label": "Image reference bundle",
+      "artifacts": [
+        {"id": "reference-derivative", "label": "Reference derivative", "role": "primary", "suggestedExtension": ".png"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"},
+        {"id": "verification-report", "label": "Verification report", "role": "proof", "suggestedExtension": ".json"}
+      ]
+    },
+    {
+      "id": "toolpath-review-bundle",
+      "routeId": "toolpath-review",
+      "label": "Toolpath review bundle",
+      "artifacts": [
+        {"id": "review-report", "label": "Toolpath review report", "role": "primary", "suggestedExtension": ".json"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"}
+      ]
+    },
+    {
+      "id": "document-review-bundle",
+      "routeId": "document-reference-review",
+      "label": "Document review bundle",
+      "artifacts": [
+        {"id": "review-report", "label": "Document review report", "role": "primary", "suggestedExtension": ".json"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"}
+      ]
+    },
+    {
+      "id": "archive-review-bundle",
+      "routeId": "archive-metadata-review",
+      "label": "Archive review bundle",
+      "artifacts": [
+        {"id": "archive-review", "label": "Archive metadata review", "role": "primary", "suggestedExtension": ".json"},
+        {"id": "route-manifest", "label": "Route manifest", "role": "manifest", "suggestedExtension": ".json"}
+      ]
+    }
+  ],
+  "requiredProof": [
+    {"id": "route-plan", "label": "Route plan", "evidenceType": "record"},
+    {"id": "tool-identity", "label": "Tool identity and version", "evidenceType": "record"},
+    {"id": "execution-log", "label": "Execution log", "evidenceType": "log"},
+    {"id": "output-hash", "label": "Output content hash", "evidenceType": "digest"},
+    {"id": "verification-result", "label": "Verification result", "evidenceType": "record"}
+  ],
+  "safety": {
+    "outputDirectoryCreated": false,
+    "outputFileCreated": false,
+    "outputFileOpened": false,
+    "proofCaptured": false,
+    "sourceFileOpened": false,
+    "routeExecuted": false,
+    "toolLaunched": false
+  }
+}

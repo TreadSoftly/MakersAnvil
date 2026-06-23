@@ -23,12 +23,14 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
+    "backend/src/makers_anvil_backend/services/output_proof.py",
     "backend/src/makers_anvil_backend/services/route_preview.py",
     "backend/src/makers_anvil_backend/services/runtime_paths.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
     "config/intake_policy.json",
+    "config/output_policy.json",
     "config/route_catalog.json",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
@@ -40,6 +42,8 @@ REQUIRED_FILES = [
     "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
     "schemas/intake-record.schema.json",
+    "schemas/output-policy.schema.json",
+    "schemas/output-proof.schema.json",
     "schemas/route-catalog.schema.json",
     "schemas/route-preview.schema.json",
     "scripts/init_workspace.py",
@@ -60,6 +64,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_005_REPORT.md",
     "docs/passes/PASS_006_REPORT.md",
     "docs/passes/PASS_007_REPORT.md",
+    "docs/passes/PASS_008_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -138,6 +143,7 @@ def check_api() -> list[str]:
     intake_policy = api.handle("GET", "/api/intake/policy")
     intake_catalog = api.handle("GET", "/api/intake/catalog")
     route_preview = api.handle("GET", "/api/routes/preview")
+    output_proof = api.handle("GET", "/api/outputs/preview")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -146,12 +152,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-007":
-        errors.append("GET /api/state does not report PASS-007")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-007":
-        errors.append("GET /api/workspace/status does not report PASS-007")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-007":
-        errors.append("GET /api/passes/ledger does not report PASS-007 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-008":
+        errors.append("GET /api/state does not report PASS-008")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-008":
+        errors.append("GET /api/workspace/status does not report PASS-008")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-008":
+        errors.append("GET /api/passes/ledger does not report PASS-008 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -185,6 +191,16 @@ def check_api() -> list[str]:
         errors.append("route preview unexpectedly enables API execution")
     if state.body.get("routePreview", {}).get("mode") != "metadata-derived-read-only":
         errors.append("GET /api/state does not include route preview status")
+    if output_proof.status != 200 or output_proof.body.get("mode") != "route-derived-read-only":
+        errors.append("GET /api/outputs/preview does not report route-derived read-only mode")
+    if any(output_proof.body.get("safety", {}).values()):
+        errors.append("one or more output preview safety flags unexpectedly claim an action")
+    if any(action.get("enabledInApi") for action in output_proof.body.get("actions", {}).values()):
+        errors.append("output preview unexpectedly enables create or open actions")
+    if output_proof.body.get("summary", {}).get("completedProofCount") != 0:
+        errors.append("output preview unexpectedly reports completed proof")
+    if state.body.get("outputProof", {}).get("mode") != "route-derived-read-only":
+        errors.append("GET /api/state does not include output proof status")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -193,7 +209,7 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
-    """Keep status, pass ledger, settings, intake, and route policy synchronized."""
+    """Keep status, pass ledger, settings, intake, route, and output policy synchronized."""
 
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
@@ -201,14 +217,15 @@ def check_status_records() -> list[str]:
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
     intake_policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
     route_catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-007":
-        errors.append("current status does not report PASS-007")
-    if status.get("trackPercentages", {}).get("realApp") != 17.5:
-        errors.append("real app completion is not 17.5 for PASS-007")
+    output_policy = json.loads((ROOT / "config" / "output_policy.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-008":
+        errors.append("current status does not report PASS-008")
+    if status.get("trackPercentages", {}).get("realApp") != 20.0:
+        errors.append("real app completion is not 20.0 for PASS-008")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-007":
-        errors.append("pass ledger latest pass is not PASS-007")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-008":
+        errors.append("pass ledger latest pass is not PASS-008")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -226,6 +243,10 @@ def check_status_records() -> list[str]:
         errors.append("route catalog is not metadata-derived read-only")
     if any(route_catalog.get("safety", {}).values()):
         errors.append("route catalog unexpectedly enables an unsafe action")
+    if output_policy.get("mode") != "route-derived-read-only":
+        errors.append("output policy is not route-derived read-only")
+    if any(output_policy.get("safety", {}).values()):
+        errors.append("output policy unexpectedly claims an output or proof action")
     return errors
 
 
@@ -249,6 +270,7 @@ def check_portable_paths() -> list[str]:
         api.handle("GET", "/api/workspace/layout").body,
         api.handle("GET", "/api/intake/catalog").body,
         api.handle("GET", "/api/routes/preview").body,
+        api.handle("GET", "/api/outputs/preview").body,
     ]
     values = [text for payload in payloads for text in _string_values(payload)]
     private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}

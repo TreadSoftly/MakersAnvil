@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-007"
-    assert current["trackPercentages"]["realApp"] == 17.5
+    assert current["currentPass"]["id"] == "PASS-008"
+    assert current["trackPercentages"]["realApp"] == 20.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-007"
+    assert ledger["passes"][-1]["id"] == "PASS-008"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -126,3 +126,17 @@ def test_route_catalog_is_preview_only_and_action_free() -> None:
     assert catalog["routes"]
     assert catalog["requiredProof"]
     assert all(value is False for value in catalog["safety"].values())
+
+
+def test_output_policy_is_logical_preview_only_and_action_free() -> None:
+    """Committed output policy uses logical storage and cannot claim produced proof."""
+
+    import json
+
+    policy = json.loads((ROOT / "config" / "output_policy.json").read_text(encoding="utf-8"))
+
+    assert policy["mode"] == "route-derived-read-only"
+    assert policy["logicalRoot"] == "makers-anvil-data://user/outputs"
+    assert policy["bundles"]
+    assert policy["requiredProof"]
+    assert all(value is False for value in policy["safety"].values())

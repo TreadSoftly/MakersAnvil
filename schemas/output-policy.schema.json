@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/output-policy.schema.json",
+  "title": "Makers Anvil output bundle preview policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "logicalRoot", "bundles", "requiredProof", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["outputDirectoryCreated", "outputFileCreated", "outputFileOpened", "proofCaptured", "sourceFileOpened", "routeExecuted", "toolLaunched"],
+      "additionalProperties": false,
+      "properties": {
+        "outputDirectoryCreated": {"const": false},
+        "outputFileCreated": {"const": false},
+        "outputFileOpened": {"const": false},
+        "proofCaptured": {"const": false},
+        "sourceFileOpened": {"const": false},
+        "routeExecuted": {"const": false},
+        "toolLaunched": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.output-policy.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "route-derived-read-only"},
+    "logicalRoot": {"const": "makers-anvil-data://user/outputs"},
+    "bundles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "routeId", "label", "artifacts"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "routeId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "role", "suggestedExtension"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+                "label": {"type": "string", "minLength": 1},
+                "role": {"enum": ["primary", "manifest", "proof"]},
+                "suggestedExtension": {"type": "string", "pattern": "^\\.[a-z0-9]+$"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "requiredProof": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "evidenceType"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "evidenceType": {"enum": ["record", "log", "digest"]}
+        }
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

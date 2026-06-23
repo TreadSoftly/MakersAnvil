@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
+from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
@@ -14,7 +15,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-007-route-preview"
+    api_build = "makers-anvil-real-pass-008-output-proof"
 
     def __init__(
         self,
@@ -22,11 +23,16 @@ class AppStateService:
         workspace_config: WorkspaceConfigService | None = None,
         intake_catalog: IntakeCatalogService | None = None,
         route_preview: RoutePreviewService | None = None,
+        output_proof: OutputProofService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
         self._intake_catalog = intake_catalog or IntakeCatalogService()
         self._route_preview = route_preview or RoutePreviewService(intake_catalog=self._intake_catalog)
+        self._output_proof = output_proof or OutputProofService(
+            route_preview=self._route_preview,
+            workspace_config=self._workspace_config,
+        )
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -46,6 +52,7 @@ class AppStateService:
 
         current_status = self._workspace_status.current_status()
         intake_catalog = self._intake_catalog.catalog()
+        route_preview = self._route_preview.preview_catalog(intake_catalog)
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -57,7 +64,8 @@ class AppStateService:
             "sourceTruth": current_status["sourceTruth"],
             "workspaceConfig": self._workspace_config.layout(),
             "intakeCatalog": intake_catalog,
-            "routePreview": self._route_preview.preview_catalog(intake_catalog),
+            "routePreview": route_preview,
+            "outputProof": self._output_proof.preview_catalog(route_preview),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -98,6 +106,11 @@ class AppStateService:
         """Return metadata-derived candidate steps while every action stays disabled."""
 
         return self._route_preview.preview_catalog()
+
+    def output_proof(self) -> dict[str, Any]:
+        """Return planned output bundles and explicitly incomplete proof state."""
+
+        return self._output_proof.preview_catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -170,6 +183,13 @@ class AppStateService:
                 "label": "Route preview",
                 "claimState": "preview-only",
                 "summary": "Metadata records map to candidate steps and explicit readiness blockers without executing a route.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "output-proof",
+                "label": "Output and proof",
+                "claimState": "preview-only",
+                "summary": "Route previews map to planned artifacts and required evidence without creating or opening outputs.",
                 "actionsEnabled": False,
             },
             {
