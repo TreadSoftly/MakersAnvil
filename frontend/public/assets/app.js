@@ -11,6 +11,7 @@ const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";
 const layoutUrl = "/api/workspace/layout";
 const intakeUrl = "/api/intake/catalog";
+const routePreviewUrl = "/api/routes/preview";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -42,6 +43,14 @@ const fallbackState = {
     summary: { recordCount: 0, invalidRecordCount: 0 },
     safety: { sourcePathStored: false, sourceContentStored: false },
     creationAction: { enabledInApi: false },
+  },
+  routePreview: {
+    claimState: "unknown",
+    mode: "not proven",
+    summary: { previewCount: 0, unmatchedCount: 0 },
+    previews: [],
+    safety: { sourcePathUsed: false, sourceContentRead: false },
+    executionAction: { enabledInApi: false },
   },
 };
 
@@ -132,7 +141,72 @@ function renderIntake(state, catalog = {}) {
   document.querySelector("#intake-api-action").textContent = intake.creationAction?.enabledInApi === false ? "blocked" : "not proven";
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}) {
+function renderRoutePreview(state, response = {}) {
+  const routePreview = response.schemaVersion ? response : state.routePreview || fallbackState.routePreview;
+  const previewState = document.querySelector("#route-preview-state");
+  previewState.textContent = routePreview.claimState || "unknown";
+  previewState.className = `badge ${claimClass(previewState.textContent)}`;
+  document.querySelector("#route-preview-mode").textContent = routePreview.mode || "not proven";
+  const summary = routePreview.summary || {};
+  const previewCount = summary.previewCount || 0;
+  const candidateLabel = previewCount === 1 ? "candidate" : "candidates";
+  document.querySelector("#route-preview-count").textContent = `${previewCount} ${candidateLabel} · ${summary.unmatchedCount || 0} unmatched`;
+  const safety = routePreview.safety || {};
+  document.querySelector("#route-preview-source").textContent = safety.sourcePathUsed === false && safety.sourceContentRead === false
+    ? "metadata records only"
+    : "not proven";
+  document.querySelector("#route-preview-execution").textContent = routePreview.executionAction?.enabledInApi === false
+    ? "blocked"
+    : "not proven";
+
+  const target = document.querySelector("#route-preview-list");
+  target.replaceChildren();
+  if (!routePreview.previews?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No route previews available.";
+    target.append(empty);
+    return;
+  }
+
+  // Source display names originate in untrusted local metadata. DOM text nodes
+  // preserve the filename literally and prevent it from becoming executable HTML.
+  routePreview.previews.forEach((preview) => {
+    const item = document.createElement("article");
+    item.className = "route-preview-item";
+    const heading = document.createElement("div");
+    heading.className = "route-preview-head";
+    const title = document.createElement("h3");
+    title.textContent = preview.route.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(preview.claimState)}`;
+    stateBadge.textContent = preview.claimState;
+    heading.append(title, stateBadge);
+
+    const source = document.createElement("p");
+    source.className = "route-preview-source";
+    source.textContent = `${preview.source.displayName} · ${preview.source.kind} · ${preview.source.extension}`;
+    const routeSummary = document.createElement("p");
+    routeSummary.textContent = preview.route.summary;
+    const tool = document.createElement("p");
+    tool.className = "route-preview-tool";
+    tool.textContent = `Tool family: ${preview.route.toolFamily}`;
+    const steps = document.createElement("ol");
+    steps.className = "route-step-list";
+    preview.steps.forEach((step) => {
+      const itemStep = document.createElement("li");
+      itemStep.textContent = `${step.label} · ${step.phase} · ${step.claimState}`;
+      steps.append(itemStep);
+    });
+    const blockers = document.createElement("p");
+    blockers.className = "route-preview-blockers";
+    blockers.textContent = `Blocked by: ${preview.readiness.blockers.join(", ")}`;
+    item.append(heading, source, routeSummary, tool, steps, blockers);
+    target.append(item);
+  });
+}
+
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -140,6 +214,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}) {
   renderWorkspace(state, workspace);
   renderLayout(state, layout);
   renderIntake(state, intake);
+  renderRoutePreview(state, routePreview);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -148,14 +223,15 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}) {
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
       fetch(layoutUrl, { method: "GET", cache: "no-store" }),
       fetch(intakeUrl, { method: "GET", cache: "no-store" }),
+      fetch(routePreviewUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -164,6 +240,7 @@ async function loadState() {
       await workspaceResponse.json(),
       await layoutResponse.json(),
       await intakeResponse.json(),
+      await routePreviewResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

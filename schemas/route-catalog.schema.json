@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/route-catalog.schema.json",
+  "title": "Makers Anvil route preview catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "routes", "requiredProof", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourcePathUsed", "sourceContentRead", "sourceFileOpened", "archiveExtractionEnabled", "routeExecutionEnabled", "toolLaunchEnabled", "outputCreationEnabled"],
+      "properties": {
+        "sourcePathUsed": {"const": false},
+        "sourceContentRead": {"const": false},
+        "sourceFileOpened": {"const": false},
+        "archiveExtractionEnabled": {"const": false},
+        "routeExecutionEnabled": {"const": false},
+        "toolLaunchEnabled": {"const": false},
+        "outputCreationEnabled": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.route-catalog.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "metadata-derived-read-only"},
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "summary", "acceptedKinds", "toolFamily", "steps"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "summary": {"type": "string", "minLength": 1},
+          "acceptedKinds": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "toolFamily": {"type": "string", "minLength": 1},
+          "steps": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["id", "label", "phase"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+                "label": {"type": "string", "minLength": 1},
+                "phase": {"enum": ["validation", "planning", "execution", "proof"]}
+              }
+            }
+          }
+        }
+      }
+    },
+    "requiredProof": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

@@ -77,6 +77,7 @@ textarea {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
 }
@@ -88,6 +89,10 @@ h1 {
 
 h2 {
   font-size: 1rem;
+}
+
+h3 {
+  font-size: 0.96rem;
 }
 
 p {
@@ -235,6 +240,56 @@ p {
 
 .capability .ghost-button {
   justify-self: end;
+}
+
+/* Route candidates are rows within one operational panel, not nested cards. */
+.route-preview-list {
+  display: grid;
+  margin-top: 10px;
+}
+
+.route-preview-item,
+.empty-state {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.route-preview-item + .route-preview-item {
+  margin-top: 14px;
+}
+
+.route-preview-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.route-preview-source,
+.route-preview-tool,
+.route-preview-blockers {
+  font-size: 0.86rem;
+  margin-top: 6px;
+  overflow-wrap: anywhere;
+}
+
+.route-preview-source {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.route-preview-blockers {
+  color: var(--red);
+}
+
+.route-step-list {
+  color: var(--muted);
+  display: grid;
+  font-size: 0.86rem;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding-left: 22px;
 }
 
 .blocked-list {

@@ -165,3 +165,56 @@ def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -
     assert catalog["claimState"] == "failed"
     assert catalog["summary"]["recordCount"] == 0
     assert catalog["summary"]["invalidRecordCount"] == 1
+
+
+def test_catalog_excludes_record_with_incomplete_source_metadata(tmp_path: Path) -> None:
+    """A record with valid safety flags but incomplete source metadata is unusable."""
+
+    write_config(tmp_path)
+    data_root = tmp_path / "runtime-data"
+    records_root = data_root / "intake" / "records"
+    records_root.mkdir(parents=True)
+    (records_root / "invalid-source.json").write_text(
+        json.dumps(
+            {
+                "schemaVersion": "makers-anvil.runtime.intake-record.v1",
+                "id": "intake-invalid-source",
+                "source": {"displayName": "missing-fields.stl"},
+                "privacy": {
+                    "sourcePathStored": False,
+                    "sourceContentStored": False,
+                },
+                "safety": {
+                    "sourceFileCopied": False,
+                    "sourceFileMoved": False,
+                    "sourceFileDeleted": False,
+                    "archiveExtracted": False,
+                    "routeExecuted": False,
+                    "toolLaunched": False,
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    catalog = build_service(tmp_path, data_root).catalog()
+
+    assert catalog["claimState"] == "failed"
+    assert catalog["records"] == []
+    assert catalog["summary"]["invalidRecordCount"] == 1
+
+
+def test_catalog_counts_non_object_json_as_invalid(tmp_path: Path) -> None:
+    """Valid JSON with the wrong top-level type is rejected without crashing readers."""
+
+    write_config(tmp_path)
+    data_root = tmp_path / "runtime-data"
+    records_root = data_root / "intake" / "records"
+    records_root.mkdir(parents=True)
+    (records_root / "array.json").write_text("[]", encoding="utf-8")
+
+    catalog = build_service(tmp_path, data_root).catalog()
+
+    assert catalog["claimState"] == "failed"
+    assert catalog["records"] == []
+    assert catalog["summary"]["invalidRecordCount"] == 1

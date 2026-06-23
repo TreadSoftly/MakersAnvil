@@ -84,6 +84,20 @@
         "continue protocol requires explanation maintenance",
         "explainability coverage is machine-verified"
       ]
+    },
+    {
+      "id": "PASS-007",
+      "title": "metadata-derived route preview foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_007_REPORT.md",
+      "proof": [
+        "committed route catalog defines one deterministic candidate per recognized intake kind",
+        "route preview service consumes validated metadata without reopening source files",
+        "read-only route preview API and composed app state added",
+        "dashboard route preview panel and candidate-step rendering added",
+        "route, tool, archive, source-open, and output actions remain disabled",
+        "route preview service, API, verifier, and browser regression coverage added"
+      ]
     }
   ]
 }

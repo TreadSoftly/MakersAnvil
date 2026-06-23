@@ -13,6 +13,7 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigServic
 
 ROOT = Path(__file__).resolve().parents[4]
 REQUIRED_PRIVACY_FLAGS = {"sourcePathStored", "sourceContentStored"}
+REQUIRED_SOURCE_FIELDS = {"displayName", "extension", "kind", "sizeBytes", "modifiedUtc"}
 REQUIRED_RECORD_SAFETY_FLAGS = {
     "sourceFileCopied",
     "sourceFileMoved",
@@ -75,7 +76,7 @@ class IntakeCatalogService:
                 except (OSError, json.JSONDecodeError):
                     invalid_record_count += 1
                     continue
-                if not self._valid_runtime_record(record):
+                if not isinstance(record, dict) or not self._valid_runtime_record(record):
                     invalid_record_count += 1
                     continue
                 records.append(record)
@@ -170,12 +171,21 @@ class IntakeCatalogService:
 
     @staticmethod
     def _valid_runtime_record(record: dict[str, Any]) -> bool:
+        source = record.get("source", {})
         privacy = record.get("privacy", {})
         safety = record.get("safety", {})
         return (
             record.get("schemaVersion") == "makers-anvil.runtime.intake-record.v1"
             and isinstance(record.get("id"), str)
-            and isinstance(record.get("source"), dict)
+            and isinstance(source, dict)
+            and set(source) == REQUIRED_SOURCE_FIELDS
+            and isinstance(source.get("displayName"), str)
+            and isinstance(source.get("extension"), str)
+            and isinstance(source.get("kind"), str)
+            and isinstance(source.get("sizeBytes"), int)
+            and not isinstance(source.get("sizeBytes"), bool)
+            and source.get("sizeBytes", -1) >= 0
+            and isinstance(source.get("modifiedUtc"), str)
             and set(privacy) == REQUIRED_PRIVACY_FLAGS
             and privacy.get("sourcePathStored") is False
             and privacy.get("sourceContentStored") is False

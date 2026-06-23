@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "makers-anvil.config.route-catalog.v1",
+  "claimState": "staged",
+  "mode": "metadata-derived-read-only",
+  "routes": [
+    {
+      "id": "mesh-to-toolpath",
+      "label": "Mesh to toolpath",
+      "summary": "Plan mesh validation, slicer preparation, toolpath generation, and output proof.",
+      "acceptedKinds": ["mesh"],
+      "toolFamily": "slicer",
+      "steps": [
+        {"id": "inspect-mesh", "label": "Inspect mesh readiness", "phase": "validation"},
+        {"id": "prepare-slicer", "label": "Prepare slicer and profile", "phase": "planning"},
+        {"id": "generate-toolpath", "label": "Generate machine toolpath", "phase": "execution"},
+        {"id": "verify-output", "label": "Verify output bundle", "phase": "proof"}
+      ]
+    },
+    {
+      "id": "cad-to-mesh",
+      "label": "CAD to mesh",
+      "summary": "Plan CAD inspection, modeling-tool preparation, mesh export, and output proof.",
+      "acceptedKinds": ["cad"],
+      "toolFamily": "cad-modeler",
+      "steps": [
+        {"id": "inspect-cad", "label": "Inspect CAD metadata", "phase": "validation"},
+        {"id": "prepare-modeler", "label": "Prepare CAD modeling tool", "phase": "planning"},
+        {"id": "export-mesh", "label": "Export manufacturing mesh", "phase": "execution"},
+        {"id": "verify-output", "label": "Verify output bundle", "phase": "proof"}
+      ]
+    },
+    {
+      "id": "image-reference-review",
+      "label": "Image reference review",
+      "summary": "Plan image validation, reference review, derivative preparation, and output proof.",
+      "acceptedKinds": ["image"],
+      "toolFamily": "image-editor",
+      "steps": [
+        {"id": "inspect-image", "label": "Inspect image metadata", "phase": "validation"},
+        {"id": "prepare-image-tool", "label": "Prepare image tool", "phase": "planning"},
+        {"id": "prepare-derivative", "label": "Prepare reference derivative", "phase": "execution"},
+        {"id": "verify-output", "label": "Verify output bundle", "phase": "proof"}
+      ]
+    },
+    {
+      "id": "toolpath-review",
+      "label": "Toolpath review",
+      "summary": "Plan toolpath metadata validation, viewer preparation, inspection, and proof capture.",
+      "acceptedKinds": ["toolpath"],
+      "toolFamily": "toolpath-viewer",
+      "steps": [
+        {"id": "inspect-toolpath", "label": "Inspect toolpath metadata", "phase": "validation"},
+        {"id": "prepare-viewer", "label": "Prepare toolpath viewer", "phase": "planning"},
+        {"id": "review-toolpath", "label": "Review toolpath", "phase": "execution"},
+        {"id": "capture-proof", "label": "Capture review proof", "phase": "proof"}
+      ]
+    },
+    {
+      "id": "document-reference-review",
+      "label": "Document reference review",
+      "summary": "Plan document metadata validation, viewer preparation, review, and proof capture.",
+      "acceptedKinds": ["document"],
+      "toolFamily": "document-viewer",
+      "steps": [
+        {"id": "inspect-document", "label": "Inspect document metadata", "phase": "validation"},
+        {"id": "prepare-viewer", "label": "Prepare document viewer", "phase": "planning"},
+        {"id": "review-document", "label": "Review document", "phase": "execution"},
+        {"id": "capture-proof", "label": "Capture review proof", "phase": "proof"}
+      ]
+    },
+    {
+      "id": "archive-metadata-review",
+      "label": "Archive metadata review",
+      "summary": "Plan archive metadata review while extraction and content inspection remain blocked.",
+      "acceptedKinds": ["archive"],
+      "toolFamily": "archive-inspector",
+      "steps": [
+        {"id": "inspect-archive-metadata", "label": "Inspect archive metadata", "phase": "validation"},
+        {"id": "review-extraction-policy", "label": "Review extraction policy", "phase": "planning"},
+        {"id": "extract-archive", "label": "Extract archive in a contained workspace", "phase": "execution"},
+        {"id": "verify-output", "label": "Verify extracted output bundle", "phase": "proof"}
+      ]
+    }
+  ],
+  "requiredProof": [
+    "tool detection not proven",
+    "route execution blocked",
+    "output proof not proven"
+  ],
+  "safety": {
+    "sourcePathUsed": false,
+    "sourceContentRead": false,
+    "sourceFileOpened": false,
+    "archiveExtractionEnabled": false,
+    "routeExecutionEnabled": false,
+    "toolLaunchEnabled": false,
+    "outputCreationEnabled": false
+  }
+}

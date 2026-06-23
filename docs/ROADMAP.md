@@ -8,7 +8,7 @@
 4. Safe runtime file intake.
 5. Portable runtime paths and relocation safety.
 6. Durable explainability and handoff contract.
-7. Route preview.
+7. Metadata-derived route preview.
 8. Output bundle and proof panels.
 9. Tool detection.
 10. Tool dry-run planning.

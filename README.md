@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 006 is staged at `15.0000%`. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, project governance, schemas, tests, verification scripts, and a machine-enforced source-explainability contract. Browser/API upload, route execution, tool launch, installers, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: real application build pass 007 is staged at `17.5000%`. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, metadata-derived route previews, project governance, schemas, tests, verification scripts, and a machine-enforced source-explainability contract. Browser/API upload, route execution, tool launch, installers, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
 
 ## Run Locally
 

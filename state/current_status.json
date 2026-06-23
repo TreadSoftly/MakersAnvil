@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-006",
-    "title": "durable explainability and handoff contract",
+    "id": "PASS-007",
+    "title": "metadata-derived route preview foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_006_REPORT.md"
+    "reportPath": "docs/passes/PASS_007_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 15.0,
-    "windowsLocal": 15.0,
+    "realApp": 17.5,
+    "windowsLocal": 17.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -43,6 +43,9 @@
     "Every tracked source file has a machine-readable purpose and maintenance record.",
     "Python modules and public components plus frontend and workflow file headers are protected by an explainability verifier.",
     "A durable start guide, architecture guide, file map, and code-explanation standard let a new human or model resume from repository truth.",
+    "Validated intake metadata maps deterministically to read-only route previews with planned steps and explicit blockers.",
+    "Route previews do not use source paths, read contents, open files, extract archives, execute routes, launch tools, or create outputs.",
+    "The dashboard renders route-preview status and candidates without treating preview state as execution readiness.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -60,8 +63,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-007",
-    "title": "route preview foundation",
+    "id": "PASS-008",
+    "title": "output bundle and proof panels",
     "claimState": "planned"
   }
 }

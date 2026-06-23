@@ -1,0 +1,121 @@
+"""Behavior examples for metadata-derived, non-executing route previews."""
+
+import json
+from pathlib import Path
+
+import pytest
+
+from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
+from makers_anvil_backend.services.route_preview import RoutePreviewError, RoutePreviewService
+from makers_anvil_backend.services.runtime_paths import DATA_DIR_ENV, RuntimePathsService
+from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def build_services(root: Path, data_root: Path) -> tuple[IntakeCatalogService, RoutePreviewService]:
+    """Build isolated intake and preview services from committed safe configuration."""
+
+    config_root = root / "config"
+    config_root.mkdir(parents=True)
+    for name in ("default_settings.json", "intake_policy.json", "route_catalog.json"):
+        config_root.joinpath(name).write_text(
+            PROJECT_ROOT.joinpath("config", name).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+    paths = RuntimePathsService(
+        source_root=root,
+        environ={DATA_DIR_ENV: str(data_root)},
+        home=root.parent / "home",
+        platform_name="linux",
+    )
+    workspace = WorkspaceConfigService(root, paths)
+    intake = IntakeCatalogService(root, workspace)
+    return intake, RoutePreviewService(root, intake)
+
+
+def test_mesh_preview_uses_metadata_after_source_is_gone(tmp_path: Path) -> None:
+    """A route preview remains available without reopening or retaining the source file."""
+
+    intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
+    source = tmp_path / "fixture.stl"
+    source.write_bytes(b"solid fixture\nendsolid fixture\n")
+    record = intake.stage_file_metadata(source)
+    source.unlink()
+
+    result = routes.preview_catalog()
+
+    assert result["claimState"] == "preview-only"
+    assert result["summary"] == {
+        "sourceRecordCount": 1,
+        "previewCount": 1,
+        "unmatchedCount": 0,
+        "invalidRecordCount": 0,
+    }
+    preview = result["previews"][0]
+    assert preview["source"]["intakeId"] == record["id"]
+    assert preview["route"]["id"] == "mesh-to-toolpath"
+    assert preview["readiness"]["executionReady"] is False
+    assert all(step["actionEnabled"] is False for step in preview["steps"])
+    assert all(value is False for value in result["safety"].values())
+    assert str(source.resolve()) not in json.dumps(result)
+
+
+def test_archive_preview_does_not_extract_or_change_source(tmp_path: Path) -> None:
+    """Archive planning describes a future gate while extraction remains disabled."""
+
+    intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
+    source = tmp_path / "bundle.zip"
+    original = b"archive bytes stay untouched"
+    source.write_bytes(original)
+    intake.stage_file_metadata(source)
+
+    result = routes.preview_catalog()
+
+    preview = result["previews"][0]
+    extraction_step = next(step for step in preview["steps"] if step["id"] == "extract-archive")
+    assert preview["route"]["id"] == "archive-metadata-review"
+    assert extraction_step["claimState"] == "planned"
+    assert extraction_step["actionEnabled"] is False
+    assert result["safety"]["archiveExtractionEnabled"] is False
+    assert source.read_bytes() == original
+
+
+def test_unknown_kind_is_counted_without_inventing_a_route(tmp_path: Path) -> None:
+    """Unrecognized metadata is reported as unmatched instead of guessed into a workflow."""
+
+    intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
+    source = tmp_path / "mystery.bin"
+    source.write_bytes(b"unknown")
+    intake.stage_file_metadata(source)
+
+    result = routes.preview_catalog()
+
+    assert result["previews"] == []
+    assert result["summary"]["unmatchedCount"] == 1
+    assert result["summary"]["sourceRecordCount"] == 1
+
+
+def test_route_catalog_rejects_enabled_actions(tmp_path: Path) -> None:
+    """A changed catalog cannot silently enable execution or tool behavior."""
+
+    _, routes = build_services(tmp_path / "source", tmp_path / "runtime")
+    catalog = json.loads(routes.catalog_path.read_text(encoding="utf-8"))
+    catalog["safety"]["toolLaunchEnabled"] = True
+    routes.catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+
+    with pytest.raises(RoutePreviewError, match="cannot enable"):
+        routes.preview_catalog()
+
+
+def test_route_catalog_rejects_missing_safety_flags(tmp_path: Path) -> None:
+    """Removing a required false flag cannot bypass route-catalog safety checks."""
+
+    _, routes = build_services(tmp_path / "source", tmp_path / "runtime")
+    catalog = json.loads(routes.catalog_path.read_text(encoding="utf-8"))
+    catalog["safety"].pop("sourceContentRead")
+    routes.catalog_path.write_text(json.dumps(catalog), encoding="utf-8")
+
+    with pytest.raises(RoutePreviewError, match="cannot enable"):
+        routes.preview_catalog()

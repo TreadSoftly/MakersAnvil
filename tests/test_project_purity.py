@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-006"
-    assert current["trackPercentages"]["realApp"] == 15.0
+    assert current["currentPass"]["id"] == "PASS-007"
+    assert current["trackPercentages"]["realApp"] == 17.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-006"
+    assert ledger["passes"][-1]["id"] == "PASS-007"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -113,3 +113,16 @@ def test_intake_policy_never_enables_data_or_action_mutations() -> None:
     assert policy["mode"] == "metadata-only"
     assert policy["recordsDirectory"] == "intake/records"
     assert all(value is False for value in policy["safety"].values())
+
+
+def test_route_catalog_is_preview_only_and_action_free() -> None:
+    """Committed route definitions cannot enable source access or route actions."""
+
+    import json
+
+    catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
+
+    assert catalog["mode"] == "metadata-derived-read-only"
+    assert catalog["routes"]
+    assert catalog["requiredProof"]
+    assert all(value is False for value in catalog["safety"].values())

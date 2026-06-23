@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
+from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 
@@ -13,17 +14,19 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-006-explainable-source"
+    api_build = "makers-anvil-real-pass-007-route-preview"
 
     def __init__(
         self,
         workspace_status: WorkspaceStatusService | None = None,
         workspace_config: WorkspaceConfigService | None = None,
         intake_catalog: IntakeCatalogService | None = None,
+        route_preview: RoutePreviewService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
         self._intake_catalog = intake_catalog or IntakeCatalogService()
+        self._route_preview = route_preview or RoutePreviewService(intake_catalog=self._intake_catalog)
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -42,6 +45,7 @@ class AppStateService:
         """Compose the complete dashboard record from durable and runtime services."""
 
         current_status = self._workspace_status.current_status()
+        intake_catalog = self._intake_catalog.catalog()
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -52,7 +56,8 @@ class AppStateService:
             "currentPass": current_status["currentPass"],
             "sourceTruth": current_status["sourceTruth"],
             "workspaceConfig": self._workspace_config.layout(),
-            "intakeCatalog": self._intake_catalog.catalog(),
+            "intakeCatalog": intake_catalog,
+            "routePreview": self._route_preview.preview_catalog(intake_catalog),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -88,6 +93,11 @@ class AppStateService:
         """Return validated app-owned intake records through a read-only response."""
 
         return self._intake_catalog.catalog()
+
+    def route_preview(self) -> dict[str, Any]:
+        """Return metadata-derived candidate steps while every action stays disabled."""
+
+        return self._route_preview.preview_catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -153,6 +163,13 @@ class AppStateService:
                 "label": "Source explainability",
                 "claimState": "proven",
                 "summary": "Every tracked file is mapped and Python/frontend explanation coverage is machine-verified.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "route-preview",
+                "label": "Route preview",
+                "claimState": "preview-only",
+                "summary": "Metadata records map to candidate steps and explicit readiness blockers without executing a route.",
                 "actionsEnabled": False,
             },
             {

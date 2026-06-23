@@ -8,7 +8,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders current completion, workspace state, portable runtime-location policy, intake status, capabilities, and blocked actions.
+`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders current completion, workspace state, portable runtime-location policy, intake status, route previews, capabilities, and blocked actions.
 
 ### HTTP Boundary
 
@@ -25,6 +25,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 - `RuntimePathsService` resolves OS-standard per-user data locations without exposing personal paths.
 - `WorkspaceConfigService` validates settings and creates contained app-owned directories.
 - `IntakeCatalogService` records metadata for one explicit regular file without storing its path or contents.
+- `RoutePreviewService` maps validated intake metadata to deterministic candidate steps without reopening files or enabling actions.
 
 ### Schemas And Durable State
 
@@ -42,6 +43,7 @@ Browser
   -> MakersAnvilApi
   -> AppStateService and focused services
   -> committed config/state plus app-owned runtime metadata
+  -> RoutePreviewService derives non-executing candidate steps
   -> JSON response
   -> browser render
 ```
@@ -75,4 +77,4 @@ The browser and HTTP API do not participate in this mutation flow yet.
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-The next planned capability is route preview. Preview must remain non-executing and must consume metadata records rather than reopening or launching source files.
+Route preview is now a read-only planning layer. The next planned capability is output bundle and proof-panel structure; it must describe intended evidence without creating or opening outputs until separate gates pass.

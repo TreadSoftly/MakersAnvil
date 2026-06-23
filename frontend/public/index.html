@@ -78,6 +78,21 @@
           </div>
         </section>
 
+        <!-- Metadata-derived route candidates; no source or tool action is available. -->
+        <section class="panel workspace-panel" aria-label="Route preview status">
+          <div class="panel-head">
+            <h2>Route Preview</h2>
+            <span id="route-preview-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Mode</strong><span id="route-preview-mode">loading</span></p>
+            <p><strong>Previews</strong><span id="route-preview-count">loading</span></p>
+            <p><strong>Source access</strong><span id="route-preview-source">loading</span></p>
+            <p><strong>Execution</strong><span id="route-preview-execution">loading</span></p>
+          </div>
+          <div id="route-preview-list" class="route-preview-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
