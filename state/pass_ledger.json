@@ -40,6 +40,20 @@
         "frontend local workspace panel added",
         "unsafe actions remain disabled"
       ]
+    },
+    {
+      "id": "PASS-004",
+      "title": "safe runtime file intake staging",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_004_REPORT.md",
+      "proof": [
+        "metadata-only intake policy added",
+        "intake record schema added",
+        "read-only intake policy and catalog APIs added",
+        "local metadata staging script added",
+        "frontend intake status panel added",
+        "source paths, contents, and unsafe actions remain disabled"
+      ]
     }
   ]
 }

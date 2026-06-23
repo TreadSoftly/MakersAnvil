@@ -92,6 +92,13 @@ class WorkspaceConfigService:
         (runtime_root / "workspace_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
         return manifest
 
+    def runtime_path(self, relative_path: str | Path) -> Path:
+        """Return a contained path inside the configured app-owned runtime root."""
+
+        settings = self.settings()
+        runtime_root = self._safe_runtime_root(settings["runtimeRoot"])
+        return runtime_root / self._safe_relative_path(str(relative_path))
+
     def _safe_runtime_root(self, runtime_root: str) -> Path:
         candidate = Path(runtime_root)
         if candidate.is_absolute() or ".." in candidate.parts or candidate.as_posix() != ".makers-anvil":

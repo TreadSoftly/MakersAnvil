@@ -26,6 +26,7 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
         for path in ROOT.rglob("*")
         if path.is_file()
         and ".git" not in path.parts
+        and ".makers-anvil" not in path.parts
         and "Refrences For Makers Anvil Application" not in path.parts
         and "References For Makers Anvil Application" not in path.parts
         and "__pycache__" not in path.parts
@@ -46,11 +47,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-003"
-    assert current["trackPercentages"]["realApp"] == 7.5
+    assert current["currentPass"]["id"] == "PASS-004"
+    assert current["trackPercentages"]["realApp"] == 10.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-003"
+    assert ledger["passes"][-1]["id"] == "PASS-004"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -61,3 +62,13 @@ def test_default_settings_are_safe_and_relative() -> None:
     assert settings["runtimeRoot"] == ".makers-anvil"
     assert all(value is False for value in settings["safety"].values())
     assert all(".." not in item["relativePath"] for item in settings["directories"])
+
+
+def test_intake_policy_never_enables_data_or_action_mutations() -> None:
+    import json
+
+    policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
+
+    assert policy["mode"] == "metadata-only"
+    assert policy["recordsDirectory"] == "intake/records"
+    assert all(value is False for value in policy["safety"].values())

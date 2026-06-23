@@ -20,9 +20,11 @@ REQUIRED_FILES = [
     "pyproject.toml",
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
+    "backend/src/makers_anvil_backend/services/intake_catalog.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
+    "config/intake_policy.json",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/styles.css",
@@ -30,13 +32,17 @@ REQUIRED_FILES = [
     "schemas/app-state.schema.json",
     "schemas/current-status.schema.json",
     "schemas/local-settings.schema.json",
+    "schemas/intake-policy.schema.json",
+    "schemas/intake-record.schema.json",
     "scripts/init_workspace.py",
+    "scripts/stage_intake.py",
     "state/current_status.json",
     "state/pass_ledger.json",
     "docs/BUILD_STATUS.md",
     "docs/passes/PASS_001_REPORT.md",
     "docs/passes/PASS_002_REPORT.md",
     "docs/passes/PASS_003_REPORT.md",
+    "docs/passes/PASS_004_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -98,6 +104,8 @@ def check_api() -> list[str]:
     ledger = api.handle("GET", "/api/passes/ledger")
     config = api.handle("GET", "/api/workspace/config")
     layout = api.handle("GET", "/api/workspace/layout")
+    intake_policy = api.handle("GET", "/api/intake/policy")
+    intake_catalog = api.handle("GET", "/api/intake/catalog")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -106,18 +114,26 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-003":
-        errors.append("GET /api/state does not report PASS-003")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-003":
-        errors.append("GET /api/workspace/status does not report PASS-003")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-003":
-        errors.append("GET /api/passes/ledger does not report PASS-003 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-004":
+        errors.append("GET /api/state does not report PASS-004")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-004":
+        errors.append("GET /api/workspace/status does not report PASS-004")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-004":
+        errors.append("GET /api/passes/ledger does not report PASS-004 as latest")
     if config.status != 200 or config.body.get("runtimeRoot") != ".makers-anvil":
         errors.append("GET /api/workspace/config does not report .makers-anvil")
     if any(config.body.get("safety", {}).values()):
         errors.append("one or more workspace config safety flags unexpectedly enable unsafe actions")
     if layout.status != 200 or layout.body.get("creationAction", {}).get("enabledInApi") is not False:
         errors.append("GET /api/workspace/layout does not keep API init action disabled")
+    if intake_policy.status != 200 or intake_policy.body.get("mode") != "metadata-only":
+        errors.append("GET /api/intake/policy does not report metadata-only mode")
+    if any(intake_policy.body.get("safety", {}).values()):
+        errors.append("one or more intake policy safety flags unexpectedly enable unsafe actions")
+    if intake_catalog.status != 200 or intake_catalog.body.get("creationAction", {}).get("enabledInApi") is not False:
+        errors.append("GET /api/intake/catalog does not keep API intake action disabled")
+    if state.body.get("intakeCatalog", {}).get("mode") != "metadata-only":
+        errors.append("GET /api/state does not include metadata-only intake status")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -130,18 +146,23 @@ def check_status_records() -> list[str]:
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-003":
-        errors.append("current status does not report PASS-003")
-    if status.get("trackPercentages", {}).get("realApp") != 7.5:
-        errors.append("real app completion is not 7.5 for PASS-003")
+    intake_policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-004":
+        errors.append("current status does not report PASS-004")
+    if status.get("trackPercentages", {}).get("realApp") != 10.0:
+        errors.append("real app completion is not 10.0 for PASS-004")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-003":
-        errors.append("pass ledger latest pass is not PASS-003")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-004":
+        errors.append("pass ledger latest pass is not PASS-004")
     if settings.get("runtimeRoot") != ".makers-anvil":
         errors.append("default settings runtime root is not .makers-anvil")
     if any(settings.get("safety", {}).values()):
         errors.append("default settings unexpectedly enable an unsafe action")
+    if intake_policy.get("mode") != "metadata-only":
+        errors.append("intake policy is not metadata-only")
+    if any(intake_policy.get("safety", {}).values()):
+        errors.append("intake policy unexpectedly enables an unsafe action")
     return errors
 
 

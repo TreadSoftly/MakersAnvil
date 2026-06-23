@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-record.schema.json",
+  "title": "Makers Anvil metadata-only intake record",
+  "type": "object",
+  "required": ["schemaVersion", "id", "claimState", "createdUtc", "source", "privacy", "safety"],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.runtime.intake-record.v1" },
+    "id": { "type": "string", "pattern": "^intake-[a-f0-9]{32}$" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "createdUtc": { "type": "string" },
+    "source": {
+      "type": "object",
+      "required": ["displayName", "extension", "kind", "sizeBytes", "modifiedUtc"],
+      "properties": {
+        "displayName": { "type": "string" },
+        "extension": { "type": "string" },
+        "kind": { "type": "string" },
+        "sizeBytes": { "type": "integer", "minimum": 0 },
+        "modifiedUtc": { "type": "string" }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["sourcePathStored", "sourceContentStored"],
+      "additionalProperties": false,
+      "properties": {
+        "sourcePathStored": { "const": false },
+        "sourceContentStored": { "const": false }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "sourceFileCopied",
+        "sourceFileMoved",
+        "sourceFileDeleted",
+        "archiveExtracted",
+        "routeExecuted",
+        "toolLaunched"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "sourceFileCopied": { "const": false },
+        "sourceFileMoved": { "const": false },
+        "sourceFileDeleted": { "const": false },
+        "archiveExtracted": { "const": false },
+        "routeExecuted": { "const": false },
+        "toolLaunched": { "const": false }
+      }
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-policy.schema.json",
+  "title": "Makers Anvil intake policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "recordsDirectory", "fileKinds", "safety"],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.config.intake-policy.v1" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "mode": { "const": "metadata-only" },
+    "recordsDirectory": { "const": "intake/records" },
+    "fileKinds": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "extensions"],
+        "properties": {
+          "id": { "type": "string" },
+          "extensions": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^\\.[a-z0-9]+$" }
+          }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "apiMutationEnabled",
+        "browserUploadEnabled",
+        "sourcePathStored",
+        "sourceContentStored",
+        "sourceFileCopied",
+        "sourceFileMoved",
+        "sourceFileDeleted",
+        "folderImportEnabled",
+        "archiveExtractionEnabled",
+        "routeExecutionEnabled",
+        "toolLaunchEnabled"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "apiMutationEnabled": { "const": false },
+        "browserUploadEnabled": { "const": false },
+        "sourcePathStored": { "const": false },
+        "sourceContentStored": { "const": false },
+        "sourceFileCopied": { "const": false },
+        "sourceFileMoved": { "const": false },
+        "sourceFileDeleted": { "const": false },
+        "folderImportEnabled": { "const": false },
+        "archiveExtractionEnabled": { "const": false },
+        "routeExecutionEnabled": { "const": false },
+        "toolLaunchEnabled": { "const": false }
+      }
+    }
+  }
+}

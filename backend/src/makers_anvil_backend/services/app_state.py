@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 
@@ -12,15 +13,17 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-003-workspace-settings"
+    api_build = "makers-anvil-real-pass-004-metadata-intake"
 
     def __init__(
         self,
         workspace_status: WorkspaceStatusService | None = None,
         workspace_config: WorkspaceConfigService | None = None,
+        intake_catalog: IntakeCatalogService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
+        self._intake_catalog = intake_catalog or IntakeCatalogService()
 
     def health(self) -> dict[str, Any]:
         return {
@@ -45,6 +48,7 @@ class AppStateService:
             "currentPass": current_status["currentPass"],
             "sourceTruth": current_status["sourceTruth"],
             "workspaceConfig": self._workspace_config.layout(),
+            "intakeCatalog": self._intake_catalog.catalog(),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -63,13 +67,19 @@ class AppStateService:
     def workspace_layout(self) -> dict[str, Any]:
         return self._workspace_config.layout()
 
+    def intake_policy(self) -> dict[str, Any]:
+        return self._intake_catalog.policy_response()
+
+    def intake_catalog(self) -> dict[str, Any]:
+        return self._intake_catalog.catalog()
+
     def _tracks(self) -> list[dict[str, Any]]:
         return [
             {
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server, browser shell, status records, and app-owned workspace settings are present.",
+                "summary": "Read-only local server, browser shell, status records, app-owned settings, and metadata intake are present.",
             },
             {
                 "id": "mac-linux",
@@ -118,8 +128,8 @@ class AppStateService:
             {
                 "id": "file-intake",
                 "label": "File intake",
-                "claimState": "planned",
-                "summary": "No runtime upload or folder import exists yet.",
+                "claimState": "staged",
+                "summary": "Local metadata records can be staged without storing paths, copying content, importing folders, or enabling uploads.",
                 "actionsEnabled": False,
             },
             {

@@ -53,6 +53,19 @@
           </div>
         </section>
 
+        <section class="panel workspace-panel" aria-label="File intake status">
+          <div class="panel-head">
+            <h2>File Intake</h2>
+            <span id="intake-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Mode</strong><span id="intake-mode">loading</span></p>
+            <p><strong>Records</strong><span id="intake-records">loading</span></p>
+            <p><strong>Source data</strong><span id="intake-source-data">loading</span></p>
+            <p><strong>API action</strong><span id="intake-api-action">loading</span></p>
+          </div>
+        </section>
+
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
         <section class="panel" aria-label="Blocked actions">

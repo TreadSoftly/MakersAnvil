@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "makers-anvil.config.intake-policy.v1",
+  "claimState": "staged",
+  "mode": "metadata-only",
+  "recordsDirectory": "intake/records",
+  "fileKinds": [
+    {
+      "id": "mesh",
+      "extensions": [".3mf", ".obj", ".stl"]
+    },
+    {
+      "id": "cad",
+      "extensions": [".blend", ".fcstd", ".iges", ".igs", ".step", ".stp"]
+    },
+    {
+      "id": "image",
+      "extensions": [".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"]
+    },
+    {
+      "id": "toolpath",
+      "extensions": [".gcode"]
+    },
+    {
+      "id": "document",
+      "extensions": [".csv", ".json", ".md", ".pdf", ".txt"]
+    },
+    {
+      "id": "archive",
+      "extensions": [".7z", ".rar", ".tar", ".zip"]
+    }
+  ],
+  "safety": {
+    "apiMutationEnabled": false,
+    "browserUploadEnabled": false,
+    "sourcePathStored": false,
+    "sourceContentStored": false,
+    "sourceFileCopied": false,
+    "sourceFileMoved": false,
+    "sourceFileDeleted": false,
+    "folderImportEnabled": false,
+    "archiveExtractionEnabled": false,
+    "routeExecutionEnabled": false,
+    "toolLaunchEnabled": false
+  }
+}

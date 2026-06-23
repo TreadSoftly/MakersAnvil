@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-003 — workspace data directory and safe local settings.
+PASS-004 — safe runtime file intake staging.
 
 ## Track Percentages
 
-- Real app completion: `7.5000%`
-- Windows local app: `7.5000%`
+- Real app completion: `10.0000%`
+- Windows local app: `10.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -20,18 +20,22 @@ PASS-003 — workspace data directory and safe local settings.
 - Read-only Python backend exposes `GET /api/health`, `GET /api/state`, and `GET /api/claim-states`.
 - Read-only Python backend exposes `GET /api/workspace/status` and `GET /api/passes/ledger`.
 - Read-only Python backend exposes `GET /api/workspace/config` and `GET /api/workspace/layout`.
+- Read-only Python backend exposes `GET /api/intake/policy` and `GET /api/intake/catalog`.
 - State-changing API methods return a blocked response.
 - Browser dashboard renders app state from the read-only API.
 - Browser dashboard renders current pass, next pass, and source-truth path from durable status records.
 - Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
 - Default local settings keep upload, route execution, tool launch, archive extraction, folder import, deletion, and packaging disabled.
+- Metadata-only intake records do not store source paths or contents and do not copy, move, delete, extract, execute, or launch source files.
+- Browser dashboard renders intake mode, record counts, source-data privacy, and API action status.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
+- PASS-004 verifier, 20 tests, metadata staging smoke, HTTP smoke, and desktop/mobile browser smoke passed.
 
 ## Blocked Or Not Proven
 
-- Runtime file intake.
+- Browser/API file upload and direct selected-file handoff.
 - Route execution.
 - Output open actions.
 - External tool launch.
@@ -45,4 +49,4 @@ PASS-003 — workspace data directory and safe local settings.
 
 ## Next Pass
 
-PASS-004 — safe runtime file intake staging.
+PASS-005 — route preview foundation.

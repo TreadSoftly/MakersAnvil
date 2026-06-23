@@ -51,6 +51,15 @@ textarea {
   min-width: 0;
 }
 
+.brand > div {
+  min-width: 0;
+}
+
+#build-label,
+.status-rows span {
+  overflow-wrap: anywhere;
+}
+
 .brand-mark {
   height: 44px;
   width: 44px;
@@ -247,6 +256,18 @@ p {
   }
 
   .topbar {
+    align-items: center;
+  }
+
+  .brand {
+    max-width: calc(100% - 54px);
+  }
+
+  .status-rows p {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .panel-head {
     align-items: flex-start;
   }
 }
