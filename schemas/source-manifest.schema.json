@@ -3,13 +3,16 @@
   "$id": "https://schemas.makers-anvil.local/source-manifest.schema.json",
   "title": "Makers Anvil source explanation manifest",
   "type": "object",
-  "required": ["schemaVersion", "claimState", "standardPath", "entrypointPath", "files"],
+  "required": ["schemaVersion", "claimState", "standardPath", "entrypointPath", "implementationGuidePath", "learningResourcesPath", "passReportTemplatePath", "files"],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "const": "makers-anvil.source-manifest.v1" },
     "claimState": { "$ref": "claim-state.schema.json" },
     "standardPath": { "const": "docs/CODE_EXPLAINABILITY_STANDARD.md" },
     "entrypointPath": { "const": "docs/START_HERE.md" },
+    "implementationGuidePath": { "const": "docs/IMPLEMENTATION_GUIDE.md" },
+    "learningResourcesPath": { "const": "docs/LEARNING_RESOURCES.md" },
+    "passReportTemplatePath": { "const": "docs/PASS_REPORT_TEMPLATE.md" },
     "files": {
       "type": "array",
       "items": {

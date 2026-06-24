@@ -36,6 +36,8 @@ class IntakeCatalogService:
         root: Path | None = None,
         workspace_config: WorkspaceConfigService | None = None,
     ) -> None:
+        """Bind intake policy and app-owned record storage without retaining source paths."""
+
         self.root = root or ROOT
         self.workspace_config = workspace_config or WorkspaceConfigService(self.root)
         self.policy_path = self.root / "config" / "intake_policy.json"
@@ -157,6 +159,8 @@ class IntakeCatalogService:
         return record
 
     def _records_root(self, policy: dict[str, Any]) -> Path:
+        """Resolve the policy's contained intake directory inside app-owned storage."""
+
         relative = Path(policy["recordsDirectory"])
         if relative.is_absolute() or ".." in relative.parts or not relative.parts or relative.parts[0] != "intake":
             raise IntakeCatalogError("records directory must stay under the app-owned intake directory")
@@ -164,6 +168,8 @@ class IntakeCatalogService:
 
     @staticmethod
     def _classify(extension: str, policy: dict[str, Any]) -> str:
+        """Map one normalized extension to a configured kind or the honest unknown state."""
+
         for file_kind in policy["fileKinds"]:
             if extension in file_kind["extensions"]:
                 return file_kind["id"]
@@ -171,6 +177,8 @@ class IntakeCatalogService:
 
     @staticmethod
     def _valid_runtime_record(record: dict[str, Any]) -> bool:
+        """Accept only privacy-safe records whose complete safety map remains false."""
+
         source = record.get("source", {})
         privacy = record.get("privacy", {})
         safety = record.get("safety", {})

@@ -19,8 +19,8 @@ def test_state_keeps_actions_blocked() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 27.5
-    assert response.body["currentPass"]["id"] == "PASS-011"
+    assert response.body["completion"]["realApp"] == 30.0
+    assert response.body["currentPass"]["id"] == "PASS-012"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -53,11 +53,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-011"
+    assert workspace.body["currentPass"]["id"] == "PASS-012"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-011"
+    assert ledger.body["passes"][-1]["id"] == "PASS-012"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
@@ -181,3 +181,22 @@ def test_execution_gates_allowlist_one_route_but_enable_nothing() -> None:
     assert response.body["executionAction"] == {"claimState": "blocked", "enabledInApi": False}
     assert all(item["readiness"]["executionReady"] is False for item in response.body["evaluations"])
     assert state.body["executionGates"]["schemaVersion"] == "makers-anvil.api.execution-gates.v1"
+
+
+def test_execution_request_preview_records_no_intent_authorization_or_audit_event() -> None:
+    """Request preview exposes the disabled contract without creating any runtime record."""
+
+    api = MakersAnvilApi()
+    response = api.handle("GET", "/api/execution/requests/preview")
+    state = api.handle("GET", "/api/state")
+
+    assert response.status == 200
+    assert response.body["mode"] == "read-only-request-preview"
+    assert response.body["scope"]["routeId"] == "mesh-to-toolpath"
+    assert response.body["summary"]["persistedRequestCount"] == 0
+    assert response.body["summary"]["acceptedAuthorizationCount"] == 0
+    assert response.body["summary"]["writtenAuditEventCount"] == 0
+    assert response.body["summary"]["executionReadyCount"] == 0
+    assert all(value is False for value in response.body["safety"].values())
+    assert all(action["enabledInApi"] is False for action in response.body["actions"].values())
+    assert state.body["executionRequestPreview"]["schemaVersion"] == "makers-anvil.api.execution-request-preview.v1"

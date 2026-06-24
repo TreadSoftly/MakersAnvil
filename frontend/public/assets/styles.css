@@ -456,7 +456,18 @@ p {
   margin-top: 10px;
 }
 
+/* Request previews share the gate rhythm while preserving a distinct audit block. */
+.execution-request-list {
+  display: grid;
+  margin-top: 10px;
+}
+
 .execution-gate-item {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.execution-request-item {
   border-top: 1px solid var(--line);
   padding-top: 12px;
 }
@@ -469,10 +480,34 @@ p {
   margin-bottom: 6px;
 }
 
+.execution-request-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
 .execution-gate-tool,
 .execution-gate-blockers {
   font-size: 0.86rem;
   overflow-wrap: anywhere;
+}
+
+.execution-request-intent,
+.execution-request-blockers {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.execution-request-intent {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.execution-request-blockers {
+  color: var(--red);
+  margin-top: 8px;
 }
 
 .execution-gate-tool {

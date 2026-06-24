@@ -10,7 +10,8 @@ def test_every_product_file_has_a_current_manifest_entry() -> None:
 
 
 def test_python_and_frontend_explanation_gates_pass() -> None:
-    """Python docstrings and non-visible frontend purpose comments remain complete."""
+    """All Python components and frontend functions retain durable explanations."""
 
     assert check_explainability.check_python_docstrings() == []
+    assert check_explainability.check_javascript_function_comments() == []
     assert check_explainability.check_text_file_headers() == []

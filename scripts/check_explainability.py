@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import json
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "state" / "source_manifest.json"
 PYTHON_ROOTS = (ROOT / "backend", ROOT / "scripts", ROOT / "tests")
+REQUIRED_GUIDES = {
+    "implementationGuidePath": "docs/IMPLEMENTATION_GUIDE.md",
+    "learningResourcesPath": "docs/LEARNING_RESOURCES.md",
+    "passReportTemplatePath": "docs/PASS_REPORT_TEMPLATE.md",
+}
 
 
 def tracked_files() -> list[str]:
@@ -45,6 +51,11 @@ def check_manifest_coverage() -> list[str]:
     errors: list[str] = []
     if manifest.get("schemaVersion") != "makers-anvil.source-manifest.v1":
         errors.append("source manifest schemaVersion is not makers-anvil.source-manifest.v1")
+    for field, expected_path in REQUIRED_GUIDES.items():
+        if manifest.get(field) != expected_path:
+            errors.append(f"source manifest {field} must be {expected_path}")
+        if not (ROOT / expected_path).is_file():
+            errors.append(f"required durable guide is missing: {expected_path}")
     if paths != sorted(paths):
         errors.append("source manifest file entries are not sorted by path")
     if len(paths) != len(set(paths)):
@@ -67,7 +78,7 @@ def check_manifest_coverage() -> list[str]:
 
 
 def check_python_docstrings() -> list[str]:
-    """Require module and public-component docstrings throughout Python code."""
+    """Require module and component docstrings throughout Python code."""
 
     errors: list[str] = []
     paths = sorted(path for root in PYTHON_ROOTS for path in root.rglob("*.py") if "__pycache__" not in path.parts)
@@ -79,10 +90,25 @@ def check_python_docstrings() -> list[str]:
         for node in ast.walk(tree):
             if not isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
-            if node.name.startswith("_"):
-                continue
             if ast.get_docstring(node) is None:
-                errors.append(f"public Python docstring missing: {relative}:{node.lineno} {node.name}")
+                errors.append(f"Python component docstring missing: {relative}:{node.lineno} {node.name}")
+    return errors
+
+
+def check_javascript_function_comments() -> list[str]:
+    """Require nearby JSDoc for each top-level frontend function declaration."""
+
+    relative = "frontend/public/assets/app.js"
+    lines = (ROOT / relative).read_text(encoding="utf-8").splitlines()
+    declaration = re.compile(r"^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(")
+    errors: list[str] = []
+    for index, line in enumerate(lines):
+        match = declaration.match(line.strip())
+        if not match:
+            continue
+        nearby = "\n".join(lines[max(0, index - 6):index])
+        if "/**" not in nearby or "*/" not in nearby:
+            errors.append(f"frontend function JSDoc missing: {relative}:{index + 1} {match.group(1)}")
     return errors
 
 
@@ -112,6 +138,7 @@ def run_checks() -> list[str]:
     return [
         *check_manifest_coverage(),
         *check_python_docstrings(),
+        *check_javascript_function_comments(),
         *check_text_file_headers(),
     ]
 

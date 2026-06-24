@@ -38,6 +38,8 @@ class OutputProofService:
         route_preview: RoutePreviewService | None = None,
         workspace_config: WorkspaceConfigService | None = None,
     ) -> None:
+        """Bind route planning, workspace policy, and the non-writing output contract."""
+
         self.root = root or ROOT
         self.route_preview = route_preview or RoutePreviewService(self.root)
         self.workspace_config = workspace_config or self.route_preview.intake_catalog.workspace_config

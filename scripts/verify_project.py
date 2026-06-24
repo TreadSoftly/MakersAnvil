@@ -23,6 +23,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/api/app.py",
     "backend/src/makers_anvil_backend/server.py",
     "backend/src/makers_anvil_backend/services/execution_gate.py",
+    "backend/src/makers_anvil_backend/services/execution_request.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
     "backend/src/makers_anvil_backend/services/output_proof.py",
     "backend/src/makers_anvil_backend/services/route_preview.py",
@@ -33,6 +34,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
     "config/execution_gate_policy.json",
+    "config/execution_request_policy.json",
     "config/intake_policy.json",
     "config/output_policy.json",
     "config/route_catalog.json",
@@ -46,6 +48,8 @@ REQUIRED_FILES = [
     "schemas/current-status.schema.json",
     "schemas/execution-gate-policy.schema.json",
     "schemas/execution-gates.schema.json",
+    "schemas/execution-request-policy.schema.json",
+    "schemas/execution-request-preview.schema.json",
     "schemas/local-settings.schema.json",
     "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
@@ -68,6 +72,9 @@ REQUIRED_FILES = [
     "docs/BUILD_STATUS.md",
     "docs/CODE_EXPLAINABILITY_STANDARD.md",
     "docs/FILE_MAP.md",
+    "docs/IMPLEMENTATION_GUIDE.md",
+    "docs/LEARNING_RESOURCES.md",
+    "docs/PASS_REPORT_TEMPLATE.md",
     "docs/START_HERE.md",
     "docs/passes/PASS_001_REPORT.md",
     "docs/passes/PASS_002_REPORT.md",
@@ -80,6 +87,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_009_REPORT.md",
     "docs/passes/PASS_010_REPORT.md",
     "docs/passes/PASS_011_REPORT.md",
+    "docs/passes/PASS_012_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -162,6 +170,7 @@ def check_api() -> list[str]:
     tool_detection = api.handle("GET", "/api/tools/detection")
     tool_dry_run = api.handle("GET", "/api/tools/dry-run")
     execution_gates = api.handle("GET", "/api/execution/gates")
+    execution_request = api.handle("GET", "/api/execution/requests/preview")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -170,12 +179,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-011":
-        errors.append("GET /api/state does not report PASS-011")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-011":
-        errors.append("GET /api/workspace/status does not report PASS-011")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-011":
-        errors.append("GET /api/passes/ledger does not report PASS-011 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-012":
+        errors.append("GET /api/state does not report PASS-012")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-012":
+        errors.append("GET /api/workspace/status does not report PASS-012")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-012":
+        errors.append("GET /api/passes/ledger does not report PASS-012 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -259,6 +268,22 @@ def check_api() -> list[str]:
         errors.append("an execution gate evaluation unexpectedly reports execution readiness")
     if state.body.get("executionGates", {}).get("mode") != "read-only-gate-evaluation":
         errors.append("GET /api/state does not include execution gate status")
+    if execution_request.status != 200 or execution_request.body.get("mode") != "read-only-request-preview":
+        errors.append("GET /api/execution/requests/preview does not report read-only request preview mode")
+    if execution_request.body.get("scope", {}).get("routeId") != "mesh-to-toolpath":
+        errors.append("execution request preview does not remain scoped to the single mesh route")
+    if any(execution_request.body.get("safety", {}).values()):
+        errors.append("execution request preview unexpectedly persists, authorizes, writes, resolves, executes, or proves")
+    if any(action.get("enabledInApi") for action in execution_request.body.get("actions", {}).values()):
+        errors.append("execution request preview unexpectedly enables an API action")
+    if execution_request.body.get("summary", {}).get("persistedRequestCount") != 0:
+        errors.append("execution request preview unexpectedly reports a persisted request")
+    if execution_request.body.get("summary", {}).get("acceptedAuthorizationCount") != 0:
+        errors.append("execution request preview unexpectedly reports accepted authorization")
+    if execution_request.body.get("summary", {}).get("writtenAuditEventCount") != 0:
+        errors.append("execution request preview unexpectedly reports a written audit event")
+    if state.body.get("executionRequestPreview", {}).get("mode") != "read-only-request-preview":
+        errors.append("GET /api/state does not include execution request preview status")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -267,7 +292,7 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
-    """Keep status, ledger, settings, planning, tool, and execution-gate policies synchronized."""
+    """Keep status, ledger, settings, planning, gate, and request policies synchronized."""
 
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
@@ -279,14 +304,15 @@ def check_status_records() -> list[str]:
     tool_catalog = json.loads((ROOT / "config" / "tool_catalog.json").read_text(encoding="utf-8"))
     dry_run_policy = json.loads((ROOT / "config" / "tool_dry_run_policy.json").read_text(encoding="utf-8"))
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-011":
-        errors.append("current status does not report PASS-011")
-    if status.get("trackPercentages", {}).get("realApp") != 27.5:
-        errors.append("real app completion is not 27.5 for PASS-011")
+    execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-012":
+        errors.append("current status does not report PASS-012")
+    if status.get("trackPercentages", {}).get("realApp") != 30.0:
+        errors.append("real app completion is not 30.0 for PASS-012")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-011":
-        errors.append("pass ledger latest pass is not PASS-011")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-012":
+        errors.append("pass ledger latest pass is not PASS-012")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -324,10 +350,18 @@ def check_status_records() -> list[str]:
         errors.append("execution gate policy unexpectedly enables execution")
     if any(execution_gate_policy.get("safety", {}).values()):
         errors.append("execution gate policy unexpectedly claims an execution-side effect")
+    if execution_request_policy.get("mode") != "read-only-request-preview":
+        errors.append("execution request policy is not read-only preview")
+    if execution_request_policy.get("scope", {}).get("routeId") != "mesh-to-toolpath":
+        errors.append("execution request policy does not remain scoped to mesh-to-toolpath")
+    if any(execution_request_policy.get("safety", {}).values()):
+        errors.append("execution request policy unexpectedly claims persistence, authorization, audit, execution, or proof")
     return errors
 
 
 def _string_values(value: object) -> list[str]:
+    """Flatten nested JSON-like values so private-path scanning sees every string."""
+
     if isinstance(value, str):
         return [value]
     if isinstance(value, dict):
@@ -351,6 +385,7 @@ def check_portable_paths() -> list[str]:
         api.handle("GET", "/api/tools/detection").body,
         api.handle("GET", "/api/tools/dry-run").body,
         api.handle("GET", "/api/execution/gates").body,
+        api.handle("GET", "/api/execution/requests/preview").body,
     ]
     values = [text for payload in payloads for text in _string_values(payload)]
     private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}

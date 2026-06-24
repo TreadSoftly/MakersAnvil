@@ -14,6 +14,8 @@ class WorkspaceStatusService:
     """Read committed status records without depending on reference folders."""
 
     def __init__(self, root: Path | None = None) -> None:
+        """Bind the committed current-status and pass-ledger source files."""
+
         self.root = root or ROOT
         self.status_path = self.root / "state" / "current_status.json"
         self.ledger_path = self.root / "state" / "pass_ledger.json"
@@ -50,4 +52,6 @@ class WorkspaceStatusService:
         }
 
     def _read_json(self, path: Path) -> dict[str, Any]:
+        """Parse one trusted repository state file without mutating durable truth."""
+
         return json.loads(path.read_text(encoding="utf-8"))

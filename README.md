@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 011 is staged at `27.5000%`. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, metadata-derived route previews, planned output bundles and proof checklists, path-redacted tool detection, semantic tool dry-run plans, and a single-route execution gate matrix. Browser/API upload, execution requests, authorization acceptance, runnable command construction, selected-file handoff, output creation/opening, proof capture, route execution, tool launch, software changes, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: real application build pass 012 is staged at `30.0000%`. The app has a read-only local backend, a visible browser dashboard, durable status records, portable per-user runtime storage, metadata-only intake records, metadata-derived route previews, planned output bundles and proof checklists, path-redacted tool detection, semantic tool dry-run plans, a single-route execution gate matrix, and logical execution-request/audit previews. Browser/API upload, request persistence, authorization acceptance, audit writes, runnable command construction, selected-file handoff, output creation/opening, proof capture, route execution, tool launch, software changes, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
 
 ## Run Locally
 
@@ -66,7 +66,7 @@ Makers Anvil is built Windows-first, with macOS, Linux, and browser-hosted suppo
 
 ## Understanding And Continuing The Build
 
-Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/ARCHITECTURE.md` explains data flow and safety boundaries, `docs/CODE_EXPLAINABILITY_STANDARD.md` defines required comments and docstrings, and `state/source_manifest.json` explains every tracked file.
+Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/IMPLEMENTATION_GUIDE.md` traces code and data flow, `docs/LEARNING_RESOURCES.md` maps study material, `docs/ARCHITECTURE.md` explains safety boundaries, `docs/CODE_EXPLAINABILITY_STANDARD.md` defines required explanations, and `state/source_manifest.json` explains every tracked file.
 
 Documentation quality is machine-checked:
 

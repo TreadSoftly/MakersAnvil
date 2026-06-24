@@ -27,6 +27,8 @@ class MakersAnvilApi:
     """Route read-only API requests to deterministic service responses."""
 
     def __init__(self, state_service: AppStateService | None = None) -> None:
+        """Register every allowed read route against one composable state service."""
+
         self._state_service = state_service or AppStateService()
         self._routes: dict[str, RouteHandler] = {
             "/api/health": self._state_service.health,
@@ -43,6 +45,7 @@ class MakersAnvilApi:
             "/api/tools/detection": self._state_service.tool_detection,
             "/api/tools/dry-run": self._state_service.tool_dry_run,
             "/api/execution/gates": self._state_service.execution_gates,
+            "/api/execution/requests/preview": self._state_service.execution_request_preview,
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:
@@ -77,6 +80,8 @@ class MakersAnvilApi:
         return ApiResponse(200, handler())
 
     def _claim_states(self) -> JsonDict:
+        """Expose the closed claim-state vocabulary used by every public contract."""
+
         return {
             "schemaVersion": "makers-anvil.api.claim-states.v1",
             "claimState": "proven",

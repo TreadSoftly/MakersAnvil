@@ -16,6 +16,7 @@ const outputProofUrl = "/api/outputs/preview";
 const toolDetectionUrl = "/api/tools/detection";
 const toolDryRunUrl = "/api/tools/dry-run";
 const executionGatesUrl = "/api/execution/gates";
+const executionRequestUrl = "/api/execution/requests/preview";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -91,14 +92,30 @@ const fallbackState = {
     safety: {},
     executionAction: { claimState: "blocked", enabledInApi: false },
   },
+  executionRequestPreview: {
+    claimState: "unknown",
+    mode: "not proven",
+    scope: { routeId: "not proven", requestPersistenceEnabled: false, authorizationEnabled: false, auditWriteEnabled: false },
+    summary: { previewCount: 0, persistedRequestCount: 0, acceptedAuthorizationCount: 0, writtenAuditEventCount: 0, executionReadyCount: 0 },
+    previews: [],
+    safety: {},
+    actions: {
+      createRequest: { claimState: "blocked", enabledInApi: false },
+      recordAuthorization: { claimState: "blocked", enabledInApi: false },
+      execute: { claimState: "blocked", enabledInApi: false },
+    },
+  },
 };
 
+/** Convert a closed claim-state label into its matching CSS class token. */
 const claimClass = (state) => String(state || "unknown").replace(/\s+/g, "-");
 
+/** Return trusted badge markup for internal capability and track records. */
 function badge(state) {
   return `<span class="badge ${claimClass(state)}">${state}</span>`;
 }
 
+/** Render platform delivery truth; no track card contains an actionable control. */
 function renderTracks(tracks) {
   // Tracks are high-level platform targets, not executable workflow actions.
   const target = document.querySelector("#tracks");
@@ -113,6 +130,7 @@ function renderTracks(tracks) {
   `).join("");
 }
 
+/** Render capability summaries and permanently disabled placeholder buttons. */
 function renderCapabilities(capabilities) {
   // Capability buttons remain disabled until a later pass proves an action gate.
   const target = document.querySelector("#capabilities");
@@ -128,11 +146,13 @@ function renderCapabilities(capabilities) {
   `).join("");
 }
 
+/** Render the durable blocked-action list supplied by committed status truth. */
 function renderBlocked(actions) {
   const target = document.querySelector("#blocked-actions");
   target.innerHTML = actions.map((action) => `<li><span>■</span>${action}</li>`).join("");
 }
 
+/** Merge workspace status with app state and display current durable pass pointers. */
 function renderWorkspace(state, workspace) {
   const current = workspace.currentPass || state.currentPass || fallbackState.currentPass;
   const next = workspace.nextPass || state.nextPass || fallbackState.nextPass;
@@ -145,6 +165,7 @@ function renderWorkspace(state, workspace) {
   document.querySelector("#status-source").textContent = sourceTruth.statusPath || "not proven";
 }
 
+/** Display logical runtime layout without exposing a resolved personal directory. */
 function renderLayout(state, layout = {}) {
   const workspaceConfig = layout.runtimeLocation ? layout : state.workspaceConfig || fallbackState.workspaceConfig;
   const layoutState = document.querySelector("#layout-state");
@@ -165,6 +186,7 @@ function renderLayout(state, layout = {}) {
   document.querySelector("#runtime-init").textContent = creation.enabledInApi === false ? `${creation.script} · API disabled` : "not proven";
 }
 
+/** Display metadata-only intake counts and privacy/action boundaries. */
 function renderIntake(state, catalog = {}) {
   const intake = catalog.schemaVersion ? catalog : state.intakeCatalog || fallbackState.intakeCatalog;
   const intakeState = document.querySelector("#intake-state");
@@ -180,6 +202,7 @@ function renderIntake(state, catalog = {}) {
   document.querySelector("#intake-api-action").textContent = intake.creationAction?.enabledInApi === false ? "blocked" : "not proven";
 }
 
+/** Render untrusted route metadata through DOM text nodes without executing steps. */
 function renderRoutePreview(state, response = {}) {
   const routePreview = response.schemaVersion ? response : state.routePreview || fallbackState.routePreview;
   const previewState = document.querySelector("#route-preview-state");
@@ -245,6 +268,7 @@ function renderRoutePreview(state, response = {}) {
   });
 }
 
+/** Render logical output and proof plans while creation/open controls remain absent. */
 function renderOutputProof(state, response = {}) {
   const outputProof = response.schemaVersion ? response : state.outputProof || fallbackState.outputProof;
   const outputState = document.querySelector("#output-proof-state");
@@ -328,6 +352,7 @@ function renderOutputProof(state, response = {}) {
   });
 }
 
+/** Render path-redacted tool evidence and blocked software actions. */
 function renderToolDetection(state, response = {}) {
   const toolDetection = response.schemaVersion ? response : state.toolDetection || fallbackState.toolDetection;
   const toolState = document.querySelector("#tool-detection-state");
@@ -388,6 +413,7 @@ function renderToolDetection(state, response = {}) {
   });
 }
 
+/** Render semantic invocation plans that contain no runnable command or handoff. */
 function renderToolDryRun(state, response = {}) {
   const dryRun = response.schemaVersion ? response : state.toolDryRun || fallbackState.toolDryRun;
   const dryRunState = document.querySelector("#tool-dry-run-state");
@@ -450,6 +476,7 @@ function renderToolDryRun(state, response = {}) {
   });
 }
 
+/** Render one-route gate evidence while authorization and execution stay disabled. */
 function renderExecutionGates(state, response = {}) {
   const gates = response.schemaVersion ? response : state.executionGates || fallbackState.executionGates;
   const gateState = document.querySelector("#execution-gate-state");
@@ -513,7 +540,62 @@ function renderExecutionGates(state, response = {}) {
   });
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}) {
+/** Render logical request intent and empty audit plans without enabling controls. */
+function renderExecutionRequest(state, response = {}) {
+  const request = response.schemaVersion ? response : state.executionRequestPreview || fallbackState.executionRequestPreview;
+  const requestState = document.querySelector("#execution-request-state");
+  requestState.textContent = request.claimState || "unknown";
+  requestState.className = `badge ${claimClass(requestState.textContent)}`;
+  document.querySelector("#execution-request-mode").textContent = request.mode || "not proven";
+  const summary = request.summary || {};
+  document.querySelector("#execution-request-count").textContent = `${summary.previewCount || 0} available · ${summary.persistedRequestCount || 0} saved`;
+  document.querySelector("#execution-request-authorization").textContent = `${summary.acceptedAuthorizationCount || 0} accepted`;
+  document.querySelector("#execution-request-audit").textContent = `${summary.writtenAuditEventCount || 0} written`;
+  document.querySelector("#execution-request-action").textContent = summary.executionReadyCount === 0
+    && request.actions?.execute?.enabledInApi === false
+    ? "blocked"
+    : "not proven";
+
+  const target = document.querySelector("#execution-request-list");
+  target.replaceChildren();
+  if (!request.previews?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No execution request previews available.";
+    target.append(empty);
+    return;
+  }
+
+  // Intent contains logical references only. Text nodes preserve that boundary
+  // and prevent intake display data from being interpreted as HTML.
+  request.previews.forEach((preview) => {
+    const item = document.createElement("article");
+    item.className = "execution-request-item";
+    const heading = document.createElement("div");
+    heading.className = "execution-request-head";
+    const title = document.createElement("h3");
+    title.textContent = preview.operation.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(preview.claimState)}`;
+    stateBadge.textContent = preview.claimState;
+    heading.append(title, stateBadge);
+    const intent = document.createElement("p");
+    intent.className = "execution-request-intent";
+    intent.textContent = `${preview.intent.source.logicalReference} → ${preview.intent.output.logicalDirectory}`;
+    const authorization = document.createElement("p");
+    authorization.textContent = preview.authorization.accepted ? "Authorization accepted" : "Authorization not accepted";
+    const audit = document.createElement("p");
+    audit.textContent = `${preview.audit.requiredEventTypes.length} required audit events · ${preview.audit.events.length} written`;
+    const blockers = document.createElement("p");
+    blockers.className = "execution-request-blockers";
+    blockers.textContent = `Blocked by: ${preview.readiness.blockers.join(", ")}`;
+    item.append(heading, intent, authorization, audit, blockers);
+    target.append(item);
+  });
+}
+
+/** Compose one coherent dashboard frame from all read-only API snapshots. */
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -526,15 +608,17 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderToolDetection(state, toolDetection);
   renderToolDryRun(state, toolDryRun);
   renderExecutionGates(state, executionGates);
+  renderExecutionRequest(state, executionRequest);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
 }
 
+/** Fetch every GET-only endpoint together and fall back to conservative offline truth. */
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -545,8 +629,9 @@ async function loadState() {
       fetch(toolDetectionUrl, { method: "GET", cache: "no-store" }),
       fetch(toolDryRunUrl, { method: "GET", cache: "no-store" }),
       fetch(executionGatesUrl, { method: "GET", cache: "no-store" }),
+      fetch(executionRequestUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -560,6 +645,7 @@ async function loadState() {
       await toolDetectionResponse.json(),
       await toolDryRunResponse.json(),
       await executionGatesResponse.json(),
+      await executionRequestResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

@@ -37,6 +37,8 @@ class ToolDryRunService:
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
     ) -> None:
+        """Bind coherent route, output, and tool services to semantic planning policy."""
+
         self.route_preview = route_preview or RoutePreviewService(root or ROOT)
         self.root = root or self.route_preview.root
         self.output_proof = output_proof or OutputProofService(self.root, self.route_preview)

@@ -154,6 +154,21 @@
         "out-of-scope plans are counted but never evaluated for execution",
         "execution requests, authorization, path resolution, commands, processes, writes, logs, cancellation, and proof remain disabled"
       ]
+    },
+    {
+      "id": "PASS-012",
+      "title": "execution request and audit preview foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_012_REPORT.md",
+      "proof": [
+        "committed request policy remains scoped to mesh-to-toolpath and enables no effects",
+        "deterministic logical intent joins coherent dry-run plans and gate evaluations",
+        "explicit authorization fields remain required but unaccepted with no actor or timestamp",
+        "six required append-only audit event types are modeled while no event is written",
+        "read-only execution request preview API and composed app state added",
+        "dashboard request, authorization, audit, and blocked execution status added",
+        "request persistence, authorization acceptance, audit writes, paths, commands, processes, tools, outputs, and proof remain disabled"
+      ]
     }
   ]
 }

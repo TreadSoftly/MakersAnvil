@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "makers-anvil.config.execution-request-policy.v1",
+  "claimState": "staged",
+  "mode": "read-only-request-preview",
+  "scope": {
+    "routeId": "mesh-to-toolpath",
+    "requestPersistenceEnabled": false,
+    "authorizationEnabled": false,
+    "auditWriteEnabled": false
+  },
+  "audit": {
+    "appendOnly": true,
+    "eventWritesEnabled": false,
+    "requiredEventTypes": [
+      "request-created",
+      "authorization-recorded",
+      "execution-started",
+      "execution-cancelled",
+      "execution-completed",
+      "proof-recorded"
+    ]
+  },
+  "safety": {
+    "requestPersisted": false,
+    "authorizationAccepted": false,
+    "auditEventWritten": false,
+    "sourcePathResolved": false,
+    "outputPathResolved": false,
+    "commandConstructed": false,
+    "processStarted": false,
+    "toolLaunched": false,
+    "filesystemWritten": false,
+    "proofCaptured": false
+  }
+}

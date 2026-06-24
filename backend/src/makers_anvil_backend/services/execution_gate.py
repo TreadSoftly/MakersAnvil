@@ -46,6 +46,8 @@ class ExecutionGateService:
     """Evaluate required evidence for one route while execution remains impossible."""
 
     def __init__(self, root: Path | None = None, tool_dry_run: ToolDryRunService | None = None) -> None:
+        """Bind one dry-run source and the committed single-route gate policy."""
+
         self.tool_dry_run = tool_dry_run or ToolDryRunService(root or ROOT)
         self.root = root or self.tool_dry_run.root
         self.policy_path = self.root / "config" / "execution_gate_policy.json"

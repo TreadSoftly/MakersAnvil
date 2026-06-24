@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-011 - single-route execution gate foundation.
+PASS-012 - execution request and audit preview foundation.
 
 ## Track Percentages
 
-- Real app completion: `27.5000%`
-- Windows local app: `27.5000%`
+- Real app completion: `30.0000%`
+- Windows local app: `30.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -32,9 +32,9 @@ PASS-011 - single-route execution gate foundation.
 - API and dashboard records expose logical storage metadata without resolved personal filesystem paths.
 - Source discovery is based on installed module/script locations rather than the current working directory.
 - Every tracked file has a machine-readable purpose and maintenance record.
-- Python modules and public components are required to have docstrings.
-- Frontend and workflow source files are required to have purpose comments.
-- A start guide, architecture guide, file map, and code-explanation standard are committed repository truth.
+- Every Python component, including private helpers and tests, is required to have a docstring.
+- Every top-level frontend function requires JSDoc; frontend and workflow files require purpose comments.
+- A start guide, implementation guide, learning-resource map, pass-report template, architecture guide, file map, and code-explanation standard are committed repository truth.
 - The explainability verifier prevents future passes from silently dropping documentation coverage.
 - Read-only `GET /api/routes/preview` maps validated intake metadata to deterministic candidate routes.
 - Preview records expose planned steps, tool-family requirements, and explicit readiness blockers.
@@ -62,6 +62,12 @@ PASS-011 - single-route execution gate foundation.
 - Out-of-scope plans are counted but never receive an execution evaluation.
 - No execution request, accepted authorization, resolved path, command, process, launch, write, log, cancellation signal, or proof is produced.
 - Browser gate progress and evidence rows render without execution controls.
+- Read-only `GET /api/execution/requests/preview` joins coherent mesh dry-run plans and gate evaluations into deterministic logical intent.
+- Request preview records use logical source/output references and never expose resolved private paths.
+- Explicit authorization remains required but unaccepted, with no actor or acceptance timestamp.
+- Six append-only lifecycle event types are required while the audit event list stays empty and event writes stay disabled.
+- Request persistence, authorization acceptance, audit writes, path resolution, command construction, processes, tool launch, filesystem writes, and proof capture remain false.
+- Browser request-preview status and rows render authorization, audit, and execution-blocked truth without action controls.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -73,6 +79,7 @@ PASS-011 - single-route execution gate foundation.
 - PASS-009 explainability covers 81 files; verifier, 54 tests, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-010 explainability covers 87 files; verifier, 61 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-011 explainability covers 93 files; verifier, 69 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
+- PASS-012 explainability covers 102 files; verifier, 76 tests, four schema validations, live/isolated HTTP smoke, and desktop/mobile/non-empty browser checks passed locally.
 
 ## Blocked Or Not Proven
 
@@ -84,7 +91,7 @@ PASS-011 - single-route execution gate foundation.
 - External tool launch.
 - Tool version proof.
 - Runnable tool command construction.
-- Execution request creation.
+- Execution request persistence.
 - User authorization acceptance.
 - Cancellation control.
 - Execution logging.
@@ -98,4 +105,4 @@ PASS-011 - single-route execution gate foundation.
 
 ## Next Pass
 
-PASS-012 - execution request and audit record foundation.
+PASS-013 - contained job workspace and cancellation record foundation.

@@ -34,6 +34,8 @@ class RoutePreviewService:
         root: Path | None = None,
         intake_catalog: IntakeCatalogService | None = None,
     ) -> None:
+        """Bind metadata intake to committed deterministic route definitions."""
+
         self.root = root or ROOT
         self.intake_catalog = intake_catalog or IntakeCatalogService(self.root)
         self.catalog_path = self.root / "config" / "route_catalog.json"

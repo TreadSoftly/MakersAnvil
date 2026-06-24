@@ -38,6 +38,8 @@ class RuntimePathsService:
         home: Path | None = None,
         platform_name: str | None = None,
     ) -> None:
+        """Capture injected platform inputs so path behavior is deterministic and testable."""
+
         self.source_root = (source_root or ROOT).resolve()
         self.environ = dict(os.environ if environ is None else environ)
         self.home = (home or Path.home()).resolve()
@@ -121,6 +123,8 @@ class RuntimePathsService:
         return f"{LOGICAL_DATA_ROOT}/{candidate.as_posix()}"
 
     def _absolute_path(self, value: str, variable_name: str) -> Path:
+        """Expand and validate an explicit override before returning its resolved path."""
+
         candidate = Path(value).expanduser()
         if not candidate.is_absolute():
             raise RuntimePathError(f"{variable_name} must be an absolute path")

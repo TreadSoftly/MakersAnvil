@@ -15,6 +15,8 @@ class _StubDryRun:
     """Provide isolated dry-run policy and plan snapshots to the gate evaluator."""
 
     def __init__(self, root: Path, snapshot: dict) -> None:
+        """Store the isolated root and dry-run snapshot used by one evaluator test."""
+
         self.root = root
         self._snapshot = snapshot
 

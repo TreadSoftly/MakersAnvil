@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-011"
-    assert current["trackPercentages"]["realApp"] == 27.5
+    assert current["currentPass"]["id"] == "PASS-012"
+    assert current["trackPercentages"]["realApp"] == 30.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-011"
+    assert ledger["passes"][-1]["id"] == "PASS-012"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -189,6 +189,30 @@ def test_execution_gate_policy_is_single_route_and_side_effect_free() -> None:
     assert len(policy["gates"]) == 10
     assert len({gate["evidenceSource"] for gate in policy["gates"]}) == 10
     assert all(gate["required"] is True for gate in policy["gates"])
+    assert all(value is False for value in policy["safety"].values())
+    assert "C:" + "\\Users\\" not in serialized
+    assert "/" + "Users/" not in serialized
+    assert "/" + "home/" not in serialized
+
+
+def test_execution_request_policy_is_preview_only_and_writes_nothing() -> None:
+    """Request policy models consent and audit requirements while all effects remain false."""
+
+    import json
+
+    policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
+    serialized = json.dumps(policy)
+
+    assert policy["mode"] == "read-only-request-preview"
+    assert policy["scope"] == {
+        "routeId": "mesh-to-toolpath",
+        "requestPersistenceEnabled": False,
+        "authorizationEnabled": False,
+        "auditWriteEnabled": False,
+    }
+    assert policy["audit"]["appendOnly"] is True
+    assert policy["audit"]["eventWritesEnabled"] is False
+    assert len(policy["audit"]["requiredEventTypes"]) == 6
     assert all(value is False for value in policy["safety"].values())
     assert "C:" + "\\Users\\" not in serialized
     assert "/" + "Users/" not in serialized

@@ -40,6 +40,8 @@ class ToolDetectionService:
         path_lookup: PathLookup | None = None,
         glob_lookup: GlobLookup | None = None,
     ) -> None:
+        """Capture platform and lookup adapters without executing any detected command."""
+
         self.root = root or ROOT
         self.platform_name = self._normalize_platform(platform_name or sys.platform)
         self.environ = dict(os.environ if environ is None else environ)

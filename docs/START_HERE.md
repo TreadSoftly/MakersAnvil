@@ -7,10 +7,13 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 3. `docs/CONTINUE_PROTOCOL.md` - exact rules for the next bounded implementation pass.
 4. `docs/ARCHITECTURE.md` - system parts, data flow, trust boundaries, and extension points.
 5. `docs/CODE_EXPLAINABILITY_STANDARD.md` - required comments, docstrings, tests, and file-map maintenance.
-6. `state/current_status.json` - machine-readable current truth.
-7. `state/pass_ledger.json` - ordered history of completed passes.
-8. `state/source_manifest.json` - purpose and maintenance notes for every tracked file.
-9. The report named by `currentPass.reportPath` in `state/current_status.json`.
+6. `docs/IMPLEMENTATION_GUIDE.md` - complete code, contract, data-flow, safety, extension, and debugging map.
+7. `docs/LEARNING_RESOURCES.md` - local study order and authoritative external references.
+8. `docs/PASS_REPORT_TEMPLATE.md` - mandatory evidence and reporting structure.
+9. `state/current_status.json` - machine-readable current truth.
+10. `state/pass_ledger.json` - ordered history of completed passes.
+11. `state/source_manifest.json` - purpose and maintenance notes for every tracked file.
+12. The report named by `currentPass.reportPath` in `state/current_status.json`.
 
 ## Before Editing
 
@@ -23,7 +26,7 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 
 - Keep source paths portable and runtime data outside the source checkout.
 - Keep unsafe or unproven actions blocked.
-- Explain each changed file and public component according to the explainability standard.
+- Explain each changed file and every component according to the explainability standard.
 - Comment decisions, invariants, boundaries, and failure behavior; do not narrate obvious syntax.
 - Update tests as executable examples of the intended behavior.
 - Update `state/source_manifest.json` when files are added, removed, renamed, or given new responsibilities.
@@ -38,4 +41,4 @@ python scripts/verify_project.py
 python -m pytest -q
 ```
 
-Then run the pass-specific smoke tests, update durable status and the pass report, commit, push, and wait for CI. A chat summary without those durable updates is not a completed `continue` pass.
+Then run the pass-specific smoke tests, update durable status and the pass report using `docs/PASS_REPORT_TEMPLATE.md`, commit, push, and wait for CI. A chat summary without those durable updates is not a completed `continue` pass.

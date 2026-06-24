@@ -20,6 +20,8 @@ class WorkspaceConfigService:
     """Read and initialize a user-data workspace independent from source location."""
 
     def __init__(self, root: Path | None = None, runtime_paths: RuntimePathsService | None = None) -> None:
+        """Bind source-independent runtime paths to committed workspace defaults."""
+
         self.root = (root or ROOT).resolve()
         self.runtime_paths = runtime_paths or RuntimePathsService(source_root=self.root)
         self.settings_path = self.root / "config" / "default_settings.json"
@@ -130,6 +132,8 @@ class WorkspaceConfigService:
 
     @staticmethod
     def _safe_relative_path(relative_path: str) -> Path:
+        """Reject absolute, empty, or traversing workspace directory declarations."""
+
         candidate = Path(relative_path)
         if candidate.is_absolute() or ".." in candidate.parts or not candidate.parts:
             raise WorkspaceConfigError("workspace directory path must be relative and contained")

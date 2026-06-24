@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
+from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
@@ -18,7 +19,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-011-execution-gates"
+    api_build = "makers-anvil-real-pass-012-execution-request-preview"
 
     def __init__(
         self,
@@ -30,7 +31,10 @@ class AppStateService:
         tool_detection: ToolDetectionService | None = None,
         tool_dry_run: ToolDryRunService | None = None,
         execution_gate: ExecutionGateService | None = None,
+        execution_request: ExecutionRequestService | None = None,
     ) -> None:
+        """Compose injected or default services so one request uses coherent snapshots."""
+
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
         self._intake_catalog = intake_catalog or IntakeCatalogService()
@@ -46,6 +50,10 @@ class AppStateService:
             tool_detection=self._tool_detection,
         )
         self._execution_gate = execution_gate or ExecutionGateService(tool_dry_run=self._tool_dry_run)
+        self._execution_request = execution_request or ExecutionRequestService(
+            tool_dry_run=self._tool_dry_run,
+            execution_gate=self._execution_gate,
+        )
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -69,6 +77,7 @@ class AppStateService:
         output_proof = self._output_proof.preview_catalog(route_preview)
         tool_detection = self._tool_detection.detection_catalog()
         tool_dry_run = self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection)
+        execution_gates = self._execution_gate.gate_catalog(tool_dry_run)
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -84,7 +93,8 @@ class AppStateService:
             "outputProof": output_proof,
             "toolDetection": tool_detection,
             "toolDryRun": tool_dry_run,
-            "executionGates": self._execution_gate.gate_catalog(tool_dry_run),
+            "executionGates": execution_gates,
+            "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -146,13 +156,20 @@ class AppStateService:
 
         return self._execution_gate.gate_catalog()
 
+    def execution_request_preview(self) -> dict[str, Any]:
+        """Return path-free intent and an empty audit plan without persisting either."""
+
+        return self._execution_request.preview_catalog()
+
     def _tracks(self) -> list[dict[str, Any]]:
+        """Describe platform delivery tracks without claiming untested runtime support."""
+
         return [
             {
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server, browser shell, portable user-data paths, status records, and metadata intake are present.",
+                "summary": "Read-only local server, browser shell, portable user data, metadata planning, execution gates, and request previews are present.",
             },
             {
                 "id": "mac-linux",
@@ -169,6 +186,8 @@ class AppStateService:
         ]
 
     def _capabilities(self) -> list[dict[str, Any]]:
+        """List visible capability truth while keeping every action control disabled."""
+
         return [
             {
                 "id": "api-health",
@@ -248,10 +267,17 @@ class AppStateService:
                 "actionsEnabled": False,
             },
             {
+                "id": "execution-request-preview",
+                "label": "Execution request preview",
+                "claimState": "preview-only",
+                "summary": "Logical intent, explicit consent fields, and required audit events are modeled without persisting a request or accepting authorization.",
+                "actionsEnabled": False,
+            },
+            {
                 "id": "route-execution",
                 "label": "Route execution",
                 "claimState": "blocked",
-                "summary": "Routes cannot run until intake, route preview, tool, and proof gates exist.",
+                "summary": "Routes cannot run until contained workspaces, accepted authorization, cancellation, audit persistence, and output proof are proven.",
                 "actionsEnabled": False,
             },
             {

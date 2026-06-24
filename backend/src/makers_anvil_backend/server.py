@@ -21,6 +21,8 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
     api = MakersAnvilApi()
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Bind the standard handler to the repository's static dashboard root."""
+
         super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
@@ -49,6 +51,8 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         self._send_api(self.api.handle("DELETE", self.path))
 
     def _send_api(self, response: ApiResponse) -> None:
+        """Serialize one API result with explicit JSON, cache, and length headers."""
+
         payload = json.dumps(response.body, indent=2).encode("utf-8")
         self.send_response(response.status)
         for key, value in response.headers.items():

@@ -13,9 +13,12 @@
 9. Path-redacted tool detection.
 10. Semantic tool dry-run planning.
 11. Single-route execution gate foundation.
-12. Execution request and audit record foundation.
-13. Backup, restore, update, and uninstall dry-runs.
-14. Windows packaging and clean-machine proof.
+12. Execution request and audit preview foundation.
+13. Contained job workspace and cancellation record foundation.
+14. Explicit authorization and command preview foundation.
+15. Single-route contained execution with cancellation, audit, and output proof.
+16. Backup, restore, update, and uninstall dry-runs.
+17. Windows packaging and clean-machine proof.
 
 ## Planned Later
 

@@ -8,7 +8,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders completion, workspace state, intake, routes, output/proof plans, path-redacted tool detection, semantic tool dry runs, execution gates, capabilities, and blocked actions.
+`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders completion, workspace state, intake, routes, output/proof plans, path-redacted tool detection, semantic tool dry runs, execution gates, request/audit previews, capabilities, and blocked actions.
 
 ### HTTP Boundary
 
@@ -30,6 +30,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 - `ToolDetectionService` checks PATH and narrow platform locations while withholding resolved paths and executing nothing.
 - `ToolDryRunService` joins route, output, and tool evidence into semantic invocation plans without constructing commands, resolving paths, handing off files, or executing processes.
 - `ExecutionGateService` evaluates ten required evidence classes for one allowlisted route while authorization and execution remain disabled.
+- `ExecutionRequestService` joins coherent dry-run and gate snapshots into path-free intent, unaccepted authorization fields, and an empty audit plan without persistence.
 
 ### Schemas And Durable State
 
@@ -52,6 +53,7 @@ Browser
   -> ToolDetectionService derives path-redacted presence evidence
   -> ToolDryRunService derives semantic, non-runnable invocation plans
   -> ExecutionGateService separates satisfied planning evidence from blocked operational gates
+  -> ExecutionRequestService models logical intent, required consent, and required audit events without saving them
   -> JSON response
   -> browser render
 ```
@@ -85,4 +87,4 @@ The browser and HTTP API do not participate in this mutation flow yet.
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, and execution-gate records are read-only planning evidence. The next capability is an execution request and audit record foundation; it must model explicit consent and immutable intent without accepting authorization or starting a process.
+Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. The next capability is a contained job workspace and cancellation-record foundation; it must remain path-redacted publicly and must not launch an external tool.
