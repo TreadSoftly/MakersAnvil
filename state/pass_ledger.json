@@ -140,6 +140,20 @@
         "semantic references replace private source and output paths",
         "command construction, handoff, process execution, tool launch, and filesystem writes remain disabled"
       ]
+    },
+    {
+      "id": "PASS-011",
+      "title": "single-route execution gate foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_011_REPORT.md",
+      "proof": [
+        "committed policy allowlists only mesh-to-toolpath with one disabled future concurrency slot",
+        "ten required gates cover scope, planning, authorization, containment, compatibility, control, logging, and proof",
+        "read-only execution gate API and composed app state added",
+        "dashboard gate progress and evidence matrix added",
+        "out-of-scope plans are counted but never evaluated for execution",
+        "execution requests, authorization, path resolution, commands, processes, writes, logs, cancellation, and proof remain disabled"
+      ]
     }
   ]
 }

@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-010 - semantic tool dry-run planning.
+PASS-011 - single-route execution gate foundation.
 
 ## Track Percentages
 
-- Real app completion: `25.0000%`
-- Windows local app: `25.0000%`
+- Real app completion: `27.5000%`
+- Windows local app: `27.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -56,6 +56,12 @@ PASS-010 - semantic tool dry-run planning.
 - Dry-run invocation plans expose semantic operations, logical source/output references, and explicit blockers without executable paths.
 - No runnable command is constructed; no source/output path is resolved; no file is handed off; no process runs; and no file is written.
 - Browser dry-run summaries and plan rows render through text nodes without action controls.
+- Read-only `GET /api/execution/gates` evaluates exactly one allowlisted route and keeps execution disabled.
+- Ten required gates cover route scope, dry-run availability, tool detection, explicit authorization, source/output containment, version compatibility, cancellation, logging, and output proof.
+- Only existing planning evidence can satisfy a gate; operational evidence remains not proven.
+- Out-of-scope plans are counted but never receive an execution evaluation.
+- No execution request, accepted authorization, resolved path, command, process, launch, write, log, cancellation signal, or proof is produced.
+- Browser gate progress and evidence rows render without execution controls.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -66,6 +72,7 @@ PASS-010 - semantic tool dry-run planning.
 - PASS-008 explainability covers 75 files; verifier, 47 tests, non-writing HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-009 explainability covers 81 files; verifier, 54 tests, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-010 explainability covers 87 files; verifier, 61 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
+- PASS-011 explainability covers 93 files; verifier, 69 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 
 ## Blocked Or Not Proven
 
@@ -77,6 +84,10 @@ PASS-010 - semantic tool dry-run planning.
 - External tool launch.
 - Tool version proof.
 - Runnable tool command construction.
+- Execution request creation.
+- User authorization acceptance.
+- Cancellation control.
+- Execution logging.
 - Selected-file handoff.
 - Install, update, uninstall, or repair actions.
 - Archive extraction.
@@ -87,4 +98,4 @@ PASS-010 - semantic tool dry-run planning.
 
 ## Next Pass
 
-PASS-011 - single-route execution gate foundation.
+PASS-012 - execution request and audit record foundation.

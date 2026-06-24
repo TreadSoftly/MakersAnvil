@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-010",
-    "title": "semantic tool dry-run planning",
+    "id": "PASS-011",
+    "title": "single-route execution gate foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_010_REPORT.md"
+    "reportPath": "docs/passes/PASS_011_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 25.0,
-    "windowsLocal": 25.0,
+    "realApp": 27.5,
+    "windowsLocal": 27.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -55,6 +55,9 @@
     "Route previews, output plans, and detected tool families compose into semantic tool dry-run plans.",
     "Dry-run plans use logical source and destination references, select only family-compatible detected tools, and expose no resolved paths.",
     "Dry-run planning constructs no command string, performs no file handoff, launches no process, writes nothing, and remains execution-blocked.",
+    "Execution gate policy allowlists only mesh-to-toolpath, reserves one future concurrency slot, and keeps execution disabled.",
+    "Gate evaluation distinguishes proven planning evidence from unproven authorization, containment, compatibility, cancellation, logging, and proof requirements.",
+    "No execution request is created, no authorization is accepted, no path or command is resolved, and no process or execution-side record is produced.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -66,6 +69,10 @@
     "external tool launch",
     "tool version proof",
     "runnable tool command construction",
+    "execution request creation",
+    "user authorization acceptance",
+    "cancellation control",
+    "execution logging",
     "selected-file handoff",
     "software install/update/uninstall/repair",
     "archive extraction",
@@ -76,8 +83,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-011",
-    "title": "single-route execution gate foundation",
+    "id": "PASS-012",
+    "title": "execution request and audit record foundation",
     "claimState": "planned"
   }
 }

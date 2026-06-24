@@ -42,6 +42,7 @@ class MakersAnvilApi:
             "/api/outputs/preview": self._state_service.output_proof,
             "/api/tools/detection": self._state_service.tool_detection,
             "/api/tools/dry-run": self._state_service.tool_dry_run,
+            "/api/execution/gates": self._state_service.execution_gates,
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:

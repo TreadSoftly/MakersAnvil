@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-gate-policy.schema.json",
+  "title": "Makers Anvil single-route execution gate policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "gates", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["executionRequestCreated", "userAuthorizationAccepted", "sourcePathResolved", "outputPathResolved", "commandConstructed", "processStarted", "toolLaunched", "filesystemWritten", "executionLogWritten", "cancellationSignalSent", "proofCaptured"],
+      "additionalProperties": false,
+      "properties": {
+        "executionRequestCreated": {"const": false},
+        "userAuthorizationAccepted": {"const": false},
+        "sourcePathResolved": {"const": false},
+        "outputPathResolved": {"const": false},
+        "commandConstructed": {"const": false},
+        "processStarted": {"const": false},
+        "toolLaunched": {"const": false},
+        "filesystemWritten": {"const": false},
+        "executionLogWritten": {"const": false},
+        "cancellationSignalSent": {"const": false},
+        "proofCaptured": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.execution-gate-policy.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "read-only-gate-evaluation"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "maxConcurrentExecutions", "executionEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+        "maxConcurrentExecutions": {"const": 1},
+        "executionEnabled": {"const": false}
+      }
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "category", "evidenceSource", "required"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "category": {"enum": ["scope", "planning", "authorization", "containment", "compatibility", "control", "observability", "proof"]},
+          "evidenceSource": {"enum": ["route-scope", "dry-run-plan", "tool-candidate", "user-authorization", "source-containment", "output-containment", "tool-version", "cancellation-channel", "execution-log", "output-proof"]},
+          "required": {"const": true}
+        }
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

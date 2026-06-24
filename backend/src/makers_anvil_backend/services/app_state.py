@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
@@ -17,7 +18,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-010-tool-dry-run"
+    api_build = "makers-anvil-real-pass-011-execution-gates"
 
     def __init__(
         self,
@@ -28,6 +29,7 @@ class AppStateService:
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
         tool_dry_run: ToolDryRunService | None = None,
+        execution_gate: ExecutionGateService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
@@ -43,6 +45,7 @@ class AppStateService:
             output_proof=self._output_proof,
             tool_detection=self._tool_detection,
         )
+        self._execution_gate = execution_gate or ExecutionGateService(tool_dry_run=self._tool_dry_run)
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -65,6 +68,7 @@ class AppStateService:
         route_preview = self._route_preview.preview_catalog(intake_catalog)
         output_proof = self._output_proof.preview_catalog(route_preview)
         tool_detection = self._tool_detection.detection_catalog()
+        tool_dry_run = self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection)
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -79,7 +83,8 @@ class AppStateService:
             "routePreview": route_preview,
             "outputProof": output_proof,
             "toolDetection": tool_detection,
-            "toolDryRun": self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection),
+            "toolDryRun": tool_dry_run,
+            "executionGates": self._execution_gate.gate_catalog(tool_dry_run),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -135,6 +140,11 @@ class AppStateService:
         """Return semantic route/tool/output plans with every action still blocked."""
 
         return self._tool_dry_run.plan_catalog()
+
+    def execution_gates(self) -> dict[str, Any]:
+        """Return one route's required evidence while execution remains disabled."""
+
+        return self._execution_gate.gate_catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -228,6 +238,13 @@ class AppStateService:
                 "label": "Tool dry run",
                 "claimState": "preview-only",
                 "summary": "Routes, detected tool families, and logical outputs compose into non-runnable invocation plans.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "execution-gates",
+                "label": "Execution gates",
+                "claimState": "staged",
+                "summary": "One route has explicit authorization, containment, compatibility, control, logging, and proof gates.",
                 "actionsEnabled": False,
             },
             {

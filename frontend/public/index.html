@@ -142,6 +142,22 @@
           <div id="tool-dry-run-list" class="tool-dry-run-list" aria-live="polite"></div>
         </section>
 
+        <!-- One-route evidence matrix; authorization and execution remain unavailable. -->
+        <section class="panel workspace-panel" aria-label="Execution gate status">
+          <div class="panel-head">
+            <h2>Execution Gate</h2>
+            <span id="execution-gate-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Scope</strong><span id="execution-gate-scope">loading</span></p>
+            <p><strong>Evaluations</strong><span id="execution-gate-count">loading</span></p>
+            <p><strong>Required gates</strong><span id="execution-gate-progress">loading</span></p>
+            <p><strong>Safety</strong><span id="execution-gate-safety">loading</span></p>
+            <p><strong>Execution</strong><span id="execution-gate-action">loading</span></p>
+          </div>
+          <div id="execution-gate-list" class="execution-gate-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>

@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-010"
-    assert current["trackPercentages"]["realApp"] == 25.0
+    assert current["currentPass"]["id"] == "PASS-011"
+    assert current["trackPercentages"]["realApp"] == 27.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-010"
+    assert ledger["passes"][-1]["id"] == "PASS-011"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -171,6 +171,25 @@ def test_tool_dry_run_policy_is_non_runnable_and_path_free() -> None:
     assert {item["routeId"] for item in policy["routes"]} == {item["id"] for item in route_catalog["routes"]}
     assert all(value is False for value in policy["safety"].values())
     assert "commandString" not in serialized
+    assert "C:" + "\\Users\\" not in serialized
+    assert "/" + "Users/" not in serialized
+    assert "/" + "home/" not in serialized
+
+
+def test_execution_gate_policy_is_single_route_and_side_effect_free() -> None:
+    """Execution policy defines complete evidence while authorization and execution stay false."""
+
+    import json
+
+    policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
+    serialized = json.dumps(policy)
+
+    assert policy["mode"] == "read-only-gate-evaluation"
+    assert policy["scope"] == {"routeId": "mesh-to-toolpath", "maxConcurrentExecutions": 1, "executionEnabled": False}
+    assert len(policy["gates"]) == 10
+    assert len({gate["evidenceSource"] for gate in policy["gates"]}) == 10
+    assert all(gate["required"] is True for gate in policy["gates"])
+    assert all(value is False for value in policy["safety"].values())
     assert "C:" + "\\Users\\" not in serialized
     assert "/" + "Users/" not in serialized
     assert "/" + "home/" not in serialized

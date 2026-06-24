@@ -15,6 +15,7 @@ const routePreviewUrl = "/api/routes/preview";
 const outputProofUrl = "/api/outputs/preview";
 const toolDetectionUrl = "/api/tools/detection";
 const toolDryRunUrl = "/api/tools/dry-run";
+const executionGatesUrl = "/api/execution/gates";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -78,6 +79,15 @@ const fallbackState = {
     mode: "not proven",
     summary: { routePreviewCount: 0, planCount: 0, selectedToolCount: 0, blockedPlanCount: 0, unmatchedPlanCount: 0 },
     plans: [],
+    safety: {},
+    executionAction: { claimState: "blocked", enabledInApi: false },
+  },
+  executionGates: {
+    claimState: "unknown",
+    mode: "not proven",
+    scope: { routeId: "not proven", maxConcurrentExecutions: 0, executionEnabled: false },
+    summary: { evaluatedPlanCount: 0, outOfScopePlanCount: 0, requiredGateCount: 0, satisfiedGateCount: 0, blockedPlanCount: 0 },
+    evaluations: [],
     safety: {},
     executionAction: { claimState: "blocked", enabledInApi: false },
   },
@@ -440,7 +450,70 @@ function renderToolDryRun(state, response = {}) {
   });
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}) {
+function renderExecutionGates(state, response = {}) {
+  const gates = response.schemaVersion ? response : state.executionGates || fallbackState.executionGates;
+  const gateState = document.querySelector("#execution-gate-state");
+  gateState.textContent = gates.claimState || "unknown";
+  gateState.className = `badge ${claimClass(gateState.textContent)}`;
+  const scope = gates.scope || {};
+  const summary = gates.summary || {};
+  document.querySelector("#execution-gate-scope").textContent = scope.routeId
+    ? `${scope.routeId} · ${scope.maxConcurrentExecutions || 0} future slot`
+    : "not proven";
+  document.querySelector("#execution-gate-count").textContent = `${summary.evaluatedPlanCount || 0} evaluated · ${summary.outOfScopePlanCount || 0} out of scope`;
+  document.querySelector("#execution-gate-progress").textContent = `${summary.satisfiedGateCount || 0}/${summary.requiredGateCount || 0} satisfied`;
+  const safety = gates.safety || {};
+  document.querySelector("#execution-gate-safety").textContent = safety.executionRequestCreated === false
+    && safety.processStarted === false
+    && safety.filesystemWritten === false
+    ? "no request, process, or write"
+    : "not proven";
+  document.querySelector("#execution-gate-action").textContent = gates.executionAction?.enabledInApi === false
+    && scope.executionEnabled === false
+    ? "blocked"
+    : "not proven";
+
+  const target = document.querySelector("#execution-gate-list");
+  target.replaceChildren();
+  if (!gates.evaluations?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No in-scope execution gate evaluations available.";
+    target.append(empty);
+    return;
+  }
+
+  gates.evaluations.forEach((evaluation) => {
+    const item = document.createElement("article");
+    item.className = "execution-gate-item";
+    const heading = document.createElement("div");
+    heading.className = "execution-gate-head";
+    const title = document.createElement("h3");
+    title.textContent = evaluation.route.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(evaluation.claimState)}`;
+    stateBadge.textContent = evaluation.claimState;
+    heading.append(title, stateBadge);
+    const tool = document.createElement("p");
+    tool.className = "execution-gate-tool";
+    tool.textContent = evaluation.tool ? `${evaluation.tool.label} · detected` : "Tool candidate · not proven";
+    const gateList = document.createElement("ul");
+    gateList.className = "execution-gate-matrix";
+    evaluation.gates.forEach((gate) => {
+      const gateItem = document.createElement("li");
+      gateItem.className = gate.satisfied ? "satisfied" : "unsatisfied";
+      gateItem.textContent = `${gate.label} · ${gate.claimState}`;
+      gateList.append(gateItem);
+    });
+    const blockers = document.createElement("p");
+    blockers.className = "execution-gate-blockers";
+    blockers.textContent = `Blocked by: ${evaluation.readiness.blockers.join(", ")}`;
+    item.append(heading, tool, gateList, blockers);
+    target.append(item);
+  });
+}
+
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -452,6 +525,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderOutputProof(state, outputProof);
   renderToolDetection(state, toolDetection);
   renderToolDryRun(state, toolDryRun);
+  renderExecutionGates(state, executionGates);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -460,7 +534,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -470,8 +544,9 @@ async function loadState() {
       fetch(outputProofUrl, { method: "GET", cache: "no-store" }),
       fetch(toolDetectionUrl, { method: "GET", cache: "no-store" }),
       fetch(toolDryRunUrl, { method: "GET", cache: "no-store" }),
+      fetch(executionGatesUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -484,6 +559,7 @@ async function loadState() {
       await outputProofResponse.json(),
       await toolDetectionResponse.json(),
       await toolDryRunResponse.json(),
+      await executionGatesResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });
