@@ -102,7 +102,7 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 ## Frontend Flow
 
-`frontend/public/index.html` declares the dashboard regions. `frontend/public/assets/app.js` performs GET requests, creates DOM nodes, and renders each service contract. `frontend/public/assets/styles.css` owns layout and responsive behavior.
+`frontend/public/index.html` declares the rail, top command bar, source deck, tool inventory, stable command deck, output-proof inspector, and Dev evidence regions. `frontend/public/assets/app.js` performs GET requests, renders each service contract, derives selected-input/expected-output summaries, and handles local-only view navigation. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
 
 Frontend rules:
 
@@ -111,6 +111,8 @@ Frontend rules:
 - Show claim states and blockers exactly; do not convert staged or preview-only work into a success claim.
 - Do not render enabled action controls until a mutation endpoint and its authorization, cancellation, containment, logging, and proof gates are independently proven.
 - Keep rendering functions focused on one contract so schema changes have an obvious update location.
+- Keep Work Flow, Plans, and Dev inside one stable command-deck footprint on desktop.
+- Put normal maker tasks before raw implementation evidence; Dev retains the complete proof surface.
 
 ## How To Add A Read-Only Capability
 

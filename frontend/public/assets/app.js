@@ -52,6 +52,7 @@ const fallbackState = {
     claimState: "unknown",
     mode: "not proven",
     summary: { recordCount: 0, invalidRecordCount: 0 },
+    records: [],
     safety: { sourcePathStored: false, sourceContentStored: false },
     creationAction: { enabledInApi: false },
   },
@@ -246,7 +247,7 @@ function renderRoutePreview(state, response = {}) {
   if (!routePreview.previews?.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "No route previews available.";
+    empty.textContent = "No work plans available.";
     target.append(empty);
     return;
   }
@@ -311,7 +312,7 @@ function renderOutputProof(state, response = {}) {
   if (!outputProof.bundles?.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "No output bundle previews available.";
+    empty.textContent = "No output proof available.";
     target.append(empty);
     return;
   }
@@ -458,7 +459,7 @@ function renderToolDryRun(state, response = {}) {
   if (!dryRun.plans?.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
-    empty.textContent = "No tool dry-run plans available.";
+    empty.textContent = "No tool setup previews available.";
     target.append(empty);
     return;
   }
@@ -673,6 +674,113 @@ function renderJobWorkspaces(state, response = {}) {
   });
 }
 
+/**
+ * Summarize the selected input and expected output for the primary workbench.
+ * Untrusted file names remain text nodes, and missing evidence stays explicit.
+ */
+function renderWorkbenchSummary(state, health, intake, routePreview, outputProof) {
+  const catalog = intake.schemaVersion ? intake : state.intakeCatalog || fallbackState.intakeCatalog;
+  const routes = routePreview.schemaVersion ? routePreview : state.routePreview || fallbackState.routePreview;
+  const outputs = outputProof.schemaVersion ? outputProof : state.outputProof || fallbackState.outputProof;
+  const record = catalog.records?.[0];
+  const source = record?.source;
+  const selectedState = document.querySelector("#selected-input-state");
+
+  selectedState.textContent = record?.claimState || (source ? "staged" : "not proven");
+  selectedState.className = `badge ${claimClass(selectedState.textContent)}`;
+  document.querySelector("#selected-input-title").textContent = source?.displayName || "No source selected";
+  document.querySelector("#selected-input-meta").textContent = source
+    ? `${source.kind} · ${source.extension} · metadata only`
+    : "Stage one file to create metadata";
+  document.querySelector("#selected-input-visual").textContent = source?.extension
+    ? source.extension.replace(".", "").slice(0, 6)
+    : "--";
+
+  const bundle = outputs.bundles?.[0];
+  const route = routes.previews?.[0];
+  document.querySelector("#expected-output-title").textContent = bundle?.output?.label
+    || route?.route?.label
+    || "No work plan selected";
+  document.querySelector("#expected-output-meta").textContent = bundle
+    ? `${bundle.artifacts?.length || 0} expected artifacts · proof incomplete`
+    : route
+      ? "Work plan selected · output bundle not available"
+      : "Output remains preview-only";
+
+  const liveState = health.claimState || state.claimState || "unknown";
+  document.querySelector("#rail-health-label").textContent = liveState === "proven" ? "Local ready" : liveState;
+}
+
+/** Switch the stable command deck without changing application or server state. */
+function selectWorkbenchView(viewName) {
+  document.querySelectorAll("[data-view-panel]").forEach((panel) => {
+    panel.hidden = panel.dataset.viewPanel !== viewName;
+  });
+  document.querySelectorAll("[data-workbench-view]").forEach((button) => {
+    const active = button.dataset.workbenchView === viewName;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  document.querySelectorAll(".rail-link").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.view === viewName && button.dataset.focus === "workbench");
+  });
+}
+
+/** Focus one visible work zone and briefly expose the navigation destination. */
+function focusWorkbenchRegion(regionId) {
+  const target = document.querySelector(`#${regionId}`);
+  if (!target) {
+    return;
+  }
+  target.setAttribute("tabindex", "-1");
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+  target.classList.add("is-focused");
+  window.setTimeout(() => target.classList.remove("is-focused"), 900);
+}
+
+/** Wire read-only tabs, rail destinations, and quick-jump search once. */
+function initializeWorkbenchControls() {
+  document.querySelectorAll("[data-workbench-view]").forEach((button) => {
+    button.addEventListener("click", () => selectWorkbenchView(button.dataset.workbenchView));
+  });
+
+  document.querySelectorAll(".rail-link").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectWorkbenchView(button.dataset.view || "workflow");
+      document.querySelectorAll(".rail-link").forEach((item) => item.classList.toggle("is-active", item === button));
+      window.requestAnimationFrame(() => focusWorkbenchRegion(button.dataset.focus));
+    });
+  });
+
+  const destinations = {
+    "workbench": ["workflow", "workbench"],
+    "intake": ["workflow", "intake-zone"],
+    "selected input": ["workflow", "selected-input-zone"],
+    "tools": ["workflow", "tools-zone"],
+    "plans": ["plans", "plan-surface"],
+    "output proof": ["workflow", "proof-inspector"],
+    "developer evidence": ["dev", "dev-surface"],
+  };
+  const search = document.querySelector("#command-search");
+  const navigate = () => {
+    const destination = destinations[search.value.trim().toLowerCase()];
+    if (!destination) {
+      return;
+    }
+    selectWorkbenchView(destination[0]);
+    window.requestAnimationFrame(() => focusWorkbenchRegion(destination[1]));
+    search.value = "";
+  };
+  search.addEventListener("change", navigate);
+  search.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      navigate();
+    }
+  });
+}
+
 /** Compose one coherent dashboard frame from all read-only API snapshots. */
 function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
   const completion = Number(state.completion?.realApp || 0);
@@ -689,6 +797,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderExecutionGates(state, executionGates);
   renderExecutionRequest(state, executionRequest);
   renderJobWorkspaces(state, jobWorkspace);
+  renderWorkbenchSummary(state, health, intake, routePreview, outputProof);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -734,5 +843,6 @@ async function loadState() {
   }
 }
 
+initializeWorkbenchControls();
 document.querySelector("#refresh").addEventListener("click", loadState);
 loadState();

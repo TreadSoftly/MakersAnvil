@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-014 - previous-app design assimilation and source explanation remediation.
+PASS-015 - preview-first maker workbench shell and responsive dashboard foundation.
 
 ## Track Percentages
 
-- Real app completion: `32.5000%`
-- Windows local app: `32.5000%`
+- Real app completion: `35.0000%`
+- Windows local app: `35.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -88,6 +88,7 @@ PASS-014 - previous-app design assimilation and source explanation remediation.
 - PASS-012 explainability covers 102 files; verifier, 76 tests, four schema validations, live/isolated HTTP smoke, desktop/mobile/non-empty browser checks, and Windows/Ubuntu/macOS CI passed.
 - PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, empty/populated desktop/mobile browser checks, and Windows/Ubuntu/macOS CI passed.
 - PASS-014 preserves the accepted previous-app workbench direction in tracked truth, adds a file-by-file source walkthrough, and replaces weak one-line module headers with machine-enforced structured context. Runtime capability remains `32.5000%` because this remediation pass enables no new action.
+- PASS-015 replaces the long equal-weight status stack with a preview-first workbench: persistent rail, compact command bar, intake/selected-input deck, tool inventory, stable Work Flow/Plans/Dev command deck, output-proof inspector, and responsive mobile flow. Navigation is client-side only and all operational actions remain blocked.
 
 ## Blocked Or Not Proven
 
@@ -113,4 +114,4 @@ PASS-014 - previous-app design assimilation and source explanation remediation.
 
 ## Next Pass
 
-PASS-015 - preview-first maker workbench shell and responsive dashboard foundation.
+PASS-016 - explicit authorization and command preview foundation.

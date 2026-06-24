@@ -49,12 +49,12 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 
 | File | What it owns | Important blocks |
 | --- | --- | --- |
-| `frontend/public/index.html` | Semantic regions and accessible loading state. | Top bar, status, workspace, intake, route, output, tool, gate, request, job, and safety sections. |
-| `frontend/public/assets/app.js` | GET-only fetch, conservative fallback state, safe text rendering, and one renderer per API region. | Endpoint constants -> fallback -> helpers -> renderers -> `renderState` -> `loadState`. |
-| `frontend/public/assets/styles.css` | Tokens, stable workbench geometry, states, responsive reflow, and focus. | Tokens -> primitives -> regions -> rows/cards -> narrow-screen rules. |
+| `frontend/public/index.html` | Preview-first workbench structure and accessible loading state. | Rail -> command bar -> source deck -> tools -> command deck -> proof inspector -> Dev evidence. |
+| `frontend/public/assets/app.js` | GET-only fetch, safe rendering, selected/expected summaries, and local view navigation. | Endpoints -> fallback -> renderers -> workbench summary -> controls -> `renderState` -> `loadState`. |
+| `frontend/public/assets/styles.css` | Industrial tokens, one-viewport desktop geometry, stable tabs, local scrolling, and mobile flow. | Tokens -> shell -> rail/topbar -> zones -> command deck -> inspector -> responsive rules. |
 | `frontend/public/assets/mark.svg` | Embedded product identity with no remote or script dependency. | Accessible SVG geometry. |
 
-All values originating outside the static page must be written with DOM text APIs. A renderer must never convert a planned or missing value into a ready action.
+All values originating outside the static page must be written with DOM text APIs. A renderer must never convert a planned or missing value into a ready action. The disabled Add files affordance is visual workflow context only; no file input or form exists.
 
 ## Explicit Local Commands
 

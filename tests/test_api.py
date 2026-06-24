@@ -28,8 +28,8 @@ def test_state_keeps_actions_blocked() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 32.5
-    assert response.body["currentPass"]["id"] == "PASS-014"
+    assert response.body["completion"]["realApp"] == 35.0
+    assert response.body["currentPass"]["id"] == "PASS-015"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -62,11 +62,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-014"
+    assert workspace.body["currentPass"]["id"] == "PASS-015"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-014"
+    assert ledger.body["passes"][-1]["id"] == "PASS-015"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

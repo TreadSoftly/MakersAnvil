@@ -29,7 +29,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-014-reference-explainability"
+    api_build = "makers-anvil-real-pass-015-preview-first-workbench"
 
     def __init__(
         self,

@@ -3,11 +3,11 @@
   Purpose: Provide the semantic, accessible shell for the Makers Anvil workbench.
   Used by: The loopback server as the browser application's only HTML entrypoint.
   Inputs: CSS, the product mark, and JSON rendered later by assets/app.js.
-  Outputs: Named dashboard regions for intake, planning, tools, jobs, and proof.
-  Side effects: None; this static document cannot mutate local or user data.
+  Outputs: Named work zones for intake, selected input, tools, plans, jobs, and proof.
+  Side effects: Client-side navigation changes visible panels but never product data.
   Safety: Contains no upload, execution, tool-launch, or other mutating control.
-  Failure behavior: Loading labels remain visible when the API is unavailable.
-  Related proof: Browser smoke checks and frontend purity tests.
+  Failure behavior: Loading and blocked labels remain visible when APIs are unavailable.
+  Related proof: Browser viewport checks and frontend purity tests.
 -->
 <html lang="en">
   <head>
@@ -19,192 +19,277 @@
   </head>
   <body>
     <div class="app-shell">
-      <!-- Product identity and state refresh. -->
+      <!-- Persistent navigation keeps the principal maker surfaces one action away. -->
+      <aside class="rail" aria-label="Primary workbench navigation">
+        <div class="rail-brand" aria-label="Makers Anvil">
+          <img src="/assets/mark.svg" alt="" class="rail-mark">
+          <span>MA</span>
+        </div>
+        <nav class="rail-nav">
+          <button class="rail-link is-active" type="button" data-view="workflow" data-focus="workbench" aria-label="Workbench">Workbench</button>
+          <button class="rail-link" type="button" data-view="workflow" data-focus="intake-zone">Intake</button>
+          <button class="rail-link" type="button" data-view="plans" data-focus="plan-surface">Plans</button>
+          <button class="rail-link" type="button" data-view="workflow" data-focus="tools-zone">Tools</button>
+          <button class="rail-link" type="button" data-view="workflow" data-focus="selected-input-zone">Files</button>
+          <button class="rail-link" type="button" data-view="workflow" data-focus="proof-inspector">Outputs</button>
+          <button class="rail-link" type="button" data-view="dev" data-focus="dev-surface">Dev</button>
+        </nav>
+        <div class="rail-health" aria-label="Local application health">
+          <span class="health-pulse" aria-hidden="true"></span>
+          <span id="rail-health-label">Loading</span>
+        </div>
+      </aside>
+
+      <!-- Product identity, quick navigation, completion, and the only live command. -->
       <header class="topbar">
         <div class="brand">
           <img src="/assets/mark.svg" alt="" class="brand-mark">
-          <div>
+          <div class="brand-copy">
             <h1>Makers Anvil</h1>
             <p id="build-label">Loading local state</p>
           </div>
         </div>
-        <button id="refresh" class="icon-button" type="button" title="Refresh state" aria-label="Refresh state">↻</button>
+
+        <label class="command-search" for="command-search">
+          <span class="search-mark" aria-hidden="true"></span>
+          <span class="sr-only">Jump to a workbench area</span>
+          <input id="command-search" type="search" list="command-options" placeholder="Jump to intake, tools, plans, output..." autocomplete="off">
+          <datalist id="command-options">
+            <option value="Workbench"></option>
+            <option value="Intake"></option>
+            <option value="Selected input"></option>
+            <option value="Tools"></option>
+            <option value="Plans"></option>
+            <option value="Output proof"></option>
+            <option value="Developer evidence"></option>
+          </datalist>
+        </label>
+
+        <div class="top-status" aria-label="Real application completion">
+          <span class="eyebrow">Real app</span>
+          <strong id="completion">0.0000%</strong>
+          <div class="meter" aria-hidden="true"><span id="completion-bar"></span></div>
+        </div>
+        <button id="refresh" class="icon-button" type="button" title="Refresh local state" aria-label="Refresh local state">&#8635;</button>
       </header>
 
-      <main>
-        <!-- Overall build completion from durable status truth. -->
-        <section class="status-band" aria-label="Application status">
-          <div>
-            <span class="eyebrow">Real App Completion</span>
-            <strong id="completion">0.0000%</strong>
-          </div>
-          <div class="meter" aria-hidden="true"><span id="completion-bar"></span></div>
-        </section>
+      <main class="workbench" id="workbench">
+        <div class="workspace-column">
+          <!-- Source work begins with intake truth and one selected metadata record. -->
+          <div class="source-deck">
+            <section class="work-zone intake-zone" id="intake-zone" data-search-key="intake add source files">
+              <div class="zone-head">
+                <div>
+                  <span class="zone-kicker">Source</span>
+                  <h2>Add source files</h2>
+                </div>
+                <span id="intake-state" class="badge unknown">unknown</span>
+              </div>
+              <div class="intake-command">
+                <div class="intake-symbol" aria-hidden="true">+</div>
+                <div class="intake-copy">
+                  <strong>Source file intake</strong>
+                  <span id="intake-records">0 staged</span>
+                </div>
+                <button class="primary-command" type="button" disabled title="Browser intake remains blocked">Add files</button>
+              </div>
+              <div class="compact-facts">
+                <p><span>Mode</span><strong id="intake-mode">loading</strong></p>
+                <p><span>API</span><strong id="intake-api-action">loading</strong></p>
+              </div>
+            </section>
 
-        <!-- Current/next pass and committed truth-file location. -->
-        <section class="panel workspace-panel" aria-label="Workspace status">
-          <div class="panel-head">
-            <h2>Workspace Status</h2>
-            <span id="workspace-state" class="badge unknown">unknown</span>
+            <section class="work-zone selected-input-zone" id="selected-input-zone" data-search-key="selected input files preview">
+              <div class="zone-head">
+                <div>
+                  <span class="zone-kicker">Current file</span>
+                  <h2>Selected input</h2>
+                </div>
+                <span id="selected-input-state" class="badge unknown">unknown</span>
+              </div>
+              <div class="selected-preview">
+                <div class="file-visual" id="selected-input-visual" aria-hidden="true">--</div>
+                <div class="selected-copy">
+                  <strong id="selected-input-title">No source selected</strong>
+                  <span id="selected-input-meta">Stage one file to create metadata</span>
+                  <small id="intake-source-data">paths and contents not stored</small>
+                </div>
+              </div>
+            </section>
           </div>
-          <div class="status-rows">
-            <p><strong>Current pass</strong><span id="current-pass">loading</span></p>
-            <p><strong>Next pass</strong><span id="next-pass">loading</span></p>
-            <p><strong>Status source</strong><span id="status-source">loading</span></p>
-          </div>
-        </section>
 
-        <!-- Portable runtime policy; resolved personal paths are never rendered. -->
-        <section class="panel workspace-panel" aria-label="Local workspace settings">
-          <div class="panel-head">
-            <h2>Local Workspace</h2>
-            <span id="layout-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Storage mode</strong><span id="runtime-mode">loading</span></p>
-            <p><strong>Location policy</strong><span id="runtime-location">loading</span></p>
-            <p><strong>Directories</strong><span id="runtime-directories">loading</span></p>
-            <p><strong>Source dependency</strong><span id="runtime-source-dependency">loading</span></p>
-            <p><strong>Init action</strong><span id="runtime-init">loading</span></p>
-          </div>
-        </section>
+          <!-- Tool presence is operational context; cards expose proof but no launch. -->
+          <section class="work-zone tools-zone" id="tools-zone" data-search-key="tools software detection">
+            <div class="zone-head tools-head">
+              <div>
+                <span class="zone-kicker">Available locally</span>
+                <h2>Tools</h2>
+              </div>
+              <div class="tools-summary">
+                <span id="tool-platform">loading</span>
+                <strong id="tool-detection-count">0/0 detected</strong>
+                <span id="tool-detection-state" class="badge unknown">unknown</span>
+              </div>
+            </div>
+            <div id="tool-detection-list" class="tool-detection-list" aria-live="polite"></div>
+            <div class="tool-foot">
+              <span id="tool-family-coverage">loading</span>
+              <span id="tool-detection-safety">loading</span>
+              <span id="tool-detection-actions">loading</span>
+            </div>
+            <ul id="tool-family-list" class="sr-only" aria-label="Tool family coverage"></ul>
+          </section>
 
-        <!-- Metadata-only intake status with all mutation gates blocked. -->
-        <section class="panel workspace-panel" aria-label="File intake status">
-          <div class="panel-head">
-            <h2>File Intake</h2>
-            <span id="intake-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="intake-mode">loading</span></p>
-            <p><strong>Records</strong><span id="intake-records">loading</span></p>
-            <p><strong>Source data</strong><span id="intake-source-data">loading</span></p>
-            <p><strong>API action</strong><span id="intake-api-action">loading</span></p>
-          </div>
-        </section>
+          <!-- One stable command deck changes internal views without resizing the shell. -->
+          <section class="command-deck" aria-label="Workflow command deck">
+            <div class="mode-tabs" role="tablist" aria-label="Workbench views">
+              <button id="workflow-tab" class="mode-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="workflow-surface" data-workbench-view="workflow">Work Flow</button>
+              <button id="plans-tab" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="plan-surface" data-workbench-view="plans">Plans</button>
+              <button id="dev-tab" class="mode-tab" type="button" role="tab" aria-selected="false" aria-controls="dev-surface" data-workbench-view="dev">Dev</button>
+            </div>
 
-        <!-- Metadata-derived route candidates; no source or tool action is available. -->
-        <section class="panel workspace-panel" aria-label="Route preview status">
-          <div class="panel-head">
-            <h2>Route Preview</h2>
-            <span id="route-preview-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="route-preview-mode">loading</span></p>
-            <p><strong>Previews</strong><span id="route-preview-count">loading</span></p>
-            <p><strong>Source access</strong><span id="route-preview-source">loading</span></p>
-            <p><strong>Execution</strong><span id="route-preview-execution">loading</span></p>
-          </div>
-          <div id="route-preview-list" class="route-preview-list" aria-live="polite"></div>
-        </section>
+            <div id="workflow-surface" class="deck-surface" role="tabpanel" aria-labelledby="workflow-tab" data-view-panel="workflow">
+              <section class="deck-column" aria-label="Work plan preview">
+                <div class="deck-head">
+                  <h3>Work plan</h3>
+                  <span id="route-preview-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="inline-facts">
+                  <span id="route-preview-count">loading</span>
+                  <span id="route-preview-mode">loading</span>
+                  <span id="route-preview-source">loading</span>
+                  <span id="route-preview-execution">loading</span>
+                </div>
+                <div id="route-preview-list" class="route-preview-list" aria-live="polite"></div>
+              </section>
+              <section class="deck-column" aria-label="Prepared workspace">
+                <div class="deck-head">
+                  <h3>Job workspace</h3>
+                  <span id="job-workspace-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="inline-facts">
+                  <span id="job-workspace-count">loading</span>
+                  <span id="job-cancellation-count">loading</span>
+                  <span id="job-workspace-execution">loading</span>
+                </div>
+                <span id="job-workspace-mode" class="sr-only">loading</span>
+                <span id="job-workspace-location" class="sr-only">loading</span>
+                <div id="job-workspace-list" class="job-workspace-list" aria-live="polite"></div>
+              </section>
+            </div>
 
-        <!-- Planned output artifacts and required proof; creation and opening stay blocked. -->
-        <section class="panel workspace-panel" aria-label="Output bundle and proof status">
-          <div class="panel-head">
-            <h2>Output &amp; Proof</h2>
+            <div id="plan-surface" class="deck-surface" role="tabpanel" aria-labelledby="plans-tab" data-view-panel="plans" hidden>
+              <section class="deck-column" aria-label="Tool setup preview">
+                <div class="deck-head">
+                  <h3>Tool setup preview</h3>
+                  <span id="tool-dry-run-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="inline-facts">
+                  <span id="tool-dry-run-count">loading</span>
+                  <span id="tool-dry-run-selection">loading</span>
+                  <span id="tool-dry-run-command">loading</span>
+                  <span id="tool-dry-run-execution">loading</span>
+                </div>
+                <span id="tool-dry-run-mode" class="sr-only">loading</span>
+                <div id="tool-dry-run-list" class="tool-dry-run-list" aria-live="polite"></div>
+              </section>
+              <section class="deck-column" aria-label="Execution request preview">
+                <div class="deck-head">
+                  <h3>Request preview</h3>
+                  <span id="execution-request-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="inline-facts">
+                  <span id="execution-request-count">loading</span>
+                  <span id="execution-request-authorization">loading</span>
+                  <span id="execution-request-audit">loading</span>
+                  <span id="execution-request-action">loading</span>
+                </div>
+                <span id="execution-request-mode" class="sr-only">loading</span>
+                <div id="execution-request-list" class="execution-request-list" aria-live="polite"></div>
+              </section>
+            </div>
+
+            <div id="dev-surface" class="deck-surface dev-surface" role="tabpanel" aria-labelledby="dev-tab" data-view-panel="dev" hidden>
+              <section class="dev-block" aria-label="Workspace status">
+                <div class="deck-head"><h3>Workspace truth</h3><span id="workspace-state" class="badge unknown">unknown</span></div>
+                <div class="status-rows">
+                  <p><strong>Current</strong><span id="current-pass">loading</span></p>
+                  <p><strong>Next</strong><span id="next-pass">loading</span></p>
+                  <p><strong>Source</strong><span id="status-source">loading</span></p>
+                </div>
+              </section>
+              <section class="dev-block" aria-label="Local workspace settings">
+                <div class="deck-head"><h3>Local workspace</h3><span id="layout-state" class="badge unknown">unknown</span></div>
+                <div class="status-rows">
+                  <p><strong>Mode</strong><span id="runtime-mode">loading</span></p>
+                  <p><strong>Location</strong><span id="runtime-location">loading</span></p>
+                  <p><strong>Directories</strong><span id="runtime-directories">loading</span></p>
+                  <p><strong>Source dependency</strong><span id="runtime-source-dependency">loading</span></p>
+                  <p><strong>Init</strong><span id="runtime-init">loading</span></p>
+                </div>
+              </section>
+              <section class="dev-block" aria-label="Execution gate status">
+                <div class="deck-head"><h3>Execution gates</h3><span id="execution-gate-state" class="badge unknown">unknown</span></div>
+                <div class="status-rows">
+                  <p><strong>Scope</strong><span id="execution-gate-scope">loading</span></p>
+                  <p><strong>Evaluations</strong><span id="execution-gate-count">loading</span></p>
+                  <p><strong>Progress</strong><span id="execution-gate-progress">loading</span></p>
+                  <p><strong>Safety</strong><span id="execution-gate-safety">loading</span></p>
+                  <p><strong>Execution</strong><span id="execution-gate-action">loading</span></p>
+                </div>
+                <div id="execution-gate-list" class="execution-gate-list" aria-live="polite"></div>
+              </section>
+              <section class="dev-block dev-wide" aria-label="Delivery tracks and capabilities">
+                <div id="tracks" class="evidence-grid" aria-label="Build tracks"></div>
+                <div id="capabilities" class="evidence-grid" aria-label="Capabilities"></div>
+              </section>
+              <section class="dev-block dev-wide" aria-label="Blocked actions">
+                <div class="deck-head"><h3>Blocked actions</h3><span class="badge blocked">blocked</span></div>
+                <ul id="blocked-actions" class="blocked-list"></ul>
+              </section>
+            </div>
+          </section>
+        </div>
+
+        <!-- The inspector keeps selected source, expected output, and proof together. -->
+        <aside class="work-zone proof-inspector" id="proof-inspector" aria-label="Work preview and proof" data-search-key="output proof work preview">
+          <div class="zone-head inspector-head">
+            <div>
+              <span class="zone-kicker">Inspector</span>
+              <h2>Work preview</h2>
+            </div>
             <span id="output-proof-state" class="badge unknown">unknown</span>
           </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="output-proof-mode">loading</span></p>
-            <p><strong>Bundles</strong><span id="output-bundle-count">loading</span></p>
-            <p><strong>Proof</strong><span id="output-proof-count">loading</span></p>
-            <p><strong>Location</strong><span id="output-logical-root">loading</span></p>
-            <p><strong>Actions</strong><span id="output-actions">loading</span></p>
-          </div>
-          <div id="output-bundle-list" class="output-bundle-list" aria-live="polite"></div>
-        </section>
 
-        <!-- Path-redacted presence checks; no tool process or software action is available. -->
-        <section class="panel workspace-panel" aria-label="Tool detection status">
-          <div class="panel-head">
-            <h2>Tool Detection</h2>
-            <span id="tool-detection-state" class="badge unknown">unknown</span>
+          <div class="inspector-preview" aria-label="Expected output preview">
+            <img src="/assets/mark.svg" alt="" class="preview-watermark">
+            <span class="preview-grid" aria-hidden="true"></span>
+            <div class="preview-copy">
+              <span>Expected output</span>
+              <strong id="expected-output-title">No work plan selected</strong>
+              <small id="expected-output-meta">Output remains preview-only</small>
+            </div>
           </div>
-          <div class="status-rows">
-            <p><strong>Platform</strong><span id="tool-platform">loading</span></p>
-            <p><strong>Tools</strong><span id="tool-detection-count">loading</span></p>
-            <p><strong>Coverage</strong><span id="tool-family-coverage">loading</span></p>
-            <p><strong>Safety</strong><span id="tool-detection-safety">loading</span></p>
-            <p><strong>Actions</strong><span id="tool-detection-actions">loading</span></p>
-          </div>
-          <ul id="tool-family-list" class="tool-family-list" aria-label="Tool family coverage"></ul>
-          <div id="tool-detection-list" class="tool-detection-list" aria-live="polite"></div>
-        </section>
 
-        <!-- Semantic invocation plans; commands, paths, handoff, launch, and execution stay absent. -->
-        <section class="panel workspace-panel" aria-label="Tool dry-run status">
-          <div class="panel-head">
-            <h2>Tool Dry Run</h2>
-            <span id="tool-dry-run-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="tool-dry-run-mode">loading</span></p>
-            <p><strong>Plans</strong><span id="tool-dry-run-count">loading</span></p>
-            <p><strong>Tool selection</strong><span id="tool-dry-run-selection">loading</span></p>
-            <p><strong>Command</strong><span id="tool-dry-run-command">loading</span></p>
-            <p><strong>Execution</strong><span id="tool-dry-run-execution">loading</span></p>
-          </div>
-          <div id="tool-dry-run-list" class="tool-dry-run-list" aria-live="polite"></div>
-        </section>
+          <section class="inspector-section" aria-label="Latest output proof">
+            <div class="deck-head">
+              <h3>Latest output proof</h3>
+              <span id="output-proof-count">0/0 complete</span>
+            </div>
+            <div class="status-rows inspector-facts">
+              <p><strong>Mode</strong><span id="output-proof-mode">loading</span></p>
+              <p><strong>Bundles</strong><span id="output-bundle-count">loading</span></p>
+              <p><strong>Location</strong><span id="output-logical-root">loading</span></p>
+              <p><strong>Actions</strong><span id="output-actions">loading</span></p>
+            </div>
+            <div id="output-bundle-list" class="output-bundle-list" aria-live="polite"></div>
+          </section>
 
-        <!-- One-route evidence matrix; authorization and execution remain unavailable. -->
-        <section class="panel workspace-panel" aria-label="Execution gate status">
-          <div class="panel-head">
-            <h2>Execution Gate</h2>
-            <span id="execution-gate-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Scope</strong><span id="execution-gate-scope">loading</span></p>
-            <p><strong>Evaluations</strong><span id="execution-gate-count">loading</span></p>
-            <p><strong>Required gates</strong><span id="execution-gate-progress">loading</span></p>
-            <p><strong>Safety</strong><span id="execution-gate-safety">loading</span></p>
-            <p><strong>Execution</strong><span id="execution-gate-action">loading</span></p>
-          </div>
-          <div id="execution-gate-list" class="execution-gate-list" aria-live="polite"></div>
-        </section>
-
-        <!-- Logical request and audit preview; nothing is saved, authorized, or run. -->
-        <section class="panel workspace-panel" aria-label="Execution request preview status">
-          <div class="panel-head">
-            <h2>Execution Request Preview</h2>
-            <span id="execution-request-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="execution-request-mode">loading</span></p>
-            <p><strong>Previews</strong><span id="execution-request-count">loading</span></p>
-            <p><strong>Authorization</strong><span id="execution-request-authorization">loading</span></p>
-            <p><strong>Audit events</strong><span id="execution-request-audit">loading</span></p>
-            <p><strong>Execution</strong><span id="execution-request-action">loading</span></p>
-          </div>
-          <div id="execution-request-list" class="execution-request-list" aria-live="polite"></div>
-        </section>
-
-        <!-- App-owned prepared jobs and cancellation intent; process execution remains impossible. -->
-        <section class="panel workspace-panel" aria-label="Contained job workspace status">
-          <div class="panel-head">
-            <h2>Contained Job Workspaces</h2>
-            <span id="job-workspace-state" class="badge unknown">unknown</span>
-          </div>
-          <div class="status-rows">
-            <p><strong>Mode</strong><span id="job-workspace-mode">loading</span></p>
-            <p><strong>Prepared jobs</strong><span id="job-workspace-count">loading</span></p>
-            <p><strong>Cancellation</strong><span id="job-cancellation-count">loading</span></p>
-            <p><strong>Location</strong><span id="job-workspace-location">loading</span></p>
-            <p><strong>Execution</strong><span id="job-workspace-execution">loading</span></p>
-          </div>
-          <div id="job-workspace-list" class="job-workspace-list" aria-live="polite"></div>
-        </section>
-
-        <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
-        <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
-        <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>
-        <section class="panel" aria-label="Blocked actions">
-          <div class="panel-head">
-            <h2>Blocked Actions</h2>
-            <span class="badge blocked">blocked</span>
-          </div>
-          <ul id="blocked-actions" class="blocked-list"></ul>
-        </section>
+          <section class="inspector-section proof-boundary" aria-label="Current proof boundary">
+            <div class="deck-head"><h3>Current boundary</h3><span class="badge blocked">blocked</span></div>
+            <p>Planning data only. No selected-file handoff, command, process, output artifact, or proof capture is enabled.</p>
+          </section>
+        </aside>
       </main>
     </div>
 

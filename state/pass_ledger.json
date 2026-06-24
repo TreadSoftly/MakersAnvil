@@ -198,6 +198,20 @@
         "the explainability checker enforces structured module and asset headers plus component documentation",
         "runtime behavior and completion percentage remain unchanged because this remediation pass enables no new application action"
       ]
+    },
+    {
+      "id": "PASS-015",
+      "title": "preview-first maker workbench shell and responsive dashboard foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_015_REPORT.md",
+      "proof": [
+        "the first screen is a dense maker workbench with intake, selected input, tools, workflow, and output proof zones",
+        "persistent rail navigation, quick-jump search, and Work Flow, Plans, and Dev tabs operate entirely in the browser",
+        "all existing API render targets remain unique and connected to the new shell",
+        "selected input and expected output summaries render untrusted metadata through text nodes",
+        "desktop workbench geometry has no page overflow and mobile reflow has no horizontal overflow",
+        "upload, file handoff, authorization, commands, processes, tools, outputs, and package actions remain disabled"
+      ]
     }
   ]
 }

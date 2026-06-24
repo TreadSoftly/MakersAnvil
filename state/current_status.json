@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-014",
-    "title": "previous-app design assimilation and source explanation remediation",
+    "id": "PASS-015",
+    "title": "preview-first maker workbench shell and responsive dashboard foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_014_REPORT.md"
+    "reportPath": "docs/passes/PASS_015_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 32.5,
-    "windowsLocal": 32.5,
+    "realApp": 35.0,
+    "windowsLocal": 35.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -73,6 +73,11 @@
     "Every comment-capable source file begins with visible structured context covering purpose, caller, inputs, outputs, side effects, safety, failure behavior, and related proof.",
     "A file-by-file source walkthrough connects backend, frontend, scripts, structured contracts, tests, and durable truth for future humans and models.",
     "The explainability checker rejects missing structured source context and undersized component documentation.",
+    "The first screen is a bounded preview-first maker workbench instead of a long equal-weight status stack.",
+    "Persistent rail navigation, quick-jump search, and stable Work Flow, Plans, and Dev tabs change browser views without mutating application state.",
+    "Source intake truth, selected-input metadata, tool inventory, work plans, job workspaces, expected output, and latest proof have dedicated synchronized work zones.",
+    "Desktop workbench layout fits 1366x768 and 1280x720 without page overflow; narrow screens reflow without horizontal overflow.",
+    "Browser upload and every operational command remain visibly blocked while read-only planning evidence stays available.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -98,8 +103,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-015",
-    "title": "preview-first maker workbench shell and responsive dashboard foundation",
+    "id": "PASS-016",
+    "title": "explicit authorization and command preview foundation",
     "claimState": "planned"
   }
 }

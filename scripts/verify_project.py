@@ -112,6 +112,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_012_REPORT.md",
     "docs/passes/PASS_013_REPORT.md",
     "docs/passes/PASS_014_REPORT.md",
+    "docs/passes/PASS_015_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -206,12 +207,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-014":
-        errors.append("GET /api/state does not report PASS-014")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-014":
-        errors.append("GET /api/workspace/status does not report PASS-014")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-014":
-        errors.append("GET /api/passes/ledger does not report PASS-014 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-015":
+        errors.append("GET /api/state does not report PASS-015")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-015":
+        errors.append("GET /api/workspace/status does not report PASS-015")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-015":
+        errors.append("GET /api/passes/ledger does not report PASS-015 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -355,14 +356,14 @@ def check_status_records() -> list[str]:
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-014":
-        errors.append("current status does not report PASS-014")
-    if status.get("trackPercentages", {}).get("realApp") != 32.5:
-        errors.append("real app completion is not 32.5 for PASS-014")
+    if status.get("currentPass", {}).get("id") != "PASS-015":
+        errors.append("current status does not report PASS-015")
+    if status.get("trackPercentages", {}).get("realApp") != 35.0:
+        errors.append("real app completion is not 35.0 for PASS-015")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-014":
-        errors.append("pass ledger latest pass is not PASS-014")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-015":
+        errors.append("pass ledger latest pass is not PASS-015")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")

@@ -89,3 +89,7 @@ Avoid vague dashboard terms and avoid using `route` as the main beginner-facing 
 6. Update this study when a prototype lesson is accepted, rejected, or superseded.
 
 The ignored prototype can disappear and this contract remains sufficient to continue the real application.
+
+## Applied In PASS-015
+
+PASS-015 implemented the first governed translation of this study: a compact rail and command bar, paired source intake/selected-input zones, horizontal tool inventory, stable Work Flow/Plans/Dev command deck, right-side work-preview/output-proof inspector, local desktop scrolling, and stacked narrow-screen flow. It intentionally did not copy the old React component tree, old CSS effects, tool icons, personal paths, or action behavior.
