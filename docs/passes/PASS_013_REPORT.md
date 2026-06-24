@@ -6,7 +6,7 @@
 - Claim: `staged`
 - Completion date: `2026-06-24`
 - Branch: `codex/pass-001-clean-foundation`
-- Implementation commit: recorded after publication
+- Implementation commit: `c890814d1d5e1300f13900ba20f6456479665742`
 
 ## Objective
 
@@ -56,7 +56,8 @@ Add the first real job-runtime records without enabling execution: one explicit 
 
 - `python scripts/check_explainability.py` passed with all `113` tracked files mapped and no explanation failures.
 - `python scripts/verify_project.py` passed all `8` verification groups.
-- `python -m pytest -q` passed all `86` tests.
+- `python -m pytest -q` passed all `86` tests; one synchronized-folder cache-write warning appeared after cache cleanup.
+- `python -m pytest -q -p no:cacheprovider` passed all `86` tests without warnings.
 - `node --check frontend/public/assets/app.js` and `git diff --check` passed.
 - Draft 2020-12 validation passed for job policy, job record, cancellation record, job catalog, composed app state, and source manifest.
 - Live HTTP smoke returned `makers-anvil-real-pass-013-contained-job-workspaces`, PASS-013, `32.5000%`, an honest empty catalog, all-false unsafe effects, and POST `405`.
@@ -79,7 +80,11 @@ Only temporary isolated app-owned directories and JSON records were created duri
 
 ## GitHub And CI
 
-Branch, implementation commit, push, draft pull request, and operating-system CI evidence are recorded after publication.
+- Branch `codex/pass-001-clean-foundation` was pushed to `origin` at implementation commit `c890814d1d5e1300f13900ba20f6456479665742`.
+- Draft PR: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-013`.
+- GitHub Actions run `28117640620` passed `Verify on windows-latest` in 39 seconds.
+- GitHub Actions run `28117640620` passed `Verify on ubuntu-latest` in 19 seconds.
+- GitHub Actions run `28117640620` passed `Verify on macos-latest` in 8 seconds.
 
 ## Next Pass
 

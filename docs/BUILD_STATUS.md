@@ -86,7 +86,7 @@ PASS-013 - contained job workspace and cancellation record foundation.
 - PASS-010 explainability covers 87 files; verifier, 61 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-011 explainability covers 93 files; verifier, 69 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-012 explainability covers 102 files; verifier, 76 tests, four schema validations, live/isolated HTTP smoke, desktop/mobile/non-empty browser checks, and Windows/Ubuntu/macOS CI passed.
-- PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, and empty/populated desktop/mobile browser checks passed locally.
+- PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, empty/populated desktop/mobile browser checks, and Windows/Ubuntu/macOS CI passed.
 
 ## Blocked Or Not Proven
 
