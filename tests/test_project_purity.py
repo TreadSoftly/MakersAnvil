@@ -1,4 +1,13 @@
-"""Governance examples that keep product source portable, safe, and current."""
+"""Purpose: Prove repository purity, portability, and durable-truth invariants.
+
+Used by: Developers and CI after every policy, state, source, or reference change.
+Inputs: Tracked product text, ignored reference roots, policies, and state files.
+Outputs: Assertions against personal paths, runtime coupling, and enabled effects.
+Side effects: Reads repository files only.
+Safety: Reference material and one developer's machine can never become dependencies.
+Failure behavior: Any forbidden string, stale marker, or weakened policy fails CI.
+Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+"""
 
 from pathlib import Path
 
@@ -7,12 +16,13 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_reference_folder_is_not_tracked_product_source() -> None:
-    """Both known reference-folder spellings remain outside product history."""
+    """All planning and previous-app reference roots remain outside product history."""
 
     gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
     assert "Refrences For Makers Anvil Application/" in gitignore
     assert "References For Makers Anvil Application/" in gitignore
+    assert "Previous Working MA For References/" in gitignore
 
 
 def test_frontend_has_no_mutating_api_calls() -> None:
@@ -38,6 +48,7 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
         and ".pytest_cache" not in path.parts
         and "Refrences For Makers Anvil Application" not in path.parts
         and "References For Makers Anvil Application" not in path.parts
+        and "Previous Working MA For References" not in path.parts
         and "__pycache__" not in path.parts
     ]
 
@@ -58,11 +69,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-013"
+    assert current["currentPass"]["id"] == "PASS-014"
     assert current["trackPercentages"]["realApp"] == 32.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-013"
+    assert ledger["passes"][-1]["id"] == "PASS-014"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -89,7 +100,15 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
         "One" + "Drive",
         "Mr" + "Dra",
     ]
-    ignored = {".git", ".makers-anvil", ".pytest_cache", "__pycache__"}
+    ignored = {
+        ".git",
+        ".makers-anvil",
+        ".pytest_cache",
+        "__pycache__",
+        "Refrences For Makers Anvil Application",
+        "References For Makers Anvil Application",
+        "Previous Working MA For References",
+    }
     offenders = []
     for path in ROOT.rglob("*"):
         if not path.is_file() or any(part in ignored for part in path.relative_to(ROOT).parts):

@@ -43,4 +43,4 @@ Contains executable behavior examples. Tests cover API safety, intake privacy, r
 
 ## `docs/`
 
-Contains durable human-readable truth. `START_HERE.md` is the entrypoint, `ARCHITECTURE.md` explains system design, `IMPLEMENTATION_GUIDE.md` traces code and data flow, `LEARNING_RESOURCES.md` maps study material, `CONTINUE_PROTOCOL.md` defines the pass loop, `CODE_EXPLAINABILITY_STANDARD.md` defines documentation quality, `PASS_REPORT_TEMPLATE.md` defines required proof, and `passes/` preserves bounded pass evidence.
+Contains durable human-readable truth. `START_HERE.md` is the entrypoint, `SOURCE_WALKTHROUGH.md` traces actual files, `PREVIOUS_APP_REFERENCE_STUDY.md` preserves the accepted workbench direction, `IMPLEMENTATION_GUIDE.md` explains extension flows, `CONTINUE_PROTOCOL.md` defines the pass loop, and `passes/` preserves bounded pass evidence.

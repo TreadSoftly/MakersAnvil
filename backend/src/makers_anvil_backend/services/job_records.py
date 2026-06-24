@@ -1,4 +1,13 @@
-"""Construct and validate non-executable prepared-job runtime records."""
+"""Purpose: Build and validate the records stored for prepared local jobs.
+
+Used by: ``JobWorkspaceService`` before writing or exposing job state.
+Inputs: Logical request previews, job identifiers, and cancellation metadata.
+Outputs: Strict path-redacted job and cancellation dictionaries.
+Side effects: None; this module validates data but does not touch the filesystem.
+Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+Failure behavior: Contract violations raise ``ValueError`` before persistence.
+Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+"""
 
 from __future__ import annotations
 

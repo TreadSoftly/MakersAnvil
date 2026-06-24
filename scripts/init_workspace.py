@@ -1,4 +1,13 @@
-"""Initialize the app-owned local Makers Anvil workspace directory."""
+"""Purpose: Create the portable app-owned runtime directory layout explicitly.
+
+Used by: A human running ``python scripts/init_workspace.py``.
+Inputs: Platform environment and optional runtime-data override.
+Outputs: A redacted JSON layout summary printed to standard output.
+Side effects: Creates only validated app-owned runtime directories.
+Safety: Never imports user files or prints a resolved personal path.
+Failure behavior: Invalid settings or containment errors exit nonzero.
+Related proof: ``tests/test_workspace_config.py``.
+"""
 
 from __future__ import annotations
 

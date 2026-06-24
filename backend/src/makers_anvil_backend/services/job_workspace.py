@@ -1,4 +1,13 @@
-"""Prepare contained app-owned job records without executing a maker workflow."""
+"""Purpose: Prepare contained job folders and cancellation-intent records.
+
+Used by: Explicit local job scripts and read-only job catalog composition.
+Inputs: One validated request-preview ID or prepared-job ID plus safe policy.
+Outputs: Path-redacted records and app-owned control/working/log/output folders.
+Side effects: Creates only the declared app-owned folders and JSON records.
+Safety: No authorization, command, process, signal, source copy, or output work.
+Failure behavior: Traversal, symlinks, malformed records, and scope drift fail closed.
+Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+"""
 
 from __future__ import annotations
 

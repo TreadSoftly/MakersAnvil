@@ -8,11 +8,9 @@ Any careful developer, reviewer, or AI model should be able to determine what a 
 
 ### Every File
 
-- Python files require a module docstring.
-- JavaScript and CSS files require a leading block comment describing purpose, inputs, outputs, and safety boundaries.
-- HTML requires an opening purpose comment and section comments for major interface regions.
-- YAML and workflow files require a leading purpose comment.
-- JSON, TOML, SVG, license, ignore, and Markdown files must have a complete entry in `state/source_manifest.json` because some formats do not safely support comments.
+- Python files require a structured module docstring naming purpose, who uses it, inputs, outputs, side effects, safety, failure behavior, and related proof.
+- JavaScript, CSS, SVG, HTML, YAML, and workflow files require the same structured context in a leading comment supported by section comments for major logical regions.
+- JSON, TOML, license, ignore, and Markdown files must have a complete entry in `state/source_manifest.json` because those formats either do not safely support comments or are better governed by the central ownership map.
 
 ### Every Python Component
 
@@ -36,15 +34,17 @@ Tests must read as executable examples. Test names and docstrings explain the ru
 
 ## What Not To Do
 
-Do not add comments such as "increment the counter" above `counter += 1`. Line-by-line narration duplicates syntax, hides the important reasoning, and becomes stale after edits. Explain meaningful units and decisions instead. This provides more usable detail than commenting every token.
+Every line must be explainable to a new learner. Obvious syntax may be explained once by the surrounding component or block instead of receiving a duplicate sentence, while decisions, trust transitions, state changes, containment checks, and failure branches require nearby reasoning.
 
 Do not leave historical chat instructions, personal paths, secrets, speculative claims, or obsolete implementation plans inside source comments.
 
-The requirement that every line be understandable is met through descriptive names, types, schemas, component documentation, block-level reasoning comments, tests, and the implementation guide. Literal narration of obvious punctuation, imports, assignments, or closing braces is prohibited because it makes important safety explanations harder to find and becomes inaccurate after ordinary edits.
+The requirement is met through structured file headers, descriptive names, types, schemas, component documentation, block-level reasoning comments, executable examples, the source walkthrough, and the implementation guide. A maintainer must be able to answer what, why, who calls it, where data comes from/goes, when effects occur, how failures behave, and which proof protects it.
 
 ## Durable Learning Paths
 
 - `docs/IMPLEMENTATION_GUIDE.md` traces folders, layers, request flow, contracts, safety, extension recipes, and debugging.
+- `docs/SOURCE_WALKTHROUGH.md` gives the file-by-file reading order and connects source blocks to contracts and tests.
+- `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves accepted prototype design knowledge without a runtime dependency.
 - `docs/LEARNING_RESOURCES.md` maps local examples to stable external references.
 - `docs/PASS_REPORT_TEMPLATE.md` defines the proof every completed pass must leave for the next contributor.
 - `state/source_manifest.json` maps every individual tracked file to its purpose and maintenance rules.

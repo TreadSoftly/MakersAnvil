@@ -1,4 +1,13 @@
-"""Examples for portable workspace initialization and policy enforcement."""
+"""Purpose: Explain and prove portable app-owned workspace initialization.
+
+Used by: Developers and CI when settings or runtime directory layout changes.
+Inputs: Isolated runtime roots and valid/invalid default-settings documents.
+Outputs: Assertions over contained directories and redacted public records.
+Side effects: Creates directories only inside temporary roots.
+Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+Failure behavior: Invalid policy or escaping paths raise ``ValueError``.
+Related proof: ``services/workspace_config.py`` and local-settings schema.
+"""
 
 import json
 from pathlib import Path

@@ -1,4 +1,13 @@
-"""Behavior examples for non-persisting execution request and audit previews."""
+"""Purpose: Explain and prove path-free request and audit-preview behavior.
+
+Used by: Developers and CI when request, consent, or lifecycle contracts change.
+Inputs: Isolated policy plus coherent and deliberately broken planning snapshots.
+Outputs: Assertions for logical intent, unaccepted consent, and empty audits.
+Side effects: Temporary files only; no request or event is persisted.
+Safety: Command, path, process, launch, write, and proof effects remain false.
+Failure behavior: Missing joins and weakened policies must fail closed.
+Related proof: ``services/execution_request.py`` and request schemas.
+"""
 
 import json
 from pathlib import Path

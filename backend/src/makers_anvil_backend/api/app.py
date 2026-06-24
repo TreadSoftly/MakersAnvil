@@ -1,4 +1,13 @@
-"""Small read-only API facade for the current Makers Anvil build."""
+"""Purpose: Translate loopback HTTP requests into read-only service calls.
+
+Used by: ``server.RequestHandler`` for every ``/api/*`` request.
+Inputs: An HTTP method and normalized URL path plus composed service state.
+Outputs: An HTTP-like status code and a JSON-serializable response mapping.
+Side effects: None; route handling reads state and never writes or launches.
+Safety: Non-GET methods and unknown routes fail closed at this boundary.
+Failure behavior: Unsupported requests return explicit 404 or 405 records.
+Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+"""
 
 from __future__ import annotations
 

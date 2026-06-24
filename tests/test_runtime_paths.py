@@ -1,4 +1,13 @@
-"""Cross-platform examples for portable runtime path selection and redaction."""
+"""Purpose: Explain and prove portable private runtime-path resolution.
+
+Used by: Developers and CI across Windows, macOS, and Linux runners.
+Inputs: Injected platform/environment values and isolated absolute overrides.
+Outputs: Assertions for provider selection, containment, and public redaction.
+Side effects: None beyond temporary path objects.
+Safety: No source-location dependency or resolved personal path may escape.
+Failure behavior: Relative overrides and invalid providers raise clear errors.
+Related proof: ``services/runtime_paths.py`` and runtime-location schema.
+"""
 
 import json
 from pathlib import Path

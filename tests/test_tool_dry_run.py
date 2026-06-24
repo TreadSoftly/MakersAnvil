@@ -1,4 +1,13 @@
-"""Behavior examples for path-free, non-runnable tool dry-run planning."""
+"""Purpose: Explain and prove semantic, non-runnable tool planning.
+
+Used by: Developers and CI when route-to-tool planning contracts change.
+Inputs: Isolated policy plus route, output, and tool-detection snapshots.
+Outputs: Assertions over selected tools, logical references, and blockers.
+Side effects: Temporary policy files only.
+Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+Failure behavior: Missing compatible tools produce blocked plans, never guesses.
+Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+"""
 
 import json
 from pathlib import Path

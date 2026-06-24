@@ -7,10 +7,10 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-013",
-    "title": "contained job workspace and cancellation record foundation",
+    "id": "PASS-014",
+    "title": "previous-app design assimilation and source explanation remediation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_013_REPORT.md"
+    "reportPath": "docs/passes/PASS_014_REPORT.md"
   },
   "trackPercentages": {
     "realApp": 32.5,
@@ -24,7 +24,9 @@
     "statusPath": "state/current_status.json",
     "passLedgerPath": "state/pass_ledger.json",
     "buildStatusPath": "docs/BUILD_STATUS.md",
-    "continueProtocolPath": "docs/CONTINUE_PROTOCOL.md"
+    "continueProtocolPath": "docs/CONTINUE_PROTOCOL.md",
+    "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
+    "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -67,6 +69,10 @@
     "A second explicit local script records cancellation intent idempotently without signaling or claiming that a process stopped.",
     "Read-only job policy and catalog APIs expose path-redacted prepared and cancellation state while every HTTP mutation remains blocked.",
     "Malformed, weakened, traversing, or symlinked job records fail closed and are never exposed as usable jobs.",
+    "The earlier working Makers Anvil prototype has a tracked design study that preserves accepted layout, workflow, wording, visual, and responsive lessons without becoming a runtime dependency.",
+    "Every comment-capable source file begins with visible structured context covering purpose, caller, inputs, outputs, side effects, safety, failure behavior, and related proof.",
+    "A file-by-file source walkthrough connects backend, frontend, scripts, structured contracts, tests, and durable truth for future humans and models.",
+    "The explainability checker rejects missing structured source context and undersized component documentation.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -92,8 +98,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-014",
-    "title": "explicit authorization and command preview foundation",
+    "id": "PASS-015",
+    "title": "preview-first maker workbench shell and responsive dashboard foundation",
     "claimState": "planned"
   }
 }

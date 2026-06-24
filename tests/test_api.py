@@ -1,4 +1,13 @@
-"""Executable examples for the read-only HTTP-style API contract."""
+"""Purpose: Explain and prove the complete read-only API surface.
+
+Used by: Developers and CI whenever services, routes, or response contracts change.
+Inputs: Isolated app state and HTTP-style method/path calls.
+Outputs: Assertions over status codes, JSON shapes, joins, and blocked mutations.
+Side effects: Uses temporary runtime directories; never touches user data.
+Safety: Every mutating method and unsupported route must fail closed.
+Failure behavior: A changed or weakened API contract fails the named example.
+Related proof: ``backend/.../api/app.py`` and public response schemas.
+"""
 
 from makers_anvil_backend.api.app import MakersAnvilApi
 
@@ -20,7 +29,7 @@ def test_state_keeps_actions_blocked() -> None:
 
     assert response.status == 200
     assert response.body["completion"]["realApp"] == 32.5
-    assert response.body["currentPass"]["id"] == "PASS-013"
+    assert response.body["currentPass"]["id"] == "PASS-014"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -53,11 +62,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-013"
+    assert workspace.body["currentPass"]["id"] == "PASS-014"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-013"
+    assert ledger.body["passes"][-1]["id"] == "PASS-014"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

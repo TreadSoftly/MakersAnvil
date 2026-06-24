@@ -1,9 +1,12 @@
 /*
- * Makers Anvil dashboard presentation.
- *
- * The layout favors a compact operational dashboard, keeps cards at an 8px
- * radius, and includes a true narrow-screen layout with no horizontal overflow.
- * Styling never communicates an unsafe action as enabled.
+ * Purpose: Define the responsive visual system for the Makers Anvil workbench.
+ * Used by: frontend/public/index.html in desktop and narrow browser windows.
+ * Inputs: Semantic classes, data-state classes, and stable DOM region IDs.
+ * Outputs: Layout, typography, color, focus, blocked-state, and responsive rules.
+ * Side effects: Presentation only; CSS cannot change application truth or data.
+ * Safety: Disabled and unproven behavior must never look actionable or complete.
+ * Failure behavior: Progressive layout fallbacks keep content readable without JS.
+ * Related proof: Browser viewport smoke checks and tests/test_project_purity.py.
  */
 
 /* Shared color, spacing, and surface tokens. */

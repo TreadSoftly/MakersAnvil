@@ -1,4 +1,13 @@
-"""Record cancellation intent for one prepared Makers Anvil job."""
+"""Purpose: Record a cancellation request without claiming a stopped process.
+
+Used by: A human targeting one existing prepared-job ID.
+Inputs: One logical job ID and optional runtime-data override.
+Outputs: A path-redacted cancellation-intent record on standard output.
+Side effects: Writes one idempotent app-owned control record.
+Safety: Sends no signal and cannot terminate, kill, or launch a process.
+Failure behavior: Unknown jobs or malformed records return a nonzero exit.
+Related proof: ``tests/test_job_workspace.py``.
+"""
 
 from __future__ import annotations
 

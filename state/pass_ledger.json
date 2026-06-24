@@ -184,6 +184,20 @@
         "malformed, weakened, traversing, and symlinked runtime records fail closed",
         "authorization, commands, processes, tools, user files, output artifacts, audit events, and proof remain disabled"
       ]
+    },
+    {
+      "id": "PASS-014",
+      "title": "previous-app design assimilation and source explanation remediation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_014_REPORT.md",
+      "proof": [
+        "the ignored previous working app was studied as visual and workflow evidence without becoming product source",
+        "accepted and rejected prototype patterns are preserved in a tracked reference study",
+        "all comment-capable source files carry structured purpose, caller, data-flow, side-effect, safety, failure, and proof context",
+        "a file-by-file source walkthrough connects code, contracts, scripts, tests, and durable truth",
+        "the explainability checker enforces structured module and asset headers plus component documentation",
+        "runtime behavior and completion percentage remain unchanged because this remediation pass enables no new application action"
+      ]
     }
   ]
 }

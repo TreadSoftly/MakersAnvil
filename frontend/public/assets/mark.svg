@@ -1,4 +1,13 @@
-<!-- Compact product mark: an anvil silhouette for browser and app identity. -->
+<!--
+  Purpose: Render the compact anvil product identity without external assets.
+  Used by: The dashboard title and browser favicon.
+  Inputs: None; shapes and colors are fully embedded.
+  Outputs: A scalable accessible anvil mark.
+  Side effects: None; the SVG contains no script, links, or remote resources.
+  Safety: Decorative geometry makes no product-status or completion claim.
+  Failure behavior: Browsers without SVG support show the image alt context.
+  Related proof: Frontend header checks and browser smoke tests.
+-->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Makers Anvil mark">
   <rect width="64" height="64" rx="8" fill="#17211c"/>
   <path d="M14 39h36v6H14z" fill="#f4f1ea"/>

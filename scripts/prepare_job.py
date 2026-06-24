@@ -1,4 +1,13 @@
-"""Prepare one contained Makers Anvil job workspace from a request preview."""
+"""Purpose: Prepare one non-executable job workspace through an explicit command.
+
+Used by: A human after obtaining a valid execution-request preview ID.
+Inputs: One logical request-preview ID and optional runtime-data override.
+Outputs: A path-redacted prepared-job JSON record on standard output.
+Side effects: Creates only allowlisted app-owned job folders and records.
+Safety: Accepts no source path, authorization, command, or launch argument.
+Failure behavior: Invalid IDs, records, or containment return a nonzero exit.
+Related proof: ``tests/test_job_workspace.py``.
+"""
 
 from __future__ import annotations
 

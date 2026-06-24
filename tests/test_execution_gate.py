@@ -1,4 +1,13 @@
-"""Behavior examples for single-route, non-executing gate evaluation."""
+"""Purpose: Explain and prove single-route execution-gate evaluation.
+
+Used by: Developers and CI before any operational execution work can advance.
+Inputs: Isolated policies and crafted dry-run snapshots.
+Outputs: Assertions for evidence mapping, blockers, scope, and false effects.
+Side effects: Temporary files only.
+Safety: Authorization, process, logging, cancellation, and proof stay unproven.
+Failure behavior: Any optimistic or broadened gate result fails its example.
+Related proof: ``services/execution_gate.py`` and execution-gate schemas.
+"""
 
 import json
 from pathlib import Path

@@ -1,5 +1,11 @@
-# Cross-platform proof gate: every pull request must pass governance and tests
-# on Windows, Ubuntu, and macOS before platform behavior can be claimed.
+# Purpose: Run the canonical repository proof on every supported CI operating system.
+# Used by: GitHub Actions for main-branch pushes and pull requests.
+# Inputs: The checked-out source plus Python 3.12 and pytest.
+# Outputs: Independent Windows, Ubuntu, and macOS verification results.
+# Side effects: Installs test tooling only inside disposable hosted runners.
+# Safety: CI validates portability but does not publish, release, or access user data.
+# Failure behavior: Any verifier or pytest failure blocks the workflow matrix job.
+# Related proof: scripts/verify_project.py and tests/test_verify_project.py.
 name: CI
 
 on:

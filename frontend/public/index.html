@@ -1,8 +1,13 @@
 <!doctype html>
 <!--
-  Static read-only Makers Anvil dashboard shell.
-  JavaScript fills status regions from loopback GET endpoints; this document
-  contains no upload, execution, tool-launch, or other mutating controls.
+  Purpose: Provide the semantic, accessible shell for the Makers Anvil workbench.
+  Used by: The loopback server as the browser application's only HTML entrypoint.
+  Inputs: CSS, the product mark, and JSON rendered later by assets/app.js.
+  Outputs: Named dashboard regions for intake, planning, tools, jobs, and proof.
+  Side effects: None; this static document cannot mutate local or user data.
+  Safety: Contains no upload, execution, tool-launch, or other mutating control.
+  Failure behavior: Loading labels remain visible when the API is unavailable.
+  Related proof: Browser smoke checks and frontend purity tests.
 -->
 <html lang="en">
   <head>

@@ -1,4 +1,13 @@
-"""Metadata-only local file intake records for Makers Anvil."""
+"""Purpose: Record and list privacy-safe metadata for explicit local files.
+
+Used by: The staging script and ``AppStateService`` intake/catalog routes.
+Inputs: One regular-file path at staging time and committed intake policy.
+Outputs: App-owned JSON records containing metadata but no source path/content.
+Side effects: Writes only an intake record; the source file is never changed.
+Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+Failure behavior: Invalid input or malformed records fail closed with errors.
+Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+"""
 
 from __future__ import annotations
 

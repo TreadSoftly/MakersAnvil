@@ -1,4 +1,13 @@
-"""Behavior examples for metadata-derived, non-executing route previews."""
+"""Purpose: Explain and prove deterministic metadata-only route planning.
+
+Used by: Developers and CI when intake kinds or work-route policy changes.
+Inputs: Isolated route catalogs and valid/invalid intake snapshots.
+Outputs: Assertions over matching, steps, blockers, and unmatched records.
+Side effects: Temporary policy files only.
+Safety: Source access, extraction, tool launch, execution, and output stay false.
+Failure behavior: Unsupported input remains unmatched; weakened policy is rejected.
+Related proof: ``services/route_preview.py`` and route schemas.
+"""
 
 import json
 from pathlib import Path

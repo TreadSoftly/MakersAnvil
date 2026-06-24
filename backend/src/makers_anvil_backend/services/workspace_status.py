@@ -1,4 +1,13 @@
-"""Durable workspace status records for Makers Anvil."""
+"""Purpose: Read committed current-pass and pass-ledger product truth.
+
+Used by: ``AppStateService`` and workspace status API routes.
+Inputs: Repository ``state/current_status.json`` and ``state/pass_ledger.json``.
+Outputs: Parsed status and historical pass dictionaries.
+Side effects: None; committed truth files are read only.
+Safety: Runtime observations do not overwrite durable build claims.
+Failure behavior: Missing or malformed truth files raise explicit errors.
+Related proof: ``tests/test_api.py`` and status schema validation.
+"""
 
 from __future__ import annotations
 

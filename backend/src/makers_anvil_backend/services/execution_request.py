@@ -1,4 +1,13 @@
-"""Preview execution intent and required audit records without persisting either."""
+"""Purpose: Preview logical execution intent, consent, and audit requirements.
+
+Used by: ``AppStateService`` after dry-run and execution-gate evaluation.
+Inputs: Request policy plus coherent dry-run and gate snapshots.
+Outputs: Path-free request previews with unaccepted consent and empty audits.
+Side effects: None; previews are never saved and no event is appended.
+Safety: Authorization, path resolution, command building, and launch stay false.
+Failure behavior: Missing joins or weakened policy fail closed or raise errors.
+Related proof: ``tests/test_execution_request.py`` and request schemas.
+"""
 
 from __future__ import annotations
 

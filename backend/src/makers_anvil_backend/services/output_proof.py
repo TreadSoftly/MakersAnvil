@@ -1,4 +1,13 @@
-"""Plan output bundles and proof requirements without creating artifacts."""
+"""Purpose: Derive expected artifacts and evidence from route previews.
+
+Used by: ``AppStateService`` after metadata-only route planning.
+Inputs: Output policy, workspace policy, and a coherent route snapshot.
+Outputs: Logical bundle plans with nonexistent artifacts and incomplete proof.
+Side effects: None; no output directory, file, preview, or proof is created.
+Safety: Planned output is never presented as produced or verified output.
+Failure behavior: Invalid policy or route joins raise clear validation errors.
+Related proof: ``tests/test_output_proof.py`` and output schemas.
+"""
 
 from __future__ import annotations
 

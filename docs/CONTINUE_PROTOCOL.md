@@ -12,31 +12,36 @@ When the user says `Continue`, inspect disk and git state first, then do the nex
 6. `docs/CODE_EXPLAINABILITY_STANDARD.md`
 7. `docs/IMPLEMENTATION_GUIDE.md`
 8. `docs/LEARNING_RESOURCES.md`
-9. `docs/PASS_REPORT_TEMPLATE.md`
-10. The latest pass report named by `currentPass.reportPath`
+9. `docs/SOURCE_WALKTHROUGH.md`
+10. `docs/PREVIOUS_APP_REFERENCE_STUDY.md`
+11. `docs/PASS_REPORT_TEMPLATE.md`
+12. The latest pass report named by `currentPass.reportPath`
 
 ## Required Loop
 
 1. Read the required truth and explanation files.
 2. Check `git status -sb` and `git remote -v`.
 3. Run the existing verifier and tests before broadening scope when useful.
-4. Define one bounded pass, its proof gates, and its non-goals.
-5. Build that pass while keeping unproven or unsafe actions blocked.
-6. Update file-level explanations, all component docstrings, frontend function JSDoc, reasoning comments, tests, architecture, and `state/source_manifest.json` for every responsibility changed.
-7. Run `python scripts/check_explainability.py`.
-8. Run `python scripts/verify_project.py`.
-9. Run `python -m pytest -q`.
-10. Run pass-specific runtime, API, browser, relocation, or platform smoke tests.
-11. Update build status, pass report, pass ledger, source manifest, and next-pass notes.
-12. Commit and push if the working tree is cleanly scoped and GitHub authentication is available.
-13. Wait for CI and report proven, blocked, not-proven, exact commands, and track-specific percentages.
+4. Check the accepted previous-app patterns for layout, workflow, wording, and visual evidence relevant to the pass; inspect selected ignored reference artifacts only when the tracked study is insufficient.
+5. Define one bounded pass, its proof gates, and its non-goals.
+6. Build that pass while keeping unproven or unsafe actions blocked.
+7. Update structured file headers, component docstrings/JSDoc, reasoning comments, tests, architecture, the source walkthrough, and `state/source_manifest.json` for every responsibility changed.
+8. Run `python scripts/check_explainability.py`.
+9. Run `python scripts/verify_project.py`.
+10. Run `python -m pytest -q`.
+11. Run pass-specific runtime, API, browser, relocation, or platform smoke tests.
+12. Update build status, pass report, pass ledger, source manifest, and next-pass notes.
+13. Commit and push if the working tree is cleanly scoped and GitHub authentication is available.
+14. Wait for CI and report proven, blocked, not-proven, exact commands, and track-specific percentages.
 
 ## Explainability Is Part Of Done
 
 - Every tracked file must have a current entry in `state/source_manifest.json`.
-- Every Python module and component, including private helpers and tests, must satisfy the docstring checks.
+- Every Python module must visibly state purpose, user/caller, inputs, outputs, side effects, safety, failure behavior, and related proof.
+- Every Python component, including private helpers and tests, must satisfy the docstring checks.
 - Frontend functions must retain nearby JSDoc; frontend and workflow files must retain purpose and section comments.
 - Comments must explain intent, data flow, invariants, safety, and failure behavior rather than repeat syntax.
+- Every changed logical block must be understandable from its component documentation, nearby reasoning comment, names/types, and linked test. A technically passing but visibly under-explained file is unfinished.
 - A pass with stale or missing explanations fails even when its functional tests pass.
 
 ## Required User Report

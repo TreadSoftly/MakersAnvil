@@ -1,4 +1,13 @@
-"""Stage one file as a metadata-only Makers Anvil intake record."""
+"""Purpose: Explicitly stage metadata for one regular local source file.
+
+Used by: A human choosing one file for the read-only planning pipeline.
+Inputs: One regular-file path and optional runtime-data override.
+Outputs: A privacy-safe intake-record summary on standard output.
+Side effects: Writes one app-owned JSON record; the source remains unchanged.
+Safety: Folders, symlinks, contents, copying, extraction, and launch are excluded.
+Failure behavior: Invalid sources or policy violations return a nonzero exit.
+Related proof: ``tests/test_intake_catalog.py``.
+"""
 
 from __future__ import annotations
 

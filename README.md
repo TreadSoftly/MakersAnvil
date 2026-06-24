@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 013 is staged at `32.5000%`. The app has a read-only local backend, a visible browser dashboard, portable per-user runtime storage, metadata planning, tool detection and dry runs, execution gates, logical request previews, contained prepared job workspaces, and cancellation-request records. Browser/API upload, executable request persistence, authorization acceptance, runnable commands, selected-file handoff, process signaling/execution, output artifacts, audit events, proof capture, tool launch, software changes, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: real application build pass 014 is staged at `32.5000%`. The earlier working prototype has been converted into a governed design study, and every comment-capable source file now carries structured purpose, caller, data-flow, side-effect, safety, failure, and proof context. Runtime capability is unchanged: browser/API upload, authorization acceptance, runnable commands, selected-file handoff, process signaling/execution, output artifacts, tool launch, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
 
 ## Run Locally
 
@@ -60,13 +60,13 @@ Set `MAKERS_ANVIL_DATA_DIR` to an absolute directory to use an explicit data loc
 
 ## Repository Policy
 
-The folder `Refrences For Makers Anvil Application/` is reference-only. It is ignored by git and must not be required by runtime code, tests, or packaged app files.
+The planning roots and `Previous Working MA For References/` are reference-only. They are ignored by git and must not be required by runtime code, tests, or packaged app files. Accepted prior-app design lessons are preserved in `docs/PREVIOUS_APP_REFERENCE_STUDY.md`.
 
 Makers Anvil is built Windows-first, with macOS, Linux, and browser-hosted support kept as planned targets until their own proof gates exist.
 
 ## Understanding And Continuing The Build
 
-Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/IMPLEMENTATION_GUIDE.md` traces code and data flow, `docs/LEARNING_RESOURCES.md` maps study material, `docs/ARCHITECTURE.md` explains safety boundaries, `docs/CODE_EXPLAINABILITY_STANDARD.md` defines required explanations, and `state/source_manifest.json` explains every tracked file.
+Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/SOURCE_WALKTHROUGH.md` traces the actual files, `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves the intended workbench direction, and `state/source_manifest.json` explains every tracked file.
 
 Documentation quality is machine-checked:
 

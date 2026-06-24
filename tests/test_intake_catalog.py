@@ -1,4 +1,13 @@
-"""Executable examples for metadata-only intake privacy and containment."""
+"""Purpose: Explain and prove metadata-only intake privacy and containment.
+
+Used by: Developers and CI whenever file intake policy or records change.
+Inputs: Temporary files, isolated runtime roots, and valid/invalid policies.
+Outputs: Assertions over metadata records, source preservation, and rejection.
+Side effects: Writes temporary app-owned records only.
+Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+Failure behavior: Unsafe or malformed input must raise or become invalid evidence.
+Related proof: ``services/intake_catalog.py`` and intake schemas.
+"""
 
 import json
 from pathlib import Path

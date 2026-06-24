@@ -1,4 +1,13 @@
-"""Detect known maker tools without executing them or exposing install paths."""
+"""Purpose: Report path-redacted presence evidence for known maker tools.
+
+Used by: ``AppStateService`` before semantic tool selection and dashboard render.
+Inputs: Tool catalog, platform identity, PATH lookup, and standard candidates.
+Outputs: Tool/family summaries with detection method but no resolved path.
+Side effects: Filesystem existence checks only; no process or version command runs.
+Safety: Detection cannot launch, install, update, repair, or expose private paths.
+Failure behavior: Unknown platforms and missing tools remain not proven.
+Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+"""
 
 from __future__ import annotations
 

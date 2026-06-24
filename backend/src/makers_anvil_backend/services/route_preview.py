@@ -1,4 +1,13 @@
-"""Build non-executing route previews from validated intake metadata."""
+"""Purpose: Match intake metadata to deterministic candidate work routes.
+
+Used by: ``AppStateService`` after the intake catalog snapshot is built.
+Inputs: Route catalog policy and validated metadata-only intake records.
+Outputs: Planned route steps, tool-family needs, and explicit blockers.
+Side effects: None; source files are not reopened, read, extracted, or launched.
+Safety: Candidate planning never implies execution or output readiness.
+Failure behavior: Unsupported metadata becomes unmatched; bad policy raises errors.
+Related proof: ``tests/test_route_preview.py`` and route schemas.
+"""
 
 from __future__ import annotations
 

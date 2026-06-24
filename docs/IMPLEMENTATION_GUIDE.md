@@ -4,7 +4,7 @@
 
 This guide is the durable code roadmap for a developer, student, reviewer, or AI model. It explains where behavior lives, how one request moves through the application, which safety rules must remain true, and how to extend the app without relying on private chat history.
 
-Use this guide with `docs/START_HERE.md`, the current status files, source-manifest entries, schemas, and tests. The repository is authoritative when this guide and code disagree; repair the stale guide in the same change.
+Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/PREVIOUS_APP_REFERENCE_STUDY.md`, the current status files, source-manifest entries, schemas, and tests. The repository is authoritative when this guide and code disagree; repair the stale guide in the same change.
 
 ## Application Shape
 
@@ -32,7 +32,9 @@ The current HTTP boundary rejects every non-GET API request. Local scripts are t
 4. `docs/BUILD_STATUS.md` explains the same truth for humans.
 5. `docs/passes/PASS_NNN_REPORT.md` records one pass's exact evidence and non-goals.
 6. `state/source_manifest.json` explains ownership and maintenance requirements for every tracked file.
-7. Schemas, tests, and implementation establish the actual behavioral contract.
+7. `docs/SOURCE_WALKTHROUGH.md` connects each source file to its caller, contract, effect, and test.
+8. `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves accepted workbench design evidence without runtime coupling.
+9. Schemas, tests, and implementation establish the actual behavioral contract.
 
 Do not infer current truth from an old chat, commit message, screenshot, or historical pass report.
 

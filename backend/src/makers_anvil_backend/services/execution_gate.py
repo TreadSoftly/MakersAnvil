@@ -1,4 +1,13 @@
-"""Evaluate one route's execution gates without creating or running a job."""
+"""Purpose: Evaluate whether one allowlisted route has required evidence.
+
+Used by: ``AppStateService`` after semantic tool dry-run planning.
+Inputs: Gate policy plus a coherent dry-run snapshot.
+Outputs: Per-plan evidence gates and an always-blocked execution action.
+Side effects: None; evaluation does not authorize, persist, or execute work.
+Safety: Operational gates remain unsatisfied until real evidence exists.
+Failure behavior: Malformed or weakened policy raises ``ValueError``.
+Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,13 @@
-"""Allowed claim states for Makers Anvil proof and UI labels."""
+"""Purpose: Define the finite truth vocabulary used by APIs and the UI.
+
+Used by: Every service that labels evidence as proven, staged, or blocked.
+Inputs: Internal enum construction and serialization requests.
+Outputs: Stable string values matching ``claim-state.schema.json``.
+Side effects: None.
+Safety: A closed enum prevents optimistic or invented truth labels.
+Failure behavior: Unknown values raise normal enum conversion errors.
+Related proof: ``schemas/claim-state.schema.json`` and verifier schema checks.
+"""
 
 from __future__ import annotations
 

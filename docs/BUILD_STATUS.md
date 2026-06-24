@@ -2,7 +2,7 @@
 
 ## Current Pass
 
-PASS-013 - contained job workspace and cancellation record foundation.
+PASS-014 - previous-app design assimilation and source explanation remediation.
 
 ## Track Percentages
 
@@ -87,6 +87,7 @@ PASS-013 - contained job workspace and cancellation record foundation.
 - PASS-011 explainability covers 93 files; verifier, 69 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-012 explainability covers 102 files; verifier, 76 tests, four schema validations, live/isolated HTTP smoke, desktop/mobile/non-empty browser checks, and Windows/Ubuntu/macOS CI passed.
 - PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, empty/populated desktop/mobile browser checks, and Windows/Ubuntu/macOS CI passed.
+- PASS-014 preserves the accepted previous-app workbench direction in tracked truth, adds a file-by-file source walkthrough, and replaces weak one-line module headers with machine-enforced structured context. Runtime capability remains `32.5000%` because this remediation pass enables no new action.
 
 ## Blocked Or Not Proven
 
@@ -112,4 +113,4 @@ PASS-013 - contained job workspace and cancellation record foundation.
 
 ## Next Pass
 
-PASS-014 - explicit authorization and command preview foundation.
+PASS-015 - preview-first maker workbench shell and responsive dashboard foundation.

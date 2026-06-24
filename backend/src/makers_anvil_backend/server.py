@@ -1,4 +1,13 @@
-"""Local read-only HTTP server for Makers Anvil."""
+"""Purpose: Serve the static dashboard and read-only API on loopback.
+
+Used by: ``scripts/run_dev.py`` and ``python -m makers_anvil_backend``.
+Inputs: Host/port settings, HTTP requests, and checked-in frontend assets.
+Outputs: Static responses or JSON responses delegated to ``MakersAnvilApi``.
+Side effects: Opens a loopback listening socket while the process is running.
+Safety: Static paths are contained and all mutating API methods stay blocked.
+Failure behavior: Missing assets return 404; startup and socket errors surface.
+Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+"""
 
 from __future__ import annotations
 

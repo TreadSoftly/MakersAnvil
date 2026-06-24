@@ -1,4 +1,13 @@
-"""Behavior examples for path-redacted, non-executing tool detection."""
+"""Purpose: Explain and prove safe maker-tool presence detection.
+
+Used by: Developers and CI when tool catalogs or platform providers change.
+Inputs: Injected PATH/candidate checks, platform identity, and isolated policy.
+Outputs: Assertions for family coverage, detection evidence, and redaction.
+Side effects: No processes or writes; test probes are injected.
+Safety: Install paths, versions, launch, install, update, and repair stay private.
+Failure behavior: Missing tools/platforms remain not proven; bad policy is rejected.
+Related proof: ``services/tool_detection.py`` and tool schemas.
+"""
 
 import json
 from pathlib import Path

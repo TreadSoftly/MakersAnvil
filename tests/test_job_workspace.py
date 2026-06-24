@@ -1,4 +1,13 @@
-"""Executable examples for contained job preparation and cancellation records."""
+"""Purpose: Explain and prove contained preparation and cancellation intent.
+
+Used by: Developers and CI before execution/process work can be introduced.
+Inputs: Isolated request previews, policies, runtime roots, and malformed cases.
+Outputs: Assertions over folders, records, idempotency, and blocked effects.
+Side effects: Creates only temporary app-owned job structures.
+Safety: No authorization, command, process, signal, source, output, or proof escapes.
+Failure behavior: Traversal, symlinks, drift, and malformed records fail closed.
+Related proof: Job services, scripts, policies, and schemas.
+"""
 
 import json
 from pathlib import Path

@@ -4,6 +4,12 @@
 
 Makers Anvil is a local-first control panel for maker workflows. The current application is intentionally small and read-only while safety gates are built. The browser dashboard reads JSON state from a loopback Python server. Explicit local scripts may create app-owned runtime records, but the HTTP API cannot mutate state.
 
+## Experience Direction
+
+The accepted application shape is a preview-first maker workbench: left navigation rail, compact command/header area, source intake, selected-input preview, tool context, work plans/workflow, latest output proof, and a synchronized preview/proof inspector. `docs/PREVIOUS_APP_REFERENCE_STUDY.md` records the evidence and responsive expectations. It informs presentation and workflow only; the ignored prototype is never imported or required.
+
+Beginner-facing labels use source files, work plans, workflow, preview, tools, output, and proof. Internal route identifiers remain stable contract vocabulary. Planned, blocked, and not-proven state must remain visually and semantically distinct from completed proof.
+
 ## Major Layers
 
 ### Browser UI
@@ -91,4 +97,4 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Prepared jobs are app-owned runtime records but remain non-executable. The next capability is explicit authorization and command preview; it must not start a process or hand a source file to a tool.
+Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Prepared jobs are app-owned runtime records but remain non-executable. The next pass rebuilds the preview-first workbench shell around these existing contracts. Explicit authorization and command preview follows after the primary workflow is visibly organized; neither pass may start a process or hand a source file to a tool.

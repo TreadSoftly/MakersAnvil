@@ -1,4 +1,13 @@
-"""Portable local workspace configuration and app-owned data layout."""
+"""Purpose: Validate settings and initialize the app-owned runtime layout.
+
+Used by: Workspace APIs, initialization scripts, and dependent services.
+Inputs: Default settings plus a private runtime root from ``RuntimePathsService``.
+Outputs: Redacted config/layout records and optionally created safe directories.
+Side effects: Initialization creates only allowlisted directories under the root.
+Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+Failure behavior: Invalid settings or containment violations raise ``ValueError``.
+Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+"""
 
 from __future__ import annotations
 

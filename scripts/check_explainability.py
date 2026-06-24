@@ -1,4 +1,13 @@
-"""Verify that every tracked file and public code component is explained."""
+"""Purpose: Enforce durable, visible explanations throughout product source.
+
+Used by: The project verifier, CI, direct developer checks, and tests.
+Inputs: Tracked files, source manifest, module headers, component docs, and guides.
+Outputs: One JSON result listing every missing or stale explanation requirement.
+Side effects: Reads repository files and Git metadata; writes nothing.
+Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+Failure behavior: Any gap produces a nonzero exit with an actionable file location.
+Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+"""
 
 from __future__ import annotations
 
@@ -17,7 +26,19 @@ REQUIRED_GUIDES = {
     "implementationGuidePath": "docs/IMPLEMENTATION_GUIDE.md",
     "learningResourcesPath": "docs/LEARNING_RESOURCES.md",
     "passReportTemplatePath": "docs/PASS_REPORT_TEMPLATE.md",
+    "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
+    "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
 }
+REQUIRED_CONTEXT_LABELS = (
+    "Purpose:",
+    "Used by:",
+    "Inputs:",
+    "Outputs:",
+    "Side effects:",
+    "Safety:",
+    "Failure behavior:",
+    "Related proof:",
+)
 
 
 def tracked_files() -> list[str]:
@@ -78,20 +99,28 @@ def check_manifest_coverage() -> list[str]:
 
 
 def check_python_docstrings() -> list[str]:
-    """Require module and component docstrings throughout Python code."""
+    """Require structured module context and component docs throughout Python."""
 
     errors: list[str] = []
     paths = sorted(path for root in PYTHON_ROOTS for path in root.rglob("*.py") if "__pycache__" not in path.parts)
     for path in paths:
         tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
         relative = path.relative_to(ROOT).as_posix()
-        if ast.get_docstring(tree) is None:
+        module_doc = ast.get_docstring(tree, clean=False)
+        if module_doc is None:
             errors.append(f"Python module docstring missing: {relative}")
+        else:
+            for label in REQUIRED_CONTEXT_LABELS:
+                if label not in module_doc:
+                    errors.append(f"Python module context missing {label} {relative}:1")
         for node in ast.walk(tree):
             if not isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
-            if ast.get_docstring(node) is None:
+            component_doc = ast.get_docstring(node)
+            if component_doc is None:
                 errors.append(f"Python component docstring missing: {relative}:{node.lineno} {node.name}")
+            elif len(component_doc.strip()) < 20:
+                errors.append(f"Python component docstring too short: {relative}:{node.lineno} {node.name}")
     return errors
 
 
@@ -113,7 +142,7 @@ def check_javascript_function_comments() -> list[str]:
 
 
 def check_text_file_headers() -> list[str]:
-    """Require non-visible purpose comments in frontend assets and CI workflow."""
+    """Require structured context headers in frontend assets and CI workflow."""
 
     rules = {
         ".github/workflows/ci.yml": "#",
@@ -126,9 +155,18 @@ def check_text_file_headers() -> list[str]:
         text = (ROOT / relative).read_text(encoding="utf-8").lstrip()
         if not text.startswith(prefix):
             errors.append(f"purpose comment missing from file header: {relative}")
+            continue
+        header = "\n".join(text.splitlines()[:16])
+        for label in REQUIRED_CONTEXT_LABELS:
+            if label not in header:
+                errors.append(f"structured header missing {label} {relative}:1")
     html = (ROOT / "frontend" / "public" / "index.html").read_text(encoding="utf-8")
     if "<!--" not in "\n".join(html.splitlines()[:12]):
         errors.append("purpose comment missing from HTML header: frontend/public/index.html")
+    html_header = "\n".join(html.splitlines()[:18])
+    for label in REQUIRED_CONTEXT_LABELS:
+        if label not in html_header:
+            errors.append(f"structured header missing {label} frontend/public/index.html:1")
     return errors
 
 

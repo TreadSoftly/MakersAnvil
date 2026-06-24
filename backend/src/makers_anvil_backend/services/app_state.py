@@ -1,4 +1,13 @@
-"""Current read-only app state for the real Makers Anvil build."""
+"""Purpose: Compose coherent dashboard snapshots from focused services.
+
+Used by: ``MakersAnvilApi`` for state, policy, preview, and catalog routes.
+Inputs: Repository roots, runtime configuration, and optional injected services.
+Outputs: JSON-shaped status records assembled from one observation chain.
+Side effects: Reads committed policy and app-owned runtime records only.
+Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+Failure behavior: Invalid policy or runtime records fail through their service.
+Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +29,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-013-contained-job-workspaces"
+    api_build = "makers-anvil-real-pass-014-reference-explainability"
 
     def __init__(
         self,

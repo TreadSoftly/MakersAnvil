@@ -1,4 +1,13 @@
-"""Executable examples for durable code and file explanation governance."""
+"""Purpose: Prove that source explanations are complete and machine-enforced.
+
+Used by: Developers and CI after every source or documentation change.
+Inputs: The tracked repository, source manifest, headers, comments, and guides.
+Outputs: Assertions that the explainability checker reports no omissions.
+Side effects: Reads repository metadata only.
+Safety: Prevents passing builds whose implementation cannot be handed off.
+Failure behavior: Missing structured context fails with actionable messages.
+Related proof: ``scripts/check_explainability.py`` and explanation standard.
+"""
 
 from scripts import check_explainability
 

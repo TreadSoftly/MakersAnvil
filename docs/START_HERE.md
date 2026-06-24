@@ -10,10 +10,12 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 6. `docs/IMPLEMENTATION_GUIDE.md` - complete code, contract, data-flow, safety, extension, and debugging map.
 7. `docs/LEARNING_RESOURCES.md` - local study order and authoritative external references.
 8. `docs/PASS_REPORT_TEMPLATE.md` - mandatory evidence and reporting structure.
-9. `state/current_status.json` - machine-readable current truth.
-10. `state/pass_ledger.json` - ordered history of completed passes.
-11. `state/source_manifest.json` - purpose and maintenance notes for every tracked file.
-12. The report named by `currentPass.reportPath` in `state/current_status.json`.
+9. `docs/SOURCE_WALKTHROUGH.md` - file-by-file code reading order and call chains.
+10. `docs/PREVIOUS_APP_REFERENCE_STUDY.md` - accepted prototype layout/workflow lessons and rejected legacy risks.
+11. `state/current_status.json` - machine-readable current truth.
+12. `state/pass_ledger.json` - ordered history of completed passes.
+13. `state/source_manifest.json` - purpose and maintenance notes for every tracked file.
+14. The report named by `currentPass.reportPath` in `state/current_status.json`.
 
 ## Before Editing
 
@@ -26,7 +28,7 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 
 - Keep source paths portable and runtime data outside the source checkout.
 - Keep unsafe or unproven actions blocked.
-- Explain each changed file and every component according to the explainability standard.
+- Explain each changed file and every component according to the explainability standard, including the visible structured source header.
 - Comment decisions, invariants, boundaries, and failure behavior; do not narrate obvious syntax.
 - Update tests as executable examples of the intended behavior.
 - Update `state/source_manifest.json` when files are added, removed, renamed, or given new responsibilities.

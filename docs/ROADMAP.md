@@ -15,10 +15,12 @@
 11. Single-route execution gate foundation.
 12. Execution request and audit preview foundation.
 13. Contained job workspace and cancellation record foundation.
-14. Explicit authorization and command preview foundation.
-15. Single-route contained execution with cancellation, audit, and output proof.
-16. Backup, restore, update, and uninstall dry-runs.
-17. Windows packaging and clean-machine proof.
+14. Previous-app design assimilation and source explanation remediation.
+15. Preview-first maker workbench shell and responsive dashboard foundation.
+16. Explicit authorization and command preview foundation.
+17. Single-route contained execution with cancellation, audit, and output proof.
+18. Backup, restore, update, and uninstall dry-runs.
+19. Windows packaging and clean-machine proof.
 
 ## Planned Later
 

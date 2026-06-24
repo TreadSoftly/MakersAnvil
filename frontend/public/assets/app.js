@@ -1,11 +1,16 @@
 /**
- * Read-only dashboard controller.
- *
- * Inputs: JSON from the loopback API's GET endpoints.
- * Outputs: text, badges, meters, capability cards, and blocked-action rows.
- * Safety: this file performs no POST, PUT, DELETE, file, route, or tool action.
+ * Purpose: Fetch and render the current Makers Anvil workbench truth.
+ * Used by: index.html after the static dashboard structure has loaded.
+ * Inputs: JSON from the loopback API's GET endpoints and trusted DOM regions.
+ * Outputs: Text, badges, meters, preview cards, proof rows, and blocked states.
+ * Side effects: Replaces DOM content and performs GET-only loopback requests.
+ * Safety: Performs no POST, PUT, DELETE, file, route, tool, or install action.
+ * Failure behavior: Missing data falls back to conservative unknown/blocked truth.
+ * Related proof: tests/test_api.py and browser smoke assertions.
  */
 
+// Endpoint constants keep the read-only network boundary visible in one place.
+// Adding a URL here does not authorize it: loadState still permits GET only.
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";

@@ -1,4 +1,13 @@
-"""Behavior examples for non-writing output bundles and proof checklists."""
+"""Purpose: Explain and prove non-writing artifact and proof planning.
+
+Used by: Developers and CI when route outputs or proof requirements change.
+Inputs: Isolated output policy and route-preview snapshots.
+Outputs: Assertions over logical bundles, nonexistent artifacts, and proof state.
+Side effects: Temporary policy files only; output directories are never created.
+Safety: Expected output must never be confused with produced or verified output.
+Failure behavior: Missing coverage or enabled effects fail their named examples.
+Related proof: ``services/output_proof.py`` and output schemas.
+"""
 
 import json
 from pathlib import Path

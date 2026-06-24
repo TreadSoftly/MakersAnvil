@@ -1,4 +1,13 @@
-"""Plan semantic tool invocations without resolving paths or constructing commands."""
+"""Purpose: Join route, output, and tool evidence into semantic invocation plans.
+
+Used by: ``AppStateService`` before gate and request-preview evaluation.
+Inputs: Dry-run policy plus coherent route, output, and detection snapshots.
+Outputs: Logical operations, selected tool IDs, references, and blockers.
+Side effects: None; no path resolution, command construction, handoff, or launch.
+Safety: A dry run is planning evidence and can never be executed as returned.
+Failure behavior: Missing tools or joins produce blocked plans; bad policy errors.
+Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+"""
 
 from __future__ import annotations
 

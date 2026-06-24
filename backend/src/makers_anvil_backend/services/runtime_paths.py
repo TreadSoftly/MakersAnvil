@@ -1,4 +1,13 @@
-"""Portable source and per-user runtime path resolution for Makers Anvil."""
+"""Purpose: Resolve private app-data locations without exposing personal paths.
+
+Used by: Workspace, intake, job, launcher, API, and relocation behavior.
+Inputs: Platform identity, environment variables, and optional absolute override.
+Outputs: Private resolved paths plus a separate redacted public location record.
+Side effects: None; resolution alone never creates directories.
+Safety: Runtime storage cannot depend on the source checkout or current directory.
+Failure behavior: Relative or unsafe overrides raise ``ValueError``.
+Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+"""
 
 from __future__ import annotations
 
