@@ -6,7 +6,7 @@
 - Claim: `staged`
 - Completion date: `2026-06-24`
 - Branch: `codex/pass-001-clean-foundation`
-- Implementation commit: recorded by the PASS-015 closeout commit after this report enters history.
+- Implementation commit: `c735fe40923dd6f13d6a46c152618622ee774804`
 
 ## Objective
 
@@ -59,7 +59,7 @@ Browser/API upload, source-file handoff, route execution, output creation/openin
 - `python scripts/verify_project.py` passed all `8` verification groups.
 - `python -m pytest -q -p no:cacheprovider` passed all `91` tests.
 - `node --check frontend/public/assets/app.js`, duplicate-ID/DOM-target audit, and `git diff --check` passed.
-- Final GitHub and CI results are recorded by the closeout commit after observed proof.
+- GitHub and CI results passed and are recorded below.
 
 ## Runtime And Visual Proof
 
@@ -78,7 +78,11 @@ No reference asset or legacy code was copied into product source. Frontend behav
 
 ## GitHub And CI
 
-The closeout commit records the exact implementation hash, push, draft pull request, and Windows/Ubuntu/macOS CI results.
+- Branch: `codex/pass-001-clean-foundation`.
+- Implementation commit: `c735fe40923dd6f13d6a46c152618622ee774804` (`Complete PASS-015 preview-first workbench`).
+- Push to `origin/codex/pass-001-clean-foundation` succeeded.
+- Draft pull request: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-015`.
+- GitHub Actions run `28134548110` passed `Verify on windows-latest`, `Verify on ubuntu-latest`, and `Verify on macos-latest`.
 
 ## Next Pass
 
