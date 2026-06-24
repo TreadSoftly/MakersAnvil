@@ -14,6 +14,7 @@ const intakeUrl = "/api/intake/catalog";
 const routePreviewUrl = "/api/routes/preview";
 const outputProofUrl = "/api/outputs/preview";
 const toolDetectionUrl = "/api/tools/detection";
+const toolDryRunUrl = "/api/tools/dry-run";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -71,6 +72,14 @@ const fallbackState = {
     tools: [],
     safety: { processExecuted: false, versionCommandExecuted: false, filesystemWritten: false },
     actions: { launch: { enabledInApi: false }, install: { enabledInApi: false } },
+  },
+  toolDryRun: {
+    claimState: "unknown",
+    mode: "not proven",
+    summary: { routePreviewCount: 0, planCount: 0, selectedToolCount: 0, blockedPlanCount: 0, unmatchedPlanCount: 0 },
+    plans: [],
+    safety: {},
+    executionAction: { claimState: "blocked", enabledInApi: false },
   },
 };
 
@@ -369,7 +378,69 @@ function renderToolDetection(state, response = {}) {
   });
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}) {
+function renderToolDryRun(state, response = {}) {
+  const dryRun = response.schemaVersion ? response : state.toolDryRun || fallbackState.toolDryRun;
+  const dryRunState = document.querySelector("#tool-dry-run-state");
+  dryRunState.textContent = dryRun.claimState || "unknown";
+  dryRunState.className = `badge ${claimClass(dryRunState.textContent)}`;
+  document.querySelector("#tool-dry-run-mode").textContent = dryRun.mode || "not proven";
+  const summary = dryRun.summary || {};
+  document.querySelector("#tool-dry-run-count").textContent = `${summary.planCount || 0} planned · ${summary.blockedPlanCount || 0} blocked`;
+  document.querySelector("#tool-dry-run-selection").textContent = `${summary.selectedToolCount || 0}/${summary.planCount || 0} plans matched`;
+  const safety = dryRun.safety || {};
+  document.querySelector("#tool-dry-run-command").textContent = safety.commandConstructed === false
+    ? "not constructed"
+    : "not proven";
+  document.querySelector("#tool-dry-run-execution").textContent = dryRun.executionAction?.enabledInApi === false
+    && safety.processExecuted === false
+    && safety.selectedFileHandedOff === false
+    ? "handoff and execution blocked"
+    : "not proven";
+
+  const target = document.querySelector("#tool-dry-run-list");
+  target.replaceChildren();
+  if (!dryRun.plans?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No tool dry-run plans available.";
+    target.append(empty);
+    return;
+  }
+
+  // Display names are untrusted metadata and logical references deliberately
+  // replace private source/output paths, so every plan is rendered as text.
+  dryRun.plans.forEach((plan) => {
+    const item = document.createElement("article");
+    item.className = "tool-dry-run-item";
+    const heading = document.createElement("div");
+    heading.className = "tool-dry-run-head";
+    const title = document.createElement("h3");
+    title.textContent = plan.invocation.operation.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(plan.claimState)}`;
+    stateBadge.textContent = plan.claimState;
+    heading.append(title, stateBadge);
+
+    const source = document.createElement("p");
+    source.className = "tool-dry-run-source";
+    source.textContent = `${plan.source.displayName} · ${plan.route.label}`;
+    const selection = document.createElement("p");
+    selection.className = "tool-dry-run-selection";
+    selection.textContent = plan.toolSelection.selectedTool
+      ? `${plan.toolSelection.selectedTool.label} · ${plan.toolSelection.selectedTool.executableName}`
+      : `No detected candidate · ${plan.toolSelection.requiredFamily}`;
+    const references = document.createElement("p");
+    references.className = "tool-dry-run-references";
+    references.textContent = `${plan.source.logicalReference} → ${plan.output.logicalDirectory}`;
+    const blockers = document.createElement("p");
+    blockers.className = "tool-dry-run-blockers";
+    blockers.textContent = `Blocked by: ${plan.readiness.blockers.join(", ")}`;
+    item.append(heading, source, selection, references, blockers);
+    target.append(item);
+  });
+}
+
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -380,6 +451,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderRoutePreview(state, routePreview);
   renderOutputProof(state, outputProof);
   renderToolDetection(state, toolDetection);
+  renderToolDryRun(state, toolDryRun);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -388,7 +460,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -397,8 +469,9 @@ async function loadState() {
       fetch(routePreviewUrl, { method: "GET", cache: "no-store" }),
       fetch(outputProofUrl, { method: "GET", cache: "no-store" }),
       fetch(toolDetectionUrl, { method: "GET", cache: "no-store" }),
+      fetch(toolDryRunUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -410,6 +483,7 @@ async function loadState() {
       await routePreviewResponse.json(),
       await outputProofResponse.json(),
       await toolDetectionResponse.json(),
+      await toolDryRunResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

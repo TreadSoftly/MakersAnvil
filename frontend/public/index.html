@@ -126,6 +126,22 @@
           <div id="tool-detection-list" class="tool-detection-list" aria-live="polite"></div>
         </section>
 
+        <!-- Semantic invocation plans; commands, paths, handoff, launch, and execution stay absent. -->
+        <section class="panel workspace-panel" aria-label="Tool dry-run status">
+          <div class="panel-head">
+            <h2>Tool Dry Run</h2>
+            <span id="tool-dry-run-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Mode</strong><span id="tool-dry-run-mode">loading</span></p>
+            <p><strong>Plans</strong><span id="tool-dry-run-count">loading</span></p>
+            <p><strong>Tool selection</strong><span id="tool-dry-run-selection">loading</span></p>
+            <p><strong>Command</strong><span id="tool-dry-run-command">loading</span></p>
+            <p><strong>Execution</strong><span id="tool-dry-run-execution">loading</span></p>
+          </div>
+          <div id="tool-dry-run-list" class="tool-dry-run-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>

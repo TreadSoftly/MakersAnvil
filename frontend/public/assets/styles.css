@@ -406,6 +406,50 @@ p {
   margin-top: 4px;
 }
 
+/* Dry-run rows expose semantic plans and blockers, never runnable commands. */
+.tool-dry-run-list {
+  display: grid;
+  margin-top: 10px;
+}
+
+.tool-dry-run-item {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.tool-dry-run-item + .tool-dry-run-item {
+  margin-top: 14px;
+}
+
+.tool-dry-run-head {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.tool-dry-run-item p {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.tool-dry-run-source,
+.tool-dry-run-selection {
+  color: var(--cyan);
+  font-weight: 600;
+}
+
+.tool-dry-run-references {
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.tool-dry-run-blockers {
+  color: var(--red);
+  margin-top: 6px;
+}
+
 .blocked-list {
   display: grid;
   gap: 8px;

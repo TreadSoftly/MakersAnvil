@@ -126,6 +126,20 @@
         "resolved installation paths and version claims remain withheld",
         "launch and all software-change actions remain disabled"
       ]
+    },
+    {
+      "id": "PASS-010",
+      "title": "semantic tool dry-run planning",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_010_REPORT.md",
+      "proof": [
+        "committed dry-run policy covers every configured route with family-compatible tool preferences",
+        "planning service joins route, output, and tool evidence without resolving paths",
+        "read-only tool dry-run API and composed app state added",
+        "dashboard dry-run summaries and plan rows added",
+        "semantic references replace private source and output paths",
+        "command construction, handoff, process execution, tool launch, and filesystem writes remain disabled"
+      ]
     }
   ]
 }

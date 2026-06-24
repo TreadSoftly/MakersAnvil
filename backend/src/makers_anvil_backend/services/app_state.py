@@ -9,6 +9,7 @@ from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.tool_detection import ToolDetectionService
+from makers_anvil_backend.services.tool_dry_run import ToolDryRunService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 
@@ -16,7 +17,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-009-tool-detection"
+    api_build = "makers-anvil-real-pass-010-tool-dry-run"
 
     def __init__(
         self,
@@ -26,6 +27,7 @@ class AppStateService:
         route_preview: RoutePreviewService | None = None,
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
+        tool_dry_run: ToolDryRunService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
@@ -36,6 +38,11 @@ class AppStateService:
             workspace_config=self._workspace_config,
         )
         self._tool_detection = tool_detection or ToolDetectionService()
+        self._tool_dry_run = tool_dry_run or ToolDryRunService(
+            route_preview=self._route_preview,
+            output_proof=self._output_proof,
+            tool_detection=self._tool_detection,
+        )
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -56,6 +63,8 @@ class AppStateService:
         current_status = self._workspace_status.current_status()
         intake_catalog = self._intake_catalog.catalog()
         route_preview = self._route_preview.preview_catalog(intake_catalog)
+        output_proof = self._output_proof.preview_catalog(route_preview)
+        tool_detection = self._tool_detection.detection_catalog()
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -68,8 +77,9 @@ class AppStateService:
             "workspaceConfig": self._workspace_config.layout(),
             "intakeCatalog": intake_catalog,
             "routePreview": route_preview,
-            "outputProof": self._output_proof.preview_catalog(route_preview),
-            "toolDetection": self._tool_detection.detection_catalog(),
+            "outputProof": output_proof,
+            "toolDetection": tool_detection,
+            "toolDryRun": self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -120,6 +130,11 @@ class AppStateService:
         """Return path-redacted tool presence without executing or changing software."""
 
         return self._tool_detection.detection_catalog()
+
+    def tool_dry_run(self) -> dict[str, Any]:
+        """Return semantic route/tool/output plans with every action still blocked."""
+
+        return self._tool_dry_run.plan_catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -206,6 +221,13 @@ class AppStateService:
                 "label": "Tool detection",
                 "claimState": "staged",
                 "summary": "Known maker tools are checked through PATH and standard locations without execution or path exposure.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "tool-dry-run",
+                "label": "Tool dry run",
+                "claimState": "preview-only",
+                "summary": "Routes, detected tool families, and logical outputs compose into non-runnable invocation plans.",
                 "actionsEnabled": False,
             },
             {

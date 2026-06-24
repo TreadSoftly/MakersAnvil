@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-dry-run.schema.json",
+  "title": "Makers Anvil semantic tool dry-run response",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "summary", "plans", "safety", "executionAction"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.tool-dry-run.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "semantic-invocation-read-only"},
+    "summary": {
+      "type": "object",
+      "required": ["routePreviewCount", "planCount", "selectedToolCount", "blockedPlanCount", "unmatchedPlanCount"],
+      "additionalProperties": false,
+      "properties": {
+        "routePreviewCount": {"type": "integer", "minimum": 0},
+        "planCount": {"type": "integer", "minimum": 0},
+        "selectedToolCount": {"type": "integer", "minimum": 0},
+        "blockedPlanCount": {"type": "integer", "minimum": 0},
+        "unmatchedPlanCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claimState", "source", "route", "output", "toolSelection", "invocation", "readiness"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "claimState": {"const": "preview-only"},
+          "source": {"$ref": "#/$defs/source"},
+          "route": {"$ref": "#/$defs/route"},
+          "output": {"$ref": "#/$defs/output"},
+          "toolSelection": {"$ref": "#/$defs/toolSelection"},
+          "invocation": {"$ref": "#/$defs/invocation"},
+          "readiness": {"$ref": "#/$defs/readiness"}
+        }
+      }
+    },
+    "safety": {"$ref": "tool-dry-run-policy.schema.json#/$defs/safety"},
+    "executionAction": {"$ref": "#/$defs/blockedAction"}
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "required": ["intakeId", "displayName", "kind", "logicalReference"],
+      "additionalProperties": false,
+      "properties": {
+        "intakeId": {"type": "string"},
+        "displayName": {"type": "string"},
+        "kind": {"type": "string"},
+        "logicalReference": {"type": "string", "pattern": "^makers-anvil-intake://records/"}
+      }
+    },
+    "route": {
+      "type": "object",
+      "required": ["previewId", "id", "label", "toolFamily"],
+      "additionalProperties": false,
+      "properties": {
+        "previewId": {"type": "string"},
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "toolFamily": {"type": "string"}
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["bundleId", "logicalDirectory"],
+      "additionalProperties": false,
+      "properties": {
+        "bundleId": {"type": "string"},
+        "logicalDirectory": {"type": "string", "pattern": "^makers-anvil-data://user/outputs/"}
+      }
+    },
+    "selectedTool": {
+      "type": "object",
+      "required": ["id", "label", "executableName", "detectionMethod", "claimState", "absolutePathExposed"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "executableName": {"type": "string"},
+        "detectionMethod": {"enum": ["path-command", "standard-location"]},
+        "claimState": {"const": "detected"},
+        "absolutePathExposed": {"const": false}
+      }
+    },
+    "toolSelection": {
+      "type": "object",
+      "required": ["requiredFamily", "preferredToolIds", "selectedTool", "claimState"],
+      "additionalProperties": false,
+      "properties": {
+        "requiredFamily": {"type": "string"},
+        "preferredToolIds": {"type": "array", "items": {"type": "string"}},
+        "selectedTool": {"anyOf": [{"$ref": "#/$defs/selectedTool"}, {"type": "null"}]},
+        "claimState": {"enum": ["detected", "not proven"]}
+      }
+    },
+    "argument": {
+      "type": "object",
+      "required": ["id", "role", "logicalValue", "pathResolved", "handoffEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "role": {"enum": ["source", "destination"]},
+        "logicalValue": {"type": "string"},
+        "pathResolved": {"const": false},
+        "handoffEnabled": {"const": false}
+      }
+    },
+    "invocation": {
+      "type": "object",
+      "required": ["claimState", "mode", "operation", "executableName", "resolvedExecutablePath", "arguments", "commandString", "processExecuted"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "planned"},
+        "mode": {"const": "semantic-only"},
+        "operation": {
+          "type": "object",
+          "required": ["id", "label"],
+          "additionalProperties": false,
+          "properties": {
+            "id": {"type": "string"},
+            "label": {"type": "string"}
+          }
+        },
+        "executableName": {"type": ["string", "null"]},
+        "resolvedExecutablePath": {"const": null},
+        "arguments": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"$ref": "#/$defs/argument"}},
+        "commandString": {"const": null},
+        "processExecuted": {"const": false}
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "required": ["planAvailable", "toolCandidateAvailable", "handoffReady", "executionReady", "blockers"],
+      "additionalProperties": false,
+      "properties": {
+        "planAvailable": {"const": true},
+        "toolCandidateAvailable": {"type": "boolean"},
+        "handoffReady": {"const": false},
+        "executionReady": {"const": false},
+        "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  }
+}

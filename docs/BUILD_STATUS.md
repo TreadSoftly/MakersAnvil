@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-009 - path-redacted tool detection foundation.
+PASS-010 - semantic tool dry-run planning.
 
 ## Track Percentages
 
-- Real app completion: `22.5000%`
-- Windows local app: `22.5000%`
+- Real app completion: `25.0000%`
+- Windows local app: `25.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -51,6 +51,11 @@ PASS-009 - path-redacted tool detection foundation.
 - Missing candidates and tool versions remain not proven rather than being guessed.
 - Launch, install, update, uninstall, and repair actions remain blocked.
 - Browser tool inventory and family coverage render without executable controls.
+- Read-only `GET /api/tools/dry-run` joins route previews, logical output bundles, and path-redacted tool evidence.
+- Dry-run policy covers every configured route and only prefers tools that advertise the required family.
+- Dry-run invocation plans expose semantic operations, logical source/output references, and explicit blockers without executable paths.
+- No runnable command is constructed; no source/output path is resolved; no file is handed off; no process runs; and no file is written.
+- Browser dry-run summaries and plan rows render through text nodes without action controls.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -60,6 +65,7 @@ PASS-009 - path-redacted tool detection foundation.
 - PASS-007 explainability covers 69 files; verifier, 40 tests, normal/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-008 explainability covers 75 files; verifier, 47 tests, non-writing HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-009 explainability covers 81 files; verifier, 54 tests, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
+- PASS-010 explainability covers 87 files; verifier, 61 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 
 ## Blocked Or Not Proven
 
@@ -70,6 +76,7 @@ PASS-009 - path-redacted tool detection foundation.
 - Proof capture.
 - External tool launch.
 - Tool version proof.
+- Runnable tool command construction.
 - Selected-file handoff.
 - Install, update, uninstall, or repair actions.
 - Archive extraction.
@@ -80,4 +87,4 @@ PASS-009 - path-redacted tool detection foundation.
 
 ## Next Pass
 
-PASS-010 - tool dry-run planning.
+PASS-011 - single-route execution gate foundation.

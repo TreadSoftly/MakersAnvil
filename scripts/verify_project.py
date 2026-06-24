@@ -27,6 +27,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/route_preview.py",
     "backend/src/makers_anvil_backend/services/runtime_paths.py",
     "backend/src/makers_anvil_backend/services/tool_detection.py",
+    "backend/src/makers_anvil_backend/services/tool_dry_run.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
@@ -34,6 +35,7 @@ REQUIRED_FILES = [
     "config/output_policy.json",
     "config/route_catalog.json",
     "config/tool_catalog.json",
+    "config/tool_dry_run_policy.json",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/styles.css",
@@ -50,6 +52,8 @@ REQUIRED_FILES = [
     "schemas/route-preview.schema.json",
     "schemas/tool-catalog.schema.json",
     "schemas/tool-detection.schema.json",
+    "schemas/tool-dry-run-policy.schema.json",
+    "schemas/tool-dry-run.schema.json",
     "scripts/init_workspace.py",
     "scripts/check_explainability.py",
     "scripts/stage_intake.py",
@@ -70,6 +74,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_007_REPORT.md",
     "docs/passes/PASS_008_REPORT.md",
     "docs/passes/PASS_009_REPORT.md",
+    "docs/passes/PASS_010_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -150,6 +155,7 @@ def check_api() -> list[str]:
     route_preview = api.handle("GET", "/api/routes/preview")
     output_proof = api.handle("GET", "/api/outputs/preview")
     tool_detection = api.handle("GET", "/api/tools/detection")
+    tool_dry_run = api.handle("GET", "/api/tools/dry-run")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -158,12 +164,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-009":
-        errors.append("GET /api/state does not report PASS-009")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-009":
-        errors.append("GET /api/workspace/status does not report PASS-009")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-009":
-        errors.append("GET /api/passes/ledger does not report PASS-009 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-010":
+        errors.append("GET /api/state does not report PASS-010")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-010":
+        errors.append("GET /api/workspace/status does not report PASS-010")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-010":
+        errors.append("GET /api/passes/ledger does not report PASS-010 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -221,6 +227,18 @@ def check_api() -> list[str]:
         errors.append("tool detection unexpectedly claims version proof")
     if state.body.get("toolDetection", {}).get("mode") != "read-only-presence":
         errors.append("GET /api/state does not include tool detection status")
+    if tool_dry_run.status != 200 or tool_dry_run.body.get("mode") != "semantic-invocation-read-only":
+        errors.append("GET /api/tools/dry-run does not report semantic read-only mode")
+    if any(tool_dry_run.body.get("safety", {}).values()):
+        errors.append("tool dry-run unexpectedly constructs, resolves, hands off, executes, launches, or writes")
+    if tool_dry_run.body.get("executionAction", {}).get("enabledInApi") is not False:
+        errors.append("tool dry-run unexpectedly enables API execution")
+    if any(plan.get("invocation", {}).get("commandString") is not None for plan in tool_dry_run.body.get("plans", [])):
+        errors.append("tool dry-run unexpectedly returns a runnable command")
+    if any(plan.get("readiness", {}).get("executionReady") for plan in tool_dry_run.body.get("plans", [])):
+        errors.append("tool dry-run unexpectedly reports execution readiness")
+    if state.body.get("toolDryRun", {}).get("mode") != "semantic-invocation-read-only":
+        errors.append("GET /api/state does not include tool dry-run status")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -229,7 +247,7 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
-    """Keep status, ledger, settings, intake, route, output, and tool policy synchronized."""
+    """Keep status, ledger, settings, intake, route, output, and tool policies synchronized."""
 
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
@@ -239,14 +257,15 @@ def check_status_records() -> list[str]:
     route_catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
     output_policy = json.loads((ROOT / "config" / "output_policy.json").read_text(encoding="utf-8"))
     tool_catalog = json.loads((ROOT / "config" / "tool_catalog.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-009":
-        errors.append("current status does not report PASS-009")
-    if status.get("trackPercentages", {}).get("realApp") != 22.5:
-        errors.append("real app completion is not 22.5 for PASS-009")
+    dry_run_policy = json.loads((ROOT / "config" / "tool_dry_run_policy.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-010":
+        errors.append("current status does not report PASS-010")
+    if status.get("trackPercentages", {}).get("realApp") != 25.0:
+        errors.append("real app completion is not 25.0 for PASS-010")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-009":
-        errors.append("pass ledger latest pass is not PASS-009")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-010":
+        errors.append("pass ledger latest pass is not PASS-010")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -272,6 +291,10 @@ def check_status_records() -> list[str]:
         errors.append("tool catalog is not read-only presence detection")
     if any(tool_catalog.get("safety", {}).values()):
         errors.append("tool catalog unexpectedly claims a process or software action")
+    if dry_run_policy.get("mode") != "semantic-invocation-read-only":
+        errors.append("tool dry-run policy is not semantic read-only planning")
+    if any(dry_run_policy.get("safety", {}).values()):
+        errors.append("tool dry-run policy unexpectedly enables a command, path, handoff, execution, or write action")
     return errors
 
 
@@ -297,6 +320,7 @@ def check_portable_paths() -> list[str]:
         api.handle("GET", "/api/routes/preview").body,
         api.handle("GET", "/api/outputs/preview").body,
         api.handle("GET", "/api/tools/detection").body,
+        api.handle("GET", "/api/tools/dry-run").body,
     ]
     values = [text for payload in payloads for text in _string_values(payload)]
     private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}

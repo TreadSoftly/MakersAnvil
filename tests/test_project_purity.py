@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-009"
-    assert current["trackPercentages"]["realApp"] == 22.5
+    assert current["currentPass"]["id"] == "PASS-010"
+    assert current["trackPercentages"]["realApp"] == 25.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-009"
+    assert ledger["passes"][-1]["id"] == "PASS-010"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -153,6 +153,24 @@ def test_tool_catalog_is_read_only_and_contains_no_personal_roots() -> None:
     assert policy["mode"] == "read-only-presence"
     assert len(policy["tools"]) == 6
     assert all(value is False for value in policy["safety"].values())
+    assert "C:" + "\\Users\\" not in serialized
+    assert "/" + "Users/" not in serialized
+    assert "/" + "home/" not in serialized
+
+
+def test_tool_dry_run_policy_is_non_runnable_and_path_free() -> None:
+    """Dry-run policy covers routes while every command, path, handoff, and action stays false."""
+
+    import json
+
+    policy = json.loads((ROOT / "config" / "tool_dry_run_policy.json").read_text(encoding="utf-8"))
+    route_catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
+    serialized = json.dumps(policy)
+
+    assert policy["mode"] == "semantic-invocation-read-only"
+    assert {item["routeId"] for item in policy["routes"]} == {item["id"] for item in route_catalog["routes"]}
+    assert all(value is False for value in policy["safety"].values())
+    assert "commandString" not in serialized
     assert "C:" + "\\Users\\" not in serialized
     assert "/" + "Users/" not in serialized
     assert "/" + "home/" not in serialized

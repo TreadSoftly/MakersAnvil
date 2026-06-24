@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-009",
-    "title": "path-redacted tool detection foundation",
+    "id": "PASS-010",
+    "title": "semantic tool dry-run planning",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_009_REPORT.md"
+    "reportPath": "docs/passes/PASS_010_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 22.5,
-    "windowsLocal": 22.5,
+    "realApp": 25.0,
+    "windowsLocal": 25.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -52,6 +52,9 @@
     "Known maker tools are checked through PATH and narrowly scoped standard locations without executing processes or reading the registry.",
     "Tool detection results expose tool identity, family, method, and executable name while withholding resolved installation paths.",
     "Missing matches remain not proven, versions remain not proven, and launch/install/update/uninstall/repair actions remain blocked.",
+    "Route previews, output plans, and detected tool families compose into semantic tool dry-run plans.",
+    "Dry-run plans use logical source and destination references, select only family-compatible detected tools, and expose no resolved paths.",
+    "Dry-run planning constructs no command string, performs no file handoff, launches no process, writes nothing, and remains execution-blocked.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -62,6 +65,7 @@
     "proof capture",
     "external tool launch",
     "tool version proof",
+    "runnable tool command construction",
     "selected-file handoff",
     "software install/update/uninstall/repair",
     "archive extraction",
@@ -72,8 +76,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-010",
-    "title": "tool dry-run planning",
+    "id": "PASS-011",
+    "title": "single-route execution gate foundation",
     "claimState": "planned"
   }
 }
