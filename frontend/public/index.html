@@ -174,6 +174,22 @@
           <div id="execution-request-list" class="execution-request-list" aria-live="polite"></div>
         </section>
 
+        <!-- App-owned prepared jobs and cancellation intent; process execution remains impossible. -->
+        <section class="panel workspace-panel" aria-label="Contained job workspace status">
+          <div class="panel-head">
+            <h2>Contained Job Workspaces</h2>
+            <span id="job-workspace-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Mode</strong><span id="job-workspace-mode">loading</span></p>
+            <p><strong>Prepared jobs</strong><span id="job-workspace-count">loading</span></p>
+            <p><strong>Cancellation</strong><span id="job-cancellation-count">loading</span></p>
+            <p><strong>Location</strong><span id="job-workspace-location">loading</span></p>
+            <p><strong>Execution</strong><span id="job-workspace-execution">loading</span></p>
+          </div>
+          <div id="job-workspace-list" class="job-workspace-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>

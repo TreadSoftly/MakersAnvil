@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/job-workspace-catalog.schema.json",
+  "title": "Makers Anvil prepared job workspace catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "jobsPath", "recordsRootExists", "summary", "jobs", "safety", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.job-workspace-catalog.v1"},
+    "claimState": {"enum": ["staged", "failed"]},
+    "mode": {"const": "contained-local-preparation"},
+    "jobsPath": {"const": "makers-anvil-data://user/jobs"},
+    "recordsRootExists": {"type": "boolean"},
+    "summary": {
+      "type": "object",
+      "required": ["preparedJobCount", "cancellationRequestedCount", "invalidJobCount", "executionReadyCount"],
+      "additionalProperties": false,
+      "properties": {
+        "preparedJobCount": {"type": "integer", "minimum": 0},
+        "cancellationRequestedCount": {"type": "integer", "minimum": 0},
+        "invalidJobCount": {"type": "integer", "minimum": 0},
+        "executionReadyCount": {"const": 0}
+      }
+    },
+    "jobs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["record", "cancellation"],
+        "additionalProperties": false,
+        "properties": {
+          "record": {"$ref": "job-workspace-record.schema.json"},
+          "cancellation": {"$ref": "job-cancellation-record.schema.json"}
+        }
+      }
+    },
+    "safety": {"$ref": "job-workspace-policy.schema.json#/$defs/safety"},
+    "actions": {
+      "type": "object",
+      "required": ["prepare", "cancel", "execute"],
+      "additionalProperties": false,
+      "properties": {
+        "prepare": {"$ref": "#/$defs/scriptAction"},
+        "cancel": {"$ref": "#/$defs/scriptAction"},
+        "execute": {"$ref": "#/$defs/blockedAction"}
+      }
+    }
+  },
+  "$defs": {
+    "scriptAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi", "script"],
+      "additionalProperties": false,
+      "properties": {"claimState": {"const": "staged"}, "enabledInApi": {"const": false}, "script": {"type": "string"}}
+    },
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {"claimState": {"const": "blocked"}, "enabledInApi": {"const": false}}
+    }
+  }
+}

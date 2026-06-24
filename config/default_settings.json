@@ -22,7 +22,7 @@
     {
       "id": "jobs",
       "relativePath": "jobs",
-      "purpose": "future job records"
+      "purpose": "contained prepared job and cancellation records"
     },
     {
       "id": "outputs",

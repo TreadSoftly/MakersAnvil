@@ -17,6 +17,7 @@ const toolDetectionUrl = "/api/tools/detection";
 const toolDryRunUrl = "/api/tools/dry-run";
 const executionGatesUrl = "/api/execution/gates";
 const executionRequestUrl = "/api/execution/requests/preview";
+const jobWorkspaceUrl = "/api/jobs/catalog";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -102,6 +103,20 @@ const fallbackState = {
     actions: {
       createRequest: { claimState: "blocked", enabledInApi: false },
       recordAuthorization: { claimState: "blocked", enabledInApi: false },
+      execute: { claimState: "blocked", enabledInApi: false },
+    },
+  },
+  jobWorkspaceCatalog: {
+    claimState: "unknown",
+    mode: "not proven",
+    jobsPath: "not proven",
+    recordsRootExists: false,
+    summary: { preparedJobCount: 0, cancellationRequestedCount: 0, invalidJobCount: 0, executionReadyCount: 0 },
+    jobs: [],
+    safety: {},
+    actions: {
+      prepare: { claimState: "staged", enabledInApi: false },
+      cancel: { claimState: "staged", enabledInApi: false },
       execute: { claimState: "blocked", enabledInApi: false },
     },
   },
@@ -594,8 +609,67 @@ function renderExecutionRequest(state, response = {}) {
   });
 }
 
+/** Render path-redacted prepared jobs and unsignaled cancellation requests. */
+function renderJobWorkspaces(state, response = {}) {
+  const catalog = response.schemaVersion ? response : state.jobWorkspaceCatalog || fallbackState.jobWorkspaceCatalog;
+  const catalogState = document.querySelector("#job-workspace-state");
+  catalogState.textContent = catalog.claimState || "unknown";
+  catalogState.className = `badge ${claimClass(catalogState.textContent)}`;
+  document.querySelector("#job-workspace-mode").textContent = catalog.mode || "not proven";
+  const summary = catalog.summary || {};
+  document.querySelector("#job-workspace-count").textContent = `${summary.preparedJobCount || 0} prepared · ${summary.invalidJobCount || 0} invalid`;
+  document.querySelector("#job-cancellation-count").textContent = `${summary.cancellationRequestedCount || 0} requested`;
+  document.querySelector("#job-workspace-location").textContent = catalog.jobsPath || "not proven";
+  document.querySelector("#job-workspace-execution").textContent = summary.executionReadyCount === 0
+    && catalog.actions?.execute?.enabledInApi === false
+    ? "blocked"
+    : "not proven";
+
+  const target = document.querySelector("#job-workspace-list");
+  target.replaceChildren();
+  if (!catalog.jobs?.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No prepared job workspaces available.";
+    target.append(empty);
+    return;
+  }
+
+  // Runtime records are untrusted local data. Render logical identifiers as
+  // text and never expose or reconstruct the private workspace path.
+  catalog.jobs.forEach((item) => {
+    const record = item.record;
+    const cancellation = item.cancellation;
+    const row = document.createElement("article");
+    row.className = "job-workspace-item";
+    const heading = document.createElement("div");
+    heading.className = "job-workspace-head";
+    const title = document.createElement("h3");
+    title.textContent = record.operation.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(record.claimState)}`;
+    stateBadge.textContent = record.claimState;
+    heading.append(title, stateBadge);
+    const identity = document.createElement("p");
+    identity.className = "job-workspace-identity";
+    identity.textContent = `${record.id} · ${record.route.label}`;
+    const location = document.createElement("p");
+    location.className = "job-workspace-location";
+    location.textContent = record.workspace.logicalRoot;
+    const cancellationState = document.createElement("p");
+    cancellationState.textContent = cancellation.state === "requested"
+      ? "Cancellation requested · no process signal sent"
+      : "Cancellation not requested · no process signal sent";
+    const readiness = document.createElement("p");
+    readiness.className = "job-workspace-blocked";
+    readiness.textContent = "Prepared only · authorization, command, process, output, audit, and proof remain blocked";
+    row.append(heading, identity, location, cancellationState, readiness);
+    target.append(row);
+  });
+}
+
 /** Compose one coherent dashboard frame from all read-only API snapshots. */
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}) {
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -609,6 +683,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderToolDryRun(state, toolDryRun);
   renderExecutionGates(state, executionGates);
   renderExecutionRequest(state, executionRequest);
+  renderJobWorkspaces(state, jobWorkspace);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -618,7 +693,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -630,8 +705,9 @@ async function loadState() {
       fetch(toolDryRunUrl, { method: "GET", cache: "no-store" }),
       fetch(executionGatesUrl, { method: "GET", cache: "no-store" }),
       fetch(executionRequestUrl, { method: "GET", cache: "no-store" }),
+      fetch(jobWorkspaceUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -646,6 +722,7 @@ async function loadState() {
       await toolDryRunResponse.json(),
       await executionGatesResponse.json(),
       await executionRequestResponse.json(),
+      await jobWorkspaceResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

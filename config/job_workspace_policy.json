@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "makers-anvil.config.job-workspace-policy.v1",
+  "claimState": "staged",
+  "mode": "contained-local-preparation",
+  "scope": {
+    "routeId": "mesh-to-toolpath",
+    "maxPreparedJobsPerRequest": 1
+  },
+  "storage": {
+    "jobsDirectory": "jobs",
+    "manifestFileName": "job.json",
+    "cancellationFileName": "cancellation.json",
+    "workspaceDirectories": ["control", "working", "logs", "outputs"]
+  },
+  "localActions": {
+    "preparationEnabled": true,
+    "cancellationRequestEnabled": true,
+    "apiMutationEnabled": false,
+    "browserMutationEnabled": false
+  },
+  "safety": {
+    "executableRequestPersisted": false,
+    "authorizationAccepted": false,
+    "sourcePathStored": false,
+    "sourceContentStored": false,
+    "selectedFileHandedOff": false,
+    "outputPathResolved": false,
+    "commandConstructed": false,
+    "processStarted": false,
+    "processSignalSent": false,
+    "toolLaunched": false,
+    "userFileWritten": false,
+    "outputArtifactWritten": false,
+    "auditEventWritten": false,
+    "proofCaptured": false
+  }
+}

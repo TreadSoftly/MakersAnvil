@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-012",
-    "title": "execution request and audit preview foundation",
+    "id": "PASS-013",
+    "title": "contained job workspace and cancellation record foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_012_REPORT.md"
+    "reportPath": "docs/passes/PASS_013_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 30.0,
-    "windowsLocal": 30.0,
+    "realApp": 32.5,
+    "windowsLocal": 32.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -62,6 +62,11 @@
     "Request previews require explicit authorization but keep acceptance false, actor and timestamp absent, and request persistence disabled.",
     "The complete append-only audit lifecycle is declared while its event list remains empty and audit writes remain disabled.",
     "The dashboard renders request, authorization, audit, and execution-blocked truth without any action control.",
+    "An explicit local script can prepare one deterministic app-owned job workspace from a valid mesh-to-toolpath request preview.",
+    "Prepared jobs store only logical intent, create empty control, working, logs, and output directories, and accept no authorization.",
+    "A second explicit local script records cancellation intent idempotently without signaling or claiming that a process stopped.",
+    "Read-only job policy and catalog APIs expose path-redacted prepared and cancellation state while every HTTP mutation remains blocked.",
+    "Malformed, weakened, traversing, or symlinked job records fail closed and are never exposed as usable jobs.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -75,7 +80,7 @@
     "runnable tool command construction",
     "execution request persistence",
     "user authorization acceptance",
-    "cancellation control",
+    "process cancellation signaling and stop proof",
     "execution logging",
     "selected-file handoff",
     "software install/update/uninstall/repair",
@@ -87,8 +92,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-013",
-    "title": "contained job workspace and cancellation record foundation",
+    "id": "PASS-014",
+    "title": "explicit authorization and command preview foundation",
     "claimState": "planned"
   }
 }

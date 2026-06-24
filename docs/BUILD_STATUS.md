@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-012 - execution request and audit preview foundation.
+PASS-013 - contained job workspace and cancellation record foundation.
 
 ## Track Percentages
 
-- Real app completion: `30.0000%`
-- Windows local app: `30.0000%`
+- Real app completion: `32.5000%`
+- Windows local app: `32.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -68,6 +68,12 @@ PASS-012 - execution request and audit preview foundation.
 - Six append-only lifecycle event types are required while the audit event list stays empty and event writes stay disabled.
 - Request persistence, authorization acceptance, audit writes, path resolution, command construction, processes, tool launch, filesystem writes, and proof capture remain false.
 - Browser request-preview status and rows render authorization, audit, and execution-blocked truth without action controls.
+- `python scripts/prepare_job.py --request-preview-id <id>` creates one deterministic prepared job under the app-owned jobs root.
+- Prepared workspaces contain only empty `control`, `working`, `logs`, and `outputs` directories plus path-redacted JSON records.
+- `python scripts/request_job_cancel.py --job-id <id>` records cancellation intent idempotently without signaling or stopping a process.
+- Read-only `GET /api/jobs/policy` and `GET /api/jobs/catalog` expose local-script boundaries, prepared jobs, cancellation state, and zero execution readiness.
+- Malformed, weakened, traversing, and symlinked job data fails closed; source and runtime absolute paths remain private.
+- Browser job rows render logical workspace locations and distinguish cancellation requests from process-stop proof.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -80,6 +86,7 @@ PASS-012 - execution request and audit preview foundation.
 - PASS-010 explainability covers 87 files; verifier, 61 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-011 explainability covers 93 files; verifier, 69 tests, schema validation, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-012 explainability covers 102 files; verifier, 76 tests, four schema validations, live/isolated HTTP smoke, desktop/mobile/non-empty browser checks, and Windows/Ubuntu/macOS CI passed.
+- PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, and empty/populated desktop/mobile browser checks passed locally.
 
 ## Blocked Or Not Proven
 
@@ -93,7 +100,7 @@ PASS-012 - execution request and audit preview foundation.
 - Runnable tool command construction.
 - Execution request persistence.
 - User authorization acceptance.
-- Cancellation control.
+- Process cancellation signaling and stop proof.
 - Execution logging.
 - Selected-file handoff.
 - Install, update, uninstall, or repair actions.
@@ -105,4 +112,4 @@ PASS-012 - execution request and audit preview foundation.
 
 ## Next Pass
 
-PASS-013 - contained job workspace and cancellation record foundation.
+PASS-014 - explicit authorization and command preview foundation.

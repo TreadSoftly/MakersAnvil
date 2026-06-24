@@ -19,8 +19,8 @@ def test_state_keeps_actions_blocked() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 30.0
-    assert response.body["currentPass"]["id"] == "PASS-012"
+    assert response.body["completion"]["realApp"] == 32.5
+    assert response.body["currentPass"]["id"] == "PASS-013"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -53,11 +53,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-012"
+    assert workspace.body["currentPass"]["id"] == "PASS-013"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-012"
+    assert ledger.body["passes"][-1]["id"] == "PASS-013"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
@@ -200,3 +200,28 @@ def test_execution_request_preview_records_no_intent_authorization_or_audit_even
     assert all(value is False for value in response.body["safety"].values())
     assert all(action["enabledInApi"] is False for action in response.body["actions"].values())
     assert state.body["executionRequestPreview"]["schemaVersion"] == "makers-anvil.api.execution-request-preview.v1"
+
+
+def test_job_catalog_is_path_redacted_and_http_mutations_remain_blocked() -> None:
+    """Job APIs expose contained local-script state without enabling browser writes."""
+
+    api = MakersAnvilApi()
+    policy = api.handle("GET", "/api/jobs/policy")
+    catalog = api.handle("GET", "/api/jobs/catalog")
+    state = api.handle("GET", "/api/state")
+
+    assert policy.status == 200
+    assert policy.body["mode"] == "contained-local-preparation"
+    assert policy.body["jobsPath"] == "makers-anvil-data://user/jobs"
+    assert policy.body["localActions"] == {
+        "preparationEnabled": True,
+        "cancellationRequestEnabled": True,
+        "apiMutationEnabled": False,
+        "browserMutationEnabled": False,
+    }
+    assert catalog.status == 200
+    assert catalog.body["summary"]["executionReadyCount"] == 0
+    assert all(value is False for value in catalog.body["safety"].values())
+    assert all(action["enabledInApi"] is False for action in catalog.body["actions"].values())
+    assert state.body["jobWorkspaceCatalog"]["schemaVersion"] == "makers-anvil.api.job-workspace-catalog.v1"
+    assert api.handle("POST", "/api/jobs/catalog").status == 405

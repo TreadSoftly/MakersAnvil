@@ -169,6 +169,21 @@
         "dashboard request, authorization, audit, and blocked execution status added",
         "request persistence, authorization acceptance, audit writes, paths, commands, processes, tools, outputs, and proof remain disabled"
       ]
+    },
+    {
+      "id": "PASS-013",
+      "title": "contained job workspace and cancellation record foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_013_REPORT.md",
+      "proof": [
+        "committed job policy permits only explicit local preparation and cancellation-request scripts",
+        "prepared jobs use deterministic ids and contained app-owned control, working, logs, and outputs directories",
+        "job manifests retain logical references and withhold private filesystem paths",
+        "cancellation requests are idempotent and never claim a process signal or stopped process",
+        "read-only job policy, catalog API, composed app state, and dashboard panel added",
+        "malformed, weakened, traversing, and symlinked runtime records fail closed",
+        "authorization, commands, processes, tools, user files, output artifacts, audit events, and proof remain disabled"
+      ]
     }
   ]
 }

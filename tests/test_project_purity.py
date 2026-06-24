@@ -58,11 +58,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-012"
-    assert current["trackPercentages"]["realApp"] == 30.0
+    assert current["currentPass"]["id"] == "PASS-013"
+    assert current["trackPercentages"]["realApp"] == 32.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-012"
+    assert ledger["passes"][-1]["id"] == "PASS-013"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -213,6 +213,30 @@ def test_execution_request_policy_is_preview_only_and_writes_nothing() -> None:
     assert policy["audit"]["appendOnly"] is True
     assert policy["audit"]["eventWritesEnabled"] is False
     assert len(policy["audit"]["requiredEventTypes"]) == 6
+    assert all(value is False for value in policy["safety"].values())
+    assert "C:" + "\\Users\\" not in serialized
+    assert "/" + "Users/" not in serialized
+    assert "/" + "home/" not in serialized
+
+
+def test_job_workspace_policy_allows_only_contained_local_record_writes() -> None:
+    """Prepared jobs use app-owned storage while every execution-side effect stays false."""
+
+    import json
+
+    policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
+    serialized = json.dumps(policy)
+
+    assert policy["mode"] == "contained-local-preparation"
+    assert policy["scope"] == {"routeId": "mesh-to-toolpath", "maxPreparedJobsPerRequest": 1}
+    assert policy["storage"]["jobsDirectory"] == "jobs"
+    assert set(policy["storage"]["workspaceDirectories"]) == {"control", "working", "logs", "outputs"}
+    assert policy["localActions"] == {
+        "preparationEnabled": True,
+        "cancellationRequestEnabled": True,
+        "apiMutationEnabled": False,
+        "browserMutationEnabled": False,
+    }
     assert all(value is False for value in policy["safety"].values())
     assert "C:" + "\\Users\\" not in serialized
     assert "/" + "Users/" not in serialized

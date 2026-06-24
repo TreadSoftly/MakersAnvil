@@ -76,6 +76,8 @@ Do not infer current truth from an old chat, commit message, screenshot, or hist
 | `ToolDetectionService` | tool catalog and platform environment | path-redacted presence evidence | never execute version/tool commands |
 | `ToolDryRunService` | route, output, and detection snapshots | semantic non-runnable plans | no command strings or file handoff |
 | `ExecutionGateService` | dry-run snapshot and gate policy | planning evidence and blocked operational gates | no authorization or process behavior |
+| `ExecutionRequestService` | coherent dry-run and gate snapshots | logical intent, consent fields, and audit plan | no persistence, accepted consent, or process behavior |
+| `JobWorkspaceService` | request preview plus app-owned job policy | prepared job and cancellation records | no private paths, authorization, commands, process signals, or output artifacts |
 
 ## Contract Chain
 

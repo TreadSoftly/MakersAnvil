@@ -8,7 +8,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders completion, workspace state, intake, routes, output/proof plans, path-redacted tool detection, semantic tool dry runs, execution gates, request/audit previews, capabilities, and blocked actions.
+`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. It renders completion, workspace state, intake, routes, output/proof plans, path-redacted tool detection, semantic tool dry runs, execution gates, request/audit previews, prepared jobs, cancellation state, capabilities, and blocked actions.
 
 ### HTTP Boundary
 
@@ -31,6 +31,7 @@ Makers Anvil is a local-first control panel for maker workflows. The current app
 - `ToolDryRunService` joins route, output, and tool evidence into semantic invocation plans without constructing commands, resolving paths, handing off files, or executing processes.
 - `ExecutionGateService` evaluates ten required evidence classes for one allowlisted route while authorization and execution remain disabled.
 - `ExecutionRequestService` joins coherent dry-run and gate snapshots into path-free intent, unaccepted authorization fields, and an empty audit plan without persistence.
+- `JobWorkspaceService` creates deterministic app-owned prepared workspaces and cancellation-request records through explicit local scripts while processes remain impossible.
 
 ### Schemas And Durable State
 
@@ -54,6 +55,7 @@ Browser
   -> ToolDryRunService derives semantic, non-runnable invocation plans
   -> ExecutionGateService separates satisfied planning evidence from blocked operational gates
   -> ExecutionRequestService models logical intent, required consent, and required audit events without saving them
+  -> JobWorkspaceService reads path-redacted prepared jobs and unsignaled cancellation requests
   -> JSON response
   -> browser render
 ```
@@ -69,6 +71,8 @@ Human invokes a local script
 ```
 
 The browser and HTTP API do not participate in this mutation flow yet.
+
+PASS-013 adds two bounded examples of this flow: job preparation creates empty app-owned directories and logical records, while cancellation recording changes only an app-owned control file. Neither action accepts authorization, resolves a user file, constructs a command, starts or signals a process, writes an output artifact, appends an audit event, or captures proof.
 
 ## Trust And Safety Boundaries
 
@@ -87,4 +91,4 @@ The browser and HTTP API do not participate in this mutation flow yet.
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. The next capability is a contained job workspace and cancellation-record foundation; it must remain path-redacted publicly and must not launch an external tool.
+Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Prepared jobs are app-owned runtime records but remain non-executable. The next capability is explicit authorization and command preview; it must not start a process or hand a source file to a tool.

@@ -3,7 +3,7 @@
   "$id": "https://schemas.makers-anvil.local/app-state.schema.json",
   "title": "Makers Anvil app state",
   "type": "object",
-  "required": ["schemaVersion", "appName", "apiBuild", "claimState", "completion", "currentPass", "sourceTruth", "workspaceConfig", "intakeCatalog", "routePreview", "outputProof", "toolDetection", "toolDryRun", "executionGates", "executionRequestPreview", "capabilities", "blockedActions"],
+  "required": ["schemaVersion", "appName", "apiBuild", "claimState", "completion", "currentPass", "sourceTruth", "workspaceConfig", "intakeCatalog", "routePreview", "outputProof", "toolDetection", "toolDryRun", "executionGates", "executionRequestPreview", "jobWorkspaceCatalog", "capabilities", "blockedActions"],
   "properties": {
     "schemaVersion": { "const": "makers-anvil.api.state.v1" },
     "appName": { "const": "Makers Anvil" },
@@ -42,6 +42,7 @@
     "toolDryRun": {"$ref": "tool-dry-run.schema.json"},
     "executionGates": {"$ref": "execution-gates.schema.json"},
     "executionRequestPreview": {"$ref": "execution-request-preview.schema.json"},
+    "jobWorkspaceCatalog": {"$ref": "job-workspace-catalog.schema.json"},
     "capabilities": {
       "type": "array",
       "items": {

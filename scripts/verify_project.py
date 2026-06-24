@@ -25,6 +25,8 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/execution_gate.py",
     "backend/src/makers_anvil_backend/services/execution_request.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
+    "backend/src/makers_anvil_backend/services/job_records.py",
+    "backend/src/makers_anvil_backend/services/job_workspace.py",
     "backend/src/makers_anvil_backend/services/output_proof.py",
     "backend/src/makers_anvil_backend/services/route_preview.py",
     "backend/src/makers_anvil_backend/services/runtime_paths.py",
@@ -36,6 +38,7 @@ REQUIRED_FILES = [
     "config/execution_gate_policy.json",
     "config/execution_request_policy.json",
     "config/intake_policy.json",
+    "config/job_workspace_policy.json",
     "config/output_policy.json",
     "config/route_catalog.json",
     "config/tool_catalog.json",
@@ -54,6 +57,10 @@ REQUIRED_FILES = [
     "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
     "schemas/intake-record.schema.json",
+    "schemas/job-cancellation-record.schema.json",
+    "schemas/job-workspace-catalog.schema.json",
+    "schemas/job-workspace-policy.schema.json",
+    "schemas/job-workspace-record.schema.json",
     "schemas/output-policy.schema.json",
     "schemas/output-proof.schema.json",
     "schemas/route-catalog.schema.json",
@@ -64,6 +71,8 @@ REQUIRED_FILES = [
     "schemas/tool-dry-run.schema.json",
     "scripts/init_workspace.py",
     "scripts/check_explainability.py",
+    "scripts/prepare_job.py",
+    "scripts/request_job_cancel.py",
     "scripts/stage_intake.py",
     "state/current_status.json",
     "state/pass_ledger.json",
@@ -88,6 +97,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_010_REPORT.md",
     "docs/passes/PASS_011_REPORT.md",
     "docs/passes/PASS_012_REPORT.md",
+    "docs/passes/PASS_013_REPORT.md",
 ]
 
 REFERENCE_FOLDERS = [
@@ -171,6 +181,8 @@ def check_api() -> list[str]:
     tool_dry_run = api.handle("GET", "/api/tools/dry-run")
     execution_gates = api.handle("GET", "/api/execution/gates")
     execution_request = api.handle("GET", "/api/execution/requests/preview")
+    job_policy = api.handle("GET", "/api/jobs/policy")
+    job_catalog = api.handle("GET", "/api/jobs/catalog")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -179,12 +191,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-012":
-        errors.append("GET /api/state does not report PASS-012")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-012":
-        errors.append("GET /api/workspace/status does not report PASS-012")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-012":
-        errors.append("GET /api/passes/ledger does not report PASS-012 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-013":
+        errors.append("GET /api/state does not report PASS-013")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-013":
+        errors.append("GET /api/workspace/status does not report PASS-013")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-013":
+        errors.append("GET /api/passes/ledger does not report PASS-013 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -284,6 +296,28 @@ def check_api() -> list[str]:
         errors.append("execution request preview unexpectedly reports a written audit event")
     if state.body.get("executionRequestPreview", {}).get("mode") != "read-only-request-preview":
         errors.append("GET /api/state does not include execution request preview status")
+    if job_policy.status != 200 or job_policy.body.get("mode") != "contained-local-preparation":
+        errors.append("GET /api/jobs/policy does not report contained local preparation")
+    if job_policy.body.get("jobsPath") != "makers-anvil-data://user/jobs":
+        errors.append("job policy does not expose the logical app-owned jobs root")
+    expected_local_actions = {
+        "preparationEnabled": True,
+        "cancellationRequestEnabled": True,
+        "apiMutationEnabled": False,
+        "browserMutationEnabled": False,
+    }
+    if job_policy.body.get("localActions") != expected_local_actions:
+        errors.append("job policy local actions do not preserve explicit-script-only mutation")
+    if job_catalog.status != 200 or job_catalog.body.get("mode") != "contained-local-preparation":
+        errors.append("GET /api/jobs/catalog does not report contained local preparation")
+    if job_catalog.body.get("summary", {}).get("executionReadyCount") != 0:
+        errors.append("job catalog unexpectedly reports an execution-ready job")
+    if any(job_catalog.body.get("safety", {}).values()):
+        errors.append("job catalog unexpectedly persists executable intent, authorizes, executes, signals, writes outputs, or proves")
+    if any(action.get("enabledInApi") for action in job_catalog.body.get("actions", {}).values()):
+        errors.append("job catalog unexpectedly enables an API mutation or execution action")
+    if state.body.get("jobWorkspaceCatalog", {}).get("mode") != "contained-local-preparation":
+        errors.append("GET /api/state does not include contained job workspace status")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -292,7 +326,7 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
-    """Keep status, ledger, settings, planning, gate, and request policies synchronized."""
+    """Keep status, ledger, settings, planning, request, and job policies synchronized."""
 
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
@@ -305,14 +339,15 @@ def check_status_records() -> list[str]:
     dry_run_policy = json.loads((ROOT / "config" / "tool_dry_run_policy.json").read_text(encoding="utf-8"))
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-012":
-        errors.append("current status does not report PASS-012")
-    if status.get("trackPercentages", {}).get("realApp") != 30.0:
-        errors.append("real app completion is not 30.0 for PASS-012")
+    job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
+    if status.get("currentPass", {}).get("id") != "PASS-013":
+        errors.append("current status does not report PASS-013")
+    if status.get("trackPercentages", {}).get("realApp") != 32.5:
+        errors.append("real app completion is not 32.5 for PASS-013")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-012":
-        errors.append("pass ledger latest pass is not PASS-012")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-013":
+        errors.append("pass ledger latest pass is not PASS-013")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -356,6 +391,14 @@ def check_status_records() -> list[str]:
         errors.append("execution request policy does not remain scoped to mesh-to-toolpath")
     if any(execution_request_policy.get("safety", {}).values()):
         errors.append("execution request policy unexpectedly claims persistence, authorization, audit, execution, or proof")
+    if job_workspace_policy.get("mode") != "contained-local-preparation":
+        errors.append("job workspace policy is not contained local preparation")
+    if job_workspace_policy.get("scope", {}).get("routeId") != "mesh-to-toolpath":
+        errors.append("job workspace policy does not remain scoped to mesh-to-toolpath")
+    if job_workspace_policy.get("localActions", {}).get("apiMutationEnabled") is not False:
+        errors.append("job workspace policy unexpectedly enables API mutation")
+    if any(job_workspace_policy.get("safety", {}).values()):
+        errors.append("job workspace policy unexpectedly claims an execution-side effect")
     return errors
 
 
@@ -386,6 +429,8 @@ def check_portable_paths() -> list[str]:
         api.handle("GET", "/api/tools/dry-run").body,
         api.handle("GET", "/api/execution/gates").body,
         api.handle("GET", "/api/execution/requests/preview").body,
+        api.handle("GET", "/api/jobs/policy").body,
+        api.handle("GET", "/api/jobs/catalog").body,
     ]
     values = [text for payload in payloads for text in _string_values(payload)]
     private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}

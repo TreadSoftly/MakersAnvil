@@ -8,6 +8,7 @@ from typing import Any
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
+from makers_anvil_backend.services.job_workspace import JobWorkspaceService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.tool_detection import ToolDetectionService
@@ -19,7 +20,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-012-execution-request-preview"
+    api_build = "makers-anvil-real-pass-013-contained-job-workspaces"
 
     def __init__(
         self,
@@ -32,6 +33,7 @@ class AppStateService:
         tool_dry_run: ToolDryRunService | None = None,
         execution_gate: ExecutionGateService | None = None,
         execution_request: ExecutionRequestService | None = None,
+        job_workspace: JobWorkspaceService | None = None,
     ) -> None:
         """Compose injected or default services so one request uses coherent snapshots."""
 
@@ -53,6 +55,10 @@ class AppStateService:
         self._execution_request = execution_request or ExecutionRequestService(
             tool_dry_run=self._tool_dry_run,
             execution_gate=self._execution_gate,
+        )
+        self._job_workspace = job_workspace or JobWorkspaceService(
+            workspace_config=self._workspace_config,
+            execution_request=self._execution_request,
         )
 
     def health(self) -> dict[str, Any]:
@@ -95,6 +101,7 @@ class AppStateService:
             "toolDryRun": tool_dry_run,
             "executionGates": execution_gates,
             "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
+            "jobWorkspaceCatalog": self._job_workspace.catalog(),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -160,6 +167,16 @@ class AppStateService:
         """Return path-free intent and an empty audit plan without persisting either."""
 
         return self._execution_request.preview_catalog()
+
+    def job_workspace_policy(self) -> dict[str, Any]:
+        """Return contained job policy and local-script boundaries through a read-only API."""
+
+        return self._job_workspace.policy_response()
+
+    def job_workspace_catalog(self) -> dict[str, Any]:
+        """Return prepared job and cancellation records without exposing private paths."""
+
+        return self._job_workspace.catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         """Describe platform delivery tracks without claiming untested runtime support."""
@@ -271,6 +288,13 @@ class AppStateService:
                 "label": "Execution request preview",
                 "claimState": "preview-only",
                 "summary": "Logical intent, explicit consent fields, and required audit events are modeled without persisting a request or accepting authorization.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "contained-job-workspace",
+                "label": "Contained job workspace",
+                "claimState": "staged",
+                "summary": "Explicit local scripts can prepare app-owned logical job records and request cancellation without starting or signaling a process.",
                 "actionsEnabled": False,
             },
             {

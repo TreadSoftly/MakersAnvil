@@ -46,6 +46,8 @@ class MakersAnvilApi:
             "/api/tools/dry-run": self._state_service.tool_dry_run,
             "/api/execution/gates": self._state_service.execution_gates,
             "/api/execution/requests/preview": self._state_service.execution_request_preview,
+            "/api/jobs/policy": self._state_service.job_workspace_policy,
+            "/api/jobs/catalog": self._state_service.job_workspace_catalog,
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:
