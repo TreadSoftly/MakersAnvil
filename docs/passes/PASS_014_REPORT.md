@@ -6,7 +6,7 @@
 - Claim: `staged`
 - Completion date: `2026-06-24`
 - Branch: `codex/pass-001-clean-foundation`
-- Implementation commit: recorded by the PASS-014 closeout commit after this report enters history.
+- Implementation commit: `7a1046186b43f81906a01739096c30454145b3c6`
 
 ## Objective
 
@@ -23,8 +23,8 @@ Repair the gap between technically present documentation and the user's requeste
 
 ## Explainability Proof
 
-- The source manifest maps every tracked and newly added file, including this report.
-- Python module headers require all eight context labels; every class/function/method/test still requires a meaningful docstring.
+- The source manifest maps all `116` tracked and newly added files, including this report.
+- All `43` Python module headers require all eight context labels; every class/function/method/test still requires a meaningful docstring.
 - JavaScript, CSS, HTML, SVG, and CI headers require the same eight context labels; top-level frontend functions retain nearby JSDoc.
 - The source walkthrough explains every source family and links it to contracts and executable examples.
 - The first verifier/test run failed only because this required report did not yet exist; the failure was retained as closure evidence and fixed by adding this report.
@@ -54,14 +54,22 @@ The application percentages do not increase because this is a remediation/design
 
 ## Exact Verification
 
-- `python scripts/check_explainability.py` passes with complete source-manifest and structured-header coverage.
+- `python scripts/check_explainability.py` passed with `116` files, all `43` Python modules, all frontend/asset/CI headers, and all components covered.
 - Initial `python scripts/verify_project.py` failed only on the intentionally not-yet-created PASS-014 report; all other eight groups passed.
 - Initial `python -m pytest -q` passed 85 tests and failed the verifier wrapper for the same missing-report reason.
-- Final verifier, pytest, syntax, diff, runtime, browser, and CI results are recorded by the closeout commit after observed proof.
+- Final `python scripts/verify_project.py` passed all `8` verification groups.
+- Final `python -m pytest -q -p no:cacheprovider` passed all `86` tests.
+- `node --check frontend/public/assets/app.js` and `git diff --check` passed.
+- Live `/api/health` returned `makers-anvil-real-pass-014-reference-explainability`; `/api/state` returned PASS-014, `32.5000%`, and PASS-015 next.
+- Headless Chrome browser proof passed at `1366x768` and `390x844` with HTTP 200, zero horizontal overflow, and no console/page errors.
 
 ## Runtime And Visual Proof
 
-Runtime and browser behavior are unchanged except for the PASS-014 build/status marker. The closeout commit records the observed local URL, API marker, viewport checks, and error state.
+- Local proof URL: `http://127.0.0.1:8766`, started with `python scripts/run_dev.py --port 8766` and stopped after verification.
+- The in-app Browser surface was unavailable, so installed Playwright and Chrome provided local visual proof.
+- Desktop and mobile screenshots were visually inspected: PASS-014, `32.5000%`, and PASS-015 rendered without overlap or horizontal clipping.
+- The screenshots confirm the current UI remains the long read-only scaffold/status layout; the preview-first workbench replacement is correctly assigned to PASS-015 rather than falsely claimed here.
+- Server logs showed static assets plus GET-only API traffic and no backend errors.
 
 ## Safety Proof
 
@@ -69,7 +77,11 @@ No reference content was copied into product source. No user file, external tool
 
 ## GitHub And CI
 
-The closeout commit records the exact implementation hash, push, pull request, and Windows/Ubuntu/macOS CI result.
+- Branch: `codex/pass-001-clean-foundation`.
+- Implementation commit: `7a1046186b43f81906a01739096c30454145b3c6` (`Complete PASS-014 reference and explainability remediation`).
+- Push to `origin/codex/pass-001-clean-foundation` succeeded.
+- Draft pull request: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-014`.
+- GitHub Actions run `28133086249` passed `Verify on windows-latest`, `Verify on ubuntu-latest`, and `Verify on macos-latest`.
 
 ## Next Pass
 
