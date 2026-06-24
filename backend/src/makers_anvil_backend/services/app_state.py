@@ -8,6 +8,7 @@ from typing import Any
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
+from makers_anvil_backend.services.tool_detection import ToolDetectionService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 
@@ -15,7 +16,7 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 class AppStateService:
     """Build deterministic state records for the browser dashboard."""
 
-    api_build = "makers-anvil-real-pass-008-output-proof"
+    api_build = "makers-anvil-real-pass-009-tool-detection"
 
     def __init__(
         self,
@@ -24,6 +25,7 @@ class AppStateService:
         intake_catalog: IntakeCatalogService | None = None,
         route_preview: RoutePreviewService | None = None,
         output_proof: OutputProofService | None = None,
+        tool_detection: ToolDetectionService | None = None,
     ) -> None:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
@@ -33,6 +35,7 @@ class AppStateService:
             route_preview=self._route_preview,
             workspace_config=self._workspace_config,
         )
+        self._tool_detection = tool_detection or ToolDetectionService()
 
     def health(self) -> dict[str, Any]:
         """Describe the live API build without claiming that mutations are enabled."""
@@ -66,6 +69,7 @@ class AppStateService:
             "intakeCatalog": intake_catalog,
             "routePreview": route_preview,
             "outputProof": self._output_proof.preview_catalog(route_preview),
+            "toolDetection": self._tool_detection.detection_catalog(),
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -111,6 +115,11 @@ class AppStateService:
         """Return planned output bundles and explicitly incomplete proof state."""
 
         return self._output_proof.preview_catalog()
+
+    def tool_detection(self) -> dict[str, Any]:
+        """Return path-redacted tool presence without executing or changing software."""
+
+        return self._tool_detection.detection_catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
         return [
@@ -190,6 +199,13 @@ class AppStateService:
                 "label": "Output and proof",
                 "claimState": "preview-only",
                 "summary": "Route previews map to planned artifacts and required evidence without creating or opening outputs.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "tool-detection",
+                "label": "Tool detection",
+                "claimState": "staged",
+                "summary": "Known maker tools are checked through PATH and standard locations without execution or path exposure.",
                 "actionsEnabled": False,
             },
             {

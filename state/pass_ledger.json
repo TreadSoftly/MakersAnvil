@@ -112,6 +112,20 @@
         "logical destinations replace resolved filesystem paths",
         "output creation, opening, proof capture, route execution, and tool launch remain disabled"
       ]
+    },
+    {
+      "id": "PASS-009",
+      "title": "path-redacted tool detection foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_009_REPORT.md",
+      "proof": [
+        "committed tool catalog defines six maker tools across Windows, macOS, and Linux",
+        "detector checks PATH and narrowly scoped standard locations without process execution",
+        "read-only tool detection API and composed app state added",
+        "dashboard tool inventory and family coverage added",
+        "resolved installation paths and version claims remain withheld",
+        "launch and all software-change actions remain disabled"
+      ]
     }
   ]
 }

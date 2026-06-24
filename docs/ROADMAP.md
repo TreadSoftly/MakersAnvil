@@ -10,7 +10,7 @@
 6. Durable explainability and handoff contract.
 7. Metadata-derived route preview.
 8. Output bundle and proof panels.
-9. Tool detection.
+9. Path-redacted tool detection.
 10. Tool dry-run planning.
 11. Gated route execution, one route at a time.
 12. Backup, restore, update, and uninstall dry-runs.

@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-008",
-    "title": "output bundle and proof preview panels",
+    "id": "PASS-009",
+    "title": "path-redacted tool detection foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_008_REPORT.md"
+    "reportPath": "docs/passes/PASS_009_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 20.0,
-    "windowsLocal": 20.0,
+    "realApp": 22.5,
+    "windowsLocal": 22.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 0.0,
@@ -49,6 +49,9 @@
     "Route previews map to planned output bundles, expected artifacts, logical destinations, and required proof checklists.",
     "Every output artifact remains planned and nonexistent, every proof item remains not proven, and create/open actions remain blocked.",
     "Output planning exposes only logical app-owned locations and never creates directories, writes files, captures proof, or opens outputs.",
+    "Known maker tools are checked through PATH and narrowly scoped standard locations without executing processes or reading the registry.",
+    "Tool detection results expose tool identity, family, method, and executable name while withholding resolved installation paths.",
+    "Missing matches remain not proven, versions remain not proven, and launch/install/update/uninstall/repair actions remain blocked.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -58,6 +61,7 @@
     "output open action",
     "proof capture",
     "external tool launch",
+    "tool version proof",
     "selected-file handoff",
     "software install/update/uninstall/repair",
     "archive extraction",
@@ -68,8 +72,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-009",
-    "title": "tool detection foundation",
+    "id": "PASS-010",
+    "title": "tool dry-run planning",
     "claimState": "planned"
   }
 }

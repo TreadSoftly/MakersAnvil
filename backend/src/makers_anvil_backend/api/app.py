@@ -40,6 +40,7 @@ class MakersAnvilApi:
             "/api/intake/catalog": self._state_service.intake_catalog,
             "/api/routes/preview": self._state_service.route_preview,
             "/api/outputs/preview": self._state_service.output_proof,
+            "/api/tools/detection": self._state_service.tool_detection,
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:

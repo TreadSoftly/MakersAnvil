@@ -13,6 +13,7 @@ const layoutUrl = "/api/workspace/layout";
 const intakeUrl = "/api/intake/catalog";
 const routePreviewUrl = "/api/routes/preview";
 const outputProofUrl = "/api/outputs/preview";
+const toolDetectionUrl = "/api/tools/detection";
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -60,6 +61,16 @@ const fallbackState = {
     summary: { bundleCount: 0, artifactCount: 0, requiredProofCount: 0, completedProofCount: 0 },
     bundles: [],
     actions: { create: { enabledInApi: false }, open: { enabledInApi: false } },
+  },
+  toolDetection: {
+    claimState: "unknown",
+    mode: "not proven",
+    platform: { id: "unknown", claimState: "not proven" },
+    summary: { toolCount: 0, detectedCount: 0, notDetectedCount: 0 },
+    familyCoverage: [],
+    tools: [],
+    safety: { processExecuted: false, versionCommandExecuted: false, filesystemWritten: false },
+    actions: { launch: { enabledInApi: false }, install: { enabledInApi: false } },
   },
 };
 
@@ -298,7 +309,67 @@ function renderOutputProof(state, response = {}) {
   });
 }
 
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}) {
+function renderToolDetection(state, response = {}) {
+  const toolDetection = response.schemaVersion ? response : state.toolDetection || fallbackState.toolDetection;
+  const toolState = document.querySelector("#tool-detection-state");
+  toolState.textContent = toolDetection.claimState || "unknown";
+  toolState.className = `badge ${claimClass(toolState.textContent)}`;
+  document.querySelector("#tool-platform").textContent = toolDetection.platform?.id || "unknown";
+  const summary = toolDetection.summary || {};
+  document.querySelector("#tool-detection-count").textContent = `${summary.detectedCount || 0}/${summary.toolCount || 0} detected`;
+  const coverage = toolDetection.familyCoverage || [];
+  const coveredFamilies = coverage.filter((family) => family.detectedToolCount > 0).length;
+  document.querySelector("#tool-family-coverage").textContent = `${coveredFamilies}/${coverage.length} families covered`;
+  const safety = toolDetection.safety || {};
+  document.querySelector("#tool-detection-safety").textContent = safety.processExecuted === false
+    && safety.versionCommandExecuted === false
+    && safety.filesystemWritten === false
+    ? "paths redacted · nothing executed or written"
+    : "not proven";
+  const actions = toolDetection.actions || {};
+  document.querySelector("#tool-detection-actions").textContent = actions.launch?.enabledInApi === false
+    && actions.install?.enabledInApi === false
+    ? "launch and software changes blocked"
+    : "not proven";
+
+  const familyTarget = document.querySelector("#tool-family-list");
+  familyTarget.replaceChildren();
+  coverage.forEach((family) => {
+    const item = document.createElement("li");
+    item.textContent = `${family.id} · ${family.detectedToolCount} detected · ${family.claimState}`;
+    familyTarget.append(item);
+  });
+
+  const toolTarget = document.querySelector("#tool-detection-list");
+  toolTarget.replaceChildren();
+  toolDetection.tools?.forEach((tool) => {
+    const item = document.createElement("article");
+    item.className = "tool-detection-item";
+    const heading = document.createElement("div");
+    heading.className = "tool-detection-head";
+    const title = document.createElement("h3");
+    title.textContent = tool.label;
+    const stateBadge = document.createElement("span");
+    stateBadge.className = `badge ${claimClass(tool.claimState)}`;
+    stateBadge.textContent = tool.claimState;
+    heading.append(title, stateBadge);
+
+    const identity = document.createElement("p");
+    identity.className = "tool-identity";
+    identity.textContent = `${tool.publisher} · ${tool.families.join(", ")}`;
+    const evidence = document.createElement("p");
+    evidence.textContent = tool.detection.installed
+      ? `${tool.detection.method} · ${tool.detection.executableName}`
+      : "No match in checked PATH or standard locations";
+    const version = document.createElement("p");
+    version.className = "tool-version";
+    version.textContent = `Version: ${tool.version.claimState}`;
+    item.append(heading, identity, evidence, version);
+    toolTarget.append(item);
+  });
+}
+
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -308,6 +379,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderIntake(state, intake);
   renderRoutePreview(state, routePreview);
   renderOutputProof(state, outputProof);
+  renderToolDetection(state, toolDetection);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
   renderBlocked(state.blockedActions || []);
@@ -316,7 +388,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -324,8 +396,9 @@ async function loadState() {
       fetch(intakeUrl, { method: "GET", cache: "no-store" }),
       fetch(routePreviewUrl, { method: "GET", cache: "no-store" }),
       fetch(outputProofUrl, { method: "GET", cache: "no-store" }),
+      fetch(toolDetectionUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -336,6 +409,7 @@ async function loadState() {
       await intakeResponse.json(),
       await routePreviewResponse.json(),
       await outputProofResponse.json(),
+      await toolDetectionResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

@@ -109,6 +109,23 @@
           <div id="output-bundle-list" class="output-bundle-list" aria-live="polite"></div>
         </section>
 
+        <!-- Path-redacted presence checks; no tool process or software action is available. -->
+        <section class="panel workspace-panel" aria-label="Tool detection status">
+          <div class="panel-head">
+            <h2>Tool Detection</h2>
+            <span id="tool-detection-state" class="badge unknown">unknown</span>
+          </div>
+          <div class="status-rows">
+            <p><strong>Platform</strong><span id="tool-platform">loading</span></p>
+            <p><strong>Tools</strong><span id="tool-detection-count">loading</span></p>
+            <p><strong>Coverage</strong><span id="tool-family-coverage">loading</span></p>
+            <p><strong>Safety</strong><span id="tool-detection-safety">loading</span></p>
+            <p><strong>Actions</strong><span id="tool-detection-actions">loading</span></p>
+          </div>
+          <ul id="tool-family-list" class="tool-family-list" aria-label="Tool family coverage"></ul>
+          <div id="tool-detection-list" class="tool-detection-list" aria-live="polite"></div>
+        </section>
+
         <!-- Dynamic platform tracks, capabilities, and explicit blocked actions. -->
         <section class="panel-grid" id="tracks" aria-label="Build tracks"></section>
         <section class="panel-grid" id="capabilities" aria-label="Capabilities"></section>

@@ -19,8 +19,8 @@ def test_state_keeps_actions_blocked() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 20.0
-    assert response.body["currentPass"]["id"] == "PASS-008"
+    assert response.body["completion"]["realApp"] == 22.5
+    assert response.body["currentPass"]["id"] == "PASS-009"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -53,11 +53,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-008"
+    assert workspace.body["currentPass"]["id"] == "PASS-009"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-008"
+    assert ledger.body["passes"][-1]["id"] == "PASS-009"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
@@ -128,3 +128,21 @@ def test_output_preview_has_no_files_or_completed_proof() -> None:
     assert all(value is False for value in response.body["safety"].values())
     assert all(action["enabledInApi"] is False for action in response.body["actions"].values())
     assert state.body["outputProof"]["schemaVersion"] == "makers-anvil.api.output-proof.v1"
+
+
+def test_tool_detection_is_path_redacted_and_non_executing() -> None:
+    """Tool detection reports presence evidence without versions, paths, or actions."""
+
+    api = MakersAnvilApi()
+    response = api.handle("GET", "/api/tools/detection")
+    state = api.handle("GET", "/api/state")
+
+    assert response.status == 200
+    assert response.body["mode"] == "read-only-presence"
+    assert response.body["summary"]["toolCount"] == 6
+    assert all(value is False for value in response.body["safety"].values())
+    assert all(action["enabledInApi"] is False for action in response.body["actions"].values())
+    assert all(tool["detection"]["absolutePathExposed"] is False for tool in response.body["tools"])
+    assert all(tool["version"]["claimState"] == "not proven" for tool in response.body["tools"])
+    assert all(tool["actionsEnabled"] is False for tool in response.body["tools"])
+    assert state.body["toolDetection"]["schemaVersion"] == "makers-anvil.api.tool-detection.v1"

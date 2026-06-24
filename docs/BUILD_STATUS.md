@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-008 - output bundle and proof preview panels.
+PASS-009 - path-redacted tool detection foundation.
 
 ## Track Percentages
 
-- Real app completion: `20.0000%`
-- Windows local app: `20.0000%`
+- Real app completion: `22.5000%`
+- Windows local app: `22.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `0.0000%`
@@ -45,6 +45,12 @@ PASS-008 - output bundle and proof preview panels.
 - Expected artifacts remain nonexistent and unopened; required proof remains incomplete and not proven.
 - Output creation, opening, proof capture, route execution, and tool launch remain disabled.
 - Browser output and proof rows render metadata through text nodes and stack responsively on narrow screens.
+- Read-only `GET /api/tools/detection` checks six known maker tools through PATH and narrow standard-location candidates.
+- Detection returns platform, tool family, method, and executable name without returning resolved installation paths.
+- No tool process or version command is executed; no registry data is read and no filesystem data is written.
+- Missing candidates and tool versions remain not proven rather than being guessed.
+- Launch, install, update, uninstall, and repair actions remain blocked.
+- Browser tool inventory and family coverage render without executable controls.
 - Project verifier and tests exist.
 - PASS-002 browser smoke passed at desktop and mobile widths with current-pass and source-truth status visible.
 - PASS-003 local verifier, pytest, HTTP smoke, workspace init, and browser smoke passed.
@@ -53,6 +59,7 @@ PASS-008 - output bundle and proof preview panels.
 - PASS-006 explainability checker covers all 63 tracked files; verifier, 31 tests, HTTP smoke, and desktop/mobile browser regression passed.
 - PASS-007 explainability covers 69 files; verifier, 40 tests, normal/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 - PASS-008 explainability covers 75 files; verifier, 47 tests, non-writing HTTP smoke, and four desktop/mobile browser regressions passed.
+- PASS-009 explainability covers 81 files; verifier, 54 tests, real/isolated HTTP smoke, and four desktop/mobile browser regressions passed.
 
 ## Blocked Or Not Proven
 
@@ -62,6 +69,7 @@ PASS-008 - output bundle and proof preview panels.
 - Output open actions.
 - Proof capture.
 - External tool launch.
+- Tool version proof.
 - Selected-file handoff.
 - Install, update, uninstall, or repair actions.
 - Archive extraction.
@@ -72,4 +80,4 @@ PASS-008 - output bundle and proof preview panels.
 
 ## Next Pass
 
-PASS-009 - tool detection foundation.
+PASS-010 - tool dry-run planning.
