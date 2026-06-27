@@ -212,6 +212,20 @@
         "desktop workbench geometry has no page overflow and mobile reflow has no horizontal overflow",
         "upload, file handoff, authorization, commands, processes, tools, outputs, and package actions remain disabled"
       ]
+    },
+    {
+      "id": "PASS-016",
+      "title": "complete instructional source and line-by-line learning layer",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_016_REPORT.md",
+      "proof": [
+        "every Python component contains all nine required teaching fields",
+        "every top-level JavaScript function contains matching detailed JSDoc",
+        "every CSS rule and semantic HTML block has a nearby purpose, mechanism, example, and safety explanation",
+        "the generated guide explains every physical line in implementation, automation, configuration, schema, state, and workflow source",
+        "exact source hashes and line totals make stale or incomplete instructional coverage fail the verifier",
+        "runtime behavior and completion percentage remain unchanged because this remediation pass enables no application action"
+      ]
     }
   ]
 }

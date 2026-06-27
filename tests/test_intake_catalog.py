@@ -20,7 +20,17 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigServic
 
 
 def write_config(root: Path) -> None:
-    """Write the smallest safe settings and intake policy used by isolated tests."""
+    """Purpose: Write the smallest safe settings and intake policy used by isolated tests.
+
+    Inputs: Caller-supplied ``root`` values from the signature.
+    Outputs: Returns ``None``, or raises before returning when validation fails.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Call ``result = instance.write_config(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     config_dir = root / "config"
     config_dir.mkdir()
@@ -83,7 +93,17 @@ def write_config(root: Path) -> None:
 
 
 def build_service(root: Path, data_root: Path) -> IntakeCatalogService:
-    """Build an intake service whose source and runtime roots are deliberately separate."""
+    """Purpose: Build an intake service whose source and runtime roots are deliberately separate.
+
+    Inputs: Caller-supplied ``root``, ``data_root`` values from the signature.
+    Outputs: Returns ``IntakeCatalogService``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Call ``result = instance.build_service(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     paths = RuntimePathsService(
         source_root=root,
@@ -96,7 +116,17 @@ def build_service(root: Path, data_root: Path) -> IntakeCatalogService:
 
 
 def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> None:
-    """Staging records metadata while preserving bytes and withholding source paths."""
+    """Purpose: Staging records metadata while preserving bytes and withholding source paths.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_stage_file_records_metadata_without_copying_source``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     source_dir = tmp_path / "user-files"
@@ -125,7 +155,17 @@ def test_stage_file_records_metadata_without_copying_source(tmp_path: Path) -> N
 
 
 def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
-    """Intake accepts one regular file and rejects folder import."""
+    """Purpose: Intake accepts one regular file and rejects folder import.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_stage_file_rejects_folder_intake``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     source_dir = tmp_path / "folder"
@@ -136,7 +176,17 @@ def test_stage_file_rejects_folder_intake(tmp_path: Path) -> None:
 
 
 def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
-    """Archive classification does not imply or perform extraction."""
+    """Purpose: Archive classification does not imply or perform extraction.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_archive_is_detected_without_extraction``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     source = tmp_path / "bundle.zip"
@@ -150,7 +200,17 @@ def test_archive_is_detected_without_extraction(tmp_path: Path) -> None:
 
 
 def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -> None:
-    """Malformed records are counted as invalid and never returned as usable data."""
+    """Purpose: Malformed records are counted as invalid and never returned as usable data.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_catalog_excludes_record_missing_required_safety_flags``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     data_root = tmp_path / "runtime-data"
@@ -177,7 +237,17 @@ def test_catalog_excludes_record_missing_required_safety_flags(tmp_path: Path) -
 
 
 def test_catalog_excludes_record_with_incomplete_source_metadata(tmp_path: Path) -> None:
-    """A record with valid safety flags but incomplete source metadata is unusable."""
+    """Purpose: A record with valid safety flags but incomplete source metadata is unusable.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_catalog_excludes_record_with_incomplete_source_metadata``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     data_root = tmp_path / "runtime-data"
@@ -214,7 +284,17 @@ def test_catalog_excludes_record_with_incomplete_source_metadata(tmp_path: Path)
 
 
 def test_catalog_counts_non_object_json_as_invalid(tmp_path: Path) -> None:
-    """Valid JSON with the wrong top-level type is rejected without crashing readers."""
+    """Purpose: Valid JSON with the wrong top-level type is rejected without crashing readers.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source paths/contents, folders, symlinks, archives, and launch stay out.
+    Example: Run ``python -m pytest tests/test_intake_catalog.py -k test_catalog_counts_non_object_json_as_invalid``.
+    Related proof: ``services/intake_catalog.py`` and intake schemas.
+    """
 
     write_config(tmp_path)
     data_root = tmp_path / "runtime-data"

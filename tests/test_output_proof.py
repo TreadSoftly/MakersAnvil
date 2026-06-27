@@ -28,7 +28,17 @@ def build_services(
     root: Path,
     data_root: Path,
 ) -> tuple[IntakeCatalogService, RoutePreviewService, OutputProofService]:
-    """Build isolated intake, route, and output services from committed policies."""
+    """Purpose: Build isolated intake, route, and output services from committed policies.
+
+    Inputs: Caller-supplied ``root``, ``data_root`` values from the signature.
+    Outputs: Returns ``tuple[IntakeCatalogService, RoutePreviewService, OutputProofService]``, or raises before returning when validation fails.
+    How it works: It iterates over bounded records, then returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Call ``result = instance.build_services(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     config_root = root / "config"
     config_root.mkdir(parents=True)
@@ -50,7 +60,17 @@ def build_services(
 
 
 def test_mesh_bundle_plans_artifacts_without_writing_outputs(tmp_path: Path) -> None:
-    """A mesh route gets a logical bundle and incomplete proof without output files."""
+    """Purpose: A mesh route gets a logical bundle and incomplete proof without output files.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Run ``python -m pytest tests/test_output_proof.py -k test_mesh_bundle_plans_artifacts_without_writing_outputs``.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     data_root = tmp_path / "runtime"
     intake, routes, outputs = build_services(tmp_path / "source", data_root)
@@ -83,7 +103,17 @@ def test_mesh_bundle_plans_artifacts_without_writing_outputs(tmp_path: Path) -> 
 
 
 def test_archive_bundle_does_not_extract_or_create_artifacts(tmp_path: Path) -> None:
-    """Archive output planning remains manifest-only and leaves source bytes unchanged."""
+    """Purpose: Archive output planning remains manifest-only and leaves source bytes unchanged.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Run ``python -m pytest tests/test_output_proof.py -k test_archive_bundle_does_not_extract_or_create_artifacts``.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     data_root = tmp_path / "runtime"
     intake, routes, outputs = build_services(tmp_path / "source", data_root)
@@ -104,7 +134,17 @@ def test_archive_bundle_does_not_extract_or_create_artifacts(tmp_path: Path) -> 
 
 
 def test_unmatched_route_is_failed_instead_of_inventing_a_bundle(tmp_path: Path) -> None:
-    """A route unknown to output policy is counted and never given guessed artifacts."""
+    """Purpose: A route unknown to output policy is counted and never given guessed artifacts.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Run ``python -m pytest tests/test_output_proof.py -k test_unmatched_route_is_failed_instead_of_inventing_a_bundle``.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     intake, routes, outputs = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "fixture.stl"
@@ -121,7 +161,17 @@ def test_unmatched_route_is_failed_instead_of_inventing_a_bundle(tmp_path: Path)
 
 
 def test_output_policy_rejects_enabled_or_missing_safety(tmp_path: Path) -> None:
-    """True or absent safety flags cannot be interpreted as a harmless output plan."""
+    """Purpose: True or absent safety flags cannot be interpreted as a harmless output plan.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Run ``python -m pytest tests/test_output_proof.py -k test_output_policy_rejects_enabled_or_missing_safety``.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     _, _, outputs = build_services(tmp_path / "source", tmp_path / "runtime")
     policy = json.loads(outputs.policy_path.read_text(encoding="utf-8"))
@@ -138,7 +188,17 @@ def test_output_policy_rejects_enabled_or_missing_safety(tmp_path: Path) -> None
 
 
 def test_output_policy_requires_complete_route_coverage(tmp_path: Path) -> None:
-    """Every configured route must have exactly one explicit output-bundle policy."""
+    """Purpose: Every configured route must have exactly one explicit output-bundle policy.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Expected output must never be confused with produced or verified output.
+    Example: Run ``python -m pytest tests/test_output_proof.py -k test_output_policy_requires_complete_route_coverage``.
+    Related proof: ``services/output_proof.py`` and output schemas.
+    """
 
     _, _, outputs = build_services(tmp_path / "source", tmp_path / "runtime")
     policy = json.loads(outputs.policy_path.read_text(encoding="utf-8"))

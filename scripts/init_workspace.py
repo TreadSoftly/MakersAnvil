@@ -23,7 +23,17 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigServic
 
 
 def main() -> int:
-    """Create the portable app-owned directory layout and print its redacted manifest."""
+    """Purpose: Create the portable app-owned directory layout and print its redacted manifest.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Never imports user files or prints a resolved personal path.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_workspace_config.py``.
+    """
 
     manifest = WorkspaceConfigService(ROOT).initialize()
     print(json.dumps(manifest, indent=2, sort_keys=True))

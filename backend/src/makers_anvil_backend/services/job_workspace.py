@@ -38,11 +38,31 @@ ROOT = Path(__file__).resolve().parents[4]
 
 
 class JobWorkspaceError(ValueError):
-    """Raised when job preparation or cancellation would violate containment."""
+    """Purpose: Raised when job preparation or cancellation would violate containment.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``JobWorkspaceError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: No authorization, command, process, signal, source copy, or output work.
+    Example: Construct with ``instance = JobWorkspaceError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+    """
 
 
 class JobWorkspaceService:
-    """Create and read path-redacted prepared jobs plus cancellation requests."""
+    """Purpose: Create and read path-redacted prepared jobs plus cancellation requests.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``JobWorkspaceService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: No authorization, command, process, signal, source copy, or output work.
+    Example: Construct with ``instance = JobWorkspaceService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+    """
 
     def __init__(
         self,
@@ -50,7 +70,17 @@ class JobWorkspaceService:
         workspace_config: WorkspaceConfigService | None = None,
         execution_request: ExecutionRequestService | None = None,
     ) -> None:
-        """Bind app-owned storage and the read-only request-preview source."""
+        """Purpose: Bind app-owned storage and the read-only request-preview source.
+
+        Inputs: Caller-supplied ``root``, ``workspace_config``, ``execution_request`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         self.root = root or ROOT
         self.workspace_config = workspace_config or WorkspaceConfigService(self.root)
@@ -58,7 +88,17 @@ class JobWorkspaceService:
         self.policy_path = self.root / "config" / "job_workspace_policy.json"
 
     def policy(self) -> dict[str, Any]:
-        """Validate one-route storage, local actions, and constant-false unsafe effects."""
+        """Purpose: Validate one-route storage, local actions, and constant-false unsafe effects.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance.policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         policy = json.loads(self.policy_path.read_text(encoding="utf-8"))
         if not isinstance(policy, dict):
@@ -98,7 +138,17 @@ class JobWorkspaceService:
         return policy
 
     def policy_response(self) -> dict[str, Any]:
-        """Return public policy with logical storage and explicit script boundaries."""
+        """Purpose: Return public policy with logical storage and explicit script boundaries.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance.policy_response(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         policy = self.policy()
         return {
@@ -113,7 +163,17 @@ class JobWorkspaceService:
         }
 
     def catalog(self) -> dict[str, Any]:
-        """Read valid prepared jobs and cancellation state without exposing private paths."""
+        """Purpose: Read valid prepared jobs and cancellation state without exposing private paths.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance.catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         policy = self.policy()
         jobs_root = self._jobs_root(policy)
@@ -169,7 +229,17 @@ class JobWorkspaceService:
         }
 
     def prepare(self, request_preview_id: str, preview_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Create one idempotent contained workspace from an existing request preview."""
+        """Purpose: Create one idempotent contained workspace from an existing request preview.
+
+        Inputs: Caller-supplied ``request_preview_id``, ``preview_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance.prepare(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         if not PREVIEW_ID_PATTERN.fullmatch(request_preview_id):
             raise JobWorkspaceError("request preview id has an invalid format")
@@ -233,7 +303,17 @@ class JobWorkspaceService:
         return {"record": job, "cancellation": cancellation}
 
     def request_cancellation(self, job_id: str) -> dict[str, Any]:
-        """Record cancellation intent without signaling or claiming a running process."""
+        """Purpose: Record cancellation intent without signaling or claiming a running process.
+
+        Inputs: Caller-supplied ``job_id`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then handles expected failures explicitly, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance.request_cancellation(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         policy = self.policy()
         job_root = self._job_root(job_id, policy)
@@ -262,7 +342,17 @@ class JobWorkspaceService:
         request_preview_id: str,
         policy: dict[str, Any],
     ) -> dict[str, Any]:
-        """Return an existing coherent job so preparation is safely idempotent."""
+        """Purpose: Return an existing coherent job so preparation is safely idempotent.
+
+        Inputs: Caller-supplied ``manifest_path``, ``cancellation_path``, ``request_preview_id``, ``policy`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then handles expected failures explicitly, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance._existing_job(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         try:
             job = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -278,7 +368,17 @@ class JobWorkspaceService:
         return {"record": job, "cancellation": cancellation}
 
     def _jobs_root(self, policy: dict[str, Any]) -> Path:
-        """Resolve the policy-owned jobs directory inside private runtime storage."""
+        """Purpose: Resolve the policy-owned jobs directory inside private runtime storage.
+
+        Inputs: Caller-supplied ``policy`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance._jobs_root(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         relative = Path(policy["storage"]["jobsDirectory"])
         if relative != Path("jobs"):
@@ -286,7 +386,17 @@ class JobWorkspaceService:
         return self.workspace_config.runtime_path(relative)
 
     def _job_root(self, job_id: str, policy: dict[str, Any]) -> Path:
-        """Resolve one validated job id without permitting traversal or symlink escape."""
+        """Purpose: Resolve one validated job id without permitting traversal or symlink escape.
+
+        Inputs: Caller-supplied ``job_id``, ``policy`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance._job_root(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         if not JOB_ID_PATTERN.fullmatch(job_id):
             raise JobWorkspaceError("job id has an invalid format")
@@ -297,7 +407,17 @@ class JobWorkspaceService:
 
     @staticmethod
     def _validate_workspace_paths(job_root: Path, policy: dict[str, Any]) -> None:
-        """Reject symlinked or non-directory children before any contained record access."""
+        """Purpose: Reject symlinked or non-directory children before any contained record access.
+
+        Inputs: Caller-supplied ``job_root``, ``policy`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance._validate_workspace_paths(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         for name in policy["storage"]["workspaceDirectories"]:
             child = job_root / name
@@ -312,7 +432,17 @@ class JobWorkspaceService:
 
     @staticmethod
     def _workspace_complete(job_root: Path, policy: dict[str, Any]) -> bool:
-        """Require every configured workspace child to exist as a real directory."""
+        """Purpose: Require every configured workspace child to exist as a real directory.
+
+        Inputs: Caller-supplied ``job_root``, ``policy`` values from the signature.
+        Outputs: Returns ``bool``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source copy, or output work.
+        Example: Call ``result = instance._workspace_complete(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_job_workspace.py`` and job workspace schemas.
+        """
 
         return all(
             (job_root / name).is_dir() and not (job_root / name).is_symlink()

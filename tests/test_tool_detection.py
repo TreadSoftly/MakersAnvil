@@ -26,7 +26,17 @@ def build_detector(
     environ: dict[str, str],
     path_lookup=None,
 ) -> ToolDetectionService:
-    """Build an isolated detector using the committed catalog and injected machine state."""
+    """Purpose: Build an isolated detector using the committed catalog and injected machine state.
+
+    Inputs: Caller-supplied ``root``, ``platform_name``, ``environ``, ``path_lookup`` values from the signature.
+    Outputs: Returns ``ToolDetectionService``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Call ``result = instance.build_detector(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     config_root = root / "config"
     config_root.mkdir(parents=True)
@@ -38,7 +48,17 @@ def build_detector(
 
 
 def test_windows_standard_location_detects_blender_without_exposing_path(tmp_path: Path) -> None:
-    """A standard-location match reports Blender but withholds its resolved path."""
+    """Purpose: A standard-location match reports Blender but withholds its resolved path.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Run ``python -m pytest tests/test_tool_detection.py -k test_windows_standard_location_detects_blender_without_exposing_path``.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     program_files = tmp_path / "private-program-files"
     executable = program_files / "Blender Foundation" / "Blender 4.5" / "blender.exe"
@@ -68,7 +88,17 @@ def test_windows_standard_location_detects_blender_without_exposing_path(tmp_pat
 
 
 def test_path_command_detection_redacts_lookup_result(tmp_path: Path) -> None:
-    """A PATH lookup can prove presence without returning its private resolved location."""
+    """Purpose: A PATH lookup can prove presence without returning its private resolved location.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It checks conditions.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Run ``python -m pytest tests/test_tool_detection.py -k test_path_command_detection_redacts_lookup_result``.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     private_match = str(tmp_path / "private-bin" / "blender")
     detector = build_detector(
@@ -88,7 +118,17 @@ def test_path_command_detection_redacts_lookup_result(tmp_path: Path) -> None:
 
 
 def test_unknown_platform_returns_no_invented_detections(tmp_path: Path) -> None:
-    """An unsupported platform produces not-proven results instead of guesses."""
+    """Purpose: An unsupported platform produces not-proven results instead of guesses.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Run ``python -m pytest tests/test_tool_detection.py -k test_unknown_platform_returns_no_invented_detections``.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     detector = build_detector(
         tmp_path / "source",
@@ -107,7 +147,17 @@ def test_unknown_platform_returns_no_invented_detections(tmp_path: Path) -> None
 
 
 def test_tool_catalog_rejects_enabled_or_missing_safety(tmp_path: Path) -> None:
-    """True or absent safety flags cannot bypass non-executing detection policy."""
+    """Purpose: True or absent safety flags cannot bypass non-executing detection policy.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Run ``python -m pytest tests/test_tool_detection.py -k test_tool_catalog_rejects_enabled_or_missing_safety``.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     detector = build_detector(tmp_path / "source", "windows", {}, path_lookup=lambda command, path: None)
     catalog = json.loads(detector.catalog_path.read_text(encoding="utf-8"))
@@ -124,7 +174,17 @@ def test_tool_catalog_rejects_enabled_or_missing_safety(tmp_path: Path) -> None:
 
 
 def test_tool_catalog_rejects_candidate_traversal(tmp_path: Path) -> None:
-    """Candidate patterns cannot escape their narrowly scoped provider root."""
+    """Purpose: Candidate patterns cannot escape their narrowly scoped provider root.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Install paths, versions, launch, install, update, and repair stay private.
+    Example: Run ``python -m pytest tests/test_tool_detection.py -k test_tool_catalog_rejects_candidate_traversal``.
+    Related proof: ``services/tool_detection.py`` and tool schemas.
+    """
 
     detector = build_detector(tmp_path / "source", "windows", {}, path_lookup=lambda command, path: None)
     catalog = json.loads(detector.catalog_path.read_text(encoding="utf-8"))

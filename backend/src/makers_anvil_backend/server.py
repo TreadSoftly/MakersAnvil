@@ -25,17 +25,47 @@ STATIC_ROOT = ROOT / "frontend" / "public"
 
 
 class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
-    """Serve static UI files and the read-only API on loopback."""
+    """Purpose: Serve static UI files and the read-only API on loopback.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``MakersAnvilRequestHandler`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Static paths are contained and all mutating API methods stay blocked.
+    Example: Construct with ``instance = MakersAnvilRequestHandler(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+    """
 
     api = MakersAnvilApi()
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Bind the standard handler to the repository's static dashboard root."""
+        """Purpose: Bind the standard handler to the repository's static dashboard root.
+
+        Inputs: Caller-supplied ``*args``, ``**kwargs`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
-        """Serve an API response or a static dashboard asset for one GET request."""
+        """Purpose: Serve an API response or a static dashboard asset for one GET request.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Call ``result = instance.do_GET(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         if self.path.startswith("/api/"):
             self._send_api(self.api.handle("GET", self.path))
@@ -45,22 +75,62 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
-        """Send the API's standard blocked response for a POST request."""
+        """Purpose: Send the API's standard blocked response for a POST request.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Call ``result = instance.do_POST(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         self._send_api(self.api.handle("POST", self.path))
 
     def do_PUT(self) -> None:  # noqa: N802 - stdlib handler API
-        """Send the API's standard blocked response for a PUT request."""
+        """Purpose: Send the API's standard blocked response for a PUT request.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Call ``result = instance.do_PUT(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         self._send_api(self.api.handle("PUT", self.path))
 
     def do_DELETE(self) -> None:  # noqa: N802 - stdlib handler API
-        """Send the API's standard blocked response for a DELETE request."""
+        """Purpose: Send the API's standard blocked response for a DELETE request.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Call ``result = instance.do_DELETE(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         self._send_api(self.api.handle("DELETE", self.path))
 
     def _send_api(self, response: ApiResponse) -> None:
-        """Serialize one API result with explicit JSON, cache, and length headers."""
+        """Purpose: Serialize one API result with explicit JSON, cache, and length headers.
+
+        Inputs: Caller-supplied ``response`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Static paths are contained and all mutating API methods stay blocked.
+        Example: Call ``result = instance._send_api(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        """
 
         payload = json.dumps(response.body, indent=2).encode("utf-8")
         self.send_response(response.status)
@@ -73,7 +143,17 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
 
 
 def run(host: str = "127.0.0.1", port: int = 8765) -> None:
-    """Run the local server until interrupted."""
+    """Purpose: Run the local server until interrupted.
+
+    Inputs: Caller-supplied ``host``, ``port`` values from the signature.
+    Outputs: Returns ``None``, or raises before returning when validation fails.
+    How it works: It executes the focused statements in source order.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Static paths are contained and all mutating API methods stay blocked.
+    Example: Call ``result = instance.run(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+    """
 
     server = ThreadingHTTPServer((host, port), MakersAnvilRequestHandler)
     print(f"Makers Anvil running at http://{host}:{port}")
@@ -81,7 +161,17 @@ def run(host: str = "127.0.0.1", port: int = 8765) -> None:
 
 
 def main() -> int:
-    """Parse host and port arguments, then run the loopback development server."""
+    """Purpose: Parse host and port arguments, then run the loopback development server.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Static paths are contained and all mutating API methods stay blocked.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+    """
 
     parser = argparse.ArgumentParser(description="Run the Makers Anvil local app.")
     parser.add_argument("--host", default="127.0.0.1")

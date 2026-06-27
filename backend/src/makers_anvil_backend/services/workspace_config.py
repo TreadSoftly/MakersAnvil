@@ -22,21 +22,61 @@ ROOT = Path(__file__).resolve().parents[4]
 
 
 class WorkspaceConfigError(ValueError):
-    """Raised when local workspace settings are invalid or uncontained."""
+    """Purpose: Raised when local workspace settings are invalid or uncontained.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``WorkspaceConfigError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+    Example: Construct with ``instance = WorkspaceConfigError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+    """
 
 
 class WorkspaceConfigService:
-    """Read and initialize a user-data workspace independent from source location."""
+    """Purpose: Read and initialize a user-data workspace independent from source location.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``WorkspaceConfigService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+    Example: Construct with ``instance = WorkspaceConfigService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+    """
 
     def __init__(self, root: Path | None = None, runtime_paths: RuntimePathsService | None = None) -> None:
-        """Bind source-independent runtime paths to committed workspace defaults."""
+        """Purpose: Bind source-independent runtime paths to committed workspace defaults.
+
+        Inputs: Caller-supplied ``root``, ``runtime_paths`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         self.root = (root or ROOT).resolve()
         self.runtime_paths = runtime_paths or RuntimePathsService(source_root=self.root)
         self.settings_path = self.root / "config" / "default_settings.json"
 
     def settings(self) -> dict[str, Any]:
-        """Load defaults and reject any policy that reconnects data to source."""
+        """Purpose: Load defaults and reject any policy that reconnects data to source.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.settings(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         settings = json.loads(self.settings_path.read_text(encoding="utf-8"))
         runtime_data = settings.get("runtimeData", {})
@@ -54,7 +94,17 @@ class WorkspaceConfigService:
         return settings
 
     def config(self) -> dict[str, Any]:
-        """Return public workspace policy, safety flags, and portable directory metadata."""
+        """Purpose: Return public workspace policy, safety flags, and portable directory metadata.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.config(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         settings = self.settings()
         return {
@@ -74,7 +124,17 @@ class WorkspaceConfigService:
         }
 
     def layout(self) -> dict[str, Any]:
-        """Report which app-owned directories exist without exposing their absolute root."""
+        """Purpose: Report which app-owned directories exist without exposing their absolute root.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.layout(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         settings = self.settings()
         runtime_root = self.runtime_paths.location().root
@@ -106,7 +166,17 @@ class WorkspaceConfigService:
         }
 
     def initialize(self) -> dict[str, Any]:
-        """Create only configured app-owned directories and a path-redacted manifest."""
+        """Purpose: Create only configured app-owned directories and a path-redacted manifest.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It iterates over bounded records, then returns the resulting contract value.
+        Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.initialize(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         settings = self.settings()
         runtime_root = self.runtime_paths.location().root
@@ -130,18 +200,48 @@ class WorkspaceConfigService:
         return manifest
 
     def runtime_path(self, relative_path: str | Path) -> Path:
-        """Return a contained path inside the resolved app-owned user-data root."""
+        """Purpose: Return a contained path inside the resolved app-owned user-data root.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.runtime_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         return self.runtime_paths.data_path(self._safe_relative_path(str(relative_path)))
 
     def logical_runtime_path(self, relative_path: str | Path) -> str:
-        """Return a stable non-filesystem identifier safe for API display."""
+        """Purpose: Return a stable non-filesystem identifier safe for API display.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``str``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.logical_runtime_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         return self.runtime_paths.logical_path(self._safe_relative_path(str(relative_path)))
 
     @staticmethod
     def _safe_relative_path(relative_path: str) -> Path:
-        """Reject absolute, empty, or traversing workspace directory declarations."""
+        """Purpose: Reject absolute, empty, or traversing workspace directory declarations.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance._safe_relative_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
 
         candidate = Path(relative_path)
         if candidate.is_absolute() or ".." in candidate.parts or not candidate.parts:

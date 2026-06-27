@@ -128,15 +128,45 @@ const fallbackState = {
   },
 };
 
-/** Convert a closed claim-state label into its matching CSS class token. */
+/**
+ * Purpose: Convert one closed claim-state label into its CSS class token.
+ * Inputs: ``state`` is an internal claim-state string such as ``preview-only``.
+ * Outputs: Returns a lowercase-compatible token with whitespace replaced by dashes.
+ * How it works: Coerces absent values to ``unknown`` and normalizes only whitespace.
+ * Side effects: None; the arrow function returns a string without touching the DOM.
+ * Failure behavior: Non-string values become strings rather than causing a hidden crash.
+ * Safety: Callers use the result only as a CSS class, never as executable markup.
+ * Example: ``claimClass("not proven")`` returns ``not-proven``.
+ * Related proof: tests/test_frontend_workbench.py and claim-state schema checks.
+ */
 const claimClass = (state) => String(state || "unknown").replace(/\s+/g, "-");
 
-/** Return trusted badge markup for internal capability and track records. */
+/**
+ * Purpose: Return trusted badge markup for internal capability and track records.
+ * Inputs: Caller supplies ``state``.
+ * Outputs: Returns trusted badge markup for a closed internal claim-state label.
+ * How it works: Normalizes the label into a CSS class and returns the corresponding span markup.
+ * Side effects: None; it returns a string and does not touch the DOM by itself.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Call only with closed claim-state data, never arbitrary user-controlled HTML.
+ * Example: ``badge("blocked")`` returns markup styled as a blocked state.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function badge(state) {
   return `<span class="badge ${claimClass(state)}">${state}</span>`;
 }
 
-/** Render platform delivery truth; no track card contains an actionable control. */
+/**
+ * Purpose: Render platform delivery truth; no track card contains an actionable control.
+ * Inputs: Caller supplies ``tracks``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderTracks(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderTracks(tracks) {
   // Tracks are high-level platform targets, not executable workflow actions.
   const target = document.querySelector("#tracks");
@@ -151,7 +181,17 @@ function renderTracks(tracks) {
   `).join("");
 }
 
-/** Render capability summaries and permanently disabled placeholder buttons. */
+/**
+ * Purpose: Render capability summaries and permanently disabled placeholder buttons.
+ * Inputs: Caller supplies ``capabilities``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderCapabilities(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderCapabilities(capabilities) {
   // Capability buttons remain disabled until a later pass proves an action gate.
   const target = document.querySelector("#capabilities");
@@ -167,13 +207,33 @@ function renderCapabilities(capabilities) {
   `).join("");
 }
 
-/** Render the durable blocked-action list supplied by committed status truth. */
+/**
+ * Purpose: Render the durable blocked-action list supplied by committed status truth.
+ * Inputs: Caller supplies ``actions``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderBlocked(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderBlocked(actions) {
   const target = document.querySelector("#blocked-actions");
   target.innerHTML = actions.map((action) => `<li><span>■</span>${action}</li>`).join("");
 }
 
-/** Merge workspace status with app state and display current durable pass pointers. */
+/**
+ * Purpose: Merge workspace status with app state and display current durable pass pointers.
+ * Inputs: Caller supplies ``state``, ``workspace``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderWorkspace(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderWorkspace(state, workspace) {
   const current = workspace.currentPass || state.currentPass || fallbackState.currentPass;
   const next = workspace.nextPass || state.nextPass || fallbackState.nextPass;
@@ -186,7 +246,17 @@ function renderWorkspace(state, workspace) {
   document.querySelector("#status-source").textContent = sourceTruth.statusPath || "not proven";
 }
 
-/** Display logical runtime layout without exposing a resolved personal directory. */
+/**
+ * Purpose: Display logical runtime layout without exposing a resolved personal directory.
+ * Inputs: Caller supplies ``state``, ``layout``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderLayout(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderLayout(state, layout = {}) {
   const workspaceConfig = layout.runtimeLocation ? layout : state.workspaceConfig || fallbackState.workspaceConfig;
   const layoutState = document.querySelector("#layout-state");
@@ -207,7 +277,17 @@ function renderLayout(state, layout = {}) {
   document.querySelector("#runtime-init").textContent = creation.enabledInApi === false ? `${creation.script} · API disabled` : "not proven";
 }
 
-/** Display metadata-only intake counts and privacy/action boundaries. */
+/**
+ * Purpose: Display metadata-only intake counts and privacy/action boundaries.
+ * Inputs: Caller supplies ``state``, ``catalog``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderIntake(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderIntake(state, catalog = {}) {
   const intake = catalog.schemaVersion ? catalog : state.intakeCatalog || fallbackState.intakeCatalog;
   const intakeState = document.querySelector("#intake-state");
@@ -223,7 +303,17 @@ function renderIntake(state, catalog = {}) {
   document.querySelector("#intake-api-action").textContent = intake.creationAction?.enabledInApi === false ? "blocked" : "not proven";
 }
 
-/** Render untrusted route metadata through DOM text nodes without executing steps. */
+/**
+ * Purpose: Render untrusted route metadata through DOM text nodes without executing steps.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderRoutePreview(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderRoutePreview(state, response = {}) {
   const routePreview = response.schemaVersion ? response : state.routePreview || fallbackState.routePreview;
   const previewState = document.querySelector("#route-preview-state");
@@ -289,7 +379,17 @@ function renderRoutePreview(state, response = {}) {
   });
 }
 
-/** Render logical output and proof plans while creation/open controls remain absent. */
+/**
+ * Purpose: Render logical output and proof plans while creation/open controls remain absent.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderOutputProof(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderOutputProof(state, response = {}) {
   const outputProof = response.schemaVersion ? response : state.outputProof || fallbackState.outputProof;
   const outputState = document.querySelector("#output-proof-state");
@@ -373,7 +473,17 @@ function renderOutputProof(state, response = {}) {
   });
 }
 
-/** Render path-redacted tool evidence and blocked software actions. */
+/**
+ * Purpose: Render path-redacted tool evidence and blocked software actions.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderToolDetection(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderToolDetection(state, response = {}) {
   const toolDetection = response.schemaVersion ? response : state.toolDetection || fallbackState.toolDetection;
   const toolState = document.querySelector("#tool-detection-state");
@@ -434,7 +544,17 @@ function renderToolDetection(state, response = {}) {
   });
 }
 
-/** Render semantic invocation plans that contain no runnable command or handoff. */
+/**
+ * Purpose: Render semantic invocation plans that contain no runnable command or handoff.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderToolDryRun(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderToolDryRun(state, response = {}) {
   const dryRun = response.schemaVersion ? response : state.toolDryRun || fallbackState.toolDryRun;
   const dryRunState = document.querySelector("#tool-dry-run-state");
@@ -497,7 +617,17 @@ function renderToolDryRun(state, response = {}) {
   });
 }
 
-/** Render one-route gate evidence while authorization and execution stay disabled. */
+/**
+ * Purpose: Render one-route gate evidence while authorization and execution stay disabled.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderExecutionGates(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderExecutionGates(state, response = {}) {
   const gates = response.schemaVersion ? response : state.executionGates || fallbackState.executionGates;
   const gateState = document.querySelector("#execution-gate-state");
@@ -561,7 +691,17 @@ function renderExecutionGates(state, response = {}) {
   });
 }
 
-/** Render logical request intent and empty audit plans without enabling controls. */
+/**
+ * Purpose: Render logical request intent and empty audit plans without enabling controls.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderExecutionRequest(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderExecutionRequest(state, response = {}) {
   const request = response.schemaVersion ? response : state.executionRequestPreview || fallbackState.executionRequestPreview;
   const requestState = document.querySelector("#execution-request-state");
@@ -615,7 +755,17 @@ function renderExecutionRequest(state, response = {}) {
   });
 }
 
-/** Render path-redacted prepared jobs and unsignaled cancellation requests. */
+/**
+ * Purpose: Render path-redacted prepared jobs and unsignaled cancellation requests.
+ * Inputs: Caller supplies ``state``, ``response``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderJobWorkspaces(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderJobWorkspaces(state, response = {}) {
   const catalog = response.schemaVersion ? response : state.jobWorkspaceCatalog || fallbackState.jobWorkspaceCatalog;
   const catalogState = document.querySelector("#job-workspace-state");
@@ -675,8 +825,15 @@ function renderJobWorkspaces(state, response = {}) {
 }
 
 /**
- * Summarize the selected input and expected output for the primary workbench.
- * Untrusted file names remain text nodes, and missing evidence stays explicit.
+ * Purpose: Summarize the selected input and expected output for the primary workbench. Untrusted file names remain text nodes, and missing evidence stays explicit.
+ * Inputs: Caller supplies ``state``, ``health``, ``intake``, ``routePreview``, ``outputProof``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderWorkbenchSummary(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
 function renderWorkbenchSummary(state, health, intake, routePreview, outputProof) {
   const catalog = intake.schemaVersion ? intake : state.intakeCatalog || fallbackState.intakeCatalog;
@@ -711,7 +868,17 @@ function renderWorkbenchSummary(state, health, intake, routePreview, outputProof
   document.querySelector("#rail-health-label").textContent = liveState === "proven" ? "Local ready" : liveState;
 }
 
-/** Switch the stable command deck without changing application or server state. */
+/**
+ * Purpose: Switch the stable command deck without changing application or server state.
+ * Inputs: Caller supplies ``viewName``.
+ * Outputs: Returns ``undefined`` after selecting one local command-deck view.
+ * How it works: Hides nonmatching panels and synchronizes tab/rail accessibility state.
+ * Side effects: Changes DOM visibility and ARIA attributes only.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Does not call an API or change application/runtime records.
+ * Example: ``selectWorkbenchView("plans")`` shows the Plans panel.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function selectWorkbenchView(viewName) {
   document.querySelectorAll("[data-view-panel]").forEach((panel) => {
     panel.hidden = panel.dataset.viewPanel !== viewName;
@@ -726,7 +893,17 @@ function selectWorkbenchView(viewName) {
   });
 }
 
-/** Focus one visible work zone and briefly expose the navigation destination. */
+/**
+ * Purpose: Focus one visible work zone and briefly expose the navigation destination.
+ * Inputs: Caller supplies ``regionId``.
+ * Outputs: Returns ``undefined`` after moving browser focus to one known region.
+ * How it works: Finds the region, focuses/scrolls it, and briefly applies a visible focus class.
+ * Side effects: Changes browser focus, scroll position, and a temporary CSS class.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: The region id comes from committed navigation mappings, not executable content.
+ * Example: ``focusWorkbenchRegion("tools-zone")`` reveals the Tools area.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function focusWorkbenchRegion(regionId) {
   const target = document.querySelector(`#${regionId}`);
   if (!target) {
@@ -739,7 +916,17 @@ function focusWorkbenchRegion(regionId) {
   window.setTimeout(() => target.classList.remove("is-focused"), 900);
 }
 
-/** Wire read-only tabs, rail destinations, and quick-jump search once. */
+/**
+ * Purpose: Wire read-only tabs, rail destinations, and quick-jump search once.
+ * Inputs: No caller-supplied values; the function reads documented local DOM/API state.
+ * Outputs: Returns ``undefined`` after registering local navigation listeners.
+ * How it works: Connects tabs, rail buttons, and exact quick-jump terms to known workbench regions.
+ * Side effects: Registers browser event listeners; it performs no request immediately.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Handlers only switch/focus views; operational maker actions remain disabled.
+ * Example: Called once during module startup before the first ``loadState()``.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function initializeWorkbenchControls() {
   document.querySelectorAll("[data-workbench-view]").forEach((button) => {
     button.addEventListener("click", () => selectWorkbenchView(button.dataset.workbenchView));
@@ -781,7 +968,17 @@ function initializeWorkbenchControls() {
   });
 }
 
-/** Compose one coherent dashboard frame from all read-only API snapshots. */
+/**
+ * Purpose: Compose one coherent dashboard frame from all read-only API snapshots.
+ * Inputs: Caller supplies ``state``, ``health``, ``workspace``, ``layout``, ``intake``, ``routePreview``, ``outputProof``, ``toolDetection``, ``toolDryRun``, ``executionGates``, ``executionRequest``, ``jobWorkspace``.
+ * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
+ * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
+ * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
+ * Example: ``renderState(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
@@ -803,7 +1000,17 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
   renderBlocked(state.blockedActions || []);
 }
 
-/** Fetch every GET-only endpoint together and fall back to conservative offline truth. */
+/**
+ * Purpose: Fetch every GET-only endpoint together and fall back to conservative offline truth.
+ * Inputs: No caller-supplied values; the function reads documented local DOM/API state.
+ * Outputs: Returns a Promise that resolves after one complete dashboard render attempt.
+ * How it works: Fetches all related GET endpoints together, validates responses, then renders one coherent frame.
+ * Side effects: Performs loopback GET requests and updates existing DOM regions.
+ * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
+ * Safety: Never sends POST/PUT/DELETE or converts missing evidence into ready state.
+ * Example: ``await loadState()`` refreshes the workbench from current loopback truth.
+ * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
+ */
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {

@@ -25,7 +25,17 @@ RouteHandler = Callable[[], JsonDict]
 
 @dataclass(frozen=True)
 class ApiResponse:
-    """HTTP-ready API response."""
+    """Purpose: HTTP-ready API response.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ApiResponse`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Non-GET methods and unknown routes fail closed at this boundary.
+    Example: Construct with ``instance = ApiResponse(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+    """
 
     status: int
     body: JsonDict
@@ -33,10 +43,30 @@ class ApiResponse:
 
 
 class MakersAnvilApi:
-    """Route read-only API requests to deterministic service responses."""
+    """Purpose: Route read-only API requests to deterministic service responses.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``MakersAnvilApi`` exposing the state and operations defined below.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Non-GET methods and unknown routes fail closed at this boundary.
+    Example: Construct with ``instance = MakersAnvilApi(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+    """
 
     def __init__(self, state_service: AppStateService | None = None) -> None:
-        """Register every allowed read route against one composable state service."""
+        """Purpose: Register every allowed read route against one composable state service.
+
+        Inputs: Caller-supplied ``state_service`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Non-GET methods and unknown routes fail closed at this boundary.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         self._state_service = state_service or AppStateService()
         self._routes: dict[str, RouteHandler] = {
@@ -60,7 +90,17 @@ class MakersAnvilApi:
         }
 
     def handle(self, method: str, raw_path: str) -> ApiResponse:
-        """Return a deterministic response while rejecting every non-GET API request."""
+        """Purpose: Return a deterministic response while rejecting every non-GET API request.
+
+        Inputs: Caller-supplied ``method``, ``raw_path`` values from the signature.
+        Outputs: Returns ``ApiResponse``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Non-GET methods and unknown routes fail closed at this boundary.
+        Example: Call ``result = instance.handle(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         path = urlparse(raw_path).path
         normalized_method = method.upper()
@@ -91,7 +131,17 @@ class MakersAnvilApi:
         return ApiResponse(200, handler())
 
     def _claim_states(self) -> JsonDict:
-        """Expose the closed claim-state vocabulary used by every public contract."""
+        """Purpose: Expose the closed claim-state vocabulary used by every public contract.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``JsonDict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Non-GET methods and unknown routes fail closed at this boundary.
+        Example: Call ``result = instance._claim_states(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return {
             "schemaVersion": "makers-anvil.api.claim-states.v1",

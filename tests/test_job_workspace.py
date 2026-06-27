@@ -24,26 +24,76 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class _StubExecutionRequest:
-    """Provide one path-free request preview without the upstream planning graph."""
+    """Purpose: Provide one path-free request preview without the upstream planning graph.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``_StubExecutionRequest`` exposing the state and operations defined below.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Construct with ``instance = _StubExecutionRequest(...)`` using values described by ``__init__``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     def __init__(self, preview: dict) -> None:
-        """Store the preview returned by isolated preparation tests."""
+        """Purpose: Store the preview returned by isolated preparation tests.
+
+        Inputs: Caller-supplied ``preview`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source, output, or proof escapes.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: Job services, scripts, policies, and schemas.
+        """
 
         self._preview = preview
 
     def execution_request_policy(self) -> dict:
-        """Return the single route required for job-policy coherence."""
+        """Purpose: Return the single route required for job-policy coherence.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source, output, or proof escapes.
+        Example: Call ``result = instance.execution_request_policy(...)`` with values satisfying the documented inputs.
+        Related proof: Job services, scripts, policies, and schemas.
+        """
 
         return {"scope": {"routeId": "mesh-to-toolpath"}}
 
     def preview_catalog(self) -> dict:
-        """Return one blocked request preview as the preparation source."""
+        """Purpose: Return one blocked request preview as the preparation source.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: No authorization, command, process, signal, source, output, or proof escapes.
+        Example: Call ``result = instance.preview_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: Job services, scripts, policies, and schemas.
+        """
 
         return {"previews": [self._preview]}
 
 
 def make_preview() -> dict:
-    """Build a valid logical request preview with no accepted authorization."""
+    """Purpose: Build a valid logical request preview with no accepted authorization.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``dict``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Call ``result = make_preview(...)`` with values satisfying the documented inputs.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     return {
         "id": "execution-request-preview-dry-run-intake-123-mesh-to-toolpath",
@@ -65,7 +115,17 @@ def make_preview() -> dict:
 
 
 def write_config(root: Path) -> None:
-    """Write committed job policy plus minimal portable workspace settings."""
+    """Purpose: Write committed job policy plus minimal portable workspace settings.
+
+    Inputs: Caller-supplied ``root`` values from the signature.
+    Outputs: Returns ``None``, or raises before returning when validation fails.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Call ``result = instance.write_config(...)`` with values satisfying the documented inputs.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     config = root / "config"
     config.mkdir(parents=True)
@@ -102,7 +162,17 @@ def write_config(root: Path) -> None:
 
 
 def build_service(tmp_path: Path, preview: dict | None = None) -> tuple[JobWorkspaceService, Path]:
-    """Build a service whose source and runtime roots are deliberately separate."""
+    """Purpose: Build a service whose source and runtime roots are deliberately separate.
+
+    Inputs: Caller-supplied ``tmp_path``, ``preview`` values from the signature.
+    Outputs: Returns ``tuple[JobWorkspaceService, Path]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Call ``result = instance.build_service(...)`` with values satisfying the documented inputs.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     source_root = tmp_path / "source"
     data_root = tmp_path / "runtime"
@@ -119,7 +189,17 @@ def build_service(tmp_path: Path, preview: dict | None = None) -> tuple[JobWorks
 
 
 def test_empty_catalog_is_read_only_and_does_not_create_runtime_storage(tmp_path: Path) -> None:
-    """Reading job state never creates the app-owned jobs directory."""
+    """Purpose: Reading job state never creates the app-owned jobs directory.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_empty_catalog_is_read_only_and_does_not_create_runtime_storage``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, data_root = build_service(tmp_path)
 
@@ -139,7 +219,17 @@ def test_empty_catalog_is_read_only_and_does_not_create_runtime_storage(tmp_path
 
 
 def test_prepare_creates_only_contained_path_redacted_app_records(tmp_path: Path) -> None:
-    """Preparation creates empty app-owned directories and no executable or private data."""
+    """Purpose: Preparation creates empty app-owned directories and no executable or private data.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_prepare_creates_only_contained_path_redacted_app_records``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, data_root = build_service(tmp_path)
     result = service.prepare(make_preview()["id"])
@@ -161,7 +251,17 @@ def test_prepare_creates_only_contained_path_redacted_app_records(tmp_path: Path
 
 
 def test_prepare_is_idempotent_for_the_same_request_preview(tmp_path: Path) -> None:
-    """Repeated preparation returns the existing job without duplicate records or timestamps."""
+    """Purpose: Repeated preparation returns the existing job without duplicate records or timestamps.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_prepare_is_idempotent_for_the_same_request_preview``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, data_root = build_service(tmp_path)
     first = service.prepare(make_preview()["id"])
@@ -172,7 +272,17 @@ def test_prepare_is_idempotent_for_the_same_request_preview(tmp_path: Path) -> N
 
 
 def test_prepare_rejects_private_or_accepted_preview_data(tmp_path: Path) -> None:
-    """A weakened upstream preview cannot persist a source path or accepted authorization."""
+    """Purpose: A weakened upstream preview cannot persist a source path or accepted authorization.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_prepare_rejects_private_or_accepted_preview_data``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     preview = make_preview()
     preview["intent"]["source"]["logicalReference"] = str(tmp_path / "private.stl")
@@ -188,7 +298,17 @@ def test_prepare_rejects_private_or_accepted_preview_data(tmp_path: Path) -> Non
 
 
 def test_cancellation_records_intent_without_signaling_or_stopping_process(tmp_path: Path) -> None:
-    """Cancellation changes only its control record and remains idempotent."""
+    """Purpose: Cancellation changes only its control record and remains idempotent.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_cancellation_records_intent_without_signaling_or_stopping_process``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, _ = build_service(tmp_path)
     job = service.prepare(make_preview()["id"])["record"]
@@ -208,7 +328,17 @@ def test_cancellation_records_intent_without_signaling_or_stopping_process(tmp_p
 
 
 def test_job_ids_and_symlink_workspaces_cannot_escape_containment(tmp_path: Path) -> None:
-    """Traversal ids and symlinked job roots are rejected before record access."""
+    """Purpose: Traversal ids and symlinked job roots are rejected before record access.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It handles expected failures explicitly.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_job_ids_and_symlink_workspaces_cannot_escape_containment``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, data_root = build_service(tmp_path)
     with pytest.raises(JobWorkspaceError, match="invalid format"):
@@ -228,7 +358,17 @@ def test_job_ids_and_symlink_workspaces_cannot_escape_containment(tmp_path: Path
 
 
 def test_catalog_fails_closed_on_malformed_or_weakened_runtime_records(tmp_path: Path) -> None:
-    """Invalid prepared records are counted and never returned as usable jobs."""
+    """Purpose: Invalid prepared records are counted and never returned as usable jobs.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_catalog_fails_closed_on_malformed_or_weakened_runtime_records``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, data_root = build_service(tmp_path)
     job = service.prepare(make_preview()["id"])["record"]
@@ -251,7 +391,17 @@ def test_catalog_fails_closed_on_malformed_or_weakened_runtime_records(tmp_path:
 
 
 def test_policy_rejects_api_mutation_or_execution_effects(tmp_path: Path) -> None:
-    """Policy changes cannot silently enable browser mutation, process start, or signaling."""
+    """Purpose: Policy changes cannot silently enable browser mutation, process start, or signaling.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: No authorization, command, process, signal, source, output, or proof escapes.
+    Example: Run ``python -m pytest tests/test_job_workspace.py -k test_policy_rejects_api_mutation_or_execution_effects``.
+    Related proof: Job services, scripts, policies, and schemas.
+    """
 
     service, _ = build_service(tmp_path)
     policy = json.loads(service.policy_path.read_text(encoding="utf-8"))

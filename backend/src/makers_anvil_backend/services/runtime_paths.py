@@ -24,12 +24,32 @@ LOGICAL_DATA_ROOT = "makers-anvil-data://user"
 
 
 class RuntimePathError(ValueError):
-    """Raised when a runtime path would depend on an unsafe or ambiguous location."""
+    """Purpose: Raised when a runtime path would depend on an unsafe or ambiguous location.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``RuntimePathError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Runtime storage cannot depend on the source checkout or current directory.
+    Example: Construct with ``instance = RuntimePathError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+    """
 
 
 @dataclass(frozen=True)
 class RuntimeLocation:
-    """Resolved private location plus safe public metadata."""
+    """Purpose: Resolved private location plus safe public metadata.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``RuntimeLocation`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Runtime storage cannot depend on the source checkout or current directory.
+    Example: Construct with ``instance = RuntimeLocation(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+    """
 
     root: Path
     provider: str
@@ -38,7 +58,17 @@ class RuntimeLocation:
 
 
 class RuntimePathsService:
-    """Resolve app data independently from the source checkout or working directory."""
+    """Purpose: Resolve app data independently from the source checkout or working directory.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``RuntimePathsService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Runtime storage cannot depend on the source checkout or current directory.
+    Example: Construct with ``instance = RuntimePathsService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+    """
 
     def __init__(
         self,
@@ -47,7 +77,17 @@ class RuntimePathsService:
         home: Path | None = None,
         platform_name: str | None = None,
     ) -> None:
-        """Capture injected platform inputs so path behavior is deterministic and testable."""
+        """Purpose: Capture injected platform inputs so path behavior is deterministic and testable.
+
+        Inputs: Caller-supplied ``source_root``, ``environ``, ``home``, ``platform_name`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It checks conditions.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         self.source_root = (source_root or ROOT).resolve()
         self.environ = dict(os.environ if environ is None else environ)
@@ -55,7 +95,17 @@ class RuntimePathsService:
         self.platform_name = platform_name or sys.platform
 
     def location(self) -> RuntimeLocation:
-        """Resolve the private data root from an override or OS convention."""
+        """Purpose: Resolve the private data root from an override or OS convention.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``RuntimeLocation``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Call ``result = instance.location(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         override = self.environ.get(DATA_DIR_ENV)
         if override:
@@ -97,7 +147,17 @@ class RuntimePathsService:
         )
 
     def public_info(self) -> dict[str, object]:
-        """Return location metadata that deliberately omits the resolved filesystem path."""
+        """Purpose: Return location metadata that deliberately omits the resolved filesystem path.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, object]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Call ``result = instance.public_info(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         location = self.location()
         return {
@@ -113,7 +173,17 @@ class RuntimePathsService:
         }
 
     def data_path(self, relative_path: str | Path) -> Path:
-        """Resolve one contained child path and reject absolute or escaping input."""
+        """Purpose: Resolve one contained child path and reject absolute or escaping input.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Call ``result = instance.data_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         candidate = Path(relative_path)
         if candidate.is_absolute() or ".." in candidate.parts or not candidate.parts:
@@ -125,14 +195,34 @@ class RuntimePathsService:
         return target
 
     def logical_path(self, relative_path: str | Path) -> str:
-        """Return a stable API-safe identifier for a contained runtime child path."""
+        """Purpose: Return a stable API-safe identifier for a contained runtime child path.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``str``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Call ``result = instance.logical_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         candidate = Path(relative_path)
         self.data_path(candidate)
         return f"{LOGICAL_DATA_ROOT}/{candidate.as_posix()}"
 
     def _absolute_path(self, value: str, variable_name: str) -> Path:
-        """Expand and validate an explicit override before returning its resolved path."""
+        """Purpose: Expand and validate an explicit override before returning its resolved path.
+
+        Inputs: Caller-supplied ``value``, ``variable_name`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Runtime storage cannot depend on the source checkout or current directory.
+        Example: Call ``result = instance._absolute_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_runtime_paths.py`` and runtime-location schema.
+        """
 
         candidate = Path(value).expanduser()
         if not candidate.is_absolute():

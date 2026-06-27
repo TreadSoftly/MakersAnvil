@@ -4,7 +4,7 @@
 
 This guide is the durable code roadmap for a developer, student, reviewer, or AI model. It explains where behavior lives, how one request moves through the application, which safety rules must remain true, and how to extend the app without relying on private chat history.
 
-Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/PREVIOUS_APP_REFERENCE_STUDY.md`, the current status files, source-manifest entries, schemas, and tests. The repository is authoritative when this guide and code disagree; repair the stale guide in the same change.
+Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/LINE_BY_LINE_CODE_GUIDE.md`, `docs/PREVIOUS_APP_REFERENCE_STUDY.md`, the current status files, source-manifest entries, schemas, and tests. The repository is authoritative when this guide and code disagree; repair the stale guide in the same change.
 
 ## Application Shape
 
@@ -35,6 +35,7 @@ The current HTTP boundary rejects every non-GET API request. Local scripts are t
 7. `docs/SOURCE_WALKTHROUGH.md` connects each source file to its caller, contract, effect, and test.
 8. `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves accepted workbench design evidence without runtime coupling.
 9. Schemas, tests, and implementation establish the actual behavioral contract.
+10. `state/learning_coverage.json` and the generated line guide prove that every physical implementation and contract line has a current explanation.
 
 Do not infer current truth from an old chat, commit message, screenshot, or historical pass report.
 
@@ -96,7 +97,8 @@ Every capability follows this sequence:
 9. CSS gives the region stable responsive dimensions.
 10. Tests prove happy paths, malformed policy rejection, privacy, and disabled actions.
 11. `scripts/verify_project.py` validates cross-file invariants and schemas.
-12. Status, architecture, roadmap, pass report, and source manifest are updated together.
+12. `scripts/build_learning_guide.py` regenerates exact numbered explanations after the final covered source change.
+13. Status, architecture, roadmap, pass report, and source manifest are updated together.
 
 Skipping a link makes a capability incomplete even if one isolated file works.
 
@@ -164,7 +166,8 @@ Until all required gates pass, policy, API, service, and UI values must keep the
 5. Call the exact GET endpoint directly.
 6. Inspect browser console/network/rendering only after the API record is correct.
 7. Run explainability, project verification, and the full test suite.
-8. Update durable records if the observed truth changed.
+8. Regenerate and check the line guide.
+9. Update durable records if the observed truth changed.
 
 ## Completion Definition
 

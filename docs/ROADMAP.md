@@ -17,10 +17,11 @@
 13. Contained job workspace and cancellation record foundation.
 14. Previous-app design assimilation and source explanation remediation.
 15. Preview-first maker workbench shell and responsive dashboard foundation.
-16. Explicit authorization and command preview foundation.
-17. Single-route contained execution with cancellation, audit, and output proof.
-18. Backup, restore, update, and uninstall dry-runs.
-19. Windows packaging and clean-machine proof.
+16. Complete instructional source and line-by-line learning layer.
+17. Explicit authorization and command preview foundation.
+18. Single-route contained execution with cancellation, audit, and output proof.
+19. Backup, restore, update, and uninstall dry-runs.
+20. Windows packaging and clean-machine proof.
 
 ## Planned Later
 

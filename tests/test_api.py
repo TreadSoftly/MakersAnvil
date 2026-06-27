@@ -13,7 +13,17 @@ from makers_anvil_backend.api.app import MakersAnvilApi
 
 
 def test_health_is_read_only_and_proven() -> None:
-    """Health identifies a proven read-only service with mutations disabled."""
+    """Purpose: Health identifies a proven read-only service with mutations disabled.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_health_is_read_only_and_proven``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     response = MakersAnvilApi().handle("GET", "/api/health")
 
@@ -23,13 +33,23 @@ def test_health_is_read_only_and_proven() -> None:
 
 
 def test_state_keeps_actions_blocked() -> None:
-    """Dashboard state reports current progress without enabling capabilities."""
+    """Purpose: Dashboard state reports current progress without enabling capabilities.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_state_keeps_actions_blocked``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
     assert response.body["completion"]["realApp"] == 35.0
-    assert response.body["currentPass"]["id"] == "PASS-015"
+    assert response.body["currentPass"]["id"] == "PASS-016"
     assert response.body["completion"]["packagedRelease"] == 0.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
@@ -37,7 +57,17 @@ def test_state_keeps_actions_blocked() -> None:
 
 
 def test_mutating_requests_are_blocked() -> None:
-    """Every POST request receives the shared blocked response."""
+    """Purpose: Every POST request receives the shared blocked response.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_mutating_requests_are_blocked``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     response = MakersAnvilApi().handle("POST", "/api/state")
 
@@ -46,7 +76,17 @@ def test_mutating_requests_are_blocked() -> None:
 
 
 def test_unknown_read_route_is_not_proven() -> None:
-    """Unknown GET routes return a not-proven record instead of invented data."""
+    """Purpose: Unknown GET routes return a not-proven record instead of invented data.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_unknown_read_route_is_not_proven``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     response = MakersAnvilApi().handle("GET", "/api/unknown")
 
@@ -55,22 +95,42 @@ def test_unknown_read_route_is_not_proven() -> None:
 
 
 def test_workspace_status_endpoints_are_read_only_truth() -> None:
-    """Workspace and ledger endpoints mirror committed durable status files."""
+    """Purpose: Workspace and ledger endpoints mirror committed durable status files.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_workspace_status_endpoints_are_read_only_truth``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     workspace = api.handle("GET", "/api/workspace/status")
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-015"
+    assert workspace.body["currentPass"]["id"] == "PASS-016"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-015"
+    assert ledger.body["passes"][-1]["id"] == "PASS-016"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
-    """Workspace APIs expose portable policy while withholding absolute paths."""
+    """Purpose: Workspace APIs expose portable policy while withholding absolute paths.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_workspace_config_keeps_unsafe_actions_disabled``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     config = api.handle("GET", "/api/workspace/config")
@@ -91,7 +151,17 @@ def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
 
 
 def test_intake_endpoints_are_metadata_only_and_read_only() -> None:
-    """Intake APIs expose metadata policy and never enable upload or mutation."""
+    """Purpose: Intake APIs expose metadata policy and never enable upload or mutation.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_intake_endpoints_are_metadata_only_and_read_only``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     policy = api.handle("GET", "/api/intake/policy")
@@ -108,7 +178,17 @@ def test_intake_endpoints_are_metadata_only_and_read_only() -> None:
 
 
 def test_route_preview_is_metadata_derived_and_non_executing() -> None:
-    """Route preview exposes planning state while every source and action gate stays false."""
+    """Purpose: Route preview exposes planning state while every source and action gate stays false.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_route_preview_is_metadata_derived_and_non_executing``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/routes/preview")
@@ -123,7 +203,17 @@ def test_route_preview_is_metadata_derived_and_non_executing() -> None:
 
 
 def test_output_preview_has_no_files_or_completed_proof() -> None:
-    """Output preview exposes plans while creation, opening, and proof stay blocked."""
+    """Purpose: Output preview exposes plans while creation, opening, and proof stay blocked.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_output_preview_has_no_files_or_completed_proof``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/outputs/preview")
@@ -140,7 +230,17 @@ def test_output_preview_has_no_files_or_completed_proof() -> None:
 
 
 def test_tool_detection_is_path_redacted_and_non_executing() -> None:
-    """Tool detection reports presence evidence without versions, paths, or actions."""
+    """Purpose: Tool detection reports presence evidence without versions, paths, or actions.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_tool_detection_is_path_redacted_and_non_executing``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/tools/detection")
@@ -158,7 +258,17 @@ def test_tool_detection_is_path_redacted_and_non_executing() -> None:
 
 
 def test_tool_dry_run_is_semantic_only_and_execution_blocked() -> None:
-    """Tool dry runs expose no command, resolved path, handoff, process, or write action."""
+    """Purpose: Tool dry runs expose no command, resolved path, handoff, process, or write action.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_tool_dry_run_is_semantic_only_and_execution_blocked``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/tools/dry-run")
@@ -174,7 +284,17 @@ def test_tool_dry_run_is_semantic_only_and_execution_blocked() -> None:
 
 
 def test_execution_gates_allowlist_one_route_but_enable_nothing() -> None:
-    """Execution gates expose required evidence without authorizing or creating a job."""
+    """Purpose: Execution gates expose required evidence without authorizing or creating a job.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_execution_gates_allowlist_one_route_but_enable_nothing``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/execution/gates")
@@ -193,7 +313,17 @@ def test_execution_gates_allowlist_one_route_but_enable_nothing() -> None:
 
 
 def test_execution_request_preview_records_no_intent_authorization_or_audit_event() -> None:
-    """Request preview exposes the disabled contract without creating any runtime record."""
+    """Purpose: Request preview exposes the disabled contract without creating any runtime record.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_execution_request_preview_records_no_intent_authorization_or_audit_event``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     response = api.handle("GET", "/api/execution/requests/preview")
@@ -212,7 +342,17 @@ def test_execution_request_preview_records_no_intent_authorization_or_audit_even
 
 
 def test_job_catalog_is_path_redacted_and_http_mutations_remain_blocked() -> None:
-    """Job APIs expose contained local-script state without enabling browser writes."""
+    """Purpose: Job APIs expose contained local-script state without enabling browser writes.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Every mutating method and unsupported route must fail closed.
+    Example: Run ``python -m pytest tests/test_api.py -k test_job_catalog_is_path_redacted_and_http_mutations_remain_blocked``.
+    Related proof: ``backend/.../api/app.py`` and public response schemas.
+    """
 
     api = MakersAnvilApi()
     policy = api.handle("GET", "/api/jobs/policy")

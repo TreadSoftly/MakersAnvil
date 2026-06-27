@@ -10,6 +10,11 @@
  */
 
 /* Shared tokens keep state colors consistent across the entire command surface. */
+/* Block purpose: Styles the ``:root`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 :root {
   color-scheme: dark;
   --bg: #080a0b;
@@ -35,15 +40,30 @@
   --radius: 6px;
 }
 
+/* Block purpose: Styles the ``*`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 * {
   box-sizing: border-box;
 }
 
+/* Block purpose: Styles the ``html, body`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 html,
 body {
   height: 100%;
 }
 
+/* Block purpose: Styles the ``body`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 body {
   background: var(--bg);
   color: var(--text);
@@ -53,6 +73,11 @@ body {
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``button, input, select, textarea`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 button,
 input,
 select,
@@ -61,15 +86,30 @@ textarea {
   letter-spacing: 0;
 }
 
+/* Block purpose: Styles the ``button, input`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 button,
 input {
   color: inherit;
 }
 
+/* Block purpose: Styles the ``button`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 button {
   border: 0;
 }
 
+/* Block purpose: Styles the ``h1, h2, h3, h4, p, ul, ol`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 h1,
 h2,
 h3,
@@ -80,15 +120,30 @@ ol {
   margin: 0;
 }
 
+/* Block purpose: Styles the ``ul, ol`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 ul,
 ol {
   padding: 0;
 }
 
+/* Block purpose: Styles the ``[hidden]`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 [hidden] {
   display: none !important;
 }
 
+/* Block purpose: Styles the ``.sr-only`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .sr-only {
   clip: rect(0, 0, 0, 0);
   clip-path: inset(50%);
@@ -100,6 +155,11 @@ ol {
 }
 
 /* The desktop shell has fixed navigation/header tracks and a bounded work area. */
+/* Block purpose: Styles the ``.app-shell`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .app-shell {
   display: grid;
   grid-template-columns: 108px minmax(0, 1fr);
@@ -108,6 +168,11 @@ ol {
   min-height: 620px;
 }
 
+/* Block purpose: Styles the ``.rail`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail {
   background: var(--rail);
   border-right: 1px solid var(--line);
@@ -120,6 +185,11 @@ ol {
   z-index: 3;
 }
 
+/* Block purpose: Styles the ``.rail-brand`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-brand {
   align-items: center;
   border-bottom: 1px solid var(--line);
@@ -130,11 +200,21 @@ ol {
   letter-spacing: 0;
 }
 
+/* Block purpose: Styles the ``.rail-mark`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-mark {
   height: 30px;
   width: 30px;
 }
 
+/* Block purpose: Styles the ``.rail-nav`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-nav {
   align-content: start;
   display: grid;
@@ -145,6 +225,11 @@ ol {
   scrollbar-width: thin;
 }
 
+/* Block purpose: Styles the ``.rail-link`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-link {
   background: transparent;
   border-left: 2px solid transparent;
@@ -160,6 +245,11 @@ ol {
   transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
+/* Block purpose: Styles the ``.rail-link:hover, .rail-link:focus-visible, .rail-link.is-active`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-link:hover,
 .rail-link:focus-visible,
 .rail-link.is-active {
@@ -169,6 +259,11 @@ ol {
   outline: none;
 }
 
+/* Block purpose: Styles the ``.rail-health`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .rail-health {
   align-items: center;
   background: var(--green-soft);
@@ -184,6 +279,11 @@ ol {
   padding: 7px;
 }
 
+/* Block purpose: Styles the ``.health-pulse`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .health-pulse {
   background: var(--green);
   border-radius: 50%;
@@ -194,12 +294,22 @@ ol {
   animation: health-pulse 2.2s ease-out infinite;
 }
 
+/* Block purpose: Defines the ``health-pulse`` animation timeline used by an explicitly named visual state.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: the health indicator uses these frames to communicate live status without changing app truth.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 @keyframes health-pulse {
   0% { box-shadow: 0 0 0 0 rgba(85, 214, 138, 0.42); }
   65%, 100% { box-shadow: 0 0 0 7px rgba(85, 214, 138, 0); }
 }
 
 /* The top bar balances product identity, navigation, completion, and refresh. */
+/* Block purpose: Styles the ``.topbar`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .topbar {
   align-items: center;
   background: #101416;
@@ -214,6 +324,11 @@ ol {
   z-index: 2;
 }
 
+/* Block purpose: Styles the ``.brand`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .brand {
   align-items: center;
   display: flex;
@@ -221,20 +336,40 @@ ol {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.brand-mark`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .brand-mark {
   height: 38px;
   width: 38px;
 }
 
+/* Block purpose: Styles the ``.brand-copy`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .brand-copy {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.brand h1`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .brand h1 {
   font-size: 1.1rem;
   line-height: 1.15;
 }
 
+/* Block purpose: Styles the ``.brand p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .brand p {
   color: var(--muted);
   font-family: Consolas, "Courier New", monospace;
@@ -244,6 +379,11 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.command-search`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .command-search {
   align-items: center;
   background: #090c0d;
@@ -254,11 +394,21 @@ ol {
   padding: 0 10px;
 }
 
+/* Block purpose: Styles the ``.command-search:focus-within`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .command-search:focus-within {
   border-color: var(--cyan);
   box-shadow: 0 0 0 2px rgba(88, 199, 212, 0.12);
 }
 
+/* Block purpose: Styles the ``.search-mark`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .search-mark {
   border: 1.5px solid var(--muted);
   border-radius: 50%;
@@ -268,6 +418,11 @@ ol {
   width: 11px;
 }
 
+/* Block purpose: Styles the ``.search-mark::after`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .search-mark::after {
   background: var(--muted);
   content: "";
@@ -279,6 +434,11 @@ ol {
   width: 6px;
 }
 
+/* Block purpose: Styles the ``.command-search input`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .command-search input {
   background: transparent;
   border: 0;
@@ -290,16 +450,31 @@ ol {
   width: 100%;
 }
 
+/* Block purpose: Styles the ``.command-search input::placeholder`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .command-search input::placeholder {
   color: #65716d;
 }
 
+/* Block purpose: Styles the ``.top-status`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .top-status {
   display: grid;
   gap: 2px;
   grid-template-columns: 1fr auto;
 }
 
+/* Block purpose: Styles the ``.eyebrow, .zone-kicker`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .eyebrow,
 .zone-kicker {
   color: var(--muted);
@@ -308,12 +483,22 @@ ol {
   text-transform: uppercase;
 }
 
+/* Block purpose: Styles the ``.top-status strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .top-status strong {
   color: var(--green);
   font-family: Consolas, "Courier New", monospace;
   font-size: 0.82rem;
 }
 
+/* Block purpose: Styles the ``.meter`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .meter {
   background: #293133;
   border-radius: 2px;
@@ -322,6 +507,11 @@ ol {
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.meter span`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .meter span {
   background: var(--cyan);
   display: block;
@@ -330,6 +520,11 @@ ol {
   width: 0;
 }
 
+/* Block purpose: Styles the ``.icon-button`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .icon-button {
   align-items: center;
   background: var(--surface-strong);
@@ -345,6 +540,11 @@ ol {
   width: 36px;
 }
 
+/* Block purpose: Styles the ``.icon-button:hover, .icon-button:focus-visible`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .icon-button:hover,
 .icon-button:focus-visible {
   border-color: var(--cyan);
@@ -353,6 +553,11 @@ ol {
 }
 
 /* The main workbench remains one viewport tall; detail scrolls inside its zones. */
+/* Block purpose: Styles the ``.workbench`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .workbench {
   display: grid;
   gap: 10px;
@@ -363,6 +568,11 @@ ol {
   padding: 10px;
 }
 
+/* Block purpose: Styles the ``.workspace-column`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .workspace-column {
   display: grid;
   gap: 10px;
@@ -370,6 +580,11 @@ ol {
   min-height: 0;
 }
 
+/* Block purpose: Styles the ``.source-deck`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .source-deck {
   display: grid;
   gap: 10px;
@@ -377,6 +592,11 @@ ol {
   min-height: 0;
 }
 
+/* Block purpose: Styles the ``.work-zone, .command-deck`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .work-zone,
 .command-deck {
   background: var(--surface);
@@ -387,12 +607,22 @@ ol {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.work-zone.is-focused, .command-deck.is-focused`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .work-zone.is-focused,
 .command-deck.is-focused {
   border-color: var(--cyan);
   box-shadow: 0 0 0 2px rgba(88, 199, 212, 0.14), var(--shadow);
 }
 
+/* Block purpose: Styles the ``.zone-head, .deck-head`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .zone-head,
 .deck-head {
   align-items: center;
@@ -402,22 +632,42 @@ ol {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.zone-head`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .zone-head {
   border-bottom: 1px solid var(--line);
   min-height: 43px;
   padding: 7px 10px;
 }
 
+/* Block purpose: Styles the ``.zone-head h2`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .zone-head h2 {
   font-size: 0.9rem;
   line-height: 1.2;
 }
 
+/* Block purpose: Styles the ``.deck-head h3`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .deck-head h3 {
   font-size: 0.78rem;
   line-height: 1.2;
 }
 
+/* Block purpose: Styles the ``.badge`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge {
   background: var(--surface-soft);
   border: 1px solid var(--line-strong);
@@ -436,6 +686,11 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.badge.proven, .badge.detected`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge.proven,
 .badge.detected {
   background: var(--green-soft);
@@ -443,6 +698,11 @@ ol {
   color: #adf1c8;
 }
 
+/* Block purpose: Styles the ``.badge.staged, .badge.planned`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge.staged,
 .badge.planned {
   background: var(--cyan-soft);
@@ -450,12 +710,22 @@ ol {
   color: #b9edf1;
 }
 
+/* Block purpose: Styles the ``.badge.preview-only`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge.preview-only {
   background: var(--gold-soft);
   border-color: #7b6029;
   color: #f2d99e;
 }
 
+/* Block purpose: Styles the ``.badge.blocked, .badge.failed`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge.blocked,
 .badge.failed {
   background: var(--red-soft);
@@ -463,6 +733,11 @@ ol {
   color: #ffc1bc;
 }
 
+/* Block purpose: Styles the ``.badge.not-proven, .badge.unknown`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .badge.not-proven,
 .badge.unknown {
   background: #272d2f;
@@ -471,11 +746,21 @@ ol {
 }
 
 /* Intake and selected input deliberately separate source truth from preview truth. */
+/* Block purpose: Styles the ``.intake-zone, .selected-input-zone`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-zone,
 .selected-input-zone {
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.intake-command`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-command {
   align-items: center;
   display: grid;
@@ -485,6 +770,11 @@ ol {
   padding: 8px 10px 5px;
 }
 
+/* Block purpose: Styles the ``.intake-symbol`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-symbol {
   align-items: center;
   background: var(--cyan-soft);
@@ -498,12 +788,22 @@ ol {
   width: 34px;
 }
 
+/* Block purpose: Styles the ``.intake-copy, .selected-copy`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-copy,
 .selected-copy {
   display: grid;
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.intake-copy strong, .selected-copy strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-copy strong,
 .selected-copy strong {
   font-size: 0.74rem;
@@ -512,6 +812,11 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.intake-copy span, .selected-copy span, .selected-copy small`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .intake-copy span,
 .selected-copy span,
 .selected-copy small {
@@ -522,6 +827,11 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.primary-command`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .primary-command {
   background: #253033;
   border: 1px solid #3d4a4c;
@@ -534,6 +844,11 @@ ol {
   padding: 0 10px;
 }
 
+/* Block purpose: Styles the ``.compact-facts`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .compact-facts {
   display: grid;
   gap: 4px;
@@ -541,12 +856,22 @@ ol {
   padding: 0 10px 8px;
 }
 
+/* Block purpose: Styles the ``.compact-facts p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .compact-facts p {
   display: flex;
   gap: 5px;
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.compact-facts span, .compact-facts strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .compact-facts span,
 .compact-facts strong {
   font-size: 0.6rem;
@@ -555,10 +880,20 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.compact-facts span`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .compact-facts span {
   color: var(--muted);
 }
 
+/* Block purpose: Styles the ``.selected-preview`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .selected-preview {
   align-items: center;
   display: grid;
@@ -568,6 +903,11 @@ ol {
   padding: 9px 10px;
 }
 
+/* Block purpose: Styles the ``.file-visual`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .file-visual {
   align-items: center;
   background: #0b1012;
@@ -587,16 +927,31 @@ ol {
 }
 
 /* Tool cards are a bounded horizontal inventory, not a page-width status table. */
+/* Block purpose: Styles the ``.tools-zone`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tools-zone {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.tools-head`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tools-head {
   min-height: 42px;
 }
 
+/* Block purpose: Styles the ``.tools-summary`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tools-summary {
   align-items: center;
   color: var(--muted);
@@ -606,10 +961,20 @@ ol {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.tools-summary strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tools-summary strong {
   color: var(--text-soft);
 }
 
+/* Block purpose: Styles the ``.tool-detection-list`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-detection-list {
   display: grid;
   gap: 7px;
@@ -623,6 +988,11 @@ ol {
   scrollbar-width: thin;
 }
 
+/* Block purpose: Styles the ``.tool-detection-item`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-detection-item {
   background: #0d1214;
   border: 1px solid var(--line);
@@ -634,6 +1004,11 @@ ol {
   padding: 8px;
 }
 
+/* Block purpose: Styles the ``.tool-detection-head, .route-preview-head, .output-bundle-head, .tool-dry-run-head, .execution-gate-head, .execution-request-head, .job-workspace-head`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-detection-head,
 .route-preview-head,
 .output-bundle-head,
@@ -648,6 +1023,11 @@ ol {
   min-width: 0;
 }
 
+/* Block purpose: Styles the ``.tool-detection-item h3, .route-preview-item h3, .output-bundle-item h3, .tool-dry-run-item h3, .execution-gate-item h3, .execution-request-item h3, .job-workspace-item h3`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-detection-item h3,
 .route-preview-item h3,
 .output-bundle-item h3,
@@ -661,6 +1041,11 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.tool-detection-item p, .route-preview-item p, .output-bundle-item p, .tool-dry-run-item p, .execution-gate-item p, .execution-request-item p, .job-workspace-item p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-detection-item p,
 .route-preview-item p,
 .output-bundle-item p,
@@ -674,15 +1059,30 @@ ol {
   overflow-wrap: anywhere;
 }
 
+/* Block purpose: Styles the ``.tool-identity`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-identity {
   color: var(--cyan) !important;
 }
 
+/* Block purpose: Styles the ``.tool-version`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-version {
   border-top: 1px solid var(--line);
   padding-top: 4px;
 }
 
+/* Block purpose: Styles the ``.tool-foot`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-foot {
   align-items: center;
   border-top: 1px solid var(--line);
@@ -695,6 +1095,11 @@ ol {
   padding: 4px 10px;
 }
 
+/* Block purpose: Styles the ``.tool-foot span`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .tool-foot span {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -702,12 +1107,22 @@ ol {
 }
 
 /* The command deck keeps one footprint while internal views change. */
+/* Block purpose: Styles the ``.command-deck`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .command-deck {
   display: grid;
   grid-template-rows: 37px minmax(0, 1fr);
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.mode-tabs`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .mode-tabs {
   align-items: end;
   border-bottom: 1px solid var(--line);
@@ -716,6 +1131,11 @@ ol {
   padding: 0 8px;
 }
 
+/* Block purpose: Styles the ``.mode-tab`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .mode-tab {
   align-self: stretch;
   background: transparent;
@@ -728,6 +1148,11 @@ ol {
   padding: 0 10px;
 }
 
+/* Block purpose: Styles the ``.mode-tab:hover, .mode-tab:focus-visible, .mode-tab.is-active`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .mode-tab:hover,
 .mode-tab:focus-visible,
 .mode-tab.is-active {
@@ -736,6 +1161,11 @@ ol {
   outline: none;
 }
 
+/* Block purpose: Styles the ``.deck-surface`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .deck-surface {
   display: grid;
   gap: 0;
@@ -744,6 +1174,11 @@ ol {
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.deck-column`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .deck-column {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
@@ -752,10 +1187,20 @@ ol {
   padding: 9px 10px;
 }
 
+/* Block purpose: Styles the ``.deck-column + .deck-column`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .deck-column + .deck-column {
   border-left: 1px solid var(--line);
 }
 
+/* Block purpose: Styles the ``.inline-facts`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inline-facts {
   color: var(--muted);
   display: flex;
@@ -768,10 +1213,20 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.inline-facts::-webkit-scrollbar`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inline-facts::-webkit-scrollbar {
   display: none;
 }
 
+/* Block purpose: Styles the ``.route-preview-list, .output-bundle-list, .tool-dry-run-list, .execution-gate-list, .execution-request-list, .job-workspace-list`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .route-preview-list,
 .output-bundle-list,
 .tool-dry-run-list,
@@ -784,6 +1239,11 @@ ol {
   scrollbar-width: thin;
 }
 
+/* Block purpose: Styles the ``.route-preview-item, .output-bundle-item, .tool-dry-run-item, .execution-gate-item, .execution-request-item, .job-workspace-item`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .route-preview-item,
 .output-bundle-item,
 .tool-dry-run-item,
@@ -799,6 +1259,11 @@ ol {
   padding: 7px;
 }
 
+/* Block purpose: Styles the ``.route-step-list, .output-proof-list, .execution-gate-grid`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .route-step-list,
 .output-proof-list,
 .execution-gate-grid {
@@ -809,18 +1274,33 @@ ol {
   list-style-position: inside;
 }
 
+/* Block purpose: Styles the ``.output-proof-columns`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .output-proof-columns {
   display: grid;
   gap: 7px;
   grid-template-columns: 1fr 1fr;
 }
 
+/* Block purpose: Styles the ``.output-proof-columns h4`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .output-proof-columns h4 {
   color: var(--text-soft);
   font-size: 0.62rem;
   margin-bottom: 3px;
 }
 
+/* Block purpose: Styles the ``.empty-state`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .empty-state {
   align-items: center;
   border: 1px dashed var(--line-strong);
@@ -835,6 +1315,11 @@ ol {
 }
 
 /* Developer evidence is dense, locally scrollable, and outside the normal path. */
+/* Block purpose: Styles the ``.dev-surface`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .dev-surface {
   align-content: start;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -844,26 +1329,51 @@ ol {
   scrollbar-width: thin;
 }
 
+/* Block purpose: Styles the ``.dev-block`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .dev-block {
   border-bottom: 1px solid var(--line);
   min-width: 0;
   padding: 8px;
 }
 
+/* Block purpose: Styles the ``.dev-block:nth-child(odd):not(.dev-wide)`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .dev-block:nth-child(odd):not(.dev-wide) {
   border-right: 1px solid var(--line);
 }
 
+/* Block purpose: Styles the ``.dev-wide`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .dev-wide {
   grid-column: 1 / -1;
 }
 
+/* Block purpose: Styles the ``.status-rows`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .status-rows {
   display: grid;
   gap: 0;
   margin-top: 5px;
 }
 
+/* Block purpose: Styles the ``.status-rows p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .status-rows p {
   align-items: start;
   border-top: 1px solid var(--line);
@@ -873,6 +1383,11 @@ ol {
   padding: 4px 0;
 }
 
+/* Block purpose: Styles the ``.status-rows strong, .status-rows span`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .status-rows strong,
 .status-rows span {
   font-size: 0.61rem;
@@ -880,11 +1395,21 @@ ol {
   overflow-wrap: anywhere;
 }
 
+/* Block purpose: Styles the ``.status-rows strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .status-rows strong {
   color: var(--muted);
   font-weight: 650;
 }
 
+/* Block purpose: Styles the ``.evidence-grid`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .evidence-grid {
   display: grid;
   gap: 5px;
@@ -892,6 +1417,11 @@ ol {
   margin-top: 6px;
 }
 
+/* Block purpose: Styles the ``.evidence-grid .panel`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .evidence-grid .panel {
   background: #0d1214;
   border: 1px solid var(--line);
@@ -900,6 +1430,11 @@ ol {
   padding: 7px;
 }
 
+/* Block purpose: Styles the ``.panel-head`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .panel-head {
   align-items: center;
   display: flex;
@@ -907,10 +1442,20 @@ ol {
   justify-content: space-between;
 }
 
+/* Block purpose: Styles the ``.evidence-grid h2`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .evidence-grid h2 {
   font-size: 0.66rem;
 }
 
+/* Block purpose: Styles the ``.evidence-grid p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .evidence-grid p {
   color: var(--muted);
   font-size: 0.58rem;
@@ -918,6 +1463,11 @@ ol {
   margin-top: 4px;
 }
 
+/* Block purpose: Styles the ``.ghost-button`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .ghost-button {
   background: transparent;
   color: var(--muted);
@@ -926,6 +1476,11 @@ ol {
   padding: 2px;
 }
 
+/* Block purpose: Styles the ``.blocked-list`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .blocked-list {
   display: grid;
   gap: 4px;
@@ -934,6 +1489,11 @@ ol {
   margin-top: 7px;
 }
 
+/* Block purpose: Styles the ``.blocked-list li`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .blocked-list li {
   align-items: center;
   background: var(--red-soft);
@@ -948,18 +1508,33 @@ ol {
   padding: 5px;
 }
 
+/* Block purpose: Styles the ``.blocked-list li span`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .blocked-list li span {
   color: var(--red);
   font-size: 0.42rem;
 }
 
 /* The inspector holds preview and proof without duplicating source/tool panels. */
+/* Block purpose: Styles the ``.proof-inspector`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .proof-inspector {
   display: grid;
   grid-template-rows: auto minmax(150px, 0.72fr) minmax(190px, 1fr) auto;
   overflow: hidden;
 }
 
+/* Block purpose: Styles the ``.inspector-preview`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inspector-preview {
   background: #0a0f11;
   border-bottom: 1px solid var(--line);
@@ -970,6 +1545,11 @@ ol {
   position: relative;
 }
 
+/* Block purpose: Styles the ``.preview-grid`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .preview-grid {
   background-image: linear-gradient(#243033 1px, transparent 1px), linear-gradient(90deg, #243033 1px, transparent 1px);
   background-size: 24px 24px;
@@ -978,12 +1558,22 @@ ol {
   position: absolute;
 }
 
+/* Block purpose: Styles the ``.preview-watermark`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .preview-watermark {
   height: 72px;
   opacity: 0.22;
   width: 72px;
 }
 
+/* Block purpose: Styles the ``.preview-copy`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .preview-copy {
   bottom: 12px;
   display: grid;
@@ -992,12 +1582,22 @@ ol {
   right: 12px;
 }
 
+/* Block purpose: Styles the ``.preview-copy span, .preview-copy small`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .preview-copy span,
 .preview-copy small {
   color: var(--muted);
   font-size: 0.6rem;
 }
 
+/* Block purpose: Styles the ``.preview-copy strong`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .preview-copy strong {
   font-size: 0.78rem;
   overflow: hidden;
@@ -1005,28 +1605,58 @@ ol {
   white-space: nowrap;
 }
 
+/* Block purpose: Styles the ``.inspector-section`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inspector-section {
   min-height: 0;
   overflow: hidden;
   padding: 9px 10px;
 }
 
+/* Block purpose: Styles the ``.inspector-section + .inspector-section`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inspector-section + .inspector-section {
   border-top: 1px solid var(--line);
 }
 
+/* Block purpose: Styles the ``.inspector-facts`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inspector-facts {
   margin: 5px 0 7px;
 }
 
+/* Block purpose: Styles the ``.inspector-facts p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .inspector-facts p {
   grid-template-columns: 64px minmax(0, 1fr);
 }
 
+/* Block purpose: Styles the ``.proof-boundary`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .proof-boundary {
   background: #141110;
 }
 
+/* Block purpose: Styles the ``.proof-boundary p`` selector block as one interface responsibility.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 .proof-boundary p {
   color: var(--muted);
   font-size: 0.62rem;
@@ -1035,49 +1665,109 @@ ol {
 }
 
 /* Medium desktop keeps the full workbench but tightens optional information. */
+/* Block purpose: Applies a responsive rule group when ``(max-width: 1180px)`` is true.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: a narrow browser activates these declarations so controls reflow without horizontal overflow.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 @media (max-width: 1180px) {
+  /* Block purpose: Styles the ``.app-shell`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .app-shell {
     grid-template-columns: 92px minmax(0, 1fr);
   }
 
+  /* Block purpose: Styles the ``.topbar, .workbench`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .topbar,
   .workbench {
     grid-column: 2;
   }
 
+  /* Block purpose: Styles the ``.workbench`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .workbench {
     grid-template-columns: minmax(0, 1fr) 300px;
   }
 
+  /* Block purpose: Styles the ``.topbar`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .topbar {
     grid-template-columns: minmax(190px, 0.8fr) minmax(220px, 1fr) 108px 38px;
   }
 
+  /* Block purpose: Styles the ``.rail-link`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-link {
     font-size: 0.66rem;
   }
 
+  /* Block purpose: Styles the ``.tool-foot span:nth-child(2)`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .tool-foot span:nth-child(2) {
     display: none;
   }
 
+  /* Block purpose: Styles the ``.evidence-grid`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .evidence-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 /* Tablet and phone layouts restore normal document flow and horizontal nav. */
+/* Block purpose: Applies a responsive rule group when ``(max-width: 900px)`` is true.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: a narrow browser activates these declarations so controls reflow without horizontal overflow.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 @media (max-width: 900px) {
+  /* Block purpose: Styles the ``body`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   body {
     overflow: auto;
   }
 
+  /* Block purpose: Styles the ``.app-shell`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .app-shell {
     display: block;
     height: auto;
     min-height: 100dvh;
   }
 
+  /* Block purpose: Styles the ``.rail`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail {
     border-bottom: 1px solid var(--line);
     border-right: 0;
@@ -1090,10 +1780,20 @@ ol {
     z-index: 6;
   }
 
+  /* Block purpose: Styles the ``.rail-brand`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-brand {
     border-bottom: 0;
   }
 
+  /* Block purpose: Styles the ``.rail-nav`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-nav {
     align-items: center;
     display: flex;
@@ -1102,6 +1802,11 @@ ol {
     padding: 0 6px;
   }
 
+  /* Block purpose: Styles the ``.rail-link`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-link {
     border-bottom: 2px solid transparent;
     border-left: 0;
@@ -1111,6 +1816,11 @@ ol {
     padding: 5px 9px;
   }
 
+  /* Block purpose: Styles the ``.rail-link:hover, .rail-link:focus-visible, .rail-link.is-active`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-link:hover,
   .rail-link:focus-visible,
   .rail-link.is-active {
@@ -1118,11 +1828,21 @@ ol {
     border-left-color: transparent;
   }
 
+  /* Block purpose: Styles the ``.rail-health`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-health {
     align-self: center;
     min-height: 32px;
   }
 
+  /* Block purpose: Styles the ``.topbar`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .topbar {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 104px 36px;
@@ -1130,11 +1850,21 @@ ol {
     padding: 8px 10px;
   }
 
+  /* Block purpose: Styles the ``.command-search`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .command-search {
     grid-column: 1 / -1;
     grid-row: 2;
   }
 
+  /* Block purpose: Styles the ``.workbench`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .workbench {
     display: grid;
     grid-template-columns: 1fr;
@@ -1142,118 +1872,253 @@ ol {
     padding: 10px;
   }
 
+  /* Block purpose: Styles the ``.workspace-column`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .workspace-column {
     display: grid;
     grid-template-rows: auto;
   }
 
+  /* Block purpose: Styles the ``.source-deck`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .source-deck {
     min-height: 150px;
   }
 
+  /* Block purpose: Styles the ``.tools-zone`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .tools-zone {
     min-height: 210px;
   }
 
+  /* Block purpose: Styles the ``.command-deck`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .command-deck {
     min-height: 340px;
   }
 
+  /* Block purpose: Styles the ``.proof-inspector`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .proof-inspector {
     min-height: 560px;
   }
 }
 
+/* Block purpose: Applies a responsive rule group when ``(max-width: 600px)`` is true.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: a narrow browser activates these declarations so controls reflow without horizontal overflow.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 @media (max-width: 600px) {
+  /* Block purpose: Styles the ``.rail`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail {
     grid-template-columns: 46px minmax(0, 1fr);
   }
 
+  /* Block purpose: Styles the ``.rail-brand span, .rail-health`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-brand span,
   .rail-health {
     display: none;
   }
 
+  /* Block purpose: Styles the ``.rail-mark`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .rail-mark {
     height: 28px;
     width: 28px;
   }
 
+  /* Block purpose: Styles the ``.topbar`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .topbar {
     gap: 8px;
     grid-template-columns: minmax(0, 1fr) 94px 36px;
   }
 
+  /* Block purpose: Styles the ``.brand-mark`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .brand-mark {
     height: 32px;
     width: 32px;
   }
 
+  /* Block purpose: Styles the ``.brand h1`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .brand h1 {
     font-size: 0.96rem;
   }
 
+  /* Block purpose: Styles the ``.brand p`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .brand p {
     max-width: 180px;
   }
 
+  /* Block purpose: Styles the ``.source-deck, .deck-surface, .dev-surface`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .source-deck,
   .deck-surface,
   .dev-surface {
     grid-template-columns: 1fr;
   }
 
+  /* Block purpose: Styles the ``.source-deck`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .source-deck {
     min-height: 0;
   }
 
+  /* Block purpose: Styles the ``.intake-zone, .selected-input-zone`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .intake-zone,
   .selected-input-zone {
     min-height: 146px;
   }
 
+  /* Block purpose: Styles the ``.deck-column + .deck-column`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .deck-column + .deck-column {
     border-left: 0;
     border-top: 1px solid var(--line);
   }
 
+  /* Block purpose: Styles the ``.command-deck`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .command-deck {
     min-height: 0;
     overflow: visible;
   }
 
+  /* Block purpose: Styles the ``.deck-surface, .dev-surface`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .deck-surface,
   .dev-surface {
     overflow: visible;
   }
 
+  /* Block purpose: Styles the ``.deck-column`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .deck-column {
     min-height: 180px;
   }
 
+  /* Block purpose: Styles the ``.dev-block:nth-child(odd):not(.dev-wide)`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .dev-block:nth-child(odd):not(.dev-wide) {
     border-right: 0;
   }
 
+  /* Block purpose: Styles the ``.dev-wide`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .dev-wide {
     grid-column: auto;
   }
 
+  /* Block purpose: Styles the ``.evidence-grid, .blocked-list`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .evidence-grid,
   .blocked-list {
     grid-template-columns: 1fr;
   }
 
+  /* Block purpose: Styles the ``.tool-foot span:nth-child(3)`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .tool-foot span:nth-child(3) {
     display: none;
   }
 
+  /* Block purpose: Styles the ``.proof-inspector`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   .proof-inspector {
     min-height: 620px;
   }
 }
 
+/* Block purpose: Applies a responsive rule group when ``(prefers-reduced-motion: reduce)`` is true.
+ * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+ * Example: a narrow browser activates these declarations so controls reflow without horizontal overflow.
+ * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+ */
 @media (prefers-reduced-motion: reduce) {
+  /* Block purpose: Styles the ``*, *::before, *::after`` selector block as one interface responsibility.
+   * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
+   * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
+   * Safety: CSS changes appearance only and cannot authorize, execute, or persist maker actions.
+   */
   *,
   *::before,
   *::after {

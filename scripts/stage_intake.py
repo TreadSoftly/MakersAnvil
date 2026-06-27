@@ -25,7 +25,17 @@ from makers_anvil_backend.services.intake_catalog import IntakeCatalogError, Int
 
 
 def main() -> int:
-    """Parse one explicit file path and stage only its privacy-safe metadata."""
+    """Purpose: Parse one explicit file path and stage only its privacy-safe metadata.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Folders, symlinks, contents, copying, extraction, and launch are excluded.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_intake_catalog.py``.
+    """
 
     parser = argparse.ArgumentParser(description="Stage metadata for one local file without copying its contents.")
     parser.add_argument("--path", required=True, help="Path to one regular local file.")

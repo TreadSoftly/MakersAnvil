@@ -22,17 +22,47 @@ JS_PATH = ROOT / "frontend" / "public" / "assets" / "app.js"
 
 
 class WorkbenchParser(HTMLParser):
-    """Collect element IDs and input/button attributes with no third-party parser."""
+    """Purpose: Collect element IDs and input/button attributes with no third-party parser.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``WorkbenchParser`` exposing the state and operations defined below.
+    How it works: It checks conditions.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Construct with ``instance = WorkbenchParser(...)`` using values described by ``__init__``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     def __init__(self) -> None:
-        """Initialize empty collections before feeding checked-in HTML."""
+        """Purpose: Initialize empty collections before feeding checked-in HTML.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Prevents visual restructuring from adding upload or mutation behavior.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+        """
 
         super().__init__()
         self.ids: list[str] = []
         self.controls: list[tuple[str, dict[str, str | None]]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        """Record IDs and user-control attributes for structural assertions."""
+        """Purpose: Record IDs and user-control attributes for structural assertions.
+
+        Inputs: Caller-supplied ``tag``, ``attrs`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Prevents visual restructuring from adding upload or mutation behavior.
+        Example: Call ``result = instance.handle_starttag(...)`` with values satisfying the documented inputs.
+        Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+        """
 
         attributes = dict(attrs)
         if "id" in attributes and attributes["id"] is not None:
@@ -42,7 +72,17 @@ class WorkbenchParser(HTMLParser):
 
 
 def parse_workbench() -> WorkbenchParser:
-    """Return a parsed representation of the static workbench document."""
+    """Purpose: Return a parsed representation of the static workbench document.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``WorkbenchParser``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Call ``result = parse_workbench(...)`` with values satisfying the documented inputs.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     parser = WorkbenchParser()
     parser.feed(HTML_PATH.read_text(encoding="utf-8"))
@@ -50,7 +90,17 @@ def parse_workbench() -> WorkbenchParser:
 
 
 def test_primary_workbench_zones_and_views_exist_once() -> None:
-    """The first screen retains one source, tool, workflow, proof, and dev surface."""
+    """Purpose: The first screen retains one source, tool, workflow, proof, and dev surface.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_primary_workbench_zones_and_views_exist_once``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     parser = parse_workbench()
     counts = Counter(parser.ids)
@@ -71,7 +121,17 @@ def test_primary_workbench_zones_and_views_exist_once() -> None:
 
 
 def test_every_javascript_id_target_exists_in_html() -> None:
-    """Controller render targets cannot silently drift away from the static shell."""
+    """Purpose: Controller render targets cannot silently drift away from the static shell.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_every_javascript_id_target_exists_in_html``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     parser = parse_workbench()
     javascript = JS_PATH.read_text(encoding="utf-8")
@@ -81,7 +141,17 @@ def test_every_javascript_id_target_exists_in_html() -> None:
 
 
 def test_workbench_controls_cannot_upload_or_mutate() -> None:
-    """Only view navigation, local search, refresh, and a disabled intake affordance exist."""
+    """Purpose: Only view navigation, local search, refresh, and a disabled intake affordance exist.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_workbench_controls_cannot_upload_or_mutate``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     parser = parse_workbench()
     buttons = [attributes for tag, attributes in parser.controls if tag == "button"]
@@ -96,7 +166,17 @@ def test_workbench_controls_cannot_upload_or_mutate() -> None:
 
 
 def test_controller_wires_read_only_views_and_safe_text_summaries() -> None:
-    """Tabs and summaries remain browser-only and render source names as text."""
+    """Purpose: Tabs and summaries remain browser-only and render source names as text.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_controller_wires_read_only_views_and_safe_text_summaries``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     javascript = JS_PATH.read_text(encoding="utf-8")
 
@@ -109,7 +189,17 @@ def test_controller_wires_read_only_views_and_safe_text_summaries() -> None:
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
-    """Desktop uses a fixed work area while narrow screens restore document flow."""
+    """Purpose: Desktop uses a fixed work area while narrow screens restore document flow.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Prevents visual restructuring from adding upload or mutation behavior.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_styles_define_bounded_desktop_and_mobile_workbenches``.
+    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    """
 
     styles = CSS_PATH.read_text(encoding="utf-8")
 

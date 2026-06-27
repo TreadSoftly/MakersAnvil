@@ -2,7 +2,7 @@
 
 ## How To Read The Code
 
-This guide connects the actual files, call order, data contracts, effects, and proof. Start with the file's structured header, then read each component docstring, then follow the related test named here. JSON cannot carry comments, so its source-manifest entry, schema, service validation, and test together provide its explanation.
+This guide connects the actual files, call order, data contracts, effects, and proof. Start with the file's structured header, then read each component docstring, then follow the related test named here. Open that file's anchor in `docs/LINE_BY_LINE_CODE_GUIDE.md` whenever you need a numbered explanation of every physical line. JSON cannot carry comments, so the generated line guide supplies its per-line teaching layer while its source-manifest entry, schema, service validation, and test explain ownership and behavior.
 
 ## One Browser Request
 
@@ -66,6 +66,7 @@ All values originating outside the static page must be written with DOM text API
 | `scripts/prepare_job.py` | Prepare one request preview. | Creates empty contained job folders and records. |
 | `scripts/request_job_cancel.py` | Request cancellation. | Writes intent; sends no process signal. |
 | `scripts/check_explainability.py` | Audit source explanations. | Reads source and prints JSON result. |
+| `scripts/build_learning_guide.py` | Generate or check every-line teaching coverage. | Writes only the committed guide and coverage record unless `--check` is used. |
 | `scripts/verify_project.py` | Run all repository gates. | Reads source and uses isolated temporary data. |
 
 Each command parses only its documented arguments and delegates behavior to a service. Business rules do not belong in argument parsing.
@@ -95,6 +96,8 @@ Every test module header explains its scope and every test function docstring na
 - `state/current_status.json`: current percentages, proof, blockers, and next pass.
 - `state/pass_ledger.json`: append-only pass history.
 - `state/source_manifest.json`: purpose and maintenance contract for every tracked file.
+- `state/learning_coverage.json`: exact source hashes, physical-line totals, explanation totals, and guide anchors.
+- `docs/LINE_BY_LINE_CODE_GUIDE.md`: generated numbered source and explanations for every covered line.
 - `docs/ARCHITECTURE.md`: layer ownership and trust boundaries.
 - `docs/IMPLEMENTATION_GUIDE.md`: extension and debugging recipes.
 - `docs/PREVIOUS_APP_REFERENCE_STUDY.md`: governed design direction from the old prototype.

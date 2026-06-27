@@ -19,7 +19,17 @@ from makers_anvil_backend.services.workspace_config import WorkspaceConfigError,
 
 
 def write_settings(root: Path, source_root_dependency: bool = False) -> None:
-    """Write isolated settings, optionally weakening one field for rejection tests."""
+    """Purpose: Write isolated settings, optionally weakening one field for rejection tests.
+
+    Inputs: Caller-supplied ``root``, ``source_root_dependency`` values from the signature.
+    Outputs: Returns ``None``, or raises before returning when validation fails.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+    Example: Call ``result = instance.write_settings(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/workspace_config.py`` and local-settings schema.
+    """
 
     config_dir = root / "config"
     config_dir.mkdir(parents=True)
@@ -55,7 +65,17 @@ def write_settings(root: Path, source_root_dependency: bool = False) -> None:
 
 
 def build_service(source_root: Path, data_root: Path) -> WorkspaceConfigService:
-    """Build a workspace service with deliberately unrelated source and data roots."""
+    """Purpose: Build a workspace service with deliberately unrelated source and data roots.
+
+    Inputs: Caller-supplied ``source_root``, ``data_root`` values from the signature.
+    Outputs: Returns ``WorkspaceConfigService``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+    Example: Call ``result = instance.build_service(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/workspace_config.py`` and local-settings schema.
+    """
 
     paths = RuntimePathsService(
         source_root=source_root,
@@ -67,7 +87,17 @@ def build_service(source_root: Path, data_root: Path) -> WorkspaceConfigService:
 
 
 def test_initialize_keeps_runtime_data_outside_source_checkout(tmp_path: Path) -> None:
-    """Initialization writes only to user data and returns a path-redacted manifest."""
+    """Purpose: Initialization writes only to user data and returns a path-redacted manifest.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+    Example: Run ``python -m pytest tests/test_workspace_config.py -k test_initialize_keeps_runtime_data_outside_source_checkout``.
+    Related proof: ``services/workspace_config.py`` and local-settings schema.
+    """
 
     source_root = tmp_path / "copied-anywhere" / "makers-anvil"
     data_root = tmp_path / "unrelated-user-data"
@@ -90,7 +120,17 @@ def test_initialize_keeps_runtime_data_outside_source_checkout(tmp_path: Path) -
 
 
 def test_workspace_relative_path_cannot_escape_user_data_root(tmp_path: Path) -> None:
-    """Workspace child paths reject traversal outside app-owned user data."""
+    """Purpose: Workspace child paths reject traversal outside app-owned user data.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+    Example: Run ``python -m pytest tests/test_workspace_config.py -k test_workspace_relative_path_cannot_escape_user_data_root``.
+    Related proof: ``services/workspace_config.py`` and local-settings schema.
+    """
 
     source_root = tmp_path / "source"
     write_settings(source_root)
@@ -101,7 +141,17 @@ def test_workspace_relative_path_cannot_escape_user_data_root(tmp_path: Path) ->
 
 
 def test_settings_cannot_reintroduce_source_root_dependency(tmp_path: Path) -> None:
-    """A changed setting cannot reconnect runtime data to the source checkout."""
+    """Purpose: A changed setting cannot reconnect runtime data to the source checkout.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Traversal, source coupling, private-path exposure, and actions stay denied.
+    Example: Run ``python -m pytest tests/test_workspace_config.py -k test_settings_cannot_reintroduce_source_root_dependency``.
+    Related proof: ``services/workspace_config.py`` and local-settings schema.
+    """
 
     source_root = tmp_path / "source"
     write_settings(source_root, source_root_dependency=True)

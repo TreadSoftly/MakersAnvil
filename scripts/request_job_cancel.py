@@ -25,7 +25,17 @@ from makers_anvil_backend.services.job_workspace import JobWorkspaceError, JobWo
 
 
 def main() -> int:
-    """Parse one job id, record cancellation locally, and make no process claim."""
+    """Purpose: Parse one job id, record cancellation locally, and make no process claim.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Sends no signal and cannot terminate, kill, or launch a process.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py``.
+    """
 
     parser = argparse.ArgumentParser(description="Request cancellation without signaling or stopping a process.")
     parser.add_argument("--job-id", required=True, help="Exact prepared job id returned by the job catalog.")

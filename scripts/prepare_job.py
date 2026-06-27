@@ -25,7 +25,17 @@ from makers_anvil_backend.services.job_workspace import JobWorkspaceError, JobWo
 
 
 def main() -> int:
-    """Parse one preview id, prepare its app-owned workspace, and print redacted JSON."""
+    """Purpose: Parse one preview id, prepare its app-owned workspace, and print redacted JSON.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Accepts no source path, authorization, command, or launch argument.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py``.
+    """
 
     parser = argparse.ArgumentParser(description="Prepare an app-owned job workspace without executing a route.")
     parser.add_argument("--request-preview-id", required=True, help="Exact id returned by the request-preview API.")

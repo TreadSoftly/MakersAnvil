@@ -32,25 +32,65 @@ ROUTE_SAFETY_FLAGS = {
 
 
 class RoutePreviewError(ValueError):
-    """Raised when the committed route catalog weakens the preview contract."""
+    """Purpose: Raised when the committed route catalog weakens the preview contract.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``RoutePreviewError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Candidate planning never implies execution or output readiness.
+    Example: Construct with ``instance = RoutePreviewError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_route_preview.py`` and route schemas.
+    """
 
 
 class RoutePreviewService:
-    """Map intake metadata to deterministic plans without reopening source files."""
+    """Purpose: Map intake metadata to deterministic plans without reopening source files.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``RoutePreviewService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Candidate planning never implies execution or output readiness.
+    Example: Construct with ``instance = RoutePreviewService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_route_preview.py`` and route schemas.
+    """
 
     def __init__(
         self,
         root: Path | None = None,
         intake_catalog: IntakeCatalogService | None = None,
     ) -> None:
-        """Bind metadata intake to committed deterministic route definitions."""
+        """Purpose: Bind metadata intake to committed deterministic route definitions.
+
+        Inputs: Caller-supplied ``root``, ``intake_catalog`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Candidate planning never implies execution or output readiness.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_route_preview.py`` and route schemas.
+        """
 
         self.root = root or ROOT
         self.intake_catalog = intake_catalog or IntakeCatalogService(self.root)
         self.catalog_path = self.root / "config" / "route_catalog.json"
 
     def route_catalog(self) -> dict[str, Any]:
-        """Load and validate the committed route definitions and safety flags."""
+        """Purpose: Load and validate the committed route definitions and safety flags.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Candidate planning never implies execution or output readiness.
+        Example: Call ``result = instance.route_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_route_preview.py`` and route schemas.
+        """
 
         catalog = json.loads(self.catalog_path.read_text(encoding="utf-8"))
         if not isinstance(catalog, dict):
@@ -103,7 +143,17 @@ class RoutePreviewService:
         return catalog
 
     def preview_catalog(self, intake_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Return route candidates from one validated intake snapshot or a fresh read."""
+        """Purpose: Return route candidates from one validated intake snapshot or a fresh read.
+
+        Inputs: Caller-supplied ``intake_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Candidate planning never implies execution or output readiness.
+        Example: Call ``result = instance.preview_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_route_preview.py`` and route schemas.
+        """
 
         intake = intake_snapshot if intake_snapshot is not None else self.intake_catalog.catalog()
         catalog = self.route_catalog()
@@ -146,7 +196,17 @@ class RoutePreviewService:
         route: dict[str, Any],
         required_proof: list[str],
     ) -> dict[str, Any]:
-        """Translate one privacy-safe intake record into a non-actionable plan."""
+        """Purpose: Translate one privacy-safe intake record into a non-actionable plan.
+
+        Inputs: Caller-supplied ``record``, ``route``, ``required_proof`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Candidate planning never implies execution or output readiness.
+        Example: Call ``result = instance._build_preview(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_route_preview.py`` and route schemas.
+        """
 
         source = record["source"]
         # Only fields allowed by the intake privacy contract cross into preview

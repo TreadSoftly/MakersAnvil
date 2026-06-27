@@ -1,6 +1,6 @@
 # File And Folder Map
 
-The machine-checkable explanation for every tracked file is `state/source_manifest.json`. This document explains how the folders fit together so a reader knows where to look first.
+The machine-checkable explanation for every tracked file is `state/source_manifest.json`. This document explains how the folders fit together so a reader knows where to look first. For a numbered explanation of every physical implementation and structured-contract line, use `docs/LINE_BY_LINE_CODE_GUIDE.md` and verify its exact hashes in `state/learning_coverage.json`.
 
 ## Root
 

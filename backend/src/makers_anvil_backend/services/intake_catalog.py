@@ -34,30 +34,80 @@ REQUIRED_RECORD_SAFETY_FLAGS = {
 
 
 class IntakeCatalogError(ValueError):
-    """Raised when a source cannot be safely staged as metadata."""
+    """Purpose: Raised when a source cannot be safely staged as metadata.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``IntakeCatalogError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+    Example: Construct with ``instance = IntakeCatalogError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+    """
 
 
 class IntakeCatalogService:
-    """Stage and list app-owned metadata records without copying source files."""
+    """Purpose: Stage and list app-owned metadata records without copying source files.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``IntakeCatalogService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+    Example: Construct with ``instance = IntakeCatalogService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+    """
 
     def __init__(
         self,
         root: Path | None = None,
         workspace_config: WorkspaceConfigService | None = None,
     ) -> None:
-        """Bind intake policy and app-owned record storage without retaining source paths."""
+        """Purpose: Bind intake policy and app-owned record storage without retaining source paths.
+
+        Inputs: Caller-supplied ``root``, ``workspace_config`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         self.root = root or ROOT
         self.workspace_config = workspace_config or WorkspaceConfigService(self.root)
         self.policy_path = self.root / "config" / "intake_policy.json"
 
     def policy(self) -> dict[str, Any]:
-        """Load the committed metadata-only intake policy from the source package."""
+        """Purpose: Load the committed metadata-only intake policy from the source package.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance.policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         return json.loads(self.policy_path.read_text(encoding="utf-8"))
 
     def policy_response(self) -> dict[str, Any]:
-        """Expose intake policy through logical paths and explicit safety boundaries."""
+        """Purpose: Expose intake policy through logical paths and explicit safety boundaries.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance.policy_response(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         policy = self.policy()
         return {
@@ -72,7 +122,17 @@ class IntakeCatalogService:
         }
 
     def catalog(self) -> dict[str, Any]:
-        """Read valid runtime records, count rejected records, and expose no source paths."""
+        """Purpose: Read valid runtime records, count rejected records, and expose no source paths.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance.catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         policy = self.policy()
         records_root = self._records_root(policy)
@@ -119,7 +179,17 @@ class IntakeCatalogService:
         }
 
     def stage_file_metadata(self, source_path: str | Path) -> dict[str, Any]:
-        """Write metadata for one regular file without storing its path or changing it."""
+        """Purpose: Write metadata for one regular file without storing its path or changing it.
+
+        Inputs: Caller-supplied ``source_path`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance.stage_file_metadata(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         source = Path(source_path).expanduser()
         if not source.exists():
@@ -168,7 +238,17 @@ class IntakeCatalogService:
         return record
 
     def _records_root(self, policy: dict[str, Any]) -> Path:
-        """Resolve the policy's contained intake directory inside app-owned storage."""
+        """Purpose: Resolve the policy's contained intake directory inside app-owned storage.
+
+        Inputs: Caller-supplied ``policy`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance._records_root(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         relative = Path(policy["recordsDirectory"])
         if relative.is_absolute() or ".." in relative.parts or not relative.parts or relative.parts[0] != "intake":
@@ -177,7 +257,17 @@ class IntakeCatalogService:
 
     @staticmethod
     def _classify(extension: str, policy: dict[str, Any]) -> str:
-        """Map one normalized extension to a configured kind or the honest unknown state."""
+        """Purpose: Map one normalized extension to a configured kind or the honest unknown state.
+
+        Inputs: Caller-supplied ``extension``, ``policy`` values from the signature.
+        Outputs: Returns ``str``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance._classify(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         for file_kind in policy["fileKinds"]:
             if extension in file_kind["extensions"]:
@@ -186,7 +276,17 @@ class IntakeCatalogService:
 
     @staticmethod
     def _valid_runtime_record(record: dict[str, Any]) -> bool:
-        """Accept only privacy-safe records whose complete safety map remains false."""
+        """Purpose: Accept only privacy-safe records whose complete safety map remains false.
+
+        Inputs: Caller-supplied ``record`` values from the signature.
+        Outputs: Returns ``bool``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Folders, symlinks, extraction, copying, execution, and launch are denied.
+        Example: Call ``result = instance._valid_runtime_record(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_intake_catalog.py`` and intake schemas.
+        """
 
         source = record.get("source", {})
         privacy = record.get("privacy", {})

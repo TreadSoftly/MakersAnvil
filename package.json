@@ -9,6 +9,8 @@
   },
   "scripts": {
     "dev": "python scripts/run_dev.py",
+    "learn": "python scripts/build_learning_guide.py",
+    "learn:check": "python scripts/build_learning_guide.py --check",
     "test": "python -m pytest -q",
     "verify": "python scripts/verify_project.py"
   },

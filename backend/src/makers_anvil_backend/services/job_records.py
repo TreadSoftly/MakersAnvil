@@ -68,14 +68,34 @@ JOB_SAFETY_FLAGS = {
 
 
 def job_id_for_preview(request_preview_id: str) -> str:
-    """Derive one stable job id so repeated preparation cannot duplicate a request."""
+    """Purpose: Derive one stable job id so repeated preparation cannot duplicate a request.
+
+    Inputs: Caller-supplied ``request_preview_id`` values from the signature.
+    Outputs: Returns ``str``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.job_id_for_preview(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     digest = hashlib.sha256(request_preview_id.encode("utf-8")).hexdigest()[:24]
     return f"job-{digest}"
 
 
 def initial_cancellation_record(job_id: str) -> dict[str, Any]:
-    """Build initial control state without inventing a signal or stopped process."""
+    """Purpose: Build initial control state without inventing a signal or stopped process.
+
+    Inputs: Caller-supplied ``job_id`` values from the signature.
+    Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.initial_cancellation_record(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     return {
         "schemaVersion": "makers-anvil.runtime.job-cancellation.v1",
@@ -90,7 +110,17 @@ def initial_cancellation_record(job_id: str) -> dict[str, Any]:
 
 
 def requested_cancellation_record(record: dict[str, Any]) -> dict[str, Any]:
-    """Return cancellation intent while preserving constant-false process outcomes."""
+    """Purpose: Return cancellation intent while preserving constant-false process outcomes.
+
+    Inputs: Caller-supplied ``record`` values from the signature.
+    Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.requested_cancellation_record(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     return {
         **record,
@@ -102,7 +132,17 @@ def requested_cancellation_record(record: dict[str, Any]) -> dict[str, Any]:
 
 
 def atomic_write_json(path: Path, record: dict[str, Any]) -> None:
-    """Replace one app-owned JSON record only after its complete temporary write."""
+    """Purpose: Replace one app-owned JSON record only after its complete temporary write.
+
+    Inputs: Caller-supplied ``path``, ``record`` values from the signature.
+    Outputs: Returns ``None``, or raises before returning when validation fails.
+    How it works: It checks conditions, then handles expected failures explicitly.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.atomic_write_json(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.{uuid4().hex}.tmp")
@@ -117,7 +157,17 @@ def atomic_write_json(path: Path, record: dict[str, Any]) -> None:
 
 
 def valid_job_record(record: dict[str, Any], policy: dict[str, Any]) -> bool:
-    """Accept only prepared, path-redacted, non-executable job manifests."""
+    """Purpose: Accept only prepared, path-redacted, non-executable job manifests.
+
+    Inputs: Caller-supplied ``record``, ``policy`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.valid_job_record(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     if (
         not isinstance(record, dict)
@@ -158,7 +208,17 @@ def valid_job_record(record: dict[str, Any], policy: dict[str, Any]) -> bool:
 
 
 def valid_cancellation_record(record: dict[str, Any], job_id: str) -> bool:
-    """Accept only unsignaled cancellation state belonging to the prepared job."""
+    """Purpose: Accept only unsignaled cancellation state belonging to the prepared job.
+
+    Inputs: Caller-supplied ``record``, ``job_id`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.valid_cancellation_record(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     if (
         not isinstance(record, dict)
@@ -187,7 +247,17 @@ def valid_cancellation_record(record: dict[str, Any], job_id: str) -> bool:
 
 
 def valid_intent(value: object) -> bool:
-    """Reject private paths or malformed tool data from persisted logical intent."""
+    """Purpose: Reject private paths or malformed tool data from persisted logical intent.
+
+    Inputs: Caller-supplied ``value`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.valid_intent(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     if not isinstance(value, dict) or set(value) != {"source", "output", "tool"}:
         return False
@@ -229,7 +299,17 @@ def valid_intent(value: object) -> bool:
 
 
 def valid_id_label(value: object, required_id: str | None = None) -> bool:
-    """Validate a minimal identity record and optionally require one exact id."""
+    """Purpose: Validate a minimal identity record and optionally require one exact id.
+
+    Inputs: Caller-supplied ``value``, ``required_id`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance.valid_id_label(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     return (
         isinstance(value, dict)
@@ -244,7 +324,17 @@ def valid_id_label(value: object, required_id: str | None = None) -> bool:
 
 
 def _valid_timestamp(value: object) -> bool:
-    """Require a timezone-aware ISO timestamp for every persisted runtime event."""
+    """Purpose: Require a timezone-aware ISO timestamp for every persisted runtime event.
+
+    Inputs: Caller-supplied ``value`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It checks conditions, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, private paths, process IDs, outputs, and proof are excluded.
+    Example: Call ``result = instance._valid_timestamp(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_job_workspace.py`` and job-record schemas.
+    """
 
     if not isinstance(value, str):
         return False

@@ -1,0 +1,654 @@
+{
+  "schemaVersion": "makers-anvil.learning-coverage.v1",
+  "claimState": "proven",
+  "guidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
+  "sourceCount": 92,
+  "totalLineCount": 16417,
+  "explainedLineCount": 16417,
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "sha256": "4ccba6a2afd3a7dcc73a7c638758c157b74f5126c058f7307f8e144851fcb6a9",
+      "lineCount": 35,
+      "explainedLineCount": 35,
+      "guideAnchor": "source-001"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "ca7f22c353b85ecc49d8d520972a1d38a09e2c60f4bed2d2eedc38afe8023700",
+      "lineCount": 31,
+      "explainedLineCount": 31,
+      "guideAnchor": "source-002"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "da709383c830e745a2cf6e3180590dd2223b3e63bb8982da7b2bbde56c5c5204",
+      "lineCount": 21,
+      "explainedLineCount": 21,
+      "guideAnchor": "source-003"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/__init__.py",
+      "sha256": "71f5d174bc7e74cc60a7d28bb5b262e84cd5a18bcb68f98e45c9f58b0a4c2bff",
+      "lineCount": 14,
+      "explainedLineCount": 14,
+      "guideAnchor": "source-004"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/__main__.py",
+      "sha256": "1143087638f02d96d8951934973c5a51f6f4d83491cce2ff5465e182d40a054d",
+      "lineCount": 14,
+      "explainedLineCount": 14,
+      "guideAnchor": "source-005"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/api/__init__.py",
+      "sha256": "e2c9fa9c53cf1e429b67cbe0eb94b3c20b718e19dd76d1c1c28c8c0037ee3ed8",
+      "lineCount": 10,
+      "explainedLineCount": 10,
+      "guideAnchor": "source-006"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/api/app.py",
+      "sha256": "2a1390a20a8ce321dd9863de57537671e0f186c1da3433e7633af817571a802b",
+      "lineCount": 150,
+      "explainedLineCount": 150,
+      "guideAnchor": "source-007"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/domain/__init__.py",
+      "sha256": "816113dcdf76b48db62e52726170b09b3c08a9fcb0a26cab4ae24a959817ed51",
+      "lineCount": 10,
+      "explainedLineCount": 10,
+      "guideAnchor": "source-008"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/domain/claim_state.py",
+      "sha256": "6d10240e108bde4b633ccdf3fcf87419c3926c842344456eb73935d1ce1dfc53",
+      "lineCount": 57,
+      "explainedLineCount": 57,
+      "guideAnchor": "source-009"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/server.py",
+      "sha256": "aa726af0989824e186924a69194f1ee31e69926ebc122b118e27eab2098e264c",
+      "lineCount": 181,
+      "explainedLineCount": 181,
+      "guideAnchor": "source-010"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/__init__.py",
+      "sha256": "4d10473f485e73839495f3bd67588ecbb5eef92527be4cccd80f2355e8fe18cd",
+      "lineCount": 10,
+      "explainedLineCount": 10,
+      "guideAnchor": "source-011"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/app_state.py",
+      "sha256": "0000df3a62c9ca2aff8c6bfb7ffc7a816302a1f8dff3a7318d5edd898aa25055",
+      "lineCount": 530,
+      "explainedLineCount": 530,
+      "guideAnchor": "source-012"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/execution_gate.py",
+      "sha256": "20c3b0706cf70e6b614791726ae1aa0e8c719d6242a616d1c728a015f385f632",
+      "lineCount": 289,
+      "explainedLineCount": 289,
+      "guideAnchor": "source-013"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/execution_request.py",
+      "sha256": "ac01f0a6ac304bf9f38049fd95ad7cef693edea84e54c7af536fedcc65704a67",
+      "lineCount": 267,
+      "explainedLineCount": 267,
+      "guideAnchor": "source-014"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/intake_catalog.py",
+      "sha256": "629a6242944c3c5c60c2a706b338c334a3738e6221895ac92d6346b1c719d150",
+      "lineCount": 311,
+      "explainedLineCount": 311,
+      "guideAnchor": "source-015"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/job_records.py",
+      "sha256": "e777bfdd48dd1d74fcfbc24c40c33e3df3b6888e801acff05ad21e56a15ae98b",
+      "lineCount": 345,
+      "explainedLineCount": 345,
+      "guideAnchor": "source-016"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/job_workspace.py",
+      "sha256": "76d4489a414f68572d0723fd716845a91bfd280551255779445c371280d27d9b",
+      "lineCount": 450,
+      "explainedLineCount": 450,
+      "guideAnchor": "source-017"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/output_proof.py",
+      "sha256": "8aba30626e5438836e494eb8e98e4dfd5ab8f5a5f09160b38954b8cb8caf4f05",
+      "lineCount": 307,
+      "explainedLineCount": 307,
+      "guideAnchor": "source-018"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/route_preview.py",
+      "sha256": "701899c09d440f8c58d2f0ab6285d40326b21c8741375c67c01416e94faabd5f",
+      "lineCount": 243,
+      "explainedLineCount": 243,
+      "guideAnchor": "source-019"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/runtime_paths.py",
+      "sha256": "a016f07199825633d19dc7cb48098e452d30db1eda9d6088d6ff4cfb77768d7b",
+      "lineCount": 230,
+      "explainedLineCount": 230,
+      "guideAnchor": "source-020"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/tool_detection.py",
+      "sha256": "5c029726f39fd7f4206710f8fcfefef2e856b5db5636d5f504fa8352c6144920",
+      "lineCount": 379,
+      "explainedLineCount": 379,
+      "guideAnchor": "source-021"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/tool_dry_run.py",
+      "sha256": "9c9db69871b452a6c0326d85c3308766f65da8c54bca10c3b0e788830867b2ac",
+      "lineCount": 304,
+      "explainedLineCount": 304,
+      "guideAnchor": "source-022"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/workspace_config.py",
+      "sha256": "b52c0af04f1edfd4e46a65914ae672e056400994b4ff6afd1719e2027501972d",
+      "lineCount": 249,
+      "explainedLineCount": 249,
+      "guideAnchor": "source-023"
+    },
+    {
+      "path": "backend/src/makers_anvil_backend/services/workspace_status.py",
+      "sha256": "7a59e2eeeed4f20cca2b7751977b4518b97e2b396dd4efa6cae821eda03bad85",
+      "lineCount": 126,
+      "explainedLineCount": 126,
+      "guideAnchor": "source-024"
+    },
+    {
+      "path": "config/default_settings.json",
+      "sha256": "d07f557b0b601280639fc8fc1ebfccc3be29433350532e0b14ab1db7382b6c0b",
+      "lineCount": 52,
+      "explainedLineCount": 52,
+      "guideAnchor": "source-025"
+    },
+    {
+      "path": "config/execution_gate_policy.json",
+      "sha256": "6505b248b380b6ca0dbe7dea32b931352f8402ee0ecdf352826a18357e469c62",
+      "lineCount": 95,
+      "explainedLineCount": 95,
+      "guideAnchor": "source-026"
+    },
+    {
+      "path": "config/execution_request_policy.json",
+      "sha256": "e28a23fc8e9156137bf9f0fd38d6eae866c6ca192d0565c1d4f4812251c67aa7",
+      "lineCount": 35,
+      "explainedLineCount": 35,
+      "guideAnchor": "source-027"
+    },
+    {
+      "path": "config/intake_policy.json",
+      "sha256": "e1696e6053a41cba286a3b6ffd5c8001da780267b67d7d882cd4d32f27b0f11a",
+      "lineCount": 45,
+      "explainedLineCount": 45,
+      "guideAnchor": "source-028"
+    },
+    {
+      "path": "config/job_workspace_policy.json",
+      "sha256": "aa2ac292d71f32a18b4d148703d379b932fc7169d811bee0ab3cf3e855402d6e",
+      "lineCount": 37,
+      "explainedLineCount": 37,
+      "guideAnchor": "source-029"
+    },
+    {
+      "path": "config/output_policy.json",
+      "sha256": "2aee81c4642070ceaf24caa37321635d85e977c7dab1510e1385f446927f00fb",
+      "lineCount": 81,
+      "explainedLineCount": 81,
+      "guideAnchor": "source-030"
+    },
+    {
+      "path": "config/route_catalog.json",
+      "sha256": "10db5e19a5526633e1601b6dbf86f1d6fc175caca74b488069e91eccc4810a9e",
+      "lineCount": 99,
+      "explainedLineCount": 99,
+      "guideAnchor": "source-031"
+    },
+    {
+      "path": "config/tool_catalog.json",
+      "sha256": "63c1dbdbaeaa3408b8755723267788c6061129d184f79b8069ebcc980c5119f4",
+      "lineCount": 98,
+      "explainedLineCount": 98,
+      "guideAnchor": "source-032"
+    },
+    {
+      "path": "config/tool_dry_run_policy.json",
+      "sha256": "2093ba69eb0bd6c088bb42178e2afff080fe641ff389f83ae532ba7055319487",
+      "lineCount": 59,
+      "explainedLineCount": 59,
+      "guideAnchor": "source-033"
+    },
+    {
+      "path": "frontend/public/assets/app.js",
+      "sha256": "1dd970227108a947c544473eac7ad0484848e71a6fcc2efbaf0dce884673dfd8",
+      "lineCount": 1055,
+      "explainedLineCount": 1055,
+      "guideAnchor": "source-034"
+    },
+    {
+      "path": "frontend/public/assets/mark.svg",
+      "sha256": "c357f624a6826400b2ff035a27ef30697a38f9b5b7aa5b2bad18779d47945732",
+      "lineCount": 17,
+      "explainedLineCount": 17,
+      "guideAnchor": "source-035"
+    },
+    {
+      "path": "frontend/public/assets/styles.css",
+      "sha256": "c8aff7d8d8ccfc42e7a166522b60653ac9429d1c330ad2fff05aa837554caccf",
+      "lineCount": 2130,
+      "explainedLineCount": 2130,
+      "guideAnchor": "source-036"
+    },
+    {
+      "path": "frontend/public/index.html",
+      "sha256": "ac65dff7be574725adef2504cf632778a555ef60111ecb48d3466ac17cbf2836",
+      "lineCount": 378,
+      "explainedLineCount": 378,
+      "guideAnchor": "source-037"
+    },
+    {
+      "path": "package.json",
+      "sha256": "e3b1dcbeb38fbb3d011e9bff721ac3e6017b1be85173e5eeb545be968d0e3235",
+      "lineCount": 21,
+      "explainedLineCount": 21,
+      "guideAnchor": "source-038"
+    },
+    {
+      "path": "pyproject.toml",
+      "sha256": "78836c5f279f9a3d59ff5746ee5dcf191e2adde14c4df45154adfe68a2a1c999",
+      "lineCount": 11,
+      "explainedLineCount": 11,
+      "guideAnchor": "source-039"
+    },
+    {
+      "path": "schemas/app-state.schema.json",
+      "sha256": "da88b0ef3da9a3d292a59f8c0d4a8b1bbab759e25e28d9533a04b3dde9ad7e28",
+      "lineCount": 65,
+      "explainedLineCount": 65,
+      "guideAnchor": "source-040"
+    },
+    {
+      "path": "schemas/claim-state.schema.json",
+      "sha256": "95ad467ae7d7317927aa8b8d6d8a5c176c1a9a598cc5f0917a247b4b33ee2a9c",
+      "lineCount": 17,
+      "explainedLineCount": 17,
+      "guideAnchor": "source-041"
+    },
+    {
+      "path": "schemas/current-status.schema.json",
+      "sha256": "696ce03a15a049426f517dce67cd6efc0edaf72be2104f47e25662889cdaf237",
+      "lineCount": 76,
+      "explainedLineCount": 76,
+      "guideAnchor": "source-042"
+    },
+    {
+      "path": "schemas/execution-gate-policy.schema.json",
+      "sha256": "61027a635cabd76bebd55b270b03b21e87abf064333ca6e36c77403c40bb3de6",
+      "lineCount": 60,
+      "explainedLineCount": 60,
+      "guideAnchor": "source-043"
+    },
+    {
+      "path": "schemas/execution-gates.schema.json",
+      "sha256": "c2eb01f1cb51922692ca0057507195301b8b7bc536c3baf465da7772f9b351d2",
+      "lineCount": 119,
+      "explainedLineCount": 119,
+      "guideAnchor": "source-044"
+    },
+    {
+      "path": "schemas/execution-request-policy.schema.json",
+      "sha256": "bd9654dc22ade64d5ef53082b7e4f74342a1d7f1997c3adcc735c7f77ede85ea",
+      "lineCount": 60,
+      "explainedLineCount": 60,
+      "guideAnchor": "source-045"
+    },
+    {
+      "path": "schemas/execution-request-preview.schema.json",
+      "sha256": "287f4c5f19743fec7d46588f58c3633daf7ebe37cc43909acf3bf86995af6f87",
+      "lineCount": 142,
+      "explainedLineCount": 142,
+      "guideAnchor": "source-046"
+    },
+    {
+      "path": "schemas/intake-policy.schema.json",
+      "sha256": "7822fd05918ac7fa46e300fbb19419034d76e1c430221a0503ad10df76ae5032",
+      "lineCount": 57,
+      "explainedLineCount": 57,
+      "guideAnchor": "source-047"
+    },
+    {
+      "path": "schemas/intake-record.schema.json",
+      "sha256": "57687fabf53fdbb5cfdcddaf60480de9b0c36bc70a05c1a67bac7eff2595d3df",
+      "lineCount": 53,
+      "explainedLineCount": 53,
+      "guideAnchor": "source-048"
+    },
+    {
+      "path": "schemas/job-cancellation-record.schema.json",
+      "sha256": "f646a8205d5533e8e8cf608e7c53e646fee95343fa28f8f6ad233091467151e4",
+      "lineCount": 28,
+      "explainedLineCount": 28,
+      "guideAnchor": "source-049"
+    },
+    {
+      "path": "schemas/job-workspace-catalog.schema.json",
+      "sha256": "f6547bcc4ed83025c1825b588e25d59935ad8ac4e667da94da19571034746560",
+      "lineCount": 63,
+      "explainedLineCount": 63,
+      "guideAnchor": "source-050"
+    },
+    {
+      "path": "schemas/job-workspace-policy.schema.json",
+      "sha256": "06951540765da6b611921e7034c580b65a9f46a6ff42dc599e2a051057aa70e3",
+      "lineCount": 74,
+      "explainedLineCount": 74,
+      "guideAnchor": "source-051"
+    },
+    {
+      "path": "schemas/job-workspace-record.schema.json",
+      "sha256": "351ff7cf9e19f0b99a9f6bd7ed6872f2712d080d833638904aa31a6f2e0209c3",
+      "lineCount": 104,
+      "explainedLineCount": 104,
+      "guideAnchor": "source-052"
+    },
+    {
+      "path": "schemas/learning-coverage.schema.json",
+      "sha256": "fe4aa1cbc08bb5600937efb73ca7109cf89f362cdc2c15046c82ee4945208415",
+      "lineCount": 32,
+      "explainedLineCount": 32,
+      "guideAnchor": "source-053"
+    },
+    {
+      "path": "schemas/local-settings.schema.json",
+      "sha256": "c61ea60abe1dc1bb05aa7717fe7f79da8a434bbe65a8641dccb340022f8478b5",
+      "lineCount": 57,
+      "explainedLineCount": 57,
+      "guideAnchor": "source-054"
+    },
+    {
+      "path": "schemas/output-policy.schema.json",
+      "sha256": "eeb13b3c8fbe21f280989ff6b603f5425f70d88ce732fb8e917adb9b4c9a20a1",
+      "lineCount": 74,
+      "explainedLineCount": 74,
+      "guideAnchor": "source-055"
+    },
+    {
+      "path": "schemas/output-proof.schema.json",
+      "sha256": "d6727ad12ec636980a193132a2e0f26d12473ca0de722c4907b823073075b7af",
+      "lineCount": 128,
+      "explainedLineCount": 128,
+      "guideAnchor": "source-056"
+    },
+    {
+      "path": "schemas/route-catalog.schema.json",
+      "sha256": "b137c6057412ab78c67cf4d1480697f53b1167322b1fe53eb2b6421ad99d1d97",
+      "lineCount": 60,
+      "explainedLineCount": 60,
+      "guideAnchor": "source-057"
+    },
+    {
+      "path": "schemas/route-preview.schema.json",
+      "sha256": "c93a4dbc2a2dbd8060b9a34a08295f0827abb2a15827038a5aa41c2357c66941",
+      "lineCount": 94,
+      "explainedLineCount": 94,
+      "guideAnchor": "source-058"
+    },
+    {
+      "path": "schemas/runtime-location.schema.json",
+      "sha256": "0f8042384d7599b4758592c74a8b6266f28b5684db26519f963aedce1eb66eeb",
+      "lineCount": 36,
+      "explainedLineCount": 36,
+      "guideAnchor": "source-059"
+    },
+    {
+      "path": "schemas/source-manifest.schema.json",
+      "sha256": "0804f640c080d054c33416789fb39999fb1933dad44d686b9a12bba95021f9ab",
+      "lineCount": 37,
+      "explainedLineCount": 37,
+      "guideAnchor": "source-060"
+    },
+    {
+      "path": "schemas/tool-catalog.schema.json",
+      "sha256": "92bde78092c68a3be4f7d6e1331e7e106a24e6139eda46dd91c4b359c05b1c2d",
+      "lineCount": 85,
+      "explainedLineCount": 85,
+      "guideAnchor": "source-061"
+    },
+    {
+      "path": "schemas/tool-detection.schema.json",
+      "sha256": "59468e8268596d78f6486556d4092c9335c65517ecc658444aeec4aa9eb94d14",
+      "lineCount": 107,
+      "explainedLineCount": 107,
+      "guideAnchor": "source-062"
+    },
+    {
+      "path": "schemas/tool-dry-run-policy.schema.json",
+      "sha256": "2862a2e59e6bf596cd6eb028ccf964f6c15dd7ed81028a49a036b9d698bdb386",
+      "lineCount": 55,
+      "explainedLineCount": 55,
+      "guideAnchor": "source-063"
+    },
+    {
+      "path": "schemas/tool-dry-run.schema.json",
+      "sha256": "9addae8a480a36e3a6c3916b8c33ee7e19e86e6af2fc3849513898b2317559eb",
+      "lineCount": 158,
+      "explainedLineCount": 158,
+      "guideAnchor": "source-064"
+    },
+    {
+      "path": "scripts/__init__.py",
+      "sha256": "3aad57921447985ee7798b4684b75846fba0aacf706fc3446f1a174547a5a8a0",
+      "lineCount": 10,
+      "explainedLineCount": 10,
+      "guideAnchor": "source-065"
+    },
+    {
+      "path": "scripts/build_learning_guide.py",
+      "sha256": "7308bfc9103c4fe21338042802dc02372174aa9e2d1b68e32e44190046608b9a",
+      "lineCount": 416,
+      "explainedLineCount": 416,
+      "guideAnchor": "source-066"
+    },
+    {
+      "path": "scripts/check_explainability.py",
+      "sha256": "07a557b1a5f148f593fe76e42a133d1aface2d3c3b74791cce656ecc09ea9e34",
+      "lineCount": 373,
+      "explainedLineCount": 373,
+      "guideAnchor": "source-067"
+    },
+    {
+      "path": "scripts/init_workspace.py",
+      "sha256": "6e75b21c229a1845e149817ca5bc2f0331a49a3ad93c67744cc0d6737fe5b1bc",
+      "lineCount": 44,
+      "explainedLineCount": 44,
+      "guideAnchor": "source-068"
+    },
+    {
+      "path": "scripts/prepare_job.py",
+      "sha256": "ee3d2b24176ea934333ff1bddbd58f5d31d2e809d534f97f01a9e180e9696789",
+      "lineCount": 64,
+      "explainedLineCount": 64,
+      "guideAnchor": "source-069"
+    },
+    {
+      "path": "scripts/request_job_cancel.py",
+      "sha256": "5378528947697f3414be0cfb150b74f568c05bdbe0b3f2f90294a6cf379f8383",
+      "lineCount": 64,
+      "explainedLineCount": 64,
+      "guideAnchor": "source-070"
+    },
+    {
+      "path": "scripts/run_dev.py",
+      "sha256": "5a0a99db17ab7086ea4f2f80763d66212e4596f4ec1e7a6e70e270ab8197b7de",
+      "lineCount": 23,
+      "explainedLineCount": 23,
+      "guideAnchor": "source-071"
+    },
+    {
+      "path": "scripts/stage_intake.py",
+      "sha256": "5718b10f302acd8e0c56cbbf5eaee31278de1e66fb22f2a42061e3487b9f009f",
+      "lineCount": 64,
+      "explainedLineCount": 64,
+      "guideAnchor": "source-072"
+    },
+    {
+      "path": "scripts/verify_project.py",
+      "sha256": "b2d50ddad7b34475ceacc26ff4401efb35b471cc72ef23cf5b7ed0a5ba9a0f29",
+      "lineCount": 605,
+      "explainedLineCount": 605,
+      "guideAnchor": "source-073"
+    },
+    {
+      "path": "state/current_status.json",
+      "sha256": "10eb706189b92bd43c8f27bc988717f31a05cdbf835519ae9e37fef1b8cfb7fb",
+      "lineCount": 116,
+      "explainedLineCount": 116,
+      "guideAnchor": "source-074"
+    },
+    {
+      "path": "state/pass_ledger.json",
+      "sha256": "66e6342274974463c82646fa016a3be8b20ffb4a5706a90040d522c7936dbe45",
+      "lineCount": 231,
+      "explainedLineCount": 231,
+      "guideAnchor": "source-075"
+    },
+    {
+      "path": "state/source_manifest.json",
+      "sha256": "7a92c280316b162d1a97d975a67301ad90d28e275dc030b7eeccbb8741e57557",
+      "lineCount": 139,
+      "explainedLineCount": 139,
+      "guideAnchor": "source-076"
+    },
+    {
+      "path": "tests/test_api.py",
+      "sha256": "18a2bdda6f43fa38ac2957d540264198113851ebbab79ef47d0e081c5bec15cc",
+      "lineCount": 376,
+      "explainedLineCount": 376,
+      "guideAnchor": "source-077"
+    },
+    {
+      "path": "tests/test_execution_gate.py",
+      "sha256": "fcf049fd764af7ff13d61395253c932724e8e155cfaf1fd06f21ce8396461eaa",
+      "lineCount": 289,
+      "explainedLineCount": 289,
+      "guideAnchor": "source-078"
+    },
+    {
+      "path": "tests/test_execution_request.py",
+      "sha256": "d3055c4f22e4b52fea302617a8474c36107cfa1e0b1d1c7cadcff3e18b3cdc75",
+      "lineCount": 331,
+      "explainedLineCount": 331,
+      "guideAnchor": "source-079"
+    },
+    {
+      "path": "tests/test_explainability.py",
+      "sha256": "15b80848342ce73ee929369ac1840de5e7bb1ea5e5ff38088e9ac931c932db9f",
+      "lineCount": 48,
+      "explainedLineCount": 48,
+      "guideAnchor": "source-080"
+    },
+    {
+      "path": "tests/test_frontend_workbench.py",
+      "sha256": "6e2f22f1c933b7db6e32eedf79410ccece53559623a7ef7f275cd3277ab13467",
+      "lineCount": 210,
+      "explainedLineCount": 210,
+      "guideAnchor": "source-081"
+    },
+    {
+      "path": "tests/test_intake_catalog.py",
+      "sha256": "8fe92854305c56d3285f01d765f58d6fbd616d1510b25869db4e50a95a00fd78",
+      "lineCount": 309,
+      "explainedLineCount": 309,
+      "guideAnchor": "source-082"
+    },
+    {
+      "path": "tests/test_job_workspace.py",
+      "sha256": "8d1288e8ba7b4e0d839b085ee7e1f59c10001559f8a639d0945e3d3c1422d098",
+      "lineCount": 417,
+      "explainedLineCount": 417,
+      "guideAnchor": "source-083"
+    },
+    {
+      "path": "tests/test_learning_guide.py",
+      "sha256": "922a4887fd468dc7a662e0bd1293dff65d44abcf103a13e285ae8ab65bc0ada1",
+      "lineCount": 77,
+      "explainedLineCount": 77,
+      "guideAnchor": "source-084"
+    },
+    {
+      "path": "tests/test_output_proof.py",
+      "sha256": "4d6ce888f39289ddecd7cd8050157e62e6d762770786c81e93ca40c700f98f31",
+      "lineCount": 209,
+      "explainedLineCount": 209,
+      "guideAnchor": "source-085"
+    },
+    {
+      "path": "tests/test_project_purity.py",
+      "sha256": "ce173e0aef3ce14088003d65da5b938183b5694a09cec01db22873ef8120e79d",
+      "lineCount": 402,
+      "explainedLineCount": 402,
+      "guideAnchor": "source-086"
+    },
+    {
+      "path": "tests/test_route_preview.py",
+      "sha256": "b2d17c217a0aa206c1a75676c01adb19e8e205f4dcbebe69870107c5b92394a6",
+      "lineCount": 190,
+      "explainedLineCount": 190,
+      "guideAnchor": "source-087"
+    },
+    {
+      "path": "tests/test_runtime_paths.py",
+      "sha256": "78b582ae092dc9130738c306f387165a7d3be85962a217e65a743dcf684abdb4",
+      "lineCount": 191,
+      "explainedLineCount": 191,
+      "guideAnchor": "source-088"
+    },
+    {
+      "path": "tests/test_tool_detection.py",
+      "sha256": "082edc1c8f641daed814ce03891de5c1992ef0c12d5b71809db119f1700ecc62",
+      "lineCount": 195,
+      "explainedLineCount": 195,
+      "guideAnchor": "source-089"
+    },
+    {
+      "path": "tests/test_tool_dry_run.py",
+      "sha256": "0add44603a62ff8d765d90ffbcb866b2e9ca1ec4112862ba1f8e60fc5ca72f67",
+      "lineCount": 218,
+      "explainedLineCount": 218,
+      "guideAnchor": "source-090"
+    },
+    {
+      "path": "tests/test_verify_project.py",
+      "sha256": "3796bd6a72febbe50f51ee2154e610e7feb653ee4484bcc61f442bb0a08ebdeb",
+      "lineCount": 28,
+      "explainedLineCount": 28,
+      "guideAnchor": "source-091"
+    },
+    {
+      "path": "tests/test_workspace_config.py",
+      "sha256": "25c744929859ffb6ca36aa9284e29e1274bf911930800f0beda4f305fb6ec1b1",
+      "lineCount": 161,
+      "explainedLineCount": 161,
+      "guideAnchor": "source-092"
+    }
+  ]
+}

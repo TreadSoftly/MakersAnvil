@@ -43,11 +43,31 @@ REQUEST_SAFETY_FLAGS = {
 
 
 class ExecutionRequestError(ValueError):
-    """Raised when request policy could persist intent or weaken an action boundary."""
+    """Purpose: Raised when request policy could persist intent or weaken an action boundary.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ExecutionRequestError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Authorization, path resolution, command building, and launch stay false.
+    Example: Construct with ``instance = ExecutionRequestError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_execution_request.py`` and request schemas.
+    """
 
 
 class ExecutionRequestService:
-    """Compose path-free request and audit previews from coherent planning evidence."""
+    """Purpose: Compose path-free request and audit previews from coherent planning evidence.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ExecutionRequestService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Authorization, path resolution, command building, and launch stay false.
+    Example: Construct with ``instance = ExecutionRequestService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_execution_request.py`` and request schemas.
+    """
 
     def __init__(
         self,
@@ -55,7 +75,17 @@ class ExecutionRequestService:
         tool_dry_run: ToolDryRunService | None = None,
         execution_gate: ExecutionGateService | None = None,
     ) -> None:
-        """Bind one dry-run source, its gate evaluator, and the committed preview policy."""
+        """Purpose: Bind one dry-run source, its gate evaluator, and the committed preview policy.
+
+        Inputs: Caller-supplied ``root``, ``tool_dry_run``, ``execution_gate`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Authorization, path resolution, command building, and launch stay false.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_execution_request.py`` and request schemas.
+        """
 
         self.tool_dry_run = tool_dry_run or ToolDryRunService(root or ROOT)
         self.root = root or self.tool_dry_run.root
@@ -63,7 +93,17 @@ class ExecutionRequestService:
         self.policy_path = self.root / "config" / "execution_request_policy.json"
 
     def execution_request_policy(self) -> dict[str, Any]:
-        """Validate single-route scope, complete audit events, and constant-false effects."""
+        """Purpose: Validate single-route scope, complete audit events, and constant-false effects.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Authorization, path resolution, command building, and launch stay false.
+        Example: Call ``result = instance.execution_request_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_request.py`` and request schemas.
+        """
 
         policy = json.loads(self.policy_path.read_text(encoding="utf-8"))
         if not isinstance(policy, dict):
@@ -109,7 +149,17 @@ class ExecutionRequestService:
         dry_run_snapshot: dict[str, Any] | None = None,
         gate_snapshot: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Return deterministic request previews while all persistence and actions stay false."""
+        """Purpose: Return deterministic request previews while all persistence and actions stay false.
+
+        Inputs: Caller-supplied ``dry_run_snapshot``, ``gate_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Authorization, path resolution, command building, and launch stay false.
+        Example: Call ``result = instance.preview_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_request.py`` and request schemas.
+        """
 
         dry_run = dry_run_snapshot if dry_run_snapshot is not None else self.tool_dry_run.plan_catalog()
         gates = gate_snapshot if gate_snapshot is not None else self.execution_gate.gate_catalog(dry_run)
@@ -155,7 +205,17 @@ class ExecutionRequestService:
 
     @staticmethod
     def _build_preview(plan: dict[str, Any], evaluation: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
-        """Translate one coherent plan and gate record into immutable logical intent."""
+        """Purpose: Translate one coherent plan and gate record into immutable logical intent.
+
+        Inputs: Caller-supplied ``plan``, ``evaluation``, ``policy`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Authorization, path resolution, command building, and launch stay false.
+        Example: Call ``result = instance._build_preview(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_request.py`` and request schemas.
+        """
 
         selected_tool = plan["toolSelection"]["selectedTool"]
         tool = None if selected_tool is None else {

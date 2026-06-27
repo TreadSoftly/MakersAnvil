@@ -24,7 +24,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def build_services(root: Path, data_root: Path) -> tuple[IntakeCatalogService, RoutePreviewService]:
-    """Build isolated intake and preview services from committed safe configuration."""
+    """Purpose: Build isolated intake and preview services from committed safe configuration.
+
+    Inputs: Caller-supplied ``root``, ``data_root`` values from the signature.
+    Outputs: Returns ``tuple[IntakeCatalogService, RoutePreviewService]``, or raises before returning when validation fails.
+    How it works: It iterates over bounded records, then returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Call ``result = instance.build_services(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     config_root = root / "config"
     config_root.mkdir(parents=True)
@@ -45,7 +55,17 @@ def build_services(root: Path, data_root: Path) -> tuple[IntakeCatalogService, R
 
 
 def test_mesh_preview_uses_metadata_after_source_is_gone(tmp_path: Path) -> None:
-    """A route preview remains available without reopening or retaining the source file."""
+    """Purpose: A route preview remains available without reopening or retaining the source file.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Run ``python -m pytest tests/test_route_preview.py -k test_mesh_preview_uses_metadata_after_source_is_gone``.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "fixture.stl"
@@ -72,7 +92,17 @@ def test_mesh_preview_uses_metadata_after_source_is_gone(tmp_path: Path) -> None
 
 
 def test_archive_preview_does_not_extract_or_change_source(tmp_path: Path) -> None:
-    """Archive planning describes a future gate while extraction remains disabled."""
+    """Purpose: Archive planning describes a future gate while extraction remains disabled.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Run ``python -m pytest tests/test_route_preview.py -k test_archive_preview_does_not_extract_or_change_source``.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "bundle.zip"
@@ -92,7 +122,17 @@ def test_archive_preview_does_not_extract_or_change_source(tmp_path: Path) -> No
 
 
 def test_unknown_kind_is_counted_without_inventing_a_route(tmp_path: Path) -> None:
-    """Unrecognized metadata is reported as unmatched instead of guessed into a workflow."""
+    """Purpose: Unrecognized metadata is reported as unmatched instead of guessed into a workflow.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Run ``python -m pytest tests/test_route_preview.py -k test_unknown_kind_is_counted_without_inventing_a_route``.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     intake, routes = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "mystery.bin"
@@ -107,7 +147,17 @@ def test_unknown_kind_is_counted_without_inventing_a_route(tmp_path: Path) -> No
 
 
 def test_route_catalog_rejects_enabled_actions(tmp_path: Path) -> None:
-    """A changed catalog cannot silently enable execution or tool behavior."""
+    """Purpose: A changed catalog cannot silently enable execution or tool behavior.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Run ``python -m pytest tests/test_route_preview.py -k test_route_catalog_rejects_enabled_actions``.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     _, routes = build_services(tmp_path / "source", tmp_path / "runtime")
     catalog = json.loads(routes.catalog_path.read_text(encoding="utf-8"))
@@ -119,7 +169,17 @@ def test_route_catalog_rejects_enabled_actions(tmp_path: Path) -> None:
 
 
 def test_route_catalog_rejects_missing_safety_flags(tmp_path: Path) -> None:
-    """Removing a required false flag cannot bypass route-catalog safety checks."""
+    """Purpose: Removing a required false flag cannot bypass route-catalog safety checks.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Source access, extraction, tool launch, execution, and output stay false.
+    Example: Run ``python -m pytest tests/test_route_preview.py -k test_route_catalog_rejects_missing_safety_flags``.
+    Related proof: ``services/route_preview.py`` and route schemas.
+    """
 
     _, routes = build_services(tmp_path / "source", tmp_path / "runtime")
     catalog = json.loads(routes.catalog_path.read_text(encoding="utf-8"))

@@ -35,11 +35,31 @@ GlobLookup = Callable[[Path, str], Iterable[Path]]
 
 
 class ToolDetectionError(ValueError):
-    """Raised when tool definitions weaken containment, privacy, or action gates."""
+    """Purpose: Raised when tool definitions weaken containment, privacy, or action gates.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ToolDetectionError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Detection cannot launch, install, update, repair, or expose private paths.
+    Example: Construct with ``instance = ToolDetectionError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+    """
 
 
 class ToolDetectionService:
-    """Check PATH and narrow standard locations while returning path-redacted evidence."""
+    """Purpose: Check PATH and narrow standard locations while returning path-redacted evidence.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ToolDetectionService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Detection cannot launch, install, update, repair, or expose private paths.
+    Example: Construct with ``instance = ToolDetectionService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+    """
 
     def __init__(
         self,
@@ -49,7 +69,17 @@ class ToolDetectionService:
         path_lookup: PathLookup | None = None,
         glob_lookup: GlobLookup | None = None,
     ) -> None:
-        """Capture platform and lookup adapters without executing any detected command."""
+        """Purpose: Capture platform and lookup adapters without executing any detected command.
+
+        Inputs: Caller-supplied ``root``, ``platform_name``, ``environ``, ``path_lookup``, ``glob_lookup`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It checks conditions.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         self.root = root or ROOT
         self.platform_name = self._normalize_platform(platform_name or sys.platform)
@@ -59,7 +89,17 @@ class ToolDetectionService:
         self.catalog_path = self.root / "config" / "tool_catalog.json"
 
     def tool_catalog(self) -> dict[str, Any]:
-        """Load and validate tool definitions, candidate containment, and safety flags."""
+        """Purpose: Load and validate tool definitions, candidate containment, and safety flags.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance.tool_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         catalog = json.loads(self.catalog_path.read_text(encoding="utf-8"))
         if not isinstance(catalog, dict):
@@ -83,7 +123,17 @@ class ToolDetectionService:
         return catalog
 
     def detection_catalog(self) -> dict[str, Any]:
-        """Return path-redacted presence results and keep all tool actions blocked."""
+        """Purpose: Return path-redacted presence results and keep all tool actions blocked.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance.detection_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         catalog = self.tool_catalog()
         providers = {provider["id"]: provider for provider in catalog["providers"]}
@@ -127,7 +177,17 @@ class ToolDetectionService:
         tool: dict[str, Any],
         providers: dict[str, dict[str, Any]],
     ) -> dict[str, Any]:
-        """Return one tool result without retaining or returning a resolved path."""
+        """Purpose: Return one tool result without retaining or returning a resolved path.
+
+        Inputs: Caller-supplied ``tool``, ``providers`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance._detect_tool(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         match: dict[str, Any] | None = None
         for command in tool["pathCommands"].get(self.platform_name, []):
@@ -183,7 +243,17 @@ class ToolDetectionService:
         }
 
     def _provider_root(self, provider: dict[str, Any]) -> Path | None:
-        """Resolve a private provider root for checking without exposing it publicly."""
+        """Purpose: Resolve a private provider root for checking without exposing it publicly.
+
+        Inputs: Caller-supplied ``provider`` values from the signature.
+        Outputs: Returns ``Path | None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance._provider_root(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         if provider["platform"] != self.platform_name:
             return None
@@ -199,7 +269,17 @@ class ToolDetectionService:
 
     @staticmethod
     def _validate_providers(providers: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-        """Require unique platform providers with exactly one valid root source."""
+        """Purpose: Require unique platform providers with exactly one valid root source.
+
+        Inputs: Caller-supplied ``providers`` values from the signature.
+        Outputs: Returns ``dict[str, dict[str, Any]]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance._validate_providers(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         provider_map: dict[str, dict[str, Any]] = {}
         for provider in providers:
@@ -227,7 +307,17 @@ class ToolDetectionService:
 
     @staticmethod
     def _validate_tools(tools: list[dict[str, Any]], providers: dict[str, dict[str, Any]]) -> None:
-        """Reject ambiguous tools, command paths, and uncontained candidate patterns."""
+        """Purpose: Reject ambiguous tools, command paths, and uncontained candidate patterns.
+
+        Inputs: Caller-supplied ``tools``, ``providers`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance._validate_tools(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         tool_ids: set[str] = set()
         candidate_ids: set[str] = set()
@@ -267,7 +357,17 @@ class ToolDetectionService:
 
     @staticmethod
     def _normalize_platform(platform_name: str) -> str:
-        """Map Python platform names to the catalog's closed platform vocabulary."""
+        """Purpose: Map Python platform names to the catalog's closed platform vocabulary.
+
+        Inputs: Caller-supplied ``platform_name`` values from the signature.
+        Outputs: Returns ``str``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Detection cannot launch, install, update, repair, or expose private paths.
+        Example: Call ``result = instance._normalize_platform(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_detection.py`` and tool schemas.
+        """
 
         normalized = platform_name.lower()
         if normalized.startswith("win"):

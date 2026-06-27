@@ -79,11 +79,13 @@ REQUIRED_FILES = [
     "schemas/tool-dry-run-policy.schema.json",
     "schemas/tool-dry-run.schema.json",
     "scripts/init_workspace.py",
+    "scripts/build_learning_guide.py",
     "scripts/check_explainability.py",
     "scripts/prepare_job.py",
     "scripts/request_job_cancel.py",
     "scripts/stage_intake.py",
     "state/current_status.json",
+    "state/learning_coverage.json",
     "state/pass_ledger.json",
     "state/source_manifest.json",
     "docs/ARCHITECTURE.md",
@@ -92,6 +94,7 @@ REQUIRED_FILES = [
     "docs/FILE_MAP.md",
     "docs/IMPLEMENTATION_GUIDE.md",
     "docs/LEARNING_RESOURCES.md",
+    "docs/LINE_BY_LINE_CODE_GUIDE.md",
     "docs/PASS_REPORT_TEMPLATE.md",
     "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
     "docs/REFERENCE_POLICY.md",
@@ -113,6 +116,8 @@ REQUIRED_FILES = [
     "docs/passes/PASS_013_REPORT.md",
     "docs/passes/PASS_014_REPORT.md",
     "docs/passes/PASS_015_REPORT.md",
+    "docs/passes/PASS_016_REPORT.md",
+    "schemas/learning-coverage.schema.json",
 ]
 
 REFERENCE_FOLDERS = [
@@ -133,7 +138,17 @@ FORBIDDEN_PRODUCT_TEXT = [
 
 
 def product_files() -> list[Path]:
-    """Return committed-style product files while excluding generated and reference data."""
+    """Purpose: Return committed-style product files while excluding generated and reference data.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[Path]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = product_files(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     ignored_parts = {".git", ".makers-anvil", "__pycache__", ".pytest_cache", "node_modules"}
     ignored_parts.update(REFERENCE_FOLDERS)
@@ -148,13 +163,33 @@ def product_files() -> list[Path]:
 
 
 def check_required_files() -> list[str]:
-    """Report every required architecture, schema, status, and pass file that is missing."""
+    """Purpose: Report every required architecture, schema, status, and pass file that is missing.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_required_files(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     return [f"missing required file: {name}" for name in REQUIRED_FILES if not (ROOT / name).exists()]
 
 
 def check_reference_policy() -> list[str]:
-    """Ensure both historical spellings of the reference-only folder remain ignored."""
+    """Purpose: Ensure both historical spellings of the reference-only folder remain ignored.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_reference_policy(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
     errors = []
@@ -165,7 +200,17 @@ def check_reference_policy() -> list[str]:
 
 
 def check_forbidden_text() -> list[str]:
-    """Reject personal paths and stale reference-build markers from product source."""
+    """Purpose: Reject personal paths and stale reference-build markers from product source.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_forbidden_text(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     errors: list[str] = []
     for path in product_files():
@@ -179,7 +224,17 @@ def check_forbidden_text() -> list[str]:
 
 
 def check_api() -> list[str]:
-    """Exercise read-only API contracts and confirm every mutation remains blocked."""
+    """Purpose: Exercise read-only API contracts and confirm every mutation remains blocked.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_api(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     api = MakersAnvilApi()
     errors: list[str] = []
@@ -207,12 +262,12 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-015":
-        errors.append("GET /api/state does not report PASS-015")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-015":
-        errors.append("GET /api/workspace/status does not report PASS-015")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-015":
-        errors.append("GET /api/passes/ledger does not report PASS-015 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-016":
+        errors.append("GET /api/state does not report PASS-016")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-016":
+        errors.append("GET /api/workspace/status does not report PASS-016")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-016":
+        errors.append("GET /api/passes/ledger does not report PASS-016 as latest")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -342,7 +397,17 @@ def check_api() -> list[str]:
 
 
 def check_status_records() -> list[str]:
-    """Keep status, ledger, settings, planning, request, and job policies synchronized."""
+    """Purpose: Keep status, ledger, settings, planning, request, and job policies synchronized.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_status_records(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     errors: list[str] = []
     status = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
@@ -356,14 +421,14 @@ def check_status_records() -> list[str]:
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-015":
-        errors.append("current status does not report PASS-015")
+    if status.get("currentPass", {}).get("id") != "PASS-016":
+        errors.append("current status does not report PASS-016")
     if status.get("trackPercentages", {}).get("realApp") != 35.0:
-        errors.append("real app completion is not 35.0 for PASS-015")
+        errors.append("real app completion is not 35.0 for PASS-016")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-015":
-        errors.append("pass ledger latest pass is not PASS-015")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-016":
+        errors.append("pass ledger latest pass is not PASS-016")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")
@@ -419,7 +484,17 @@ def check_status_records() -> list[str]:
 
 
 def _string_values(value: object) -> list[str]:
-    """Flatten nested JSON-like values so private-path scanning sees every string."""
+    """Purpose: Flatten nested JSON-like values so private-path scanning sees every string.
+
+    Inputs: Caller-supplied ``value`` values from the signature.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = instance._string_values(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     if isinstance(value, str):
         return [value]
@@ -431,7 +506,17 @@ def _string_values(value: object) -> list[str]:
 
 
 def check_portable_paths() -> list[str]:
-    """Fail when an API payload exposes the resolved source or user home path."""
+    """Purpose: Fail when an API payload exposes the resolved source or user home path.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_portable_paths(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     api = MakersAnvilApi()
     payloads = [
@@ -459,7 +544,17 @@ def check_portable_paths() -> list[str]:
 
 
 def check_json_files() -> list[str]:
-    """Parse every product JSON file so malformed contracts fail verification."""
+    """Purpose: Parse every product JSON file so malformed contracts fail verification.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = check_json_files(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     errors = []
     for path in product_files():
@@ -473,7 +568,17 @@ def check_json_files() -> list[str]:
 
 
 def main() -> int:
-    """Run all project gates, print one machine-readable result, and set the exit code."""
+    """Purpose: Run all project gates, print one machine-readable result, and set the exit code.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Verification never imports reference folders or changes user data.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_verify_project.py`` and CI workflow.
+    """
 
     checks = {
         "required_files": check_required_files(),

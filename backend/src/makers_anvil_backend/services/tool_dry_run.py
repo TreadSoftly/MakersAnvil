@@ -33,11 +33,31 @@ DRY_RUN_SAFETY_FLAGS = {
 
 
 class ToolDryRunError(ValueError):
-    """Raised when dry-run policy could create a runnable or incoherent plan."""
+    """Purpose: Raised when dry-run policy could create a runnable or incoherent plan.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ToolDryRunError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: A dry run is planning evidence and can never be executed as returned.
+    Example: Construct with ``instance = ToolDryRunError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+    """
 
 
 class ToolDryRunService:
-    """Join route, output, and tool evidence into non-runnable invocation plans."""
+    """Purpose: Join route, output, and tool evidence into non-runnable invocation plans.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ToolDryRunService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: A dry run is planning evidence and can never be executed as returned.
+    Example: Construct with ``instance = ToolDryRunService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+    """
 
     def __init__(
         self,
@@ -46,7 +66,17 @@ class ToolDryRunService:
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
     ) -> None:
-        """Bind coherent route, output, and tool services to semantic planning policy."""
+        """Purpose: Bind coherent route, output, and tool services to semantic planning policy.
+
+        Inputs: Caller-supplied ``root``, ``route_preview``, ``output_proof``, ``tool_detection`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: A dry run is planning evidence and can never be executed as returned.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+        """
 
         self.route_preview = route_preview or RoutePreviewService(root or ROOT)
         self.root = root or self.route_preview.root
@@ -55,7 +85,17 @@ class ToolDryRunService:
         self.policy_path = self.root / "config" / "tool_dry_run_policy.json"
 
     def dry_run_policy(self) -> dict[str, Any]:
-        """Validate route coverage, tool-family compatibility, and false safety state."""
+        """Purpose: Validate route coverage, tool-family compatibility, and false safety state.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: A dry run is planning evidence and can never be executed as returned.
+        Example: Call ``result = instance.dry_run_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+        """
 
         policy = json.loads(self.policy_path.read_text(encoding="utf-8"))
         if not isinstance(policy, dict):
@@ -87,7 +127,17 @@ class ToolDryRunService:
         output_snapshot: dict[str, Any] | None = None,
         tool_snapshot: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Return coherent semantic plans from one set of read-only snapshots."""
+        """Purpose: Return coherent semantic plans from one set of read-only snapshots.
+
+        Inputs: Caller-supplied ``route_snapshot``, ``output_snapshot``, ``tool_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: A dry run is planning evidence and can never be executed as returned.
+        Example: Call ``result = instance.plan_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+        """
 
         routes = route_snapshot if route_snapshot is not None else self.route_preview.preview_catalog()
         outputs = output_snapshot if output_snapshot is not None else self.output_proof.preview_catalog(routes)
@@ -133,7 +183,17 @@ class ToolDryRunService:
         }
 
     def _validate_route_plans(self, route_plans: list[dict[str, Any]]) -> None:
-        """Require exact route coverage and family-compatible preferred tool ids."""
+        """Purpose: Require exact route coverage and family-compatible preferred tool ids.
+
+        Inputs: Caller-supplied ``route_plans`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: A dry run is planning evidence and can never be executed as returned.
+        Example: Call ``result = instance._validate_route_plans(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+        """
 
         routes = {item["id"]: item for item in self.route_preview.route_catalog()["routes"]}
         tools = {item["id"]: item for item in self.tool_detection.tool_catalog()["tools"]}
@@ -163,7 +223,17 @@ class ToolDryRunService:
         selected_tool: dict[str, Any] | None,
         required_blockers: list[str],
     ) -> dict[str, Any]:
-        """Build one path-free semantic invocation while preserving every action gate."""
+        """Purpose: Build one path-free semantic invocation while preserving every action gate.
+
+        Inputs: Caller-supplied ``route``, ``output_bundle``, ``plan_policy``, ``selected_tool``, ``required_blockers`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: A dry run is planning evidence and can never be executed as returned.
+        Example: Call ``result = instance._build_plan(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_tool_dry_run.py`` and dry-run schemas.
+        """
 
         source = route["source"]
         logical_source = f"makers-anvil-intake://records/{source['intakeId']}"

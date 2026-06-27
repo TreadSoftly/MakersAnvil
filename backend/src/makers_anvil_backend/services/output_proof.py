@@ -35,11 +35,31 @@ EVIDENCE_TYPES = {"record", "log", "digest"}
 
 
 class OutputProofError(ValueError):
-    """Raised when output policy could invent, create, open, or overstate evidence."""
+    """Purpose: Raised when output policy could invent, create, open, or overstate evidence.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``OutputProofError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Planned output is never presented as produced or verified output.
+    Example: Construct with ``instance = OutputProofError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_output_proof.py`` and output schemas.
+    """
 
 
 class OutputProofService:
-    """Derive non-writing output plans from route previews and committed policy."""
+    """Purpose: Derive non-writing output plans from route previews and committed policy.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``OutputProofService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Planned output is never presented as produced or verified output.
+    Example: Construct with ``instance = OutputProofService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_output_proof.py`` and output schemas.
+    """
 
     def __init__(
         self,
@@ -47,7 +67,17 @@ class OutputProofService:
         route_preview: RoutePreviewService | None = None,
         workspace_config: WorkspaceConfigService | None = None,
     ) -> None:
-        """Bind route planning, workspace policy, and the non-writing output contract."""
+        """Purpose: Bind route planning, workspace policy, and the non-writing output contract.
+
+        Inputs: Caller-supplied ``root``, ``route_preview``, ``workspace_config`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         self.root = root or ROOT
         self.route_preview = route_preview or RoutePreviewService(self.root)
@@ -55,7 +85,17 @@ class OutputProofService:
         self.policy_path = self.root / "config" / "output_policy.json"
 
     def output_policy(self) -> dict[str, Any]:
-        """Load and validate output planning, route coverage, and false safety state."""
+        """Purpose: Load and validate output planning, route coverage, and false safety state.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Call ``result = instance.output_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         policy = json.loads(self.policy_path.read_text(encoding="utf-8"))
         if not isinstance(policy, dict):
@@ -87,7 +127,17 @@ class OutputProofService:
         return policy
 
     def preview_catalog(self, route_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Return planned bundles and incomplete proof items for one route snapshot."""
+        """Purpose: Return planned bundles and incomplete proof items for one route snapshot.
+
+        Inputs: Caller-supplied ``route_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Call ``result = instance.preview_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         routes = route_snapshot if route_snapshot is not None else self.route_preview.preview_catalog()
         policy = self.output_policy()
@@ -126,7 +176,17 @@ class OutputProofService:
 
     @staticmethod
     def _validate_bundles(bundles: list[dict[str, Any]]) -> None:
-        """Reject ambiguous routes, malformed artifacts, and unsupported artifact roles."""
+        """Purpose: Reject ambiguous routes, malformed artifacts, and unsupported artifact roles.
+
+        Inputs: Caller-supplied ``bundles`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Call ``result = instance._validate_bundles(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         bundle_ids: set[str] = set()
         route_ids: set[str] = set()
@@ -159,7 +219,17 @@ class OutputProofService:
 
     @staticmethod
     def _validate_proof(proof: list[dict[str, Any]]) -> None:
-        """Require unique proof definitions with supported evidence types."""
+        """Purpose: Require unique proof definitions with supported evidence types.
+
+        Inputs: Caller-supplied ``proof`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Call ``result = instance._validate_proof(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         if not all(isinstance(item, dict) for item in proof):
             raise OutputProofError("proof definitions must be structured records")
@@ -182,7 +252,17 @@ class OutputProofService:
         bundle_policy: dict[str, Any],
         policy: dict[str, Any],
     ) -> dict[str, Any]:
-        """Translate one route preview into a bundle plan with no completed evidence."""
+        """Purpose: Translate one route preview into a bundle plan with no completed evidence.
+
+        Inputs: Caller-supplied ``route``, ``bundle_policy``, ``policy`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Planned output is never presented as produced or verified output.
+        Example: Call ``result = instance._build_bundle(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_output_proof.py`` and output schemas.
+        """
 
         blockers = list(dict.fromkeys([
             *route["readiness"]["blockers"],

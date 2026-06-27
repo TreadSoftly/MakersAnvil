@@ -16,7 +16,17 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_reference_folder_is_not_tracked_product_source() -> None:
-    """All planning and previous-app reference roots remain outside product history."""
+    """Purpose: All planning and previous-app reference roots remain outside product history.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_reference_folder_is_not_tracked_product_source``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
 
@@ -26,7 +36,17 @@ def test_reference_folder_is_not_tracked_product_source() -> None:
 
 
 def test_frontend_has_no_mutating_api_calls() -> None:
-    """Browser code may fetch state but cannot call mutation or tool routes."""
+    """Purpose: Browser code may fetch state but cannot call mutation or tool routes.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_frontend_has_no_mutating_api_calls``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     app_js = (ROOT / "frontend" / "public" / "assets" / "app.js").read_text(encoding="utf-8")
 
@@ -37,7 +57,17 @@ def test_frontend_has_no_mutating_api_calls() -> None:
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
-    """Historical reference-build identifiers cannot leak into product runtime code."""
+    """Purpose: Historical reference-build identifiers cannot leak into product runtime code.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_reference_material_names_are_not_runtime_dependencies``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     product_files = [
         path
@@ -62,22 +92,42 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
 
 
 def test_durable_status_records_are_current_and_relative() -> None:
-    """Current status and pass history agree on the active bounded pass."""
+    """Purpose: Current status and pass history agree on the active bounded pass.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_durable_status_records_are_current_and_relative``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-015"
+    assert current["currentPass"]["id"] == "PASS-016"
     assert current["trackPercentages"]["realApp"] == 35.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-015"
+    assert ledger["passes"][-1]["id"] == "PASS-016"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
-    """Committed defaults preserve user-data portability and disabled actions."""
+    """Purpose: Committed defaults preserve user-data portability and disabled actions.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_default_settings_are_safe_and_relative``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -91,7 +141,17 @@ def test_default_settings_are_safe_and_relative() -> None:
 
 
 def test_product_source_contains_no_personal_machine_paths() -> None:
-    """Tracked product text contains no username, home, or cloud-folder path."""
+    """Purpose: Tracked product text contains no username, home, or cloud-folder path.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It checks conditions, then iterates over bounded records.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_product_source_contains_no_personal_machine_paths``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     markers = [
         "C:" + "\\Users\\",
@@ -123,7 +183,17 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
 
 
 def test_intake_policy_never_enables_data_or_action_mutations() -> None:
-    """Every intake safety flag remains false in committed policy."""
+    """Purpose: Every intake safety flag remains false in committed policy.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_intake_policy_never_enables_data_or_action_mutations``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -135,7 +205,17 @@ def test_intake_policy_never_enables_data_or_action_mutations() -> None:
 
 
 def test_route_catalog_is_preview_only_and_action_free() -> None:
-    """Committed route definitions cannot enable source access or route actions."""
+    """Purpose: Committed route definitions cannot enable source access or route actions.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_route_catalog_is_preview_only_and_action_free``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -148,7 +228,17 @@ def test_route_catalog_is_preview_only_and_action_free() -> None:
 
 
 def test_output_policy_is_logical_preview_only_and_action_free() -> None:
-    """Committed output policy uses logical storage and cannot claim produced proof."""
+    """Purpose: Committed output policy uses logical storage and cannot claim produced proof.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_output_policy_is_logical_preview_only_and_action_free``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -162,7 +252,17 @@ def test_output_policy_is_logical_preview_only_and_action_free() -> None:
 
 
 def test_tool_catalog_is_read_only_and_contains_no_personal_roots() -> None:
-    """Tool candidates use generic providers and cannot claim process or software actions."""
+    """Purpose: Tool candidates use generic providers and cannot claim process or software actions.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_tool_catalog_is_read_only_and_contains_no_personal_roots``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -178,7 +278,17 @@ def test_tool_catalog_is_read_only_and_contains_no_personal_roots() -> None:
 
 
 def test_tool_dry_run_policy_is_non_runnable_and_path_free() -> None:
-    """Dry-run policy covers routes while every command, path, handoff, and action stays false."""
+    """Purpose: Dry-run policy covers routes while every command, path, handoff, and action stays false.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_tool_dry_run_policy_is_non_runnable_and_path_free``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -196,7 +306,17 @@ def test_tool_dry_run_policy_is_non_runnable_and_path_free() -> None:
 
 
 def test_execution_gate_policy_is_single_route_and_side_effect_free() -> None:
-    """Execution policy defines complete evidence while authorization and execution stay false."""
+    """Purpose: Execution policy defines complete evidence while authorization and execution stay false.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_execution_gate_policy_is_single_route_and_side_effect_free``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -215,7 +335,17 @@ def test_execution_gate_policy_is_single_route_and_side_effect_free() -> None:
 
 
 def test_execution_request_policy_is_preview_only_and_writes_nothing() -> None:
-    """Request policy models consent and audit requirements while all effects remain false."""
+    """Purpose: Request policy models consent and audit requirements while all effects remain false.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_execution_request_policy_is_preview_only_and_writes_nothing``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 
@@ -239,7 +369,17 @@ def test_execution_request_policy_is_preview_only_and_writes_nothing() -> None:
 
 
 def test_job_workspace_policy_allows_only_contained_local_record_writes() -> None:
-    """Prepared jobs use app-owned storage while every execution-side effect stays false."""
+    """Purpose: Prepared jobs use app-owned storage while every execution-side effect stays false.
+
+    Inputs: No explicit parameters; the test builds its own isolated example state.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Reference material and one developer's machine can never become dependencies.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_job_workspace_policy_allows_only_contained_local_record_writes``.
+    Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
+    """
 
     import json
 

@@ -20,11 +20,19 @@
   <body>
     <div class="app-shell">
       <!-- Persistent navigation keeps the principal maker surfaces one action away. -->
+      <!-- Block purpose: The aside named "rail" groups one semantic workbench responsibility.
+           How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+           Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+           Safety: Structure and local view controls do not enable any blocked maker operation. -->
       <aside class="rail" aria-label="Primary workbench navigation">
         <div class="rail-brand" aria-label="Makers Anvil">
           <img src="/assets/mark.svg" alt="" class="rail-mark">
           <span>MA</span>
         </div>
+        <!-- Block purpose: The nav named "rail-nav" groups one semantic workbench responsibility.
+             How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+             Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+             Safety: Structure and local view controls do not enable any blocked maker operation. -->
         <nav class="rail-nav">
           <button class="rail-link is-active" type="button" data-view="workflow" data-focus="workbench" aria-label="Workbench">Workbench</button>
           <button class="rail-link" type="button" data-view="workflow" data-focus="intake-zone">Intake</button>
@@ -41,6 +49,10 @@
       </aside>
 
       <!-- Product identity, quick navigation, completion, and the only live command. -->
+      <!-- Block purpose: The header named "topbar" groups one semantic workbench responsibility.
+           How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+           Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+           Safety: Structure and local view controls do not enable any blocked maker operation. -->
       <header class="topbar">
         <div class="brand">
           <img src="/assets/mark.svg" alt="" class="brand-mark">
@@ -73,10 +85,18 @@
         <button id="refresh" class="icon-button" type="button" title="Refresh local state" aria-label="Refresh local state">&#8635;</button>
       </header>
 
+      <!-- Block purpose: The main named "workbench" groups one semantic workbench responsibility.
+           How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+           Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+           Safety: Structure and local view controls do not enable any blocked maker operation. -->
       <main class="workbench" id="workbench">
         <div class="workspace-column">
           <!-- Source work begins with intake truth and one selected metadata record. -->
           <div class="source-deck">
+            <!-- Block purpose: The section named "work-zone intake-zone" groups one semantic workbench responsibility.
+                 How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                 Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                 Safety: Structure and local view controls do not enable any blocked maker operation. -->
             <section class="work-zone intake-zone" id="intake-zone" data-search-key="intake add source files">
               <div class="zone-head">
                 <div>
@@ -99,6 +119,10 @@
               </div>
             </section>
 
+            <!-- Block purpose: The section named "work-zone selected-input-zone" groups one semantic workbench responsibility.
+                 How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                 Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                 Safety: Structure and local view controls do not enable any blocked maker operation. -->
             <section class="work-zone selected-input-zone" id="selected-input-zone" data-search-key="selected input files preview">
               <div class="zone-head">
                 <div>
@@ -119,6 +143,10 @@
           </div>
 
           <!-- Tool presence is operational context; cards expose proof but no launch. -->
+          <!-- Block purpose: The section named "work-zone tools-zone" groups one semantic workbench responsibility.
+               How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+               Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+               Safety: Structure and local view controls do not enable any blocked maker operation. -->
           <section class="work-zone tools-zone" id="tools-zone" data-search-key="tools software detection">
             <div class="zone-head tools-head">
               <div>
@@ -141,6 +169,10 @@
           </section>
 
           <!-- One stable command deck changes internal views without resizing the shell. -->
+          <!-- Block purpose: The section named "command-deck" groups one semantic workbench responsibility.
+               How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+               Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+               Safety: Structure and local view controls do not enable any blocked maker operation. -->
           <section class="command-deck" aria-label="Workflow command deck">
             <div class="mode-tabs" role="tablist" aria-label="Workbench views">
               <button id="workflow-tab" class="mode-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="workflow-surface" data-workbench-view="workflow">Work Flow</button>
@@ -149,6 +181,10 @@
             </div>
 
             <div id="workflow-surface" class="deck-surface" role="tabpanel" aria-labelledby="workflow-tab" data-view-panel="workflow">
+              <!-- Block purpose: The section named "deck-column" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="deck-column" aria-label="Work plan preview">
                 <div class="deck-head">
                   <h3>Work plan</h3>
@@ -162,6 +198,10 @@
                 </div>
                 <div id="route-preview-list" class="route-preview-list" aria-live="polite"></div>
               </section>
+              <!-- Block purpose: The section named "deck-column" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="deck-column" aria-label="Prepared workspace">
                 <div class="deck-head">
                   <h3>Job workspace</h3>
@@ -179,6 +219,10 @@
             </div>
 
             <div id="plan-surface" class="deck-surface" role="tabpanel" aria-labelledby="plans-tab" data-view-panel="plans" hidden>
+              <!-- Block purpose: The section named "deck-column" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="deck-column" aria-label="Tool setup preview">
                 <div class="deck-head">
                   <h3>Tool setup preview</h3>
@@ -193,6 +237,10 @@
                 <span id="tool-dry-run-mode" class="sr-only">loading</span>
                 <div id="tool-dry-run-list" class="tool-dry-run-list" aria-live="polite"></div>
               </section>
+              <!-- Block purpose: The section named "deck-column" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="deck-column" aria-label="Execution request preview">
                 <div class="deck-head">
                   <h3>Request preview</h3>
@@ -210,6 +258,10 @@
             </div>
 
             <div id="dev-surface" class="deck-surface dev-surface" role="tabpanel" aria-labelledby="dev-tab" data-view-panel="dev" hidden>
+              <!-- Block purpose: The section named "dev-block" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="dev-block" aria-label="Workspace status">
                 <div class="deck-head"><h3>Workspace truth</h3><span id="workspace-state" class="badge unknown">unknown</span></div>
                 <div class="status-rows">
@@ -218,6 +270,10 @@
                   <p><strong>Source</strong><span id="status-source">loading</span></p>
                 </div>
               </section>
+              <!-- Block purpose: The section named "dev-block" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="dev-block" aria-label="Local workspace settings">
                 <div class="deck-head"><h3>Local workspace</h3><span id="layout-state" class="badge unknown">unknown</span></div>
                 <div class="status-rows">
@@ -228,6 +284,10 @@
                   <p><strong>Init</strong><span id="runtime-init">loading</span></p>
                 </div>
               </section>
+              <!-- Block purpose: The section named "dev-block" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="dev-block" aria-label="Execution gate status">
                 <div class="deck-head"><h3>Execution gates</h3><span id="execution-gate-state" class="badge unknown">unknown</span></div>
                 <div class="status-rows">
@@ -239,10 +299,18 @@
                 </div>
                 <div id="execution-gate-list" class="execution-gate-list" aria-live="polite"></div>
               </section>
+              <!-- Block purpose: The section named "dev-block dev-wide" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="dev-block dev-wide" aria-label="Delivery tracks and capabilities">
                 <div id="tracks" class="evidence-grid" aria-label="Build tracks"></div>
                 <div id="capabilities" class="evidence-grid" aria-label="Capabilities"></div>
               </section>
+              <!-- Block purpose: The section named "dev-block dev-wide" groups one semantic workbench responsibility.
+                   How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+                   Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+                   Safety: Structure and local view controls do not enable any blocked maker operation. -->
               <section class="dev-block dev-wide" aria-label="Blocked actions">
                 <div class="deck-head"><h3>Blocked actions</h3><span class="badge blocked">blocked</span></div>
                 <ul id="blocked-actions" class="blocked-list"></ul>
@@ -252,6 +320,10 @@
         </div>
 
         <!-- The inspector keeps selected source, expected output, and proof together. -->
+        <!-- Block purpose: The aside named "work-zone proof-inspector" groups one semantic workbench responsibility.
+             How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+             Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+             Safety: Structure and local view controls do not enable any blocked maker operation. -->
         <aside class="work-zone proof-inspector" id="proof-inspector" aria-label="Work preview and proof" data-search-key="output proof work preview">
           <div class="zone-head inspector-head">
             <div>
@@ -271,6 +343,10 @@
             </div>
           </div>
 
+          <!-- Block purpose: The section named "inspector-section" groups one semantic workbench responsibility.
+               How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+               Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+               Safety: Structure and local view controls do not enable any blocked maker operation. -->
           <section class="inspector-section" aria-label="Latest output proof">
             <div class="deck-head">
               <h3>Latest output proof</h3>
@@ -285,6 +361,10 @@
             <div id="output-bundle-list" class="output-bundle-list" aria-live="polite"></div>
           </section>
 
+          <!-- Block purpose: The section named "inspector-section proof-boundary" groups one semantic workbench responsibility.
+               How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
+               Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
+               Safety: Structure and local view controls do not enable any blocked maker operation. -->
           <section class="inspector-section proof-boundary" aria-label="Current proof boundary">
             <div class="deck-head"><h3>Current boundary</h3><span class="badge blocked">blocked</span></div>
             <p>Planning data only. No selected-file handoff, command, process, output artifact, or proof capture is enabled.</p>

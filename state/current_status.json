@@ -7,10 +7,10 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-015",
-    "title": "preview-first maker workbench shell and responsive dashboard foundation",
+    "id": "PASS-016",
+    "title": "complete instructional source and line-by-line learning layer",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_015_REPORT.md"
+    "reportPath": "docs/passes/PASS_016_REPORT.md"
   },
   "trackPercentages": {
     "realApp": 35.0,
@@ -26,7 +26,9 @@
     "buildStatusPath": "docs/BUILD_STATUS.md",
     "continueProtocolPath": "docs/CONTINUE_PROTOCOL.md",
     "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
-    "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md"
+    "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
+    "lineByLineGuidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
+    "learningCoveragePath": "state/learning_coverage.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -78,6 +80,10 @@
     "Source intake truth, selected-input metadata, tool inventory, work plans, job workspaces, expected output, and latest proof have dedicated synchronized work zones.",
     "Desktop workbench layout fits 1366x768 and 1280x720 without page overflow; narrow screens reflow without horizontal overflow.",
     "Browser upload and every operational command remain visibly blocked while read-only planning evidence stays available.",
+    "Every Python class, constructor, function, method, helper, and test carries all nine required teaching fields.",
+    "Every top-level JavaScript function and every CSS or semantic HTML block carries locally visible teaching documentation.",
+    "A generated line-numbered guide explains every physical implementation and structured-contract line, including comment-free JSON.",
+    "Exact source hashes and line totals make stale or incomplete learning coverage fail verification.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -103,7 +109,7 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-016",
+    "id": "PASS-017",
     "title": "explicit authorization and command preview foundation",
     "claimState": "planned"
   }

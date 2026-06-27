@@ -2,7 +2,7 @@
 
 ## Current Pass
 
-PASS-015 - preview-first maker workbench shell and responsive dashboard foundation.
+PASS-016 - complete instructional source and line-by-line learning layer.
 
 ## Track Percentages
 
@@ -89,6 +89,7 @@ PASS-015 - preview-first maker workbench shell and responsive dashboard foundati
 - PASS-013 explainability covers 113 files; verifier, 86 tests, six schema validations, live/isolated script and HTTP smoke, empty/populated desktop/mobile browser checks, and Windows/Ubuntu/macOS CI passed.
 - PASS-014 preserves the accepted previous-app workbench direction in tracked truth, adds a file-by-file source walkthrough, and replaces weak one-line module headers with machine-enforced structured context. Runtime capability remains `32.5000%` because this remediation pass enables no new action.
 - PASS-015 replaces the long equal-weight status stack with a preview-first workbench: persistent rail, compact command bar, intake/selected-input deck, tool inventory, stable Work Flow/Plans/Dev command deck, output-proof inspector, and responsive mobile flow. Navigation is client-side only and all operational actions remain blocked.
+- PASS-016 expands every Python and JavaScript component into a nine-field teaching contract, adds purpose/mechanism/example/safety comments to every CSS and semantic HTML block, and generates hash-checked numbered explanations for every physical implementation and contract line. Runtime capability remains `35.0000%` because this remediation pass enables no new action.
 
 ## Blocked Or Not Proven
 
@@ -114,4 +115,4 @@ PASS-015 - preview-first maker workbench shell and responsive dashboard foundati
 
 ## Next Pass
 
-PASS-016 - explicit authorization and command preview foundation.
+PASS-017 - explicit authorization and command preview foundation.

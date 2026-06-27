@@ -27,9 +27,19 @@ from makers_anvil_backend.services.workspace_status import WorkspaceStatusServic
 
 
 class AppStateService:
-    """Build deterministic state records for the browser dashboard."""
+    """Purpose: Build deterministic state records for the browser dashboard.
 
-    api_build = "makers-anvil-real-pass-015-preview-first-workbench"
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``AppStateService`` exposing the state and operations defined below.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+    Example: Construct with ``instance = AppStateService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+    """
+
+    api_build = "makers-anvil-real-pass-016-line-by-line-learning"
 
     def __init__(
         self,
@@ -44,7 +54,17 @@ class AppStateService:
         execution_request: ExecutionRequestService | None = None,
         job_workspace: JobWorkspaceService | None = None,
     ) -> None:
-        """Compose injected or default services so one request uses coherent snapshots."""
+        """Purpose: Compose injected or default services so one request uses coherent snapshots.
+
+        Inputs: Caller-supplied ``workspace_status``, ``workspace_config``, ``intake_catalog``, ``route_preview``, ``output_proof``, ``tool_detection``, ``tool_dry_run``, ``execution_gate``, ``execution_request``, ``job_workspace`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
@@ -71,7 +91,17 @@ class AppStateService:
         )
 
     def health(self) -> dict[str, Any]:
-        """Describe the live API build without claiming that mutations are enabled."""
+        """Purpose: Describe the live API build without claiming that mutations are enabled.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.health(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return {
             "schemaVersion": "makers-anvil.api.health.v1",
@@ -84,7 +114,17 @@ class AppStateService:
         }
 
     def state(self) -> dict[str, Any]:
-        """Compose the complete dashboard record from durable and runtime services."""
+        """Purpose: Compose the complete dashboard record from durable and runtime services.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.state(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         current_status = self._workspace_status.current_status()
         intake_catalog = self._intake_catalog.catalog()
@@ -118,77 +158,227 @@ class AppStateService:
         }
 
     def workspace_status(self) -> dict[str, Any]:
-        """Return committed current-pass truth through the workspace status service."""
+        """Purpose: Return committed current-pass truth through the workspace status service.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.workspace_status(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._workspace_status.workspace_status()
 
     def pass_ledger(self) -> dict[str, Any]:
-        """Return the ordered durable pass history without modifying it."""
+        """Purpose: Return the ordered durable pass history without modifying it.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.pass_ledger(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._workspace_status.pass_ledger()
 
     def workspace_config(self) -> dict[str, Any]:
-        """Return safe workspace policy with resolved personal paths withheld."""
+        """Purpose: Return safe workspace policy with resolved personal paths withheld.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.workspace_config(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._workspace_config.config()
 
     def workspace_layout(self) -> dict[str, Any]:
-        """Report app-owned directory presence using relative and logical identifiers."""
+        """Purpose: Report app-owned directory presence using relative and logical identifiers.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.workspace_layout(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._workspace_config.layout()
 
     def intake_policy(self) -> dict[str, Any]:
-        """Return metadata-intake rules and their blocked action boundaries."""
+        """Purpose: Return metadata-intake rules and their blocked action boundaries.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.intake_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._intake_catalog.policy_response()
 
     def intake_catalog(self) -> dict[str, Any]:
-        """Return validated app-owned intake records through a read-only response."""
+        """Purpose: Return validated app-owned intake records through a read-only response.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.intake_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._intake_catalog.catalog()
 
     def route_preview(self) -> dict[str, Any]:
-        """Return metadata-derived candidate steps while every action stays disabled."""
+        """Purpose: Return metadata-derived candidate steps while every action stays disabled.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.route_preview(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._route_preview.preview_catalog()
 
     def output_proof(self) -> dict[str, Any]:
-        """Return planned output bundles and explicitly incomplete proof state."""
+        """Purpose: Return planned output bundles and explicitly incomplete proof state.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.output_proof(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._output_proof.preview_catalog()
 
     def tool_detection(self) -> dict[str, Any]:
-        """Return path-redacted tool presence without executing or changing software."""
+        """Purpose: Return path-redacted tool presence without executing or changing software.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.tool_detection(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._tool_detection.detection_catalog()
 
     def tool_dry_run(self) -> dict[str, Any]:
-        """Return semantic route/tool/output plans with every action still blocked."""
+        """Purpose: Return semantic route/tool/output plans with every action still blocked.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.tool_dry_run(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._tool_dry_run.plan_catalog()
 
     def execution_gates(self) -> dict[str, Any]:
-        """Return one route's required evidence while execution remains disabled."""
+        """Purpose: Return one route's required evidence while execution remains disabled.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.execution_gates(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._execution_gate.gate_catalog()
 
     def execution_request_preview(self) -> dict[str, Any]:
-        """Return path-free intent and an empty audit plan without persisting either."""
+        """Purpose: Return path-free intent and an empty audit plan without persisting either.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.execution_request_preview(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._execution_request.preview_catalog()
 
     def job_workspace_policy(self) -> dict[str, Any]:
-        """Return contained job policy and local-script boundaries through a read-only API."""
+        """Purpose: Return contained job policy and local-script boundaries through a read-only API.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.job_workspace_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._job_workspace.policy_response()
 
     def job_workspace_catalog(self) -> dict[str, Any]:
-        """Return prepared job and cancellation records without exposing private paths."""
+        """Purpose: Return prepared job and cancellation records without exposing private paths.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance.job_workspace_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return self._job_workspace.catalog()
 
     def _tracks(self) -> list[dict[str, Any]]:
-        """Describe platform delivery tracks without claiming untested runtime support."""
+        """Purpose: Describe platform delivery tracks without claiming untested runtime support.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``list[dict[str, Any]]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance._tracks(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return [
             {
@@ -212,7 +402,17 @@ class AppStateService:
         ]
 
     def _capabilities(self) -> list[dict[str, Any]]:
-        """List visible capability truth while keeping every action control disabled."""
+        """Purpose: List visible capability truth while keeping every action control disabled.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``list[dict[str, Any]]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
+        Example: Call ``result = instance._capabilities(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
+        """
 
         return [
             {

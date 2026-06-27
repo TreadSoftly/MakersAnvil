@@ -27,7 +27,17 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 def build_services(root: Path, data_root: Path, detected_command: str | None = None) -> tuple[IntakeCatalogService, ToolDryRunService]:
-    """Build an isolated planning graph with optional injected PATH detection."""
+    """Purpose: Build an isolated planning graph with optional injected PATH detection.
+
+    Inputs: Caller-supplied ``root``, ``data_root``, ``detected_command`` values from the signature.
+    Outputs: Returns ``tuple[IntakeCatalogService, ToolDryRunService]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Call ``result = instance.build_services(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     config_root = root / "config"
     config_root.mkdir(parents=True)
@@ -47,7 +57,17 @@ def build_services(root: Path, data_root: Path, detected_command: str | None = N
     outputs = OutputProofService(root, routes, workspace)
 
     def path_lookup(command: str, path: str | None) -> str | None:
-        """Return one private fake result without running the named command."""
+        """Purpose: Return one private fake result without running the named command.
+
+        Inputs: Caller-supplied ``command``, ``path`` values from the signature.
+        Outputs: Returns ``str | None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+        Example: Call ``result = instance.path_lookup(...)`` with values satisfying the documented inputs.
+        Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+        """
 
         return str(root.parent / "private-bin" / command) if command == detected_command else None
 
@@ -56,7 +76,17 @@ def build_services(root: Path, data_root: Path, detected_command: str | None = N
 
 
 def test_mesh_plan_selects_cura_without_building_or_running_a_command(tmp_path: Path) -> None:
-    """A detected preferred slicer yields semantic references but no runnable command."""
+    """Purpose: A detected preferred slicer yields semantic references but no runnable command.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Run ``python -m pytest tests/test_tool_dry_run.py -k test_mesh_plan_selects_cura_without_building_or_running_a_command``.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     intake, planner = build_services(tmp_path / "source", tmp_path / "runtime", "UltiMaker-Cura.exe")
     source = tmp_path / "fixture.stl"
@@ -88,7 +118,17 @@ def test_mesh_plan_selects_cura_without_building_or_running_a_command(tmp_path: 
 
 
 def test_missing_detected_tool_keeps_selection_and_execution_not_proven(tmp_path: Path) -> None:
-    """A route remains planned and blocked when no preferred tool is detected."""
+    """Purpose: A route remains planned and blocked when no preferred tool is detected.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Run ``python -m pytest tests/test_tool_dry_run.py -k test_missing_detected_tool_keeps_selection_and_execution_not_proven``.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     intake, planner = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "fixture.fcstd"
@@ -105,7 +145,17 @@ def test_missing_detected_tool_keeps_selection_and_execution_not_proven(tmp_path
 
 
 def test_unconfigured_tool_family_is_reported_without_guessing(tmp_path: Path) -> None:
-    """Document planning names the missing catalog coverage instead of inventing a viewer."""
+    """Purpose: Document planning names the missing catalog coverage instead of inventing a viewer.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Run ``python -m pytest tests/test_tool_dry_run.py -k test_unconfigured_tool_family_is_reported_without_guessing``.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     intake, planner = build_services(tmp_path / "source", tmp_path / "runtime")
     source = tmp_path / "reference.pdf"
@@ -120,7 +170,17 @@ def test_unconfigured_tool_family_is_reported_without_guessing(tmp_path: Path) -
 
 
 def test_policy_rejects_enabled_or_missing_safety_flags(tmp_path: Path) -> None:
-    """Dry-run policy cannot silently gain command, handoff, execution, or write behavior."""
+    """Purpose: Dry-run policy cannot silently gain command, handoff, execution, or write behavior.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Run ``python -m pytest tests/test_tool_dry_run.py -k test_policy_rejects_enabled_or_missing_safety_flags``.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     _, planner = build_services(tmp_path / "source", tmp_path / "runtime")
     policy = json.loads(planner.policy_path.read_text(encoding="utf-8"))
@@ -137,7 +197,17 @@ def test_policy_rejects_enabled_or_missing_safety_flags(tmp_path: Path) -> None:
 
 
 def test_policy_rejects_tool_outside_required_family(tmp_path: Path) -> None:
-    """A preferred tool must advertise the family required by its route."""
+    """Purpose: A preferred tool must advertise the family required by its route.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Commands, resolved paths, file handoff, process launch, and writes stay absent.
+    Example: Run ``python -m pytest tests/test_tool_dry_run.py -k test_policy_rejects_tool_outside_required_family``.
+    Related proof: ``services/tool_dry_run.py`` and dry-run schemas.
+    """
 
     _, planner = build_services(tmp_path / "source", tmp_path / "runtime")
     policy = json.loads(planner.policy_path.read_text(encoding="utf-8"))

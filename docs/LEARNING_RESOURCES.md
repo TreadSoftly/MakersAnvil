@@ -6,6 +6,8 @@ Start with local code, schemas, tests, and the implementation guide because they
 
 For each topic, read the local files first, run the named tests, then use the external reference when a language or platform concept needs more background.
 
+For any source file, open its section in `docs/LINE_BY_LINE_CODE_GUIDE.md` to study the exact source text and plain-language explanation at matching line numbers. The file hash and counts in `state/learning_coverage.json` prove that the guide matches the current source. Run `python scripts/build_learning_guide.py --check` before trusting an older local copy.
+
 ## Python Structure And Documentation
 
 Local study path:
@@ -14,6 +16,7 @@ Local study path:
 2. `backend/src/makers_anvil_backend/services/` for dependency injection and focused services.
 3. `tests/test_api.py` and the service tests for executable usage examples.
 4. `scripts/check_explainability.py` for AST-based docstring enforcement.
+5. `scripts/build_learning_guide.py` for the rules that produce per-line context-aware explanations.
 
 References:
 
@@ -82,8 +85,9 @@ Local study path:
 1. Read the test whose name matches the capability.
 2. Run one focused test with `python -m pytest tests/test_name.py -q`.
 3. Run `python scripts/check_explainability.py`.
-4. Run `python scripts/verify_project.py`.
-5. Run `python -m pytest -q`.
+4. Run `python scripts/build_learning_guide.py --check`.
+5. Run `python scripts/verify_project.py`.
+6. Run `python -m pytest -q`.
 
 References:
 
@@ -115,4 +119,3 @@ References:
 8. Use `state/source_manifest.json` when a file's role is unclear.
 
 External videos may help with general Python, HTTP, JavaScript, Git, or JSON Schema concepts, but links can age and teaching quality varies. Prefer the official references above and the repository's executable tests for current project truth.
-

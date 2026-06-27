@@ -15,7 +15,17 @@ from enum import StrEnum
 
 
 class ClaimState(StrEnum):
-    """Truth states allowed in product code and user-facing state records."""
+    """Purpose: Truth states allowed in product code and user-facing state records.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ClaimState`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: A closed enum prevents optimistic or invented truth labels.
+    Example: Construct with ``instance = ClaimState(...)`` using values described by ``__init__``.
+    Related proof: ``schemas/claim-state.schema.json`` and verifier schema checks.
+    """
 
     PROVEN = "proven"
     DETECTED = "detected"
@@ -32,6 +42,16 @@ ALLOWED_CLAIM_STATES: tuple[str, ...] = tuple(state.value for state in ClaimStat
 
 
 def is_claim_state(value: str) -> bool:
-    """Return whether a string is an approved Makers Anvil claim state."""
+    """Purpose: Return whether a string is an approved Makers Anvil claim state.
+
+    Inputs: Caller-supplied ``value`` values from the signature.
+    Outputs: Returns ``bool``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: A closed enum prevents optimistic or invented truth labels.
+    Example: Call ``result = instance.is_claim_state(...)`` with values satisfying the documented inputs.
+    Related proof: ``schemas/claim-state.schema.json`` and verifier schema checks.
+    """
 
     return value in ALLOWED_CLAIM_STATES

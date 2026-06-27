@@ -18,6 +18,11 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+try:
+    from scripts import build_learning_guide
+except (ImportError, ModuleNotFoundError):  # Direct execution places ``scripts`` first.
+    import build_learning_guide  # type: ignore[no-redef]
+
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "state" / "source_manifest.json"
@@ -28,6 +33,8 @@ REQUIRED_GUIDES = {
     "passReportTemplatePath": "docs/PASS_REPORT_TEMPLATE.md",
     "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
     "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
+    "lineByLineGuidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
+    "learningCoveragePath": "state/learning_coverage.json",
 }
 REQUIRED_CONTEXT_LABELS = (
     "Purpose:",
@@ -39,10 +46,31 @@ REQUIRED_CONTEXT_LABELS = (
     "Failure behavior:",
     "Related proof:",
 )
+REQUIRED_COMPONENT_LABELS = (
+    "Purpose:",
+    "Inputs:",
+    "Outputs:",
+    "How it works:",
+    "Side effects:",
+    "Failure behavior:",
+    "Safety:",
+    "Example:",
+    "Related proof:",
+)
 
 
 def tracked_files() -> list[str]:
-    """Return tracked and pending product paths, or manifest paths outside Git."""
+    """Purpose: Return tracked and pending product paths, or manifest paths outside Git.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = tracked_files(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     if (ROOT / ".git").exists():
         result = subprocess.run(
@@ -58,13 +86,33 @@ def tracked_files() -> list[str]:
 
 
 def load_manifest() -> dict[str, Any]:
-    """Load the machine-readable explanation and ownership record."""
+    """Purpose: Load the machine-readable explanation and ownership record.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = load_manifest(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     return json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
 
 
 def check_manifest_coverage() -> list[str]:
-    """Require one detailed, unique manifest entry for every product file."""
+    """Purpose: Require one detailed, unique manifest entry for every product file.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_manifest_coverage(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     manifest = load_manifest()
     entries = manifest.get("files", [])
@@ -99,7 +147,17 @@ def check_manifest_coverage() -> list[str]:
 
 
 def check_python_docstrings() -> list[str]:
-    """Require structured module context and component docs throughout Python."""
+    """Purpose: Require structured module context and component docs throughout Python.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_python_docstrings(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     errors: list[str] = []
     paths = sorted(path for root in PYTHON_ROOTS for path in root.rglob("*.py") if "__pycache__" not in path.parts)
@@ -119,13 +177,25 @@ def check_python_docstrings() -> list[str]:
             component_doc = ast.get_docstring(node)
             if component_doc is None:
                 errors.append(f"Python component docstring missing: {relative}:{node.lineno} {node.name}")
-            elif len(component_doc.strip()) < 20:
-                errors.append(f"Python component docstring too short: {relative}:{node.lineno} {node.name}")
+            else:
+                for label in REQUIRED_COMPONENT_LABELS:
+                    if label not in component_doc:
+                        errors.append(f"Python component context missing {label} {relative}:{node.lineno} {node.name}")
     return errors
 
 
 def check_javascript_function_comments() -> list[str]:
-    """Require nearby JSDoc for each top-level frontend function declaration."""
+    """Purpose: Require detailed nearby JSDoc for each top-level frontend function.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_javascript_function_comments(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     relative = "frontend/public/assets/app.js"
     lines = (ROOT / relative).read_text(encoding="utf-8").splitlines()
@@ -135,14 +205,95 @@ def check_javascript_function_comments() -> list[str]:
         match = declaration.match(line.strip())
         if not match:
             continue
-        nearby = "\n".join(lines[max(0, index - 6):index])
+        nearby = "\n".join(lines[max(0, index - 18):index])
         if "/**" not in nearby or "*/" not in nearby:
             errors.append(f"frontend function JSDoc missing: {relative}:{index + 1} {match.group(1)}")
+            continue
+        for label in REQUIRED_COMPONENT_LABELS:
+            if label not in nearby:
+                errors.append(f"frontend function context missing {label} {relative}:{index + 1} {match.group(1)}")
+    return errors
+
+
+def check_frontend_block_comments() -> list[str]:
+    """Purpose: Require teaching comments beside every CSS rule and semantic HTML block.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_frontend_block_comments(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
+
+    errors: list[str] = []
+    css_relative = "frontend/public/assets/styles.css"
+    css_lines = (ROOT / css_relative).read_text(encoding="utf-8").splitlines()
+    for index, line in enumerate(css_lines):
+        stripped = line.strip()
+        if not stripped.endswith("{") or re.match(r"^(?:from|to|\d+%)\s*\{", stripped):
+            continue
+        nearby = "\n".join(css_lines[max(0, index - 20):index])
+        if "Block purpose:" not in nearby:
+            errors.append(f"CSS block teaching comment missing: {css_relative}:{index + 1} {stripped}")
+
+    html_relative = "frontend/public/index.html"
+    html_lines = (ROOT / html_relative).read_text(encoding="utf-8").splitlines()
+    semantic_open = re.compile(r"<(?:aside|header|main|nav|section)\b")
+    for index, line in enumerate(html_lines):
+        if not semantic_open.search(line):
+            continue
+        nearby = "\n".join(html_lines[max(0, index - 8):index])
+        if "Block purpose:" not in nearby:
+            errors.append(f"HTML block teaching comment missing: {html_relative}:{index + 1} {line.strip()}")
+    return errors
+
+
+def check_learning_coverage() -> list[str]:
+    """Purpose: Require generated teaching artifacts to match every selected source byte.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then handles expected failures explicitly, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_learning_coverage(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
+
+    errors: list[str] = []
+    try:
+        expected_guide, expected_coverage, coverage = build_learning_guide.build_outputs()
+    except (OSError, ValueError, SyntaxError, json.JSONDecodeError) as error:
+        return [f"learning guide generation failed: {error}"]
+    if not build_learning_guide.GUIDE_PATH.is_file():
+        errors.append("line-by-line code guide is missing")
+    elif build_learning_guide.GUIDE_PATH.read_text(encoding="utf-8") != expected_guide:
+        errors.append("line-by-line code guide is stale")
+    if not build_learning_guide.COVERAGE_PATH.is_file():
+        errors.append("learning coverage record is missing")
+    elif build_learning_guide.COVERAGE_PATH.read_text(encoding="utf-8") != expected_coverage:
+        errors.append("learning coverage record is stale")
+    if coverage["totalLineCount"] != coverage["explainedLineCount"]:
+        errors.append("learning guide does not explain every selected physical line")
     return errors
 
 
 def check_text_file_headers() -> list[str]:
-    """Require structured context headers in frontend assets and CI workflow."""
+    """Purpose: Require structured context headers in frontend assets and CI workflow.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = check_text_file_headers(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     rules = {
         ".github/workflows/ci.yml": "#",
@@ -171,18 +322,40 @@ def check_text_file_headers() -> list[str]:
 
 
 def run_checks() -> list[str]:
-    """Run all explainability gates and return human-readable failures."""
+    """Purpose: Run all explainability gates and return human-readable failures.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``list[str]``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = run_checks(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     return [
         *check_manifest_coverage(),
         *check_python_docstrings(),
         *check_javascript_function_comments(),
+        *check_frontend_block_comments(),
         *check_text_file_headers(),
+        *check_learning_coverage(),
     ]
 
 
 def main() -> int:
-    """Print one machine-readable explainability result and return its exit code."""
+    """Purpose: Print one machine-readable explainability result and return its exit code.
+
+    Inputs: No caller-supplied values beyond an implicit instance/class when present.
+    Outputs: Returns ``int``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Deterministic checks prevent functional work from bypassing handoff quality.
+    Example: Call ``result = main(...)`` with values satisfying the documented inputs.
+    Related proof: ``tests/test_explainability.py`` and source-manifest schema.
+    """
 
     errors = run_checks()
     result = {

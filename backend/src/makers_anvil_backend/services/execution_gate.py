@@ -48,21 +48,61 @@ EXECUTION_SAFETY_FLAGS = {
 
 
 class ExecutionGateError(ValueError):
-    """Raised when gate policy broadens scope or weakens an execution boundary."""
+    """Purpose: Raised when gate policy broadens scope or weakens an execution boundary.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ExecutionGateError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Operational gates remain unsatisfied until real evidence exists.
+    Example: Construct with ``instance = ExecutionGateError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+    """
 
 
 class ExecutionGateService:
-    """Evaluate required evidence for one route while execution remains impossible."""
+    """Purpose: Evaluate required evidence for one route while execution remains impossible.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``ExecutionGateService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Operational gates remain unsatisfied until real evidence exists.
+    Example: Construct with ``instance = ExecutionGateService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+    """
 
     def __init__(self, root: Path | None = None, tool_dry_run: ToolDryRunService | None = None) -> None:
-        """Bind one dry-run source and the committed single-route gate policy."""
+        """Purpose: Bind one dry-run source and the committed single-route gate policy.
+
+        Inputs: Caller-supplied ``root``, ``tool_dry_run`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         self.tool_dry_run = tool_dry_run or ToolDryRunService(root or ROOT)
         self.root = root or self.tool_dry_run.root
         self.policy_path = self.root / "config" / "execution_gate_policy.json"
 
     def execution_gate_policy(self) -> dict[str, Any]:
-        """Validate one-route scope, complete gate evidence, and constant-false safety."""
+        """Purpose: Validate one-route scope, complete gate evidence, and constant-false safety.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Call ``result = instance.execution_gate_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         policy = json.loads(self.policy_path.read_text(encoding="utf-8"))
         if not isinstance(policy, dict):
@@ -92,7 +132,17 @@ class ExecutionGateService:
         return policy
 
     def gate_catalog(self, dry_run_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
-        """Return read-only gate evaluations for in-scope semantic dry-run plans."""
+        """Purpose: Return read-only gate evaluations for in-scope semantic dry-run plans.
+
+        Inputs: Caller-supplied ``dry_run_snapshot`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Call ``result = instance.gate_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         dry_run = dry_run_snapshot if dry_run_snapshot is not None else self.tool_dry_run.plan_catalog()
         policy = self.execution_gate_policy()
@@ -128,7 +178,17 @@ class ExecutionGateService:
 
     @staticmethod
     def _validate_gates(gates: list[dict[str, Any]]) -> None:
-        """Require unique gates and exactly one source for every required evidence class."""
+        """Purpose: Require unique gates and exactly one source for every required evidence class.
+
+        Inputs: Caller-supplied ``gates`` values from the signature.
+        Outputs: Returns ``None``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Call ``result = instance._validate_gates(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         ids: set[str] = set()
         sources: set[str] = set()
@@ -146,7 +206,17 @@ class ExecutionGateService:
 
     @classmethod
     def _build_evaluation(cls, plan: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
-        """Evaluate available planning evidence while leaving operational gates unsatisfied."""
+        """Purpose: Evaluate available planning evidence while leaving operational gates unsatisfied.
+
+        Inputs: Caller-supplied ``plan``, ``policy`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Call ``result = instance._build_evaluation(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         gates = [cls._evaluate_gate(gate, plan, policy["scope"]["routeId"]) for gate in policy["gates"]]
         selected_tool = plan["toolSelection"]["selectedTool"]
@@ -178,7 +248,17 @@ class ExecutionGateService:
 
     @staticmethod
     def _evaluate_gate(gate: dict[str, Any], plan: dict[str, Any], route_id: str) -> dict[str, Any]:
-        """Map only existing planning evidence; operational sources remain not proven."""
+        """Purpose: Map only existing planning evidence; operational sources remain not proven.
+
+        Inputs: Caller-supplied ``gate``, ``plan``, ``route_id`` values from the signature.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Operational gates remain unsatisfied until real evidence exists.
+        Example: Call ``result = instance._evaluate_gate(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_execution_gate.py`` and gate schemas.
+        """
 
         source = gate["evidenceSource"]
         satisfied = False

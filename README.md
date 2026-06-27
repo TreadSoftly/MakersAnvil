@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 015 is staged at `35.0000%`. The browser now presents a preview-first maker workbench with source intake, selected-input context, tool inventory, stable Work Flow/Plans/Dev views, output proof inspection, quick navigation, and responsive desktop/mobile layouts. Browser/API upload, authorization acceptance, runnable commands, selected-file handoff, process signaling/execution, output artifacts, tool launch, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: real application build pass 016 is staged at `35.0000%`. The preview-first maker workbench is unchanged, while its source now carries detailed component/block teaching documentation and a generated, hash-checked guide explains every physical implementation and contract line. Browser/API upload, authorization acceptance, runnable commands, selected-file handoff, process signaling/execution, output artifacts, tool launch, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
 
 ## Run Locally
 
@@ -25,6 +25,7 @@ http://127.0.0.1:8765
 ## Verify
 
 ```powershell
+python scripts/build_learning_guide.py --check
 python scripts/check_explainability.py
 python scripts/verify_project.py
 python -m pytest -q
@@ -66,10 +67,11 @@ Makers Anvil is built Windows-first, with macOS, Linux, and browser-hosted suppo
 
 ## Understanding And Continuing The Build
 
-Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/SOURCE_WALKTHROUGH.md` traces the actual files, `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves the intended workbench direction, and `state/source_manifest.json` explains every tracked file.
+Start with `docs/START_HERE.md`. It gives the exact reading order for a new developer or AI model. `docs/SOURCE_WALKTHROUGH.md` traces the actual files, `docs/LINE_BY_LINE_CODE_GUIDE.md` explains every covered source line at matching line numbers, `docs/PREVIOUS_APP_REFERENCE_STUDY.md` preserves the intended workbench direction, and `state/source_manifest.json` explains every tracked file.
 
 Documentation quality is machine-checked:
 
 ```powershell
+python scripts/build_learning_guide.py --check
 python scripts/check_explainability.py
 ```

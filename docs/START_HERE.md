@@ -15,7 +15,9 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 11. `state/current_status.json` - machine-readable current truth.
 12. `state/pass_ledger.json` - ordered history of completed passes.
 13. `state/source_manifest.json` - purpose and maintenance notes for every tracked file.
-14. The report named by `currentPass.reportPath` in `state/current_status.json`.
+14. `state/learning_coverage.json` - exact hashes and line totals for the generated learning guide.
+15. The relevant file section in `docs/LINE_BY_LINE_CODE_GUIDE.md` - numbered explanation for every physical source line.
+16. The report named by `currentPass.reportPath` in `state/current_status.json`.
 
 ## Before Editing
 
@@ -28,16 +30,18 @@ This is the durable entrypoint for a new developer, AI model, reviewer, or futur
 
 - Keep source paths portable and runtime data outside the source checkout.
 - Keep unsafe or unproven actions blocked.
-- Explain each changed file and every component according to the explainability standard, including the visible structured source header.
-- Comment decisions, invariants, boundaries, and failure behavior; do not narrate obvious syntax.
+- Explain each changed file and every component according to the explainability standard, including the visible structured source header and all nine component fields.
+- Add teaching comments to changed CSS/HTML blocks and reasoning comments to changed logic.
 - Update tests as executable examples of the intended behavior.
 - Update `state/source_manifest.json` when files are added, removed, renamed, or given new responsibilities.
+- Regenerate the line-by-line guide after the last covered source edit so even syntax and blank lines retain exact numbered explanations.
 
 ## Before Declaring Done
 
 Run:
 
 ```powershell
+python scripts/build_learning_guide.py --check
 python scripts/check_explainability.py
 python scripts/verify_project.py
 python -m pytest -q

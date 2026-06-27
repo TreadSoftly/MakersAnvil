@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/learning-coverage.schema.json",
+  "title": "Makers Anvil line-by-line learning coverage",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "guidePath", "sourceCount", "totalLineCount", "explainedLineCount", "files"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.learning-coverage.v1" },
+    "claimState": { "const": "proven" },
+    "guidePath": { "const": "docs/LINE_BY_LINE_CODE_GUIDE.md" },
+    "sourceCount": { "type": "integer", "minimum": 1 },
+    "totalLineCount": { "type": "integer", "minimum": 1 },
+    "explainedLineCount": { "type": "integer", "minimum": 1 },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "sha256", "lineCount", "explainedLineCount", "guideAnchor"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "lineCount": { "type": "integer", "minimum": 0 },
+          "explainedLineCount": { "type": "integer", "minimum": 0 },
+          "guideAnchor": { "type": "string", "pattern": "^source-[0-9]{3}$" }
+        }
+      }
+    }
+  }
+}

@@ -21,42 +21,122 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class _StubDryRun:
-    """Provide isolated semantic plans without reading runtime intake or tools."""
+    """Purpose: Provide isolated semantic plans without reading runtime intake or tools.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``_StubDryRun`` exposing the state and operations defined below.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Construct with ``instance = _StubDryRun(...)`` using values described by ``__init__``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     def __init__(self, root: Path, snapshot: dict) -> None:
-        """Store the temporary project root and injected dry-run snapshot."""
+        """Purpose: Store the temporary project root and injected dry-run snapshot.
+
+        Inputs: Caller-supplied ``root``, ``snapshot`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Command, path, process, launch, write, and proof effects remain false.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``services/execution_request.py`` and request schemas.
+        """
 
         self.root = root
         self._snapshot = snapshot
 
     def plan_catalog(self) -> dict:
-        """Return the injected non-runnable planning snapshot."""
+        """Purpose: Return the injected non-runnable planning snapshot.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Command, path, process, launch, write, and proof effects remain false.
+        Example: Call ``result = instance.plan_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``services/execution_request.py`` and request schemas.
+        """
 
         return self._snapshot
 
 
 class _StubGate:
-    """Provide matching gate policy and evaluation snapshots for request tests."""
+    """Purpose: Provide matching gate policy and evaluation snapshots for request tests.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``_StubGate`` exposing the state and operations defined below.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Construct with ``instance = _StubGate(...)`` using values described by ``__init__``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     def __init__(self, snapshot: dict) -> None:
-        """Store one isolated gate snapshot."""
+        """Purpose: Store one isolated gate snapshot.
+
+        Inputs: Caller-supplied ``snapshot`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Command, path, process, launch, write, and proof effects remain false.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``services/execution_request.py`` and request schemas.
+        """
 
         self._snapshot = snapshot
 
     def execution_gate_policy(self) -> dict:
-        """Return the single-route scope required for policy coherence checks."""
+        """Purpose: Return the single-route scope required for policy coherence checks.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Command, path, process, launch, write, and proof effects remain false.
+        Example: Call ``result = instance.execution_gate_policy(...)`` with values satisfying the documented inputs.
+        Related proof: ``services/execution_request.py`` and request schemas.
+        """
 
         return {"scope": {"routeId": "mesh-to-toolpath"}}
 
     def gate_catalog(self, dry_run_snapshot: dict) -> dict:
-        """Return the injected gate snapshot while accepting the coherent dry run."""
+        """Purpose: Return the injected gate snapshot while accepting the coherent dry run.
+
+        Inputs: Caller-supplied ``dry_run_snapshot`` values from the signature.
+        Outputs: Returns ``dict``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Command, path, process, launch, write, and proof effects remain false.
+        Example: Call ``result = instance.gate_catalog(...)`` with values satisfying the documented inputs.
+        Related proof: ``services/execution_request.py`` and request schemas.
+        """
 
         assert dry_run_snapshot["plans"]
         return self._snapshot
 
 
 def make_plan(with_tool: bool = True) -> dict:
-    """Create one path-free mesh toolpath plan consumed by request previewing."""
+    """Purpose: Create one path-free mesh toolpath plan consumed by request previewing.
+
+    Inputs: Caller-supplied ``with_tool`` values from the signature.
+    Outputs: Returns ``dict``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Call ``result = instance.make_plan(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     tool = {"id": "prusaslicer", "label": "PrusaSlicer"} if with_tool else None
     return {
@@ -76,7 +156,17 @@ def make_plan(with_tool: bool = True) -> dict:
 
 
 def make_gate_snapshot(plan: dict, include_evaluation: bool = True) -> dict:
-    """Create blocked gate evidence matching one semantic plan."""
+    """Purpose: Create blocked gate evidence matching one semantic plan.
+
+    Inputs: Caller-supplied ``plan``, ``include_evaluation`` values from the signature.
+    Outputs: Returns ``dict``, or raises before returning when validation fails.
+    How it works: It checks conditions, then returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Call ``result = instance.make_gate_snapshot(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     evaluations = []
     if include_evaluation:
@@ -92,7 +182,17 @@ def make_gate_snapshot(plan: dict, include_evaluation: bool = True) -> dict:
 
 
 def build_service(tmp_path: Path, plan: dict, include_evaluation: bool = True) -> ExecutionRequestService:
-    """Build an isolated service using committed policy and injected snapshots."""
+    """Purpose: Build an isolated service using committed policy and injected snapshots.
+
+    Inputs: Caller-supplied ``tmp_path``, ``plan``, ``include_evaluation`` values from the signature.
+    Outputs: Returns ``ExecutionRequestService``, or raises before returning when validation fails.
+    How it works: It returns the resulting contract value.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Call ``result = instance.build_service(...)`` with values satisfying the documented inputs.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     root = tmp_path / "source"
     config = root / "config"
@@ -107,7 +207,17 @@ def build_service(tmp_path: Path, plan: dict, include_evaluation: bool = True) -
 
 
 def test_preview_models_logical_intent_without_persistence_or_authorization(tmp_path: Path) -> None:
-    """One coherent plan produces deterministic intent while every action remains false."""
+    """Purpose: One coherent plan produces deterministic intent while every action remains false.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Run ``python -m pytest tests/test_execution_request.py -k test_preview_models_logical_intent_without_persistence_or_authorization``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     result = build_service(tmp_path, make_plan()).preview_catalog()
 
@@ -134,7 +244,17 @@ def test_preview_models_logical_intent_without_persistence_or_authorization(tmp_
 
 
 def test_missing_tool_remains_an_explicit_null_candidate(tmp_path: Path) -> None:
-    """A request preview never invents tool identity when detection found no candidate."""
+    """Purpose: A request preview never invents tool identity when detection found no candidate.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Run ``python -m pytest tests/test_execution_request.py -k test_missing_tool_remains_an_explicit_null_candidate``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     preview = build_service(tmp_path, make_plan(with_tool=False)).preview_catalog()["previews"][0]
 
@@ -143,7 +263,17 @@ def test_missing_tool_remains_an_explicit_null_candidate(tmp_path: Path) -> None
 
 
 def test_missing_gate_evaluation_fails_closed_without_a_preview(tmp_path: Path) -> None:
-    """Planning intent cannot become a request preview without its matching gate record."""
+    """Purpose: Planning intent cannot become a request preview without its matching gate record.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Run ``python -m pytest tests/test_execution_request.py -k test_missing_gate_evaluation_fails_closed_without_a_preview``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     result = build_service(tmp_path, make_plan(), include_evaluation=False).preview_catalog()
 
@@ -153,7 +283,17 @@ def test_missing_gate_evaluation_fails_closed_without_a_preview(tmp_path: Path) 
 
 
 def test_policy_rejects_enabled_persistence_authorization_or_effects(tmp_path: Path) -> None:
-    """Policy edits cannot silently enable request writes, consent, processes, or outputs."""
+    """Purpose: Policy edits cannot silently enable request writes, consent, processes, or outputs.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Run ``python -m pytest tests/test_execution_request.py -k test_policy_rejects_enabled_persistence_authorization_or_effects``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     service = build_service(tmp_path, make_plan())
     policy = json.loads(service.policy_path.read_text(encoding="utf-8"))
@@ -170,7 +310,17 @@ def test_policy_rejects_enabled_persistence_authorization_or_effects(tmp_path: P
 
 
 def test_policy_requires_complete_unique_audit_lifecycle(tmp_path: Path) -> None:
-    """Removing or duplicating an audit event cannot weaken future observability."""
+    """Purpose: Removing or duplicating an audit event cannot weaken future observability.
+
+    Inputs: Pytest fixtures and isolated values named by the function signature.
+    Outputs: No application value; passing assertions prove the named behavior.
+    How it works: It executes the focused statements in source order.
+    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
+    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
+    Safety: Command, path, process, launch, write, and proof effects remain false.
+    Example: Run ``python -m pytest tests/test_execution_request.py -k test_policy_requires_complete_unique_audit_lifecycle``.
+    Related proof: ``services/execution_request.py`` and request schemas.
+    """
 
     service = build_service(tmp_path, make_plan())
     policy = json.loads(service.policy_path.read_text(encoding="utf-8"))
