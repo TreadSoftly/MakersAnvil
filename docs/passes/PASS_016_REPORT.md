@@ -6,7 +6,7 @@
 - Claim: `staged`
 - Completion date: `2026-06-27`
 - Branch: `codex/pass-001-clean-foundation`
-- Implementation commit: recorded in the GitHub and CI section after local proof.
+- Implementation commit: `45fc78eee11736df4b122b0860320d5173f36ec3`.
 
 ## Objective
 
@@ -78,7 +78,10 @@ No user file, external tool, registry key, package, runtime directory, installed
 ## GitHub And CI
 
 - Branch: `codex/pass-001-clean-foundation`.
-- Commit, push, pull request, and final cross-platform CI evidence are recorded here after those actions complete.
+- Implementation commit: `45fc78eee11736df4b122b0860320d5173f36ec3` (`Complete PASS-016 instructional source coverage`).
+- Push to `origin/codex/pass-001-clean-foundation` succeeded.
+- Draft pull request: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-016`.
+- GitHub Actions run `28300620096` passed `Verify on windows-latest`, `Verify on ubuntu-latest`, and `Verify on macos-latest`.
 
 ## Next Pass
 
