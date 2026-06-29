@@ -3,14 +3,14 @@
   "claimState": "proven",
   "guidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
   "sourceCount": 105,
-  "totalLineCount": 18201,
-  "explainedLineCount": 18201,
+  "totalLineCount": 18204,
+  "explainedLineCount": 18204,
   "files": [
     {
       "path": ".github/workflows/ci.yml",
-      "sha256": "178d22fca4b2616acc2924a71ff719d092fce3235602d88ed441e1695164339a",
-      "lineCount": 54,
-      "explainedLineCount": 54,
+      "sha256": "e63e030cc180c765c00f770f9bf61c2c9a26ee6408a1aa5a6498357fa7b31616",
+      "lineCount": 57,
+      "explainedLineCount": 57,
       "guideAnchor": "source-001"
     },
     {

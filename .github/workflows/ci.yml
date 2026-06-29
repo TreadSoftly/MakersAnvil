@@ -3,10 +3,13 @@
 # Inputs: The checkout, Python 3.12, tests, and pinned Windows package tools.
 # Outputs: Cross-platform verification plus a smoke-tested Windows executable artifact.
 # Side effects: Installs tooling and uploads an ephemeral artifact on hosted runners.
-# Safety: CI does not publish a release, sign code, or access user data.
-# Failure behavior: Any verifier or pytest failure blocks the workflow matrix job.
+# Safety: CI has read-only source access and never publishes a release, signs code, or accesses user data.
+# Failure behavior: Any verifier, pytest, package, or smoke failure blocks its job.
 # Related proof: scripts/verify_project.py and tests/test_verify_project.py.
 name: CI
+
+permissions:
+  contents: read
 
 on:
   push:
@@ -26,8 +29,8 @@ jobs:
       matrix:
         os: [windows-latest, ubuntu-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip pytest
@@ -40,14 +43,14 @@ jobs:
     steps:
       # Packaging is isolated from the cross-platform verifier so Linux/macOS
       # evidence never pretends that one operating system built another's app.
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - run: python -m pip install --upgrade pip pywebview==6.2.1 pyinstaller==6.21.0
       - run: python scripts/build_windows_exe.py
       - run: .\artifacts\windows\MakersAnvil.exe --smoke
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: MakersAnvil-windows-x64-pass-017
           path: artifacts/windows/MakersAnvil.exe

@@ -11,9 +11,9 @@ Regenerate with `python scripts/build_learning_guide.py`. Verify without writing
 
 **Maintenance rule:** Keep platform coverage and proof commands aligned with the local continue protocol.
 
-**Change example:** Modify this file only with its matching tests/contracts, then regenerate this guide so the recorded SHA-256 `178d22fca4b2616acc2924a71ff719d092fce3235602d88ed441e1695164339a` changes intentionally.
+**Change example:** Modify this file only with its matching tests/contracts, then regenerate this guide so the recorded SHA-256 `e63e030cc180c765c00f770f9bf61c2c9a26ee6408a1aa5a6498357fa7b31616` changes intentionally.
 
-<!-- source:.github/workflows/ci.yml sha256:178d22fca4b2616acc2924a71ff719d092fce3235602d88ed441e1695164339a lines:54 -->
+<!-- source:.github/workflows/ci.yml sha256:e63e030cc180c765c00f770f9bf61c2c9a26ee6408a1aa5a6498357fa7b31616 lines:57 -->
 
 | Line | Source | Explanation |
 | ---: | --- | --- |
@@ -22,55 +22,58 @@ Regenerate with `python scripts/build_learning_guide.py`. Verify without writing
 | 3 | <code># Inputs: The checkout, Python 3.12, tests, and pinned Windows package tools.</code> | Workflow maintainer comment explaining the following automation block. |
 | 4 | <code># Outputs: Cross-platform verification plus a smoke-tested Windows executable artifact.</code> | Workflow maintainer comment explaining the following automation block. |
 | 5 | <code># Side effects: Installs tooling and uploads an ephemeral artifact on hosted runners.</code> | Workflow maintainer comment explaining the following automation block. |
-| 6 | <code># Safety: CI does not publish a release, sign code, or access user data.</code> | Workflow maintainer comment explaining the following automation block. |
-| 7 | <code># Failure behavior: Any verifier or pytest failure blocks the workflow matrix job.</code> | Workflow maintainer comment explaining the following automation block. |
+| 6 | <code># Safety: CI has read-only source access and never publishes a release, signs code, or accesses user data.</code> | Workflow maintainer comment explaining the following automation block. |
+| 7 | <code># Failure behavior: Any verifier, pytest, package, or smoke failure blocks its job.</code> | Workflow maintainer comment explaining the following automation block. |
 | 8 | <code># Related proof: scripts/verify_project.py and tests/test_verify_project.py.</code> | Workflow maintainer comment explaining the following automation block. |
 | 9 | <code>name: CI</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
 | 10 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
-| 11 | <code>on:</code> | Defines YAML key ``on`` inside the current automation hierarchy. |
-| 12 | <code>  push:</code> | Defines YAML key ``push`` inside the current automation hierarchy. |
-| 13 | <code>    branches: [main]</code> | Defines YAML key ``branches`` inside the current automation hierarchy. |
-| 14 | <code>  pull_request:</code> | Defines YAML key ``pull_request`` inside the current automation hierarchy. |
-| 15 | <code>    branches: [main]</code> | Defines YAML key ``branches`` inside the current automation hierarchy. |
-| 16 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
-| 17 | <code>env:</code> | Defines YAML key ``env`` inside the current automation hierarchy. |
-| 18 | <code>  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"</code> | Defines YAML key ``FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`` inside the current automation hierarchy. |
+| 11 | <code>permissions:</code> | Defines YAML key ``permissions`` inside the current automation hierarchy. |
+| 12 | <code>  contents: read</code> | Defines YAML key ``contents`` inside the current automation hierarchy. |
+| 13 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
+| 14 | <code>on:</code> | Defines YAML key ``on`` inside the current automation hierarchy. |
+| 15 | <code>  push:</code> | Defines YAML key ``push`` inside the current automation hierarchy. |
+| 16 | <code>    branches: [main]</code> | Defines YAML key ``branches`` inside the current automation hierarchy. |
+| 17 | <code>  pull_request:</code> | Defines YAML key ``pull_request`` inside the current automation hierarchy. |
+| 18 | <code>    branches: [main]</code> | Defines YAML key ``branches`` inside the current automation hierarchy. |
 | 19 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
-| 20 | <code>jobs:</code> | Defines YAML key ``jobs`` inside the current automation hierarchy. |
-| 21 | <code>  verify:</code> | Defines YAML key ``verify`` inside the current automation hierarchy. |
-| 22 | <code>    name: Verify on ${{ matrix.os }}</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
-| 23 | <code>    runs-on: ${{ matrix.os }}</code> | Defines YAML key ``runs-on`` inside the current automation hierarchy. |
-| 24 | <code>    strategy:</code> | Defines YAML key ``strategy`` inside the current automation hierarchy. |
-| 25 | <code>      fail-fast: false</code> | Defines YAML key ``fail-fast`` inside the current automation hierarchy. |
-| 26 | <code>      matrix:</code> | Defines YAML key ``matrix`` inside the current automation hierarchy. |
-| 27 | <code>        os: [windows-latest, ubuntu-latest, macos-latest]</code> | Defines YAML key ``os`` inside the current automation hierarchy. |
-| 28 | <code>    steps:</code> | Defines YAML key ``steps`` inside the current automation hierarchy. |
-| 29 | <code>      - uses: actions/checkout@v4</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 30 | <code>      - uses: actions/setup-python@v5</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 31 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
-| 32 | <code>          python-version: "3.12"</code> | Defines YAML key ``python-version`` inside the current automation hierarchy. |
-| 33 | <code>      - run: python -m pip install --upgrade pip pytest</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 34 | <code>      - run: python scripts/verify_project.py</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 35 | <code>      - run: python -m pytest -q</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 36 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
-| 37 | <code>  package-windows:</code> | Defines YAML key ``package-windows`` inside the current automation hierarchy. |
-| 38 | <code>    name: Build Windows executable</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
-| 39 | <code>    runs-on: windows-latest</code> | Defines YAML key ``runs-on`` inside the current automation hierarchy. |
-| 40 | <code>    steps:</code> | Defines YAML key ``steps`` inside the current automation hierarchy. |
-| 41 | <code>      # Packaging is isolated from the cross-platform verifier so Linux/macOS</code> | Workflow maintainer comment explaining the following automation block. |
-| 42 | <code>      # evidence never pretends that one operating system built another's app.</code> | Workflow maintainer comment explaining the following automation block. |
-| 43 | <code>      - uses: actions/checkout@v4</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 44 | <code>      - uses: actions/setup-python@v5</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 45 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
-| 46 | <code>          python-version: "3.12"</code> | Defines YAML key ``python-version`` inside the current automation hierarchy. |
-| 47 | <code>      - run: python -m pip install --upgrade pip pywebview==6.2.1 pyinstaller==6.21.0</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 48 | <code>      - run: python scripts/build_windows_exe.py</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 49 | <code>      - run: .\artifacts\windows\MakersAnvil.exe --smoke</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 50 | <code>      - uses: actions/upload-artifact@v4</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
-| 51 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
-| 52 | <code>          name: MakersAnvil-windows-x64-pass-017</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
-| 53 | <code>          path: artifacts/windows/MakersAnvil.exe</code> | Defines YAML key ``path`` inside the current automation hierarchy. |
-| 54 | <code>          if-no-files-found: error</code> | Defines YAML key ``if-no-files-found`` inside the current automation hierarchy. |
+| 20 | <code>env:</code> | Defines YAML key ``env`` inside the current automation hierarchy. |
+| 21 | <code>  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"</code> | Defines YAML key ``FORCE_JAVASCRIPT_ACTIONS_TO_NODE24`` inside the current automation hierarchy. |
+| 22 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
+| 23 | <code>jobs:</code> | Defines YAML key ``jobs`` inside the current automation hierarchy. |
+| 24 | <code>  verify:</code> | Defines YAML key ``verify`` inside the current automation hierarchy. |
+| 25 | <code>    name: Verify on ${{ matrix.os }}</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
+| 26 | <code>    runs-on: ${{ matrix.os }}</code> | Defines YAML key ``runs-on`` inside the current automation hierarchy. |
+| 27 | <code>    strategy:</code> | Defines YAML key ``strategy`` inside the current automation hierarchy. |
+| 28 | <code>      fail-fast: false</code> | Defines YAML key ``fail-fast`` inside the current automation hierarchy. |
+| 29 | <code>      matrix:</code> | Defines YAML key ``matrix`` inside the current automation hierarchy. |
+| 30 | <code>        os: [windows-latest, ubuntu-latest, macos-latest]</code> | Defines YAML key ``os`` inside the current automation hierarchy. |
+| 31 | <code>    steps:</code> | Defines YAML key ``steps`` inside the current automation hierarchy. |
+| 32 | <code>      - uses: actions/checkout@v6</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 33 | <code>      - uses: actions/setup-python@v6</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 34 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
+| 35 | <code>          python-version: "3.12"</code> | Defines YAML key ``python-version`` inside the current automation hierarchy. |
+| 36 | <code>      - run: python -m pip install --upgrade pip pytest</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 37 | <code>      - run: python scripts/verify_project.py</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 38 | <code>      - run: python -m pytest -q</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 39 | <code><em>blank</em></code> | Blank separator inside this file; it groups neighboring ideas and performs no runtime action. |
+| 40 | <code>  package-windows:</code> | Defines YAML key ``package-windows`` inside the current automation hierarchy. |
+| 41 | <code>    name: Build Windows executable</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
+| 42 | <code>    runs-on: windows-latest</code> | Defines YAML key ``runs-on`` inside the current automation hierarchy. |
+| 43 | <code>    steps:</code> | Defines YAML key ``steps`` inside the current automation hierarchy. |
+| 44 | <code>      # Packaging is isolated from the cross-platform verifier so Linux/macOS</code> | Workflow maintainer comment explaining the following automation block. |
+| 45 | <code>      # evidence never pretends that one operating system built another's app.</code> | Workflow maintainer comment explaining the following automation block. |
+| 46 | <code>      - uses: actions/checkout@v6</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 47 | <code>      - uses: actions/setup-python@v6</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 48 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
+| 49 | <code>          python-version: "3.12"</code> | Defines YAML key ``python-version`` inside the current automation hierarchy. |
+| 50 | <code>      - run: python -m pip install --upgrade pip pywebview==6.2.1 pyinstaller==6.21.0</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 51 | <code>      - run: python scripts/build_windows_exe.py</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 52 | <code>      - run: .\artifacts\windows\MakersAnvil.exe --smoke</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 53 | <code>      - uses: actions/upload-artifact@v6</code> | Adds one ordered YAML list/step entry to the surrounding workflow or matrix. |
+| 54 | <code>        with:</code> | Defines YAML key ``with`` inside the current automation hierarchy. |
+| 55 | <code>          name: MakersAnvil-windows-x64-pass-017</code> | Defines YAML key ``name`` inside the current automation hierarchy. |
+| 56 | <code>          path: artifacts/windows/MakersAnvil.exe</code> | Defines YAML key ``path`` inside the current automation hierarchy. |
+| 57 | <code>          if-no-files-found: error</code> | Defines YAML key ``if-no-files-found`` inside the current automation hierarchy. |
 
 <a id="source-002"></a>
 ## `.gitignore`
