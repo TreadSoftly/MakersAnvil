@@ -14,17 +14,21 @@ When the user says `Continue`, inspect disk and git state first, then do the nex
 8. `docs/LEARNING_RESOURCES.md`
 9. `docs/SOURCE_WALKTHROUGH.md`
 10. `docs/PREVIOUS_APP_REFERENCE_STUDY.md`
-11. `state/learning_coverage.json`
-12. The relevant file section in `docs/LINE_BY_LINE_CODE_GUIDE.md`; do not load the entire generated guide when one section answers the question.
-13. `docs/PASS_REPORT_TEMPLATE.md`
-14. The latest pass report named by `currentPass.reportPath`
+11. `docs/PREVIOUS_APP_MERGER_AUDIT.md`
+12. `state/previous_app_migration.json`
+13. `docs/DESKTOP_ARCHITECTURE.md`
+14. `state/learning_coverage.json`
+15. The relevant file section in `docs/LINE_BY_LINE_CODE_GUIDE.md`; do not load the entire generated guide when one section answers the question.
+16. For old-app merger work, the relevant section in the locally generated `REFERENCE_SOURCE_LINE_BY_LINE_GUIDE.md`.
+17. `docs/PASS_REPORT_TEMPLATE.md`
+18. The latest pass report named by `currentPass.reportPath`
 
 ## Required Loop
 
 1. Read the required truth and explanation files.
 2. Check `git status -sb` and `git remote -v`.
 3. Run the existing verifier and tests before broadening scope when useful.
-4. Check the accepted previous-app patterns for layout, workflow, wording, and visual evidence relevant to the pass; inspect selected ignored reference artifacts only when the tracked study is insufficient.
+4. Check accepted previous-app patterns and the migration registry; inspect only selected first-party ignored source and never import dependency/generated trees.
 5. Define one bounded pass, its proof gates, and its non-goals.
 6. Build that pass while keeping unproven or unsafe actions blocked.
 7. Update structured file headers, all nine labeled component docstring/JSDoc fields, CSS/HTML block teaching comments, reasoning comments, tests, architecture, the source walkthrough, and `state/source_manifest.json` for every responsibility changed.
@@ -32,7 +36,7 @@ When the user says `Continue`, inspect disk and git state first, then do the nex
 9. Run `python scripts/build_learning_guide.py --check` and `python scripts/check_explainability.py`.
 10. Run `python scripts/verify_project.py`.
 11. Run `python -m pytest -q`.
-12. Run pass-specific runtime, API, browser, relocation, or platform smoke tests.
+12. Run pass-specific runtime, API, browser, native-window, executable, relocation, or platform smoke tests.
 13. Update build status, pass report, pass ledger, source manifest, and next-pass notes.
 14. Regenerate and re-check the line guide if those durable updates changed a covered source file.
 15. Commit and push if the working tree is cleanly scoped and GitHub authentication is available.
@@ -49,6 +53,7 @@ When the user says `Continue`, inspect disk and git state first, then do the nex
 - Comments and guide explanations must cover syntax plus intent, data flow, invariants, safety, and failure behavior at the appropriate layer.
 - Every changed logical block must be understandable from its component documentation, nearby reasoning comment, names/types, and linked test. A technically passing but visibly under-explained file is unfinished.
 - A pass with stale or missing explanations fails even when its functional tests pass.
+- Merger passes must keep the local previous app's generated first-party line guide current without editing dependency or generated trees.
 
 ## Required User Report
 

@@ -2,15 +2,15 @@
 
 ## Current Pass
 
-PASS-016 - complete instructional source and line-by-line learning layer.
+PASS-017 - previous-app unification and Windows desktop executable foundation.
 
 ## Track Percentages
 
-- Real app completion: `35.0000%`
-- Windows local app: `35.0000%`
+- Real app completion: `37.5000%`
+- Windows local app: `40.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `0.0000%`
+- Packaged release: `5.0000%`
 - Clean-machine proof: `0.0000%`
 
 ## Proven
@@ -90,6 +90,7 @@ PASS-016 - complete instructional source and line-by-line learning layer.
 - PASS-014 preserves the accepted previous-app workbench direction in tracked truth, adds a file-by-file source walkthrough, and replaces weak one-line module headers with machine-enforced structured context. Runtime capability remains `32.5000%` because this remediation pass enables no new action.
 - PASS-015 replaces the long equal-weight status stack with a preview-first workbench: persistent rail, compact command bar, intake/selected-input deck, tool inventory, stable Work Flow/Plans/Dev command deck, output-proof inspector, and responsive mobile flow. Navigation is client-side only and all operational actions remain blocked.
 - PASS-016 expands every Python and JavaScript component into a nine-field teaching contract, adds purpose/mechanism/example/safety comments to every CSS and semantic HTML block, and generates hash-checked numbered explanations for every physical implementation and contract line. Runtime capability remains `35.0000%` because this remediation pass enables no new action.
+- PASS-017 inventories the previous working app without importing its 3.7 GB dependency/generated tree, records every capability migration decision, locally explains all 14,611 lines in 29 first-party legacy source files, and adds a secured native-window plus deterministic one-file Windows executable path over the same current core.
 
 ## Blocked Or Not Proven
 
@@ -115,4 +116,4 @@ PASS-016 - complete instructional source and line-by-line learning layer.
 
 ## Next Pass
 
-PASS-017 - explicit authorization and command preview foundation.
+PASS-018 - explicit authorization and portable native/browser intake foundation.

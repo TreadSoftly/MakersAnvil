@@ -29,6 +29,8 @@ The browser performs GET requests only. Local scripts are separate, explicit mut
 | `backend/src/makers_anvil_backend/api/app.py` | Method/path routing, status codes, 404/405 behavior. | `tests/test_api.py` |
 | `backend/src/makers_anvil_backend/domain/claim_state.py` | Closed proof-state vocabulary. | `schemas/claim-state.schema.json` |
 | `backend/src/makers_anvil_backend/server.py` | Loopback HTTP, static containment, JSON encoding, cache headers. | API tests and runtime smoke |
+| `backend/src/makers_anvil_backend/runtime_resources.py` | Source/PyInstaller resource resolution without fixed paths. | `tests/test_runtime_resources.py` |
+| `backend/src/makers_anvil_backend/desktop.py` | Native window, ephemeral server ownership, shutdown, and binary smoke. | `tests/test_desktop.py` |
 | `backend/src/makers_anvil_backend/services/app_state.py` | Constructs services and composes one coherent dashboard snapshot. | `schemas/app-state.schema.json` |
 | `backend/src/makers_anvil_backend/services/workspace_status.py` | Reads current status and pass history. | `state/*.json` |
 | `backend/src/makers_anvil_backend/services/runtime_paths.py` | Separates private resolved paths from public logical location truth. | `tests/test_runtime_paths.py` |
@@ -61,6 +63,9 @@ All values originating outside the static page must be written with DOM text API
 | File | Human action | Allowed effect |
 | --- | --- | --- |
 | `scripts/run_dev.py` | Start local dashboard. | Opens loopback server process. |
+| `scripts/run_desktop.py` | Start native desktop app or package smoke. | Owns one window/session; accepts no path or command. |
+| `scripts/build_windows_exe.py` | Inspect/build Windows one-file artifact. | Writes ignored build/artifact trees only in build mode. |
+| `scripts/build_previous_app_learning_guide.py` | Explain selected old-app first-party lines. | Writes two ignored guide artifacts; never edits source. |
 | `scripts/init_workspace.py` | Initialize app data. | Creates allowlisted app-owned directories. |
 | `scripts/stage_intake.py` | Stage one file. | Writes metadata record only. |
 | `scripts/prepare_job.py` | Prepare one request preview. | Creates empty contained job folders and records. |

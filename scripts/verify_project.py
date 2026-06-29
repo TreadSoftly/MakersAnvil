@@ -22,6 +22,9 @@ sys.path.insert(0, str(BACKEND_SRC))
 
 from makers_anvil_backend.api.app import MakersAnvilApi  # noqa: E402
 from makers_anvil_backend.domain.claim_state import ALLOWED_CLAIM_STATES  # noqa: E402
+from makers_anvil_backend.runtime_resources import frontend_root  # noqa: E402
+from makers_anvil_backend.server import require_loopback_host  # noqa: E402
+from scripts.build_windows_exe import package_plan  # noqa: E402
 from scripts.check_explainability import run_checks as check_explainability  # noqa: E402
 
 REQUIRED_FILES = [
@@ -30,6 +33,8 @@ REQUIRED_FILES = [
     "package.json",
     "pyproject.toml",
     "backend/src/makers_anvil_backend/api/app.py",
+    "backend/src/makers_anvil_backend/desktop.py",
+    "backend/src/makers_anvil_backend/runtime_resources.py",
     "backend/src/makers_anvil_backend/server.py",
     "backend/src/makers_anvil_backend/services/execution_gate.py",
     "backend/src/makers_anvil_backend/services/execution_request.py",
@@ -80,23 +85,29 @@ REQUIRED_FILES = [
     "schemas/tool-dry-run.schema.json",
     "scripts/init_workspace.py",
     "scripts/build_learning_guide.py",
+    "scripts/build_previous_app_learning_guide.py",
+    "scripts/build_windows_exe.py",
     "scripts/check_explainability.py",
     "scripts/prepare_job.py",
     "scripts/request_job_cancel.py",
+    "scripts/run_desktop.py",
     "scripts/stage_intake.py",
     "state/current_status.json",
     "state/learning_coverage.json",
     "state/pass_ledger.json",
+    "state/previous_app_migration.json",
     "state/source_manifest.json",
     "docs/ARCHITECTURE.md",
     "docs/BUILD_STATUS.md",
     "docs/CODE_EXPLAINABILITY_STANDARD.md",
     "docs/FILE_MAP.md",
     "docs/IMPLEMENTATION_GUIDE.md",
+    "docs/DESKTOP_ARCHITECTURE.md",
     "docs/LEARNING_RESOURCES.md",
     "docs/LINE_BY_LINE_CODE_GUIDE.md",
     "docs/PASS_REPORT_TEMPLATE.md",
     "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
+    "docs/PREVIOUS_APP_MERGER_AUDIT.md",
     "docs/REFERENCE_POLICY.md",
     "docs/ROADMAP.md",
     "docs/SOURCE_WALKTHROUGH.md",
@@ -117,7 +128,15 @@ REQUIRED_FILES = [
     "docs/passes/PASS_014_REPORT.md",
     "docs/passes/PASS_015_REPORT.md",
     "docs/passes/PASS_016_REPORT.md",
+    "docs/passes/PASS_017_REPORT.md",
     "schemas/learning-coverage.schema.json",
+    "schemas/previous-app-migration.schema.json",
+    "schemas/windows-package-plan.schema.json",
+    "tests/test_desktop.py",
+    "tests/test_previous_app_learning_guide.py",
+    "tests/test_runtime_resources.py",
+    "tests/test_server.py",
+    "tests/test_windows_packaging.py",
 ]
 
 REFERENCE_FOLDERS = [
@@ -150,7 +169,15 @@ def product_files() -> list[Path]:
     Related proof: ``tests/test_verify_project.py`` and CI workflow.
     """
 
-    ignored_parts = {".git", ".makers-anvil", "__pycache__", ".pytest_cache", "node_modules"}
+    ignored_parts = {
+        ".build",
+        ".git",
+        ".makers-anvil",
+        ".pytest_cache",
+        "__pycache__",
+        "artifacts",
+        "node_modules",
+    }
     ignored_parts.update(REFERENCE_FOLDERS)
     files: list[Path] = []
     for path in ROOT.rglob("*"):
@@ -262,12 +289,18 @@ def check_api() -> list[str]:
         errors.append("GET /api/state did not return an allowed claim state")
     if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
         errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-016":
-        errors.append("GET /api/state does not report PASS-016")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-016":
-        errors.append("GET /api/workspace/status does not report PASS-016")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-016":
-        errors.append("GET /api/passes/ledger does not report PASS-016 as latest")
+    if state.body.get("currentPass", {}).get("id") != "PASS-017":
+        errors.append("GET /api/state does not report PASS-017")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-017":
+        errors.append("GET /api/workspace/status does not report PASS-017")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-017":
+        errors.append("GET /api/passes/ledger does not report PASS-017 as latest")
+    desktop_capability = next(
+        (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
+        None,
+    )
+    if not desktop_capability or desktop_capability.get("actionsEnabled") is not False:
+        errors.append("GET /api/state does not expose the staged non-actionable desktop shell")
     runtime_location = config.body.get("runtimeLocation", {})
     if config.status != 200 or runtime_location.get("mode") != "platform-user-data":
         errors.append("GET /api/workspace/config does not report platform user-data mode")
@@ -421,14 +454,32 @@ def check_status_records() -> list[str]:
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
-    if status.get("currentPass", {}).get("id") != "PASS-016":
-        errors.append("current status does not report PASS-016")
-    if status.get("trackPercentages", {}).get("realApp") != 35.0:
-        errors.append("real app completion is not 35.0 for PASS-016")
+    migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
+    windows_plan = package_plan()
+    if status.get("currentPass", {}).get("id") != "PASS-017":
+        errors.append("current status does not report PASS-017")
+    if status.get("trackPercentages", {}).get("realApp") != 37.5:
+        errors.append("real app completion is not 37.5 for PASS-017")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-016":
-        errors.append("pass ledger latest pass is not PASS-016")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-017":
+        errors.append("pass ledger latest pass is not PASS-017")
+    if migration.get("runtimeDependency") is not False:
+        errors.append("previous app migration registry unexpectedly creates a runtime dependency")
+    if any(migration.get("safety", {}).values()):
+        errors.append("previous app migration registry unexpectedly imports, enables, or deletes legacy state")
+    capability_ids = [item.get("id") for item in migration.get("capabilities", [])]
+    if len(capability_ids) != len(set(capability_ids)):
+        errors.append("previous app migration registry contains duplicate capability ids")
+    if windows_plan.get("expectedArtifact") != "artifacts/windows/MakersAnvil.exe":
+        errors.append("Windows package plan does not target the portable MakersAnvil.exe artifact")
+    if any(windows_plan.get("safety", {}).values()):
+        errors.append("Windows package check plan unexpectedly claims build, signing, publish, install, or clean-machine proof")
+    try:
+        require_loopback_host("127.0.0.1")
+        frontend_root()
+    except (OSError, RuntimeError, ValueError) as exc:
+        errors.append(f"desktop runtime resource or loopback precondition failed: {exc}")
     runtime_data = settings.get("runtimeData", {})
     if runtime_data.get("mode") != "platform-user-data":
         errors.append("default settings do not use platform user-data mode")

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/windows-package-plan.schema.json",
+  "title": "Makers Anvil Windows package plan",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "platform", "format", "entrypoint", "frontend", "bundledReadOnlyData", "expectedArtifact", "dependencies", "arguments", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.windows-package-plan.v1"},
+    "claimState": {"const": "staged"},
+    "platform": {"const": "windows"},
+    "format": {"const": "one-file-executable"},
+    "entrypoint": {"const": "scripts/run_desktop.py"},
+    "frontend": {"const": "frontend/public"},
+    "bundledReadOnlyData": {"const": ["config", "schemas", "state"]},
+    "expectedArtifact": {"const": "artifacts/windows/MakersAnvil.exe"},
+    "dependencies": {
+      "type": "object",
+      "required": ["pywebview", "pyinstaller", "webview2"],
+      "additionalProperties": false,
+      "properties": {
+        "pywebview": {"const": "6.2.1"},
+        "pyinstaller": {"const": "6.21.0"},
+        "webview2": {"const": "evergreen-runtime"}
+      }
+    },
+    "arguments": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "safety": {
+      "type": "object",
+      "additionalProperties": {"const": false}
+    }
+  }
+}

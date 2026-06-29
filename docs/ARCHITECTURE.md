@@ -47,6 +47,12 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 
 `scripts/` contains explicit local entrypoints for running, initializing, staging metadata, checking explainability, and verifying the project. `tests/` provides executable examples of API behavior, containment, privacy, portability, and governance.
 
+### Desktop Delivery
+
+`desktop.py` owns an ephemeral loopback server and a native pywebview window over the same frontend/API used in browser development. `runtime_resources.py` resolves source or PyInstaller-bundled static assets. `scripts/build_windows_exe.py` owns the deterministic one-file Windows plan. No separate desktop frontend or legacy backend exists.
+
+Desktop startup accepts no path, URL, tool, command, or authorization argument. It disables direct JavaScript bridging, downloads, file URLs, automatic devtools, and remote debugging. Closing the window shuts down the owned server. See `docs/DESKTOP_ARCHITECTURE.md` for upstream citations and packaging boundaries.
+
 ## Read Flow
 
 ```text

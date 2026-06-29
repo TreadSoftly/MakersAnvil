@@ -19,7 +19,10 @@ from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.tool_dry_run import ToolDryRunService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 REQUIRED_AUDIT_EVENTS = {
     "request-created",
     "authorization-recorded",

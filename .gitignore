@@ -18,6 +18,8 @@ node_modules/
 dist/
 build/
 .vite/
+.build/
+artifacts/
 
 # OS-managed runtime data; legacy source-adjacent locations remain ignored
 .makers-anvil/

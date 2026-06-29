@@ -39,7 +39,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-016-line-by-line-learning"
+    api_build = "makers-anvil-real-pass-017-desktop-unification-foundation"
 
     def __init__(
         self,
@@ -385,7 +385,7 @@ class AppStateService:
                 "id": "windows-local",
                 "label": "Windows local app",
                 "claimState": "staged",
-                "summary": "Read-only local server, browser shell, portable user data, metadata planning, execution gates, and request previews are present.",
+                "summary": "Read-only local core, native desktop shell, portable user data, planning contracts, and package smoke are present.",
             },
             {
                 "id": "mac-linux",
@@ -427,6 +427,13 @@ class AppStateService:
                 "label": "Dashboard shell",
                 "claimState": "staged",
                 "summary": "The browser UI renders current app state and blocked capabilities.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "desktop-shell",
+                "label": "Native desktop shell",
+                "claimState": "staged",
+                "summary": "A secured pywebview window owns one ephemeral loopback app session and deterministic shutdown.",
                 "actionsEnabled": False,
             },
             {

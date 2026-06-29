@@ -34,7 +34,10 @@ from makers_anvil_backend.services.job_records import (
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 
 
 class JobWorkspaceError(ValueError):

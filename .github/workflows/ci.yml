@@ -1,9 +1,9 @@
 # Purpose: Run the canonical repository proof on every supported CI operating system.
 # Used by: GitHub Actions for main-branch pushes and pull requests.
-# Inputs: The checked-out source plus Python 3.12 and pytest.
-# Outputs: Independent Windows, Ubuntu, and macOS verification results.
-# Side effects: Installs test tooling only inside disposable hosted runners.
-# Safety: CI validates portability but does not publish, release, or access user data.
+# Inputs: The checkout, Python 3.12, tests, and pinned Windows package tools.
+# Outputs: Cross-platform verification plus a smoke-tested Windows executable artifact.
+# Side effects: Installs tooling and uploads an ephemeral artifact on hosted runners.
+# Safety: CI does not publish a release, sign code, or access user data.
 # Failure behavior: Any verifier or pytest failure blocks the workflow matrix job.
 # Related proof: scripts/verify_project.py and tests/test_verify_project.py.
 name: CI
@@ -33,3 +33,22 @@ jobs:
       - run: python -m pip install --upgrade pip pytest
       - run: python scripts/verify_project.py
       - run: python -m pytest -q
+
+  package-windows:
+    name: Build Windows executable
+    runs-on: windows-latest
+    steps:
+      # Packaging is isolated from the cross-platform verifier so Linux/macOS
+      # evidence never pretends that one operating system built another's app.
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --upgrade pip pywebview==6.2.1 pyinstaller==6.21.0
+      - run: python scripts/build_windows_exe.py
+      - run: .\artifacts\windows\MakersAnvil.exe --smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MakersAnvil-windows-x64-pass-017
+          path: artifacts/windows/MakersAnvil.exe
+          if-no-files-found: error

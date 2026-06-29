@@ -18,7 +18,10 @@ from typing import Any
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 ROUTE_PHASES = {"validation", "planning", "execution", "proof"}
 ROUTE_SAFETY_FLAGS = {
     "sourcePathUsed",

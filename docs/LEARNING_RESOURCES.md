@@ -107,6 +107,25 @@ References:
 - Pro Git: <https://git-scm.com/book/en/v2>
 - GitHub Actions: <https://docs.github.com/en/actions>
 
+## Desktop Windows And Packaging
+
+Local study path:
+
+1. `runtime_resources.py` for source-versus-frozen resource discovery.
+2. `server.py` for loopback-only binding and owned server construction.
+3. `desktop.py` for native-window lifecycle and headless package smoke.
+4. `scripts/build_windows_exe.py` for deterministic one-file packaging.
+5. `docs/DESKTOP_ARCHITECTURE.md` for selected/deferred architecture and release boundaries.
+
+References:
+
+- pywebview API: <https://pywebview.idepy.com/en/guide/api>
+- pywebview freezing: <https://pywebview.idepy.com/en/guide/freezing>
+- PyInstaller usage: <https://pyinstaller.org/en/stable/usage.html>
+- PyInstaller spec/data files: <https://pyinstaller.org/en/latest/spec-files.html>
+- Microsoft WebView2 distribution: <https://learn.microsoft.com/en-us/microsoft-edge/webview2/concepts/distribution>
+- Tauri external sidecars: <https://v2.tauri.app/develop/sidecar/>
+
 ## Recommended Learning Loop
 
 1. Pick one visible dashboard panel.

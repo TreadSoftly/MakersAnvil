@@ -91,6 +91,54 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
     assert offenders == []
 
 
+def test_previous_app_migration_registry_keeps_legacy_runtime_outside_product() -> None:
+    """Purpose: The old working app remains evidence rather than a second runtime.
+
+    Inputs: Committed migration registry and tracked product source text.
+    Outputs: Assertions for unique decisions and all-false legacy effects.
+    How it works: Parses the registry and scans Python imports for legacy package names.
+    Side effects: Reads repository files only.
+    Failure behavior: Duplicate ids, imported runtime, or enabled legacy effect fails.
+    Safety: Prevents copying the old source tree while still preserving its lessons.
+    Example: ``native-desktop-window`` rebuilds in current source; monoliths reject.
+    Related proof: ``docs/PREVIOUS_APP_MERGER_AUDIT.md`` and migration schema.
+    """
+
+    import json
+
+    migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
+    ids = [item["id"] for item in migration["capabilities"]]
+    python_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (ROOT / "backend").rglob("*.py")
+        if "__pycache__" not in path.parts
+    )
+
+    assert migration["runtimeDependency"] is False
+    assert len(ids) == len(set(ids))
+    assert all(value is False for value in migration["safety"].values())
+    assert "makers_anvil_panel" not in python_text
+
+
+def test_desktop_build_outputs_are_ignored_local_artifacts() -> None:
+    """Purpose: Build environments and executable outputs cannot enter product history.
+
+    Inputs: Root ``.gitignore`` packaging patterns.
+    Outputs: Assertions for ignored build and artifact directories.
+    How it works: Reads ignore text and checks exact portable directory patterns.
+    Side effects: Reads one file only.
+    Failure behavior: Missing exclusions fail before a local binary is committed.
+    Safety: Prevents virtual environments, PyInstaller work, and binaries becoming source.
+    Example: ``.build/`` and ``artifacts/`` remain local/CI output locations.
+    Related proof: ``scripts/build_windows_exe.py`` writes only those trees.
+    """
+
+    gitignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+
+    assert ".build/" in gitignore
+    assert "artifacts/" in gitignore
+
+
 def test_durable_status_records_are_current_and_relative() -> None:
     """Purpose: Current status and pass history agree on the active bounded pass.
 
@@ -109,11 +157,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-016"
-    assert current["trackPercentages"]["realApp"] == 35.0
+    assert current["currentPass"]["id"] == "PASS-017"
+    assert current["trackPercentages"]["realApp"] == 37.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-016"
+    assert ledger["passes"][-1]["id"] == "PASS-017"
 
 
 def test_default_settings_are_safe_and_relative() -> None:
@@ -162,12 +210,14 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
     ]
     ignored = {
         ".git",
+        ".build",
         ".makers-anvil",
         ".pytest_cache",
         "__pycache__",
         "Refrences For Makers Anvil Application",
         "References For Makers Anvil Application",
         "Previous Working MA For References",
+        "artifacts",
     }
     offenders = []
     for path in ROOT.rglob("*"):

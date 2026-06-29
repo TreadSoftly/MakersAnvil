@@ -226,6 +226,21 @@
         "exact source hashes and line totals make stale or incomplete instructional coverage fail the verifier",
         "runtime behavior and completion percentage remain unchanged because this remediation pass enables no application action"
       ]
+    },
+    {
+      "id": "PASS-017",
+      "title": "previous-app unification and Windows desktop executable foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_017_REPORT.md",
+      "proof": [
+        "the previous working app is inventoried through an explicit no-duplicate capability migration registry",
+        "29 selected first-party previous-app files have exact local coverage for all 14,611 physical lines",
+        "legacy dependencies, generated outputs, logs, paths, source storage, process behavior, and monoliths remain outside product source",
+        "one secured native pywebview window owns one ephemeral loopback session over the existing frontend and API",
+        "source and PyInstaller resource roots resolve without current-directory, username, desktop, cloud-folder, or drive assumptions",
+        "the deterministic Windows one-file plan creates MakersAnvil.exe with a headless bundled-resource/API smoke mode",
+        "file upload, route execution, tool launch, output opening, installation, signing, release, and clean-machine claims remain blocked"
+      ]
     }
   ]
 }

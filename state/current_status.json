@@ -7,17 +7,17 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-016",
-    "title": "complete instructional source and line-by-line learning layer",
+    "id": "PASS-017",
+    "title": "previous-app unification and Windows desktop executable foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_016_REPORT.md"
+    "reportPath": "docs/passes/PASS_017_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 35.0,
-    "windowsLocal": 35.0,
+    "realApp": 37.5,
+    "windowsLocal": 40.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 0.0,
+    "packagedRelease": 5.0,
     "cleanMachineProof": 0.0
   },
   "sourceTruth": {
@@ -28,7 +28,10 @@
     "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
     "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
     "lineByLineGuidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
-    "learningCoveragePath": "state/learning_coverage.json"
+    "learningCoveragePath": "state/learning_coverage.json",
+    "desktopArchitecturePath": "docs/DESKTOP_ARCHITECTURE.md",
+    "previousAppMergerAuditPath": "docs/PREVIOUS_APP_MERGER_AUDIT.md",
+    "previousAppMigrationPath": "state/previous_app_migration.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -84,6 +87,12 @@
     "Every top-level JavaScript function and every CSS or semantic HTML block carries locally visible teaching documentation.",
     "A generated line-numbered guide explains every physical implementation and structured-contract line, including comment-free JSON.",
     "Exact source hashes and line totals make stale or incomplete learning coverage fail verification.",
+    "The previous working app is inventoried as migration evidence with explicit adopt, migrate, rebuild, and reject decisions instead of becoming a second runtime.",
+    "A local generated guide explains all 14,611 physical lines across 29 selected first-party previous-app files while excluding dependencies and generated data.",
+    "Native desktop mode owns one ephemeral loopback server and one secured pywebview window over the same current frontend and API.",
+    "Closing the native window deterministically shuts down its owned server; remote binds, downloads, file URLs, direct JavaScript bridging, devtools, and remote debugging remain disabled.",
+    "A deterministic Windows PyInstaller plan bundles the frontend and Python core into MakersAnvil.exe without a source-checkout path dependency.",
+    "The packaged executable has a headless smoke mode that proves bundled resources, API health, and blocked mutation truth.",
     "State-changing API methods remain blocked."
   ],
   "blockedOrNotProven": [
@@ -109,8 +118,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-017",
-    "title": "explicit authorization and command preview foundation",
+    "id": "PASS-018",
+    "title": "explicit authorization and portable native/browser intake foundation",
     "claimState": "planned"
   }
 }

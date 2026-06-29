@@ -10,6 +10,8 @@ Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/LI
 
 Makers Anvil is currently a local-first browser dashboard served by a small Python backend. The checked-in frontend has no compilation step. The backend serves static files and read-only JSON APIs from loopback. Product data and runtime records belong in OS-standard user-data storage, not in the source checkout.
 
+The same frontend/backend now has a native desktop delivery path. pywebview supplies the operating-system window, while PyInstaller bundles the Python core and static frontend for Windows. This is a delivery adapter, not a second application implementation.
+
 ```text
 Browser HTML/CSS/JavaScript
   -> GET request
@@ -51,6 +53,8 @@ Do not infer current truth from an old chat, commit message, screenshot, or hist
 | `scripts/` | Explicit local commands and verification entrypoints | Business rules that belong in services |
 | `tests/` | Executable behavior and safety examples | Dependence on one user's machine state |
 | `docs/` | Human-readable architecture, procedures, evidence, and learning paths | Claims unsupported by current tests or runtime proof |
+
+The ignored previous application is governed through `docs/PREVIOUS_APP_MERGER_AUDIT.md` and `state/previous_app_migration.json`. Migrate one capability through the existing contract chain; never copy the legacy virtual environment, dependencies, generated output, runtime records, paths, or monoliths.
 
 ## Backend Layers
 

@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: real application build pass 016 is staged at `35.0000%`. The preview-first maker workbench is unchanged, while its source now carries detailed component/block teaching documentation and a generated, hash-checked guide explains every physical implementation and contract line. Browser/API upload, authorization acceptance, runnable commands, selected-file handoff, process signaling/execution, output artifacts, tool launch, packaging, and clean-machine proof remain blocked until their own gates are built and tested.
+Current status: build pass 017 unifies the previous working app's verified design/behavior evidence with the portable current core and adds the Windows native-window/one-file executable foundation. The application remains read-only and evidence-honest while packaging, installer, signing, clean-machine, and operational actions advance through separate proof gates.
 
 ## Run Locally
 
@@ -21,6 +21,22 @@ Open:
 ```text
 http://127.0.0.1:8765
 ```
+
+Start the native desktop app after installing the pinned optional desktop dependency:
+
+```powershell
+python scripts/run_desktop.py
+```
+
+Inspect or build the Windows one-file executable:
+
+```powershell
+python scripts/build_windows_exe.py --check
+python scripts/build_windows_exe.py
+artifacts\windows\MakersAnvil.exe --smoke
+```
+
+Build outputs are ignored local artifacts. GitHub Actions builds and smoke-tests a Windows executable for the draft pull request; this is not yet a signed installer or public release.
 
 ## Verify
 
@@ -61,7 +77,7 @@ Set `MAKERS_ANVIL_DATA_DIR` to an absolute directory to use an explicit data loc
 
 ## Repository Policy
 
-The planning roots and `Previous Working MA For References/` are reference-only. They are ignored by git and must not be required by runtime code, tests, or packaged app files. Accepted prior-app design lessons are preserved in `docs/PREVIOUS_APP_REFERENCE_STUDY.md`.
+The planning roots and `Previous Working MA For References/` are reference-only. They are ignored by git and must not be required by runtime code, tests, or packaged app files. Accepted design lessons and the no-duplicate migration registry are preserved in `docs/PREVIOUS_APP_REFERENCE_STUDY.md`, `docs/PREVIOUS_APP_MERGER_AUDIT.md`, and `state/previous_app_migration.json`.
 
 Makers Anvil is built Windows-first, with macOS, Linux, and browser-hosted support kept as planned targets until their own proof gates exist.
 

@@ -20,7 +20,10 @@ from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.tool_detection import ToolDetectionService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 DRY_RUN_SAFETY_FLAGS = {
     "commandConstructed",
     "processExecuted",

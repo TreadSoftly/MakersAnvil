@@ -18,10 +18,12 @@
 14. Previous-app design assimilation and source explanation remediation.
 15. Preview-first maker workbench shell and responsive dashboard foundation.
 16. Complete instructional source and line-by-line learning layer.
-17. Explicit authorization and command preview foundation.
-18. Single-route contained execution with cancellation, audit, and output proof.
-19. Backup, restore, update, and uninstall dry-runs.
-20. Windows packaging and clean-machine proof.
+17. Previous-app unification and Windows desktop executable foundation.
+18. Explicit authorization and portable native/browser intake foundation.
+19. Modular previous-app capability, help, event, and settings migration.
+20. Single-route contained execution with cancellation, audit, and output proof.
+21. Backup, restore, update, and uninstall dry-runs.
+22. Signed Windows installer, upgrades, removal, and clean-machine proof.
 
 ## Planned Later
 

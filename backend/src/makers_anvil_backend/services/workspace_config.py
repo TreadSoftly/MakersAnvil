@@ -18,7 +18,10 @@ from typing import Any
 from makers_anvil_backend.services.runtime_paths import LOGICAL_DATA_ROOT, RuntimePathsService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 
 
 class WorkspaceConfigError(ValueError):

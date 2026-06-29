@@ -20,7 +20,10 @@ from uuid import uuid4
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 REQUIRED_PRIVACY_FLAGS = {"sourcePathStored", "sourceContentStored"}
 REQUIRED_SOURCE_FIELDS = {"displayName", "extension", "kind", "sizeBytes", "modifiedUtc"}
 REQUIRED_RECORD_SAFETY_FLAGS = {

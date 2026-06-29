@@ -18,7 +18,10 @@ from pathlib import Path
 from typing import Mapping
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 DATA_DIR_ENV = "MAKERS_ANVIL_DATA_DIR"
 LOGICAL_DATA_ROOT = "makers-anvil-data://user"
 

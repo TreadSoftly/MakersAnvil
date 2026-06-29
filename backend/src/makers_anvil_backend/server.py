@@ -12,16 +12,18 @@ Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
+from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
 
 from makers_anvil_backend.api.app import ApiResponse, MakersAnvilApi
+from makers_anvil_backend.runtime_resources import frontend_root
 
 
-ROOT = Path(__file__).resolve().parents[3]
-STATIC_ROOT = ROOT / "frontend" / "public"
+DEFAULT_STATIC_ROOT = frontend_root()
 
 
 class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
@@ -37,9 +39,13 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
     Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
     """
 
-    api = MakersAnvilApi()
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(
+        self,
+        *args: Any,
+        api: MakersAnvilApi | None = None,
+        static_root: Path | None = None,
+        **kwargs: Any,
+    ) -> None:
         """Purpose: Bind the standard handler to the repository's static dashboard root.
 
         Inputs: Caller-supplied ``*args``, ``**kwargs`` values from the signature.
@@ -52,7 +58,8 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
         """
 
-        super().__init__(*args, directory=str(STATIC_ROOT), **kwargs)
+        self.api = api or MakersAnvilApi()
+        super().__init__(*args, directory=str(static_root or DEFAULT_STATIC_ROOT), **kwargs)
 
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
         """Purpose: Serve an API response or a static dashboard asset for one GET request.
@@ -142,6 +149,58 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         self.wfile.write(payload)
 
 
+def require_loopback_host(host: str) -> str:
+    """Purpose: Reject any server bind that could expose the local API remotely.
+
+    Inputs: Hostname or IP text supplied by a development/desktop caller.
+    Outputs: The unchanged host only when it identifies a loopback interface.
+    How it works: Accepts localhost or asks ``ipaddress`` for loopback truth.
+    Side effects: None; no socket is opened by validation.
+    Failure behavior: Invalid, wildcard, LAN, and public hosts raise ``ValueError``.
+    Safety: Prevents accidental ``0.0.0.0`` or network exposure in every mode.
+    Example: ``require_loopback_host("127.0.0.1")`` passes; ``0.0.0.0`` fails.
+    Related proof: ``tests/test_server.py`` covers accepted and rejected hosts.
+    """
+
+    normalized = host.strip().lower()
+    if normalized == "localhost":
+        return host
+    try:
+        address = ipaddress.ip_address(normalized)
+    except ValueError as exc:
+        raise ValueError(f"Makers Anvil only binds to loopback hosts, not {host!r}") from exc
+    if not address.is_loopback:
+        raise ValueError(f"Makers Anvil only binds to loopback hosts, not {host!r}")
+    return host
+
+
+def create_server(
+    host: str = "127.0.0.1",
+    port: int = 8765,
+    *,
+    api: MakersAnvilApi | None = None,
+    static_root: Path | None = None,
+) -> ThreadingHTTPServer:
+    """Purpose: Construct one loopback HTTP server for browser or desktop ownership.
+
+    Inputs: Loopback host, port including zero, optional API, and static test root.
+    Outputs: Bound ``ThreadingHTTPServer`` that has not started serving yet.
+    How it works: Validates host/port and binds a handler with explicit dependencies.
+    Side effects: Reserves one local listening socket until the server is closed.
+    Failure behavior: Invalid input, missing resources, or socket errors propagate.
+    Safety: Remote hosts are rejected and static files stay under a validated root.
+    Example: Desktop mode uses port zero, then owns serving and shutdown itself.
+    Related proof: ``tests/test_server.py`` and ``tests/test_desktop.py``.
+    """
+
+    require_loopback_host(host)
+    if not 0 <= port <= 65535:
+        raise ValueError("port must be between 0 and 65535")
+    resolved_static_root = frontend_root(static_root) if static_root else DEFAULT_STATIC_ROOT
+    handler = partial(MakersAnvilRequestHandler, api=api, static_root=resolved_static_root)
+    return ThreadingHTTPServer((host, port), handler)
+
+
 def run(host: str = "127.0.0.1", port: int = 8765) -> None:
     """Purpose: Run the local server until interrupted.
 
@@ -155,9 +214,9 @@ def run(host: str = "127.0.0.1", port: int = 8765) -> None:
     Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
     """
 
-    server = ThreadingHTTPServer((host, port), MakersAnvilRequestHandler)
-    print(f"Makers Anvil running at http://{host}:{port}")
-    server.serve_forever()
+    with create_server(host, port) as server:
+        print(f"Makers Anvil running at http://{host}:{server.server_address[1]}")
+        server.serve_forever()
 
 
 def main() -> int:

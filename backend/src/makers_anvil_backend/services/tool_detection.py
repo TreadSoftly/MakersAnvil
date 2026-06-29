@@ -20,7 +20,10 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[4]
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
 PLATFORMS = {"windows", "macos", "linux"}
 TOOL_SAFETY_FLAGS = {
     "processExecuted",

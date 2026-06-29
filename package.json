@@ -9,8 +9,12 @@
   },
   "scripts": {
     "dev": "python scripts/run_dev.py",
+    "desktop": "python scripts/run_desktop.py",
+    "desktop:smoke": "python scripts/run_desktop.py --smoke",
     "learn": "python scripts/build_learning_guide.py",
     "learn:check": "python scripts/build_learning_guide.py --check",
+    "package:windows": "python scripts/build_windows_exe.py",
+    "package:windows:check": "python scripts/build_windows_exe.py --check",
     "test": "python -m pytest -q",
     "verify": "python scripts/verify_project.py"
   },

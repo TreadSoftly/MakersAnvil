@@ -30,7 +30,21 @@ ROOT = Path(__file__).resolve().parents[1]
 GUIDE_PATH = ROOT / "docs" / "LINE_BY_LINE_CODE_GUIDE.md"
 COVERAGE_PATH = ROOT / "state" / "learning_coverage.json"
 MANIFEST_PATH = ROOT / "state" / "source_manifest.json"
-LEARNING_SUFFIXES = {".py", ".js", ".css", ".html", ".svg", ".json", ".toml", ".yml", ".yaml"}
+LEARNING_SUFFIXES = {
+    ".py",
+    ".js",
+    ".ts",
+    ".tsx",
+    ".css",
+    ".html",
+    ".svg",
+    ".json",
+    ".toml",
+    ".yml",
+    ".yaml",
+    ".ps1",
+    ".cmd",
+}
 LEARNING_NAMES = {".gitignore", "LICENSE"}
 EXCLUDED_PATHS = {
     GUIDE_PATH.relative_to(ROOT).as_posix(),
@@ -207,7 +221,7 @@ def explain_line(relative: str, line: str, line_number: int, contexts: list[Sour
             return f"Closes the current literal or call inside {context}; it adds no behavior beyond completing that structure."
         return f"Executes this statement inside {context}; read it with the surrounding detailed docstring and block comments to see its inputs and invariant."
 
-    if suffix == ".js":
+    if suffix in {".js", ".ts", ".tsx"}:
         if stripped.startswith(("/**", "*", "*/", "//")):
             return "Documentation or reasoning comment for the surrounding JavaScript block; it teaches intent and performs no browser action."
         if stripped.startswith(("const ", "let ", "var ")):
@@ -285,6 +299,22 @@ def explain_line(relative: str, line: str, line_number: int, contexts: list[Sour
 
     if Path(relative).name == "LICENSE":
         return "Part of the MIT license text defining permitted use, redistribution, warranty, or liability terms."
+
+    if suffix == ".ps1":
+        if stripped.startswith("#"):
+            return "PowerShell maintainer comment describing the adjacent launcher or validation step."
+        if stripped.lower().startswith(("param(", "[cmdletbinding")):
+            return "Declares the PowerShell command interface so accepted inputs remain explicit."
+        if stripped.startswith("$") and "=" in stripped:
+            return "Assigns a named PowerShell value used by the surrounding launcher or safety check."
+        return "Executes part of the surrounding PowerShell launcher; the owning guide section explains its boundary and expected effect."
+
+    if suffix == ".cmd":
+        if stripped.lower().startswith("rem ") or stripped.startswith("::"):
+            return "Command-script maintainer comment explaining the adjacent launcher statement."
+        if stripped.lower().startswith("@echo"):
+            return "Controls command echoing so the launcher presents intentional output only."
+        return "Executes one Windows command-script launcher statement; no behavior is implied beyond the visible command."
 
     return "Declarative source line covered by the file purpose and maintenance contract shown above."
 
