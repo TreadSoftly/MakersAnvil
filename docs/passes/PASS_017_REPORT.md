@@ -6,7 +6,8 @@
 - Claim: `staged`
 - Completion date: `2026-06-29`
 - Branch: `codex/pass-001-clean-foundation`
-- Implementation commit: recorded in the GitHub and CI section after publication.
+- Implementation commit: `bd90840959e027902c960eacfd209683d5e24d01`.
+- CI-maintenance commit: `8afa1d4034d7fc4b73da434d5c48d2823d7e2d4e`.
 
 ## Objective
 
@@ -52,7 +53,7 @@ Browser/native file upload, selected-file handoff, authorization acceptance, run
 
 ## Exact Verification
 
-- `python scripts/build_learning_guide.py --check`: passed; 105 current source files and 18,201 physical lines explained.
+- `python scripts/build_learning_guide.py --check`: passed; 105 current source files and 18,204 physical lines explained.
 - `python scripts/check_explainability.py`: passed; all 140 manifested files satisfy the maintained source-context contract.
 - `python scripts/build_previous_app_learning_guide.py --check`: passed; 29 selected first-party previous-app files and all 14,611 physical lines explained.
 - `python scripts/verify_project.py`: passed; API, explainability, forbidden-text, JSON, portable-path, reference-policy, required-file, and status-record checks are green.
@@ -77,7 +78,10 @@ No previous-app source, dependency, generated output, user project, external mak
 
 ## GitHub And CI
 
-- Pending publication. Commit, draft-PR, cross-platform verifier, and Windows executable artifact evidence are not claimed until the remote checks finish.
+- Draft PR: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-017`.
+- GitHub Actions run `28392774025` passed at commit `8afa1d4034d7fc4b73da434d5c48d2823d7e2d4e`.
+- Windows, Ubuntu, and macOS each passed the canonical verifier and all 110 tests.
+- The hosted Windows job built and smoked the executable, then uploaded artifact `MakersAnvil-windows-x64-pass-017`.
 
 ## Next Pass
 
