@@ -30,7 +30,8 @@ def test_health_exposes_only_bounded_local_mutations() -> None:
     assert response.status == 200
     assert response.body["claimState"] == "proven"
     assert response.body["mutatingActionsEnabled"] is True
-    assert response.body["enabledMutationScopes"] == ["authorized-file-intake", "workbench-preferences"]
+    assert response.body["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
+    assert response.body["builtInStlPreflightEnabled"] is True
     assert response.body["routeExecutionEnabled"] is False
     assert response.body["toolLaunchEnabled"] is False
 
@@ -51,13 +52,42 @@ def test_state_limits_actions_to_intake_and_preferences() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 52.5
-    assert response.body["currentPass"]["id"] == "PASS-019"
-    assert response.body["completion"]["packagedRelease"] == 10.0
+    assert response.body["completion"]["realApp"] == 62.5
+    assert response.body["currentPass"]["id"] == "PASS-020"
+    assert response.body["completion"]["packagedRelease"] == 12.5
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
-    assert enabled_capabilities == ["file-intake", "workbench-preferences"]
-    assert "route execution" in response.body["blockedActions"]
+    assert enabled_capabilities == ["file-intake", "workbench-preferences", "contained-stl-preflight"]
+    assert any("full route execution" in action for action in response.body["blockedActions"])
+
+
+def test_contained_execution_reads_expose_one_partial_operation_only() -> None:
+    """Purpose: Prove public execution reads expose one bounded built-in operation.
+
+    Inputs: Default composed API and exact policy/catalog GET routes.
+    Outputs: Scope, action, safety, empty-state, and state-composition assertions.
+    How it works: Reads all three contracts and compares their shared catalog.
+    Side effects: Reads app-owned execution storage only.
+    Failure behavior: Scope widening, path exposure, or missing composition fails.
+    Safety: Full route, process, tool, software, and output-open effects stay false.
+    Example: Fresh data has zero executions but authorization remains available.
+    Related proof: Contained execution schemas and service tests.
+    """
+
+    api = MakersAnvilApi()
+    policy = api.handle("GET", "/api/executions/policy")
+    catalog = api.handle("GET", "/api/executions/catalog")
+    state = api.handle("GET", "/api/state")
+
+    assert policy.status == 200
+    assert policy.body["scope"]["operationId"] == "built-in-stl-preflight"
+    assert policy.body["scope"]["allowedExtensions"] == [".stl"]
+    assert all(value is False for value in policy.body["safety"].values())
+    assert catalog.status == 200
+    assert catalog.body["actions"]["run"]["enabledInApi"] is True
+    assert catalog.body["actions"]["openOutput"]["enabledInApi"] is False
+    assert state.body["containedExecutions"] == catalog.body
+    assert state.body["containedExecutions"]["executionsPath"] == "makers-anvil-data://user/executions"
 
 
 def test_non_intake_mutating_requests_are_blocked() -> None:
@@ -141,11 +171,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-019"
+    assert workspace.body["currentPass"]["id"] == "PASS-020"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-019"
+    assert ledger.body["passes"][-1]["id"] == "PASS-020"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

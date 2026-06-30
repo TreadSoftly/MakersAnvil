@@ -39,6 +39,8 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/activity_log.py",
     "backend/src/makers_anvil_backend/services/app_state.py",
     "backend/src/makers_anvil_backend/services/capability_matrix.py",
+    "backend/src/makers_anvil_backend/services/contained_execution.py",
+    "backend/src/makers_anvil_backend/services/execution_audit.py",
     "backend/src/makers_anvil_backend/services/execution_gate.py",
     "backend/src/makers_anvil_backend/services/execution_request.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
@@ -54,6 +56,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
+    "config/contained_execution_policy.json",
     "config/execution_gate_policy.json",
     "config/execution_request_policy.json",
     "config/intake_policy.json",
@@ -66,6 +69,7 @@ REQUIRED_FILES = [
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/capability-lanes.js",
+    "frontend/public/assets/contained-execution.js",
     "frontend/public/assets/context-help.js",
     "frontend/public/assets/styles.css",
     "frontend/public/assets/workbench-experience.js",
@@ -74,11 +78,18 @@ REQUIRED_FILES = [
     "schemas/claim-state.schema.json",
     "schemas/app-state.schema.json",
     "schemas/capability-matrix.schema.json",
+    "schemas/contained-execution-policy.schema.json",
+    "schemas/contained-execution-record.schema.json",
+    "schemas/contained-execution-catalog.schema.json",
     "schemas/current-status.schema.json",
     "schemas/execution-gate-policy.schema.json",
     "schemas/execution-gates.schema.json",
     "schemas/execution-request-policy.schema.json",
     "schemas/execution-request-preview.schema.json",
+    "schemas/execution-cancellation.schema.json",
+    "schemas/execution-audit-event.schema.json",
+    "schemas/execution-audit-history.schema.json",
+    "schemas/execution-proof.schema.json",
     "schemas/local-settings.schema.json",
     "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
@@ -95,6 +106,7 @@ REQUIRED_FILES = [
     "schemas/tool-detection.schema.json",
     "schemas/tool-dry-run-policy.schema.json",
     "schemas/tool-dry-run.schema.json",
+    "schemas/stl-preflight-report.schema.json",
     "schemas/workbench-experience-policy.schema.json",
     "schemas/workbench-experience.schema.json",
     "schemas/workbench-preferences.schema.json",
@@ -146,10 +158,12 @@ REQUIRED_FILES = [
     "docs/passes/PASS_017_REPORT.md",
     "docs/passes/PASS_018_REPORT.md",
     "docs/passes/PASS_019_REPORT.md",
+    "docs/passes/PASS_020_REPORT.md",
     "schemas/learning-coverage.schema.json",
     "schemas/previous-app-migration.schema.json",
     "schemas/windows-package-plan.schema.json",
     "tests/test_desktop.py",
+    "tests/test_contained_execution.py",
     "tests/test_previous_app_learning_guide.py",
     "tests/test_runtime_resources.py",
     "tests/test_server.py",
@@ -302,14 +316,18 @@ def check_api() -> list[str]:
     experience = api.handle("GET", "/api/workbench/experience")
     activity = api.handle("GET", "/api/activity/recent")
     capability_matrix = api.handle("GET", "/api/capabilities/matrix")
+    contained_policy = api.handle("GET", "/api/executions/policy")
+    contained_catalog = api.handle("GET", "/api/executions/catalog")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
         errors.append("GET /api/health did not return proven health")
     if health.body.get("mutatingActionsEnabled") is not True:
         errors.append("GET /api/health does not report the bounded intake mutation")
-    if health.body.get("enabledMutationScopes") != ["authorized-file-intake", "workbench-preferences"]:
+    if health.body.get("enabledMutationScopes") != ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]:
         errors.append("GET /api/health exposes an unexpected mutation scope")
+    if health.body.get("builtInStlPreflightEnabled") is not True:
+        errors.append("GET /api/health does not expose the bounded built-in STL preflight")
     if health.body.get("routeExecutionEnabled") is not False or health.body.get("toolLaunchEnabled") is not False:
         errors.append("GET /api/health unexpectedly enables route execution or tool launch")
     if state.status != 200 or state.body.get("claimState") not in ALLOWED_CLAIM_STATES:
@@ -319,16 +337,16 @@ def check_api() -> list[str]:
         for capability in state.body.get("capabilities", [])
         if capability.get("actionsEnabled")
     ]
-    if enabled_capabilities != ["file-intake", "workbench-preferences"]:
-        errors.append("GET /api/state does not limit actions to file-intake and workbench-preferences")
-    if state.body.get("currentPass", {}).get("id") != "PASS-019":
-        errors.append("GET /api/state does not report PASS-019")
+    if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
+        errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
+    if state.body.get("currentPass", {}).get("id") != "PASS-020":
+        errors.append("GET /api/state does not report PASS-020")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-019":
-        errors.append("GET /api/workspace/status does not report PASS-019")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-019":
-        errors.append("GET /api/passes/ledger does not report PASS-019 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-020":
+        errors.append("GET /api/workspace/status does not report PASS-020")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-020":
+        errors.append("GET /api/passes/ledger does not report PASS-020 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -499,6 +517,18 @@ def check_api() -> list[str]:
         errors.append("job catalog unexpectedly enables an API mutation or execution action")
     if state.body.get("jobWorkspaceCatalog", {}).get("mode") != "contained-local-preparation":
         errors.append("GET /api/state does not include contained job workspace status")
+    if contained_policy.status != 200 or contained_policy.body.get("scope", {}).get("operationId") != "built-in-stl-preflight":
+        errors.append("GET /api/executions/policy does not preserve the single built-in STL operation")
+    if any(contained_policy.body.get("safety", {}).values()):
+        errors.append("contained execution policy unexpectedly enables an external or source effect")
+    if contained_catalog.status != 200 or contained_catalog.body.get("mode") != "built-in-cooperative-single-operation":
+        errors.append("GET /api/executions/catalog does not expose contained preflight truth")
+    if contained_catalog.body.get("actions", {}).get("run", {}).get("enabledInApi") is not True:
+        errors.append("contained execution catalog does not expose its bounded run action")
+    if contained_catalog.body.get("actions", {}).get("openOutput", {}).get("enabledInApi") is not False:
+        errors.append("contained execution catalog unexpectedly enables output opening")
+    if state.body.get("containedExecutions") != contained_catalog.body:
+        errors.append("GET /api/state contained execution catalog differs from focused route")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -531,17 +561,18 @@ def check_status_records() -> list[str]:
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
+    contained_execution_policy = json.loads((ROOT / "config" / "contained_execution_policy.json").read_text(encoding="utf-8"))
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-019":
-        errors.append("current status does not report PASS-019")
-    if status.get("trackPercentages", {}).get("realApp") != 52.5:
-        errors.append("real app completion is not 52.5 for PASS-019")
+    if status.get("currentPass", {}).get("id") != "PASS-020":
+        errors.append("current status does not report PASS-020")
+    if status.get("trackPercentages", {}).get("realApp") != 62.5:
+        errors.append("real app completion is not 62.5 for PASS-020")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-019":
-        errors.append("pass ledger latest pass is not PASS-019")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-020":
+        errors.append("pass ledger latest pass is not PASS-020")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -598,6 +629,14 @@ def check_status_records() -> list[str]:
         errors.append("workbench experience policy unexpectedly enables an unsafe action")
     if experience_policy.get("activity", {}).get("allowedEventTypes") != ["intake-authorized", "intake-copied", "preferences-updated"]:
         errors.append("workbench activity policy event allowlist is invalid")
+    if contained_execution_policy.get("mode") != "built-in-cooperative-single-operation":
+        errors.append("contained execution policy mode is invalid")
+    if contained_execution_policy.get("scope", {}).get("operationId") != "built-in-stl-preflight":
+        errors.append("contained execution policy operation scope is invalid")
+    if contained_execution_policy.get("scope", {}).get("maxConcurrentExecutions") != 1:
+        errors.append("contained execution policy concurrency is not exactly one")
+    if any(contained_execution_policy.get("safety", {}).values()):
+        errors.append("contained execution policy enables an unsafe effect")
     if route_catalog.get("mode") != "metadata-derived-read-only":
         errors.append("route catalog is not metadata-derived read-only")
     if any(route_catalog.get("safety", {}).values()):

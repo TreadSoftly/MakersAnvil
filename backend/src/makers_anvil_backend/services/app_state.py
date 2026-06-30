@@ -17,6 +17,7 @@ from typing import Any
 from makers_anvil_backend.services.activity_log import ActivityLogService
 from makers_anvil_backend.services.authorized_intake import AuthorizedIntakeService, IntakeRequestContext
 from makers_anvil_backend.services.capability_matrix import CapabilityMatrixService
+from makers_anvil_backend.services.contained_execution import ContainedExecutionService
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
@@ -43,7 +44,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-019-workbench-experience"
+    api_build = "makers-anvil-real-pass-020-contained-stl-preflight"
 
     def __init__(
         self,
@@ -61,6 +62,7 @@ class AppStateService:
         workbench_experience: WorkbenchExperienceService | None = None,
         activity_log: ActivityLogService | None = None,
         capability_matrix: CapabilityMatrixService | None = None,
+        contained_execution: ContainedExecutionService | None = None,
     ) -> None:
         """Purpose: Compose injected or default services so one request uses coherent snapshots.
 
@@ -110,6 +112,13 @@ class AppStateService:
             intake_catalog=self._intake_catalog,
             route_preview=self._route_preview,
         )
+        # Contained execution shares the exact intake catalog, workspace policy,
+        # and process-local request guard already used by authorized intake.
+        self._contained_execution = contained_execution or ContainedExecutionService(
+            workspace_config=self._workspace_config,
+            intake_catalog=self._intake_catalog,
+            request_guard=self._authorized_intake.request_guard,
+        )
 
     def health(self) -> dict[str, Any]:
         """Purpose: Describe the live API and its one bounded mutation scope honestly.
@@ -132,7 +141,8 @@ class AppStateService:
             "service": "bounded-local-api",
             "timeUtc": datetime.now(UTC).isoformat(),
             "mutatingActionsEnabled": True,
-            "enabledMutationScopes": ["authorized-file-intake", "workbench-preferences"],
+            "enabledMutationScopes": ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"],
+            "builtInStlPreflightEnabled": True,
             "routeExecutionEnabled": False,
             "toolLaunchEnabled": False,
         }
@@ -176,6 +186,7 @@ class AppStateService:
             "executionGates": execution_gates,
             "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
             "jobWorkspaceCatalog": self._job_workspace.catalog(),
+            "containedExecutions": self._contained_execution.catalog(),
             "capabilityMatrix": capability_matrix,
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
@@ -536,6 +547,81 @@ class AppStateService:
 
         return self._job_workspace.catalog()
 
+    def contained_execution_policy(self) -> dict[str, Any]:
+        """Purpose: Return the exact built-in STL preflight execution boundary.
+
+        Inputs: No request body or user path.
+        Outputs: Path-redacted scope, action endpoints, and disabled external effects.
+        How it works: Delegates strict committed-policy validation to the service.
+        Side effects: Reads policy only.
+        Failure behavior: Invalid policy fails instead of widening execution.
+        Safety: Full routes, tools, commands, G-code, and output opening stay disabled.
+        Example: The browser reads this before offering a preflight command.
+        Related proof: Contained execution service and API tests.
+        """
+
+        return self._contained_execution.policy_response()
+
+    def contained_execution_catalog(self) -> dict[str, Any]:
+        """Purpose: Return path-redacted preflight lifecycle, audit, and proof truth.
+
+        Inputs: No caller-supplied values.
+        Outputs: Valid contained execution records plus conservative invalid counts.
+        How it works: Delegates strict app-owned runtime record reads.
+        Side effects: Reads execution storage only.
+        Failure behavior: Invalid entries are counted and never exposed as usable.
+        Safety: Catalog reads cannot start, cancel, launch, or open anything.
+        Example: A completed preflight exposes report hashes but no disk path.
+        Related proof: Contained execution catalog and privacy tests.
+        """
+
+        return self._contained_execution.catalog()
+
+    def authorize_contained_execution(self, payload: dict[str, Any], context: IntakeRequestContext) -> dict[str, Any]:
+        """Purpose: Record explicit consent for one authorized STL preflight.
+
+        Inputs: Exact intake, route, operation, consent fields and guarded context.
+        Outputs: One authorized execution workspace record.
+        How it works: Delegates scope, source, uniqueness, and audit validation.
+        Side effects: Creates only app-owned execution control/audit records.
+        Failure behavior: Invalid scope, source, consent, or guard fails closed.
+        Safety: Authorization does not execute or construct an external command.
+        Example: A copied STL receives one built-in preflight authorization.
+        Related proof: Contained execution authorization tests.
+        """
+
+        return self._contained_execution.authorize(payload, context)
+
+    def run_contained_execution(self, execution_id: str, context: IntakeRequestContext) -> dict[str, Any]:
+        """Purpose: Run one authorized in-process STL structural preflight.
+
+        Inputs: Generated execution id and guarded same-origin context.
+        Outputs: Completed, failed, or cancelled record with hashed evidence.
+        How it works: Delegates streaming inspection and cooperative cancellation.
+        Side effects: Reads one quarantine copy and writes app-owned proof artifacts.
+        Failure behavior: Invalid state, content, or storage produces explicit failure.
+        Safety: Starts no process/tool and creates no toolpath or G-code.
+        Example: Valid binary STL produces a passing preflight report.
+        Related proof: Contained execution success/failure/cancellation tests.
+        """
+
+        return self._contained_execution.run(execution_id, context)
+
+    def cancel_contained_execution(self, execution_id: str, context: IntakeRequestContext) -> dict[str, Any]:
+        """Purpose: Request or observe cooperative cancellation for one preflight.
+
+        Inputs: Generated execution id and guarded same-origin context.
+        Outputs: Updated cancellation and lifecycle truth.
+        How it works: Writes a control record observed between bounded read chunks.
+        Side effects: Replaces app-owned control/manifest records and appends audit.
+        Failure behavior: Invalid or terminal execution rejects repeated mutation.
+        Safety: Sends no operating-system process signal because none exists.
+        Example: Cancelling before Run reaches cancelled with no output files.
+        Related proof: Contained execution cancellation tests.
+        """
+
+        return self._contained_execution.cancel(execution_id, context)
+
     def _tracks(self) -> list[dict[str, Any]]:
         """Purpose: Describe platform delivery tracks without claiming untested runtime support.
 
@@ -695,6 +781,13 @@ class AppStateService:
                 "claimState": "staged",
                 "summary": "One route has explicit authorization, containment, compatibility, control, logging, and proof gates.",
                 "actionsEnabled": False,
+            },
+            {
+                "id": "contained-stl-preflight",
+                "label": "Contained STL preflight",
+                "claimState": "staged",
+                "summary": "One authorized app-owned STL can receive an in-process structural preflight with audit and proof.",
+                "actionsEnabled": True,
             },
             {
                 "id": "execution-request-preview",

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/contained-execution-catalog.schema.json",
+  "title": "Makers Anvil contained execution catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "executionsPath", "summary", "executions", "safety", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.contained-execution-catalog.v1"},
+    "claimState": {"enum": ["staged", "failed"]},
+    "mode": {"const": "built-in-cooperative-single-operation"},
+    "scope": {"type": "object"},
+    "executionsPath": {"const": "makers-anvil-data://user/executions"},
+    "summary": {"type": "object"},
+    "executions": {"type": "array", "items": {"type": "object", "required": ["record", "cancellation", "audit"], "additionalProperties": false, "properties": {"record": {"$ref": "contained-execution-record.schema.json"}, "cancellation": {"$ref": "execution-cancellation.schema.json"}, "audit": {"$ref": "execution-audit-history.schema.json"}}}},
+    "safety": {"type": "object", "additionalProperties": {"const": false}},
+    "actions": {"type": "object"}
+  }
+}

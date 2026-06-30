@@ -120,7 +120,7 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         headers = {key: value for key, value in self.headers.items()}
         path = self.path.split("?", 1)[0]
         content_length = self._content_length()
-        if path in {"/api/intake/authorizations", "/api/workbench/experience"}:
+        if path in {"/api/intake/authorizations", "/api/workbench/experience", "/api/executions/authorizations"}:
             if content_length is None:
                 self._send_api(self._request_error(411, "content_length_required", "JSON mutation metadata requires Content-Length."))
                 return
@@ -140,6 +140,13 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
                     content_length=content_length,
                 )
             )
+            return
+        is_execution_command = path.startswith("/api/executions/") and path.endswith(("/run", "/cancel"))
+        if is_execution_command:
+            if content_length not in (None, 0):
+                self._send_api(self._request_error(400, "body_not_allowed", "Execution run and cancel accept no request body."))
+                return
+            self._send_api(self.api.handle("POST", path, headers=headers, content_length=content_length))
             return
         is_content_route = path.startswith("/api/intake/authorizations/") and path.endswith("/content")
         if is_content_route:

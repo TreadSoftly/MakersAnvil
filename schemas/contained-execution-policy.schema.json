@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/contained-execution-policy.schema.json",
+  "title": "Makers Anvil contained execution policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "storage", "limits", "actions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.contained-execution.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "built-in-cooperative-single-operation"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "operationId", "allowedKind", "allowedExtensions", "maxConcurrentExecutions"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"const": "mesh-to-toolpath"},
+        "operationId": {"const": "built-in-stl-preflight"},
+        "allowedKind": {"const": "mesh"},
+        "allowedExtensions": {"const": [".stl"]},
+        "maxConcurrentExecutions": {"const": 1}
+      }
+    },
+    "storage": {"type": "object", "minProperties": 7, "additionalProperties": {"type": "string"}},
+    "limits": {
+      "type": "object",
+      "required": ["maxSourceBytes", "readChunkBytes"],
+      "additionalProperties": false,
+      "properties": {"maxSourceBytes": {"type": "integer", "minimum": 1}, "readChunkBytes": {"type": "integer", "minimum": 1}}
+    },
+    "actions": {"type": "object", "additionalProperties": {"const": true}},
+    "safety": {"type": "object", "additionalProperties": {"const": false}}
+  }
+}

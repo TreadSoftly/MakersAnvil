@@ -2,15 +2,15 @@
 
 ## Current Pass
 
-PASS-019 - modular previous-app capability, help, event, and settings migration.
+PASS-020 - contained built-in STL preflight with cancellation, audit, and output proof.
 
 ## Track Percentages
 
-- Real app completion: `52.5000%`
-- Windows local app: `57.5000%`
+- Real app completion: `62.5000%`
+- Windows local app: `67.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `10.0000%`
+- Packaged release: `12.5000%`
 - Clean-machine proof: `0.0000%`
 
 ## Proven
@@ -21,8 +21,8 @@ PASS-019 - modular previous-app capability, help, event, and settings migration.
 - Read-only Python backend exposes `GET /api/workspace/status` and `GET /api/passes/ledger`.
 - Read-only Python backend exposes `GET /api/workspace/config` and `GET /api/workspace/layout`.
 - Read-only Python backend exposes `GET /api/intake/policy` and `GET /api/intake/catalog`.
-- Only guarded intake and complete workbench-preference routes accept POST; all other state-changing API methods return a blocked response.
-- Browser dashboard renders app state and performs only bounded authorized intake and presentation-preference mutations.
+- Only guarded intake, complete workbench-preference, and contained STL-preflight routes accept POST; all other state-changing API methods return a blocked response.
+- Browser dashboard renders app state and performs only bounded authorized intake, presentation-preference, and contained-preflight mutations.
 - Browser dashboard renders current pass, next pass, and source-truth path from durable status records.
 - Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
 - Default local settings enable only user-authorized intake; route execution, tool launch, archive extraction, folder import, deletion, and release packaging remain disabled.
@@ -93,20 +93,21 @@ PASS-019 - modular previous-app capability, help, event, and settings migration.
 - PASS-017 inventories the previous working app without importing its 3.7 GB dependency/generated tree, records every capability migration decision, locally explains all 14,611 lines in 29 first-party legacy source files, and adds a secured native-window plus deterministic one-file Windows executable path over the same current core.
 - PASS-018 adds a process-local request token, same-origin checks, a ten-minute one-time authorization, allowlisted one-file intake, bounded exact-length streaming, SHA-256 proof, atomic app-owned quarantine storage, rollback, and the reviewed browser/native workbench flow.
 - PASS-019 migrates the prior app's strongest capability-lane, contextual-help, event-history, settings, and restrained-motion ideas into focused current modules. The matrix derives from existing contracts, preferences use portable app-owned settings, activity is fixed/redacted/create-only, and all route/tool/output/software actions remain blocked.
+- PASS-020 enables one deliberately partial route stage: an explicitly authorized app-owned STL is streamed through a built-in structural preflight with exact size/hash checks, one concurrency slot, cooperative cancellation, fixed append-only audit events, a report, execution log, and hashed output proof. It starts no external command/process/tool, creates no toolpath or G-code, opens no output, and does not claim full mesh-to-toolpath completion.
 
 ## Blocked Or Not Proven
 
-- Route execution.
-- Output creation.
+- Full route execution beyond the built-in STL preflight.
+- Toolpath and G-code output creation.
 - Output open actions.
-- Proof capture.
+- Proof capture beyond the contained STL preflight.
 - External tool launch.
 - Tool version proof.
 - Runnable tool command construction.
 - Execution request persistence.
-- Execution authorization acceptance.
+- Execution authorization beyond the contained STL preflight.
 - Process cancellation signaling and stop proof.
-- Execution logging.
+- External-process execution logging.
 - Selected-file handoff.
 - Drag-and-drop or clipboard-paste intake.
 - Archive upload, content-type verification, and malware scanning.
@@ -119,4 +120,4 @@ PASS-019 - modular previous-app capability, help, event, and settings migration.
 
 ## Next Pass
 
-PASS-020 - single-route contained execution with cancellation, audit, and output proof.
+PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle contracts.

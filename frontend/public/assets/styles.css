@@ -2583,6 +2583,45 @@ html[data-motion="reduced"] *::after {
   transition-duration: 0.01ms !important;
 }
 
+/* Block purpose: Stacks eligible sources and existing contained execution records. */
+.contained-execution-list {
+  display: grid;
+  gap: 1px;
+  margin-top: 8px;
+}
+
+/* Block purpose: Aligns one preflight identity with stable right-side commands. */
+.contained-execution-item {
+  align-items: center;
+  background: var(--surface-soft);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-height: 52px;
+  padding: 8px 10px;
+}
+
+/* Block purpose: Keeps lifecycle detail subordinate to the selected source name. */
+.contained-execution-item > div:first-child {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* Block purpose: Prevents long source names and proof summaries from shifting commands. */
+.contained-execution-item span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  overflow-wrap: anywhere;
+}
+
+/* Block purpose: Groups run and symbol-based cancel commands without changing row size. */
+.contained-execution-commands {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
 /* Block purpose: Reflows capability comparison at tablet widths without horizontal scroll. */
 @media (max-width: 1180px) {
   .capability-lane {
@@ -2611,5 +2650,11 @@ html[data-motion="reduced"] *::after {
     left: 8px;
     right: 8px;
     top: 58px;
+}
+
+/* Block purpose: Gives each preflight source or execution one stable two-column command row. */
+.contained-execution-item {
+    align-items: stretch;
+    grid-template-columns: 1fr;
   }
 }

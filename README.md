@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: build pass 018 adds explicit one-file authorization and a bounded browser/native intake path. A reviewed, allowlisted file can be copied into private app-owned quarantine storage; route execution, tool launch, selected-file handoff, archive extraction, installers, signing, release, and clean-machine claims remain gated.
+Current status: PASS-020 adds one explicitly authorized built-in STL structural preflight with cooperative cancellation, append-only audit, and real report/log/proof artifacts. Full routes, slicing, G-code, external commands/processes/tools, output opening, software changes, release, and clean-machine claims remain gated.
 
 ## Run Locally
 

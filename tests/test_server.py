@@ -127,7 +127,8 @@ def test_http_intake_uses_one_shared_token_and_rejects_preflight(tmp_path: Path)
             "Origin": base,
             "Sec-Fetch-Site": "same-origin",
         }
-        metadata = json.dumps(valid_metadata()).encode("utf-8")
+        payload = b"solid fixture\nfacet normal 0 0 0\nouter loop\nendloop\nendfacet\nendsolid fixture\n"
+        metadata = json.dumps(valid_metadata(sizeBytes=len(payload))).encode("utf-8")
         authorize_request = Request(
             f"{base}/api/intake/authorizations",
             data=metadata,
@@ -137,7 +138,6 @@ def test_http_intake_uses_one_shared_token_and_rejects_preflight(tmp_path: Path)
         with urlopen(authorize_request, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
             assert response.status == 201
             authorization = json.loads(response.read().decode("utf-8"))["authorization"]
-        payload = b"solid fixture\nendsolid x\n"
         content_request = Request(
             f"{base}/api/intake/authorizations/{authorization['id']}/content",
             data=payload,
@@ -149,6 +149,42 @@ def test_http_intake_uses_one_shared_token_and_rejects_preflight(tmp_path: Path)
             result = json.loads(response.read().decode("utf-8"))
         assert result["record"]["storage"]["sizeBytes"] == len(payload)
         assert len(list((data_root / "intake" / "files").glob("*"))) == 1
+        execution_authorization = json.dumps(
+            {
+                "intakeId": result["record"]["id"],
+                "routeId": "mesh-to-toolpath",
+                "operationId": "built-in-stl-preflight",
+                "accepted": True,
+            }
+        ).encode("utf-8")
+        authorize_execution_request = Request(
+            f"{base}/api/executions/authorizations",
+            data=execution_authorization,
+            method="POST",
+            headers={**common_headers, "Content-Type": "application/json"},
+        )
+        with urlopen(authorize_execution_request, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            assert response.status == 201
+            execution = json.loads(response.read().decode("utf-8"))["record"]
+        run_request = Request(
+            f"{base}/api/executions/{execution['id']}/run",
+            data=None,
+            method="POST",
+            headers=common_headers,
+        )
+        with urlopen(run_request, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            assert response.status == 200
+            completed = json.loads(response.read().decode("utf-8"))
+        assert completed["record"]["lifecycle"]["state"] == "completed"
+        assert completed["record"]["proof"]["outcome"] == "passed"
+        assert completed["record"]["proof"]["fullRouteCompleted"] is False
+        assert completed["record"]["proof"]["toolpathGenerated"] is False
+        assert completed["audit"]["summary"]["eventCount"] == 5
+        with urlopen(f"{base}/api/executions/catalog", timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            execution_catalog = json.loads(response.read().decode("utf-8"))
+        assert execution_catalog["summary"]["completedCount"] == 1
+        assert execution_catalog["summary"]["proofCount"] == 1
+        assert str(data_root) not in json.dumps(execution_catalog)
         options = Request(
             f"{base}/api/intake/authorizations",
             method="OPTIONS",

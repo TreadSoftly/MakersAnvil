@@ -306,6 +306,51 @@ class IntakeCatalogService:
 
         return self._record_path(record_id, self.policy()).exists()
 
+    def authorized_record(self, record_id: str) -> dict[str, Any]:
+        """Purpose: Return one strictly validated authorized intake record by generated id.
+
+        Inputs: Exact ``intake-<32 hex>`` identifier, never a path or filename.
+        Outputs: A defensive copy of the authorized record used by contained execution.
+        How it works: Resolves the fixed record path, decodes JSON, and revalidates every field.
+        Side effects: Reads one app-owned JSON record only.
+        Failure behavior: Missing, malformed, metadata-only, or weakened records raise explicitly.
+        Safety: Callers cannot use this method to resolve arbitrary files or legacy source paths.
+        Example: STL preflight asks for the record bound to its accepted authorization.
+        Related proof: ``tests/test_contained_execution.py`` and intake validation tests.
+        """
+
+        path = self._record_path(record_id, self.policy())
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise IntakeCatalogError("authorized intake record is unavailable") from exc
+        if not isinstance(record, dict) or not self._valid_authorized_record(record):
+            raise IntakeCatalogError("authorized intake record is invalid")
+        return json.loads(json.dumps(record))
+
+    def authorized_content_path(self, record: dict[str, Any]) -> Path:
+        """Purpose: Resolve the private app-owned content path for one validated record.
+
+        Inputs: Complete authorized record previously returned by ``authorized_record``.
+        Outputs: Existing regular non-symlink file contained under ``intake/files``.
+        How it works: Revalidates the record and derives its generated id plus extension.
+        Side effects: Reads filesystem metadata only; no source or app-owned file changes.
+        Failure behavior: Invalid records, missing content, symlinks, and size drift raise.
+        Safety: The path never comes from browser text and is never returned by a public API.
+        Example: ``intake-abc...`` plus ``.stl`` resolves its quarantined generated copy.
+        Related proof: Containment, symlink, missing-content, and size-drift tests.
+        """
+
+        if not isinstance(record, dict) or not self._valid_authorized_record(record):
+            raise IntakeCatalogError("authorized intake record is invalid")
+        files_root = self.workspace_config.runtime_path(self.policy()["filesDirectory"])
+        path = files_root / f"{record['id']}{record['source']['extension']}"
+        if path.is_symlink() or not path.is_file():
+            raise IntakeCatalogError("authorized intake content is unavailable")
+        if path.stat().st_size != record["storage"]["sizeBytes"]:
+            raise IntakeCatalogError("authorized intake content size no longer matches its record")
+        return path
+
     def classify_extension(self, extension: str) -> str:
         """Purpose: Classify one normalized extension through committed intake policy.
 
@@ -356,6 +401,8 @@ class IntakeCatalogService:
         Related proof: ``tests/test_authorized_intake.py`` probes invalid ids.
         """
 
+        if not isinstance(record_id, str):
+            raise IntakeCatalogError("intake record id is invalid")
         suffix = record_id.removeprefix("intake-")
         if not record_id.startswith("intake-") or len(suffix) != 32 or any(char not in "0123456789abcdef" for char in suffix):
             raise IntakeCatalogError("intake record id is invalid")

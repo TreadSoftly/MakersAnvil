@@ -25,6 +25,11 @@
       "purpose": "contained prepared job and cancellation records"
     },
     {
+      "id": "executions",
+      "relativePath": "executions",
+      "purpose": "authorized contained execution records, logs, reports, and proof"
+    },
+    {
       "id": "outputs",
       "relativePath": "outputs",
       "purpose": "future output bundles"

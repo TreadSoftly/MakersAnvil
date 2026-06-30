@@ -270,6 +270,21 @@
         "legacy dependencies, monoliths, personal paths, source-adjacent storage, direct processes, broad intake, and output opening remain excluded",
         "source schemas, focused service tests, complete line explanations, browser/native/package proof, and cross-platform CI cover the pass"
       ]
+    },
+    {
+      "id": "PASS-020",
+      "title": "contained built-in STL preflight with cancellation, audit, and output proof",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_020_REPORT.md",
+      "proof": [
+        "one explicitly authorized app-owned STL can enter one built-in in-process structural preflight",
+        "bounded streaming proves byte size, SHA-256, and binary or ASCII STL structure without retaining source content",
+        "one concurrency slot and cooperative cancellation prevent overlapping work and require no process signal",
+        "fixed append-only audit events cover request, authorization, start, cancellation or completion, and proof",
+        "report, log, proof, and terminal records use portable app-owned storage and expose only logical paths",
+        "guarded API and workbench actions remain limited to authorize, run, and cancel for this partial operation",
+        "full routes, slicing, G-code, arbitrary commands, external processes/tools, output opening, and software changes remain blocked"
+      ]
     }
   ]
 }

@@ -109,7 +109,7 @@ def test_desktop_window_owns_server_and_cleans_up() -> None:
     assert fake.settings["ALLOW_FILE_URLS"] is False
     assert fake.settings["REMOTE_DEBUGGING_PORT"] is None
     assert fake.health["mutatingActionsEnabled"] is True
-    assert fake.health["enabledMutationScopes"] == ["authorized-file-intake", "workbench-preferences"]
+    assert fake.health["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
     assert fake.health["routeExecutionEnabled"] is False
     with pytest.raises(URLError):
         urlopen(str(fake.window["url"]), timeout=1)  # noqa: S310 - closed loopback URL
@@ -132,11 +132,11 @@ def test_package_smoke_proves_bundled_core(capsys: pytest.CaptureFixture[str]) -
     result = json.loads(capsys.readouterr().out)
     assert result["passed"] is True
     assert result["mutatingActionsEnabled"] is True
-    assert result["enabledMutationScopes"] == ["authorized-file-intake", "workbench-preferences"]
+    assert result["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
     assert result["routeExecutionEnabled"] is False
     assert result["apiBuild"].startswith("makers-anvil-real-pass-")
-    assert result["currentPass"] == "PASS-019"
-    assert result["realAppCompletion"] == 52.5
+    assert result["currentPass"] == "PASS-020"
+    assert result["realAppCompletion"] == 62.5
 
 
 def test_package_smoke_handles_windowed_stdout(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/stl-preflight-report.schema.json",
+  "title": "Makers Anvil STL preflight report",
+  "type": "object",
+  "required": ["schemaVersion", "executionId", "claimState", "completedUtc", "source", "detectedFormat", "triangleCount", "checks", "result"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.stl-preflight-report.v1"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "claimState": {"enum": ["proven", "failed"]},
+    "completedUtc": {"type": "string"},
+    "source": {"type": "object"},
+    "detectedFormat": {"enum": ["binary-stl", "ascii-stl", "unknown"]},
+    "triangleCount": {"type": ["integer", "null"], "minimum": 0},
+    "checks": {"type": "object", "additionalProperties": {"type": "boolean"}},
+    "result": {"type": "object", "required": ["passed", "fullRouteCompleted", "toolpathGenerated"], "additionalProperties": false, "properties": {"passed": {"type": "boolean"}, "fullRouteCompleted": {"const": false}, "toolpathGenerated": {"const": false}}}
+  }
+}

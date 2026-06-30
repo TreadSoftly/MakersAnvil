@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/contained-execution-record.schema.json",
+  "title": "Makers Anvil contained execution record",
+  "type": "object",
+  "required": ["schemaVersion", "id", "claimState", "createdUtc", "updatedUtc", "route", "operation", "source", "authorization", "lifecycle", "workspace", "proof", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.contained-execution.v1"},
+    "id": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "claimState": {"enum": ["staged", "proven", "failed", "blocked"]},
+    "createdUtc": {"type": "string"}, "updatedUtc": {"type": "string"},
+    "route": {"type": "object"}, "operation": {"type": "object"}, "source": {"type": "object"},
+    "authorization": {"type": "object"}, "lifecycle": {"type": "object"}, "workspace": {"type": "object"},
+    "proof": {"oneOf": [{"type": "null"}, {"$ref": "execution-proof.schema.json"}]},
+    "safety": {"type": "object", "additionalProperties": {"const": false}}
+  }
+}

@@ -151,7 +151,7 @@ A mutation is not a read-only feature with a button added. Before one is enabled
 - restart/recovery behavior when state must survive a process;
 - negative tests and visible browser state.
 
-Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates and PASS-019 adds presentation preferences plus fixed redacted activity; execution gates remain false.
+Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates, PASS-019 adds presentation preferences plus fixed redacted activity, and PASS-020 enables only the built-in STL structural preflight; full route and external-process execution remain false.
 
 ## Portability Rules
 

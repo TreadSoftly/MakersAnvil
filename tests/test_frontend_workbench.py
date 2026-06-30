@@ -198,7 +198,7 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     assert "function renderWorkbenchSummary" in javascript
     assert 'document.querySelector("#selected-input-title").textContent' in javascript
     assert 'method: "GET"' in javascript
-    assert javascript.count('method: "POST"') == 3
+    assert javascript.count('method: "POST"') == 4
     assert 'mode: "same-origin"' in javascript
     assert '"X-Makers-Anvil-Request-Token"' in javascript
     assert "dragover" not in javascript.lower()
@@ -206,6 +206,10 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     assert "renderCapabilityMatrix" in javascript
     assert "configureContextHelp" in javascript
     assert "renderActivityHistory" in javascript
+    assert "renderContainedExecutions" in javascript
+    assert "Authorize preflight" in javascript
+    assert "Run preflight" in javascript
+    assert "toolpathGenerated" not in javascript
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:

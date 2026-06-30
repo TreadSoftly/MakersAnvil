@@ -35,7 +35,7 @@ def test_reference_folder_is_not_tracked_product_source() -> None:
     assert "Previous Working MA For References/" in gitignore
 
 
-def test_frontend_mutation_is_limited_to_guarded_intake_and_preferences() -> None:
+def test_frontend_mutation_is_limited_to_guarded_intake_preferences_and_preflight() -> None:
     """Purpose: Browser mutation is limited to intake and complete preferences.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
@@ -56,7 +56,7 @@ def test_frontend_mutation_is_limited_to_guarded_intake_and_preferences() -> Non
     all_js = "\n".join(scripts.values())
 
     assert 'method: "GET"' in app_js
-    assert all_js.count('method: "POST"') == 3
+    assert all_js.count('method: "POST"') == 4
     assert 'const intakeSessionUrl = "/api/intake/session"' in app_js
     assert '"X-Makers-Anvil-Request-Token"' in app_js
     assert 'mode: "same-origin"' in app_js
@@ -64,6 +64,9 @@ def test_frontend_mutation_is_limited_to_guarded_intake_and_preferences() -> Non
     assert "/api/tools/open" not in all_js
     assert "/api/jobs/run" not in all_js
     assert 'fetch("/api/workbench/experience"' in scripts["workbench-experience.js"]
+    assert 'const containedExecutionPolicyUrl = "/api/executions/policy"' in app_js
+    assert '"X-Makers-Anvil-Request-Token": token' in scripts["contained-execution.js"]
+    assert "externalToolLaunched" not in scripts["contained-execution.js"]
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -167,11 +170,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-019"
-    assert current["trackPercentages"]["realApp"] == 52.5
+    assert current["currentPass"]["id"] == "PASS-020"
+    assert current["trackPercentages"]["realApp"] == 62.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-019"
+    assert ledger["passes"][-1]["id"] == "PASS-020"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:

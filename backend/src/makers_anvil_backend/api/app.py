@@ -19,6 +19,7 @@ from urllib.parse import urlparse
 from makers_anvil_backend.domain.claim_state import ALLOWED_CLAIM_STATES
 from makers_anvil_backend.services.app_state import AppStateService
 from makers_anvil_backend.services.authorized_intake import IntakeRequestContext, IntakeTransferError
+from makers_anvil_backend.services.contained_execution import ContainedExecutionError
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogError
 from makers_anvil_backend.services.local_request_guard import LocalRequestError
 from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceError
@@ -96,6 +97,8 @@ class MakersAnvilApi:
             "/api/workbench/experience": self._state_service.workbench_experience,
             "/api/activity/recent": self._state_service.activity_history,
             "/api/capabilities/matrix": self._state_service.capability_matrix,
+            "/api/executions/policy": self._state_service.contained_execution_policy,
+            "/api/executions/catalog": self._state_service.contained_execution_catalog,
         }
 
     def handle(
@@ -204,6 +207,28 @@ class MakersAnvilApi:
                 result = self._state_service.update_workbench_experience(preferences, context)
                 return ApiResponse(200, result)
 
+            if path == "/api/executions/authorizations":
+                media_type = normalized_headers.get("content-type", "").split(";", 1)[0].strip().lower()
+                if media_type != "application/json" or body is None:
+                    return self._api_error(415, "content_type_not_allowed", "Execution authorization requires an application/json body.")
+                try:
+                    payload = json.loads(body.decode("utf-8"))
+                except (UnicodeDecodeError, json.JSONDecodeError):
+                    return self._api_error(400, "json_invalid", "Execution authorization must be valid UTF-8 JSON.")
+                if not isinstance(payload, dict):
+                    return self._api_error(400, "execution_authorization_invalid", "Execution authorization must be a JSON object.")
+                return ApiResponse(201, self._state_service.authorize_contained_execution(payload, context))
+
+            execution_prefix = "/api/executions/"
+            for action in ("run", "cancel"):
+                suffix = f"/{action}"
+                if path.startswith(execution_prefix) and path.endswith(suffix):
+                    execution_id = path[len(execution_prefix) : -len(suffix)]
+                    if body not in (None, b"") or content_length not in (None, 0):
+                        return self._api_error(400, "body_not_allowed", f"Execution {action} accepts no request body.")
+                    operation = self._state_service.run_contained_execution if action == "run" else self._state_service.cancel_contained_execution
+                    return ApiResponse(200, operation(execution_id, context))
+
             prefix = "/api/intake/authorizations/"
             suffix = "/content"
             if path.startswith(prefix) and path.endswith(suffix):
@@ -224,6 +249,8 @@ class MakersAnvilApi:
             return self._api_error(exc.status, exc.code, str(exc))
         except LocalRequestError as exc:
             return self._api_error(exc.status, exc.code, str(exc))
+        except ContainedExecutionError as exc:
+            return self._api_error(exc.status, exc.code, str(exc))
         except WorkbenchExperienceError as exc:
             return self._api_error(422, "preferences_invalid", str(exc))
         except IntakeCatalogError:
@@ -237,7 +264,7 @@ class MakersAnvilApi:
                 "schemaVersion": "makers-anvil.api.error.v1",
                 "claimState": "blocked",
                 "error": "method_not_allowed",
-                "message": "Only documented guarded intake and workbench-preference POST routes are enabled.",
+                "message": "Only documented guarded intake, preference, and contained-preflight POST routes are enabled.",
                 "allowedMethods": ["GET"],
             },
         )

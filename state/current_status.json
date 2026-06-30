@@ -7,17 +7,17 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-019",
-    "title": "modular previous-app capability, help, event, and settings migration",
+    "id": "PASS-020",
+    "title": "contained built-in STL preflight with cancellation, audit, and output proof",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_019_REPORT.md"
+    "reportPath": "docs/passes/PASS_020_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 52.5,
-    "windowsLocal": 57.5,
+    "realApp": 62.5,
+    "windowsLocal": 67.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 10.0,
+    "packagedRelease": 12.5,
     "cleanMachineProof": 0.0
   },
   "sourceTruth": {
@@ -37,7 +37,10 @@
     "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json",
     "workbenchExperiencePolicyPath": "config/workbench_experience.json",
     "capabilityMatrixSchemaPath": "schemas/capability-matrix.schema.json",
-    "activityHistorySchemaPath": "schemas/activity-history.schema.json"
+    "activityHistorySchemaPath": "schemas/activity-history.schema.json",
+    "containedExecutionPolicyPath": "config/contained_execution_policy.json",
+    "containedExecutionRecordSchemaPath": "schemas/contained-execution-record.schema.json",
+    "executionProofSchemaPath": "schemas/execution-proof.schema.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -113,19 +116,24 @@
     ,"Compact or comfortable density, full or reduced motion, and contextual-help visibility persist atomically in portable app-owned user data through the shared local request guard."
     ,"Completed intake and preference actions create immutable server-authored redacted activity files; browsers cannot submit arbitrary event text, paths, updates, or deletions."
     ,"The previous app's capability, help, event-history, settings, and restrained motion ideas are migrated into focused modules without importing legacy dependencies, paths, source storage, or process behavior."
+    ,"One explicitly authorized app-owned STL can run a built-in streaming structural preflight with a single in-process concurrency slot."
+    ,"The preflight verifies exact byte size, SHA-256 digest, and binary or ASCII STL structure without constructing a command or starting a process or external tool."
+    ,"Cooperative cancellation is persisted and observed between bounded source reads without claiming an operating-system process signal."
+    ,"Successful or failed preflight completion writes a path-redacted report, execution log, hashed proof, terminal manifest, and append-only fixed-vocabulary audit events under portable app-owned storage."
+    ,"The guarded API and workbench expose explicit authorize, run, and cancel controls only for the built-in STL preflight while full mesh-to-toolpath execution remains false."
   ],
   "blockedOrNotProven": [
-    "route execution",
-    "output creation",
+    "full route execution beyond built-in STL preflight",
+    "toolpath and G-code output creation",
     "output open action",
-    "proof capture",
+    "proof capture beyond contained STL preflight",
     "external tool launch",
     "tool version proof",
     "runnable tool command construction",
     "execution request persistence",
-    "execution authorization acceptance",
+    "execution authorization beyond contained STL preflight",
     "process cancellation signaling and stop proof",
-    "execution logging",
+    "external-process execution logging",
     "selected-file handoff",
     "drag-and-drop intake",
     "clipboard-paste intake",
@@ -141,8 +149,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-020",
-    "title": "single-route contained execution with cancellation, audit, and output proof",
+    "id": "PASS-021",
+    "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
     "claimState": "planned"
   }
 }

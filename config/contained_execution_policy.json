@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "makers-anvil.config.contained-execution.v1",
+  "claimState": "staged",
+  "mode": "built-in-cooperative-single-operation",
+  "scope": {
+    "routeId": "mesh-to-toolpath",
+    "operationId": "built-in-stl-preflight",
+    "allowedKind": "mesh",
+    "allowedExtensions": [".stl"],
+    "maxConcurrentExecutions": 1
+  },
+  "storage": {
+    "executionsDirectory": "executions",
+    "recordFileName": "execution.json",
+    "cancellationFileName": "cancellation.json",
+    "executionLogFileName": "execution.log",
+    "reportFileName": "stl-preflight-report.json",
+    "proofFileName": "execution-proof.json",
+    "auditDirectory": "logs/audit"
+  },
+  "limits": {
+    "maxSourceBytes": 536870912,
+    "readChunkBytes": 1048576
+  },
+  "actions": {
+    "authorizationEnabled": true,
+    "executionEnabled": true,
+    "cooperativeCancellationEnabled": true,
+    "apiMutationEnabled": true,
+    "browserMutationEnabled": true
+  },
+  "safety": {
+    "originalSourcePathStored": false,
+    "originalSourceModified": false,
+    "archiveExtractionEnabled": false,
+    "externalCommandConstructed": false,
+    "externalProcessStarted": false,
+    "externalToolLaunched": false,
+    "softwareChangeEnabled": false,
+    "outputOpenEnabled": false
+  }
+}
