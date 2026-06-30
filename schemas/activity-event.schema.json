@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/activity-event.schema.json",
+  "title": "Makers Anvil activity event",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "id", "claimState", "timestampUtc", "eventType", "surface", "outcome", "summary", "subjectId"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.activity-event.v1"}, "id": {"type": "string", "pattern": "^activity-[a-f0-9]{32}$"}, "claimState": {"const": "proven"},
+    "timestampUtc": {"type": "string", "format": "date-time"}, "eventType": {"enum": ["intake-authorized", "intake-copied", "preferences-updated"]},
+    "surface": {"enum": ["intake", "settings"]}, "outcome": {"const": "completed"}, "summary": {"type": "string", "minLength": 1},
+    "subjectId": {"type": ["string", "null"], "pattern": "^intake-[a-f0-9]{32}$"}
+  }
+}

@@ -12,19 +12,20 @@ Related proof: ``tests/test_authorized_intake.py`` and intake transfer schemas.
 from __future__ import annotations
 
 import hashlib
-import hmac
 import json
 import os
-import secrets
 import threading
-from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, BinaryIO, Callable
-from urllib.parse import urlsplit
 from uuid import uuid4
 
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogError, IntakeCatalogService
+from makers_anvil_backend.services.local_request_guard import (
+    LocalRequestContext as IntakeRequestContext,
+    LocalRequestError,
+    LocalRequestGuard,
+)
 
 
 TRANSFER_SCOPE = "copy-one-file-into-app-storage"
@@ -76,26 +77,6 @@ class IntakeTransferError(ValueError):
         self.code = code
 
 
-@dataclass(frozen=True)
-class IntakeRequestContext:
-    """Purpose: Describe the browser security headers required for local mutation.
-
-    Inputs: Process token, HTTP Origin/Host, and Fetch Metadata site relationship.
-    Outputs: Immutable request context consumed by ``AuthorizedIntakeService``.
-    How it works: Dataclass generation provides a typed constructor and attributes.
-    Side effects: None.
-    Failure behavior: Missing values are rejected by service validation, not guessed.
-    Safety: Keeps transport security evidence explicit at the service boundary.
-    Example: Same-origin fetch passes token, ``http://127.0.0.1:port``, and host.
-    Related proof: Origin, token, and fetch-site rejection tests.
-    """
-
-    request_token: str
-    origin: str
-    host: str
-    fetch_site: str
-
-
 class AuthorizedIntakeService:
     """Purpose: Own one-file consent and transactional app-owned byte intake.
 
@@ -114,6 +95,7 @@ class AuthorizedIntakeService:
         intake_catalog: IntakeCatalogService | None = None,
         *,
         request_token: str | None = None,
+        request_guard: LocalRequestGuard | None = None,
         clock: Callable[[], datetime] | None = None,
     ) -> None:
         """Purpose: Bind one process-local token to shared intake storage and policy.
@@ -129,7 +111,9 @@ class AuthorizedIntakeService:
         """
 
         self.intake_catalog = intake_catalog or IntakeCatalogService()
-        self._request_token = request_token or secrets.token_urlsafe(32)
+        if request_guard is not None and request_token is not None:
+            raise ValueError("inject request_token or request_guard, not both")
+        self._request_guard = request_guard or LocalRequestGuard(request_token)
         self._clock = clock or (lambda: datetime.now(UTC))
         self._lock = threading.RLock()
 
@@ -158,7 +142,7 @@ class AuthorizedIntakeService:
             "schemaVersion": "makers-anvil.api.intake-session.v1",
             "claimState": "staged",
             "mode": "same-origin-one-file",
-            "requestToken": self._request_token,
+            "requestToken": self._request_guard.request_token,
             "authorizeEndpoint": "/api/intake/authorizations",
             "contentEndpointTemplate": "/api/intake/authorizations/{authorizationId}/content",
             "constraints": {
@@ -283,20 +267,26 @@ class AuthorizedIntakeService:
         Related proof: Cross-origin, missing-token, and fetch-site tests.
         """
 
-        if not context.request_token or not hmac.compare_digest(context.request_token, self._request_token):
-            raise IntakeTransferError(403, "request_token_rejected", "The local intake request token is missing or invalid.")
-        if context.fetch_site != "same-origin":
-            raise IntakeTransferError(403, "cross_origin_rejected", "Intake mutations require a same-origin browser request.")
         try:
-            parsed_origin = urlsplit(context.origin)
-        except ValueError as exc:
-            raise IntakeTransferError(403, "origin_rejected", "The intake request origin is invalid.") from exc
-        if parsed_origin.scheme != "http" or not parsed_origin.hostname or parsed_origin.username or parsed_origin.password:
-            raise IntakeTransferError(403, "origin_rejected", "The intake request origin is invalid.")
-        if parsed_origin.netloc.lower() != context.host.strip().lower():
-            raise IntakeTransferError(403, "origin_rejected", "The intake request origin does not match the local app.")
-        if parsed_origin.hostname.lower() not in {"127.0.0.1", "localhost", "::1"}:
-            raise IntakeTransferError(403, "origin_rejected", "Intake mutations require a loopback origin.")
+            self._request_guard.validate(context)
+        except LocalRequestError as exc:
+            raise IntakeTransferError(exc.status, exc.code, str(exc)) from exc
+
+    @property
+    def request_guard(self) -> LocalRequestGuard:
+        """Purpose: Share the exact process guard with other bounded local services.
+
+        Inputs: No caller values beyond this initialized intake service.
+        Outputs: The immutable guard reference used by intake validation.
+        How it works: Returns the private dependency without exposing token in state.
+        Side effects: None.
+        Failure behavior: Construction guarantees the guard exists.
+        Safety: Sharing one guard prevents parallel tokens and inconsistent origin rules.
+        Example: Preference persistence receives ``authorized_intake.request_guard``.
+        Related proof: App-state composition and mutation API tests.
+        """
+
+        return self._request_guard
 
     def _validate_metadata(self, metadata: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
         """Purpose: Normalize and allowlist path-free browser file metadata.

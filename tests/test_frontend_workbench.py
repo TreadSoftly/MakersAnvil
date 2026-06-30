@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "frontend" / "public" / "index.html"
 CSS_PATH = ROOT / "frontend" / "public" / "assets" / "styles.css"
 JS_PATH = ROOT / "frontend" / "public" / "assets" / "app.js"
+JS_PATHS = sorted((ROOT / "frontend" / "public" / "assets").glob("*.js"))
 
 
 class WorkbenchParser(HTMLParser):
@@ -109,6 +110,7 @@ def test_primary_workbench_zones_and_views_exist_once() -> None:
         "intake-zone",
         "selected-input-zone",
         "tools-zone",
+        "capability-matrix",
         "workflow-surface",
         "plan-surface",
         "dev-surface",
@@ -134,7 +136,7 @@ def test_every_javascript_id_target_exists_in_html() -> None:
     """
 
     parser = parse_workbench()
-    javascript = JS_PATH.read_text(encoding="utf-8")
+    javascript = "\n".join(path.read_text(encoding="utf-8") for path in JS_PATHS)
     target_ids = set(re.findall(r'querySelector\("#([^"]+)"\)', javascript))
 
     assert target_ids <= set(parser.ids)
@@ -169,7 +171,7 @@ def test_workbench_controls_allow_only_one_file_with_separate_consent() -> None:
     assert "multiple" not in file_input
     assert "webkitdirectory" not in file_input
     assert forms == []
-    assert {attributes.get("type") for attributes in inputs} == {"search", "file"}
+    assert {attributes.get("type") for attributes in inputs} == {"search", "file", "radio", "checkbox"}
     assert all("onclick" not in attributes for attributes in buttons)
 
 
@@ -186,7 +188,7 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
     """
 
-    javascript = JS_PATH.read_text(encoding="utf-8")
+    javascript = "\n".join(path.read_text(encoding="utf-8") for path in JS_PATHS)
 
     assert "function selectWorkbenchView" in javascript
     assert "function initializeWorkbenchControls" in javascript
@@ -196,11 +198,14 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     assert "function renderWorkbenchSummary" in javascript
     assert 'document.querySelector("#selected-input-title").textContent' in javascript
     assert 'method: "GET"' in javascript
-    assert javascript.count('method: "POST"') == 2
+    assert javascript.count('method: "POST"') == 3
     assert 'mode: "same-origin"' in javascript
     assert '"X-Makers-Anvil-Request-Token"' in javascript
     assert "dragover" not in javascript.lower()
     assert 'addEventListener("paste"' not in javascript
+    assert "renderCapabilityMatrix" in javascript
+    assert "configureContextHelp" in javascript
+    assert "renderActivityHistory" in javascript
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:

@@ -35,8 +35,8 @@ def test_reference_folder_is_not_tracked_product_source() -> None:
     assert "Previous Working MA For References/" in gitignore
 
 
-def test_frontend_mutation_is_limited_to_two_authorized_intake_calls() -> None:
-    """Purpose: Browser mutation is limited to metadata consent and matching file bytes.
+def test_frontend_mutation_is_limited_to_guarded_intake_and_preferences() -> None:
+    """Purpose: Browser mutation is limited to intake and complete preferences.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -48,16 +48,22 @@ def test_frontend_mutation_is_limited_to_two_authorized_intake_calls() -> None:
     Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
     """
 
-    app_js = (ROOT / "frontend" / "public" / "assets" / "app.js").read_text(encoding="utf-8")
+    scripts = {
+        path.name: path.read_text(encoding="utf-8")
+        for path in (ROOT / "frontend" / "public" / "assets").glob("*.js")
+    }
+    app_js = scripts["app.js"]
+    all_js = "\n".join(scripts.values())
 
     assert 'method: "GET"' in app_js
-    assert app_js.count('method: "POST"') == 2
+    assert all_js.count('method: "POST"') == 3
     assert 'const intakeSessionUrl = "/api/intake/session"' in app_js
     assert '"X-Makers-Anvil-Request-Token"' in app_js
     assert 'mode: "same-origin"' in app_js
-    assert 'method: "DELETE"' not in app_js
-    assert "/api/tools/open" not in app_js
-    assert "/api/jobs/run" not in app_js
+    assert 'method: "DELETE"' not in all_js
+    assert "/api/tools/open" not in all_js
+    assert "/api/jobs/run" not in all_js
+    assert 'fetch("/api/workbench/experience"' in scripts["workbench-experience.js"]
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -161,11 +167,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-018"
-    assert current["trackPercentages"]["realApp"] == 42.5
+    assert current["currentPass"]["id"] == "PASS-019"
+    assert current["trackPercentages"]["realApp"] == 52.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-018"
+    assert ledger["passes"][-1]["id"] == "PASS-019"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:

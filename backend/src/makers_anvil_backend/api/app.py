@@ -20,6 +20,8 @@ from makers_anvil_backend.domain.claim_state import ALLOWED_CLAIM_STATES
 from makers_anvil_backend.services.app_state import AppStateService
 from makers_anvil_backend.services.authorized_intake import IntakeRequestContext, IntakeTransferError
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogError
+from makers_anvil_backend.services.local_request_guard import LocalRequestError
+from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceError
 
 
 JsonDict = dict[str, Any]
@@ -91,6 +93,9 @@ class MakersAnvilApi:
             "/api/execution/requests/preview": self._state_service.execution_request_preview,
             "/api/jobs/policy": self._state_service.job_workspace_policy,
             "/api/jobs/catalog": self._state_service.job_workspace_catalog,
+            "/api/workbench/experience": self._state_service.workbench_experience,
+            "/api/activity/recent": self._state_service.activity_history,
+            "/api/capabilities/matrix": self._state_service.capability_matrix,
         }
 
     def handle(
@@ -118,7 +123,7 @@ class MakersAnvilApi:
         path = urlparse(raw_path).path
         normalized_method = method.upper()
         if normalized_method == "POST":
-            return self._handle_intake_post(path, headers or {}, body, body_stream, content_length)
+            return self._handle_post(path, headers or {}, body, body_stream, content_length)
         if normalized_method != "GET":
             return ApiResponse(
                 405,
@@ -145,7 +150,7 @@ class MakersAnvilApi:
             )
         return ApiResponse(200, handler())
 
-    def _handle_intake_post(
+    def _handle_post(
         self,
         path: str,
         headers: Mapping[str, str],
@@ -153,12 +158,12 @@ class MakersAnvilApi:
         body_stream: BinaryIO | None,
         content_length: int | None,
     ) -> ApiResponse:
-        """Purpose: Handle authorization metadata or its one matching byte stream.
+        """Purpose: Handle guarded intake or complete workbench preference JSON.
 
         Inputs: Exact API path, normalized HTTP headers, body/stream, and length.
         Outputs: 201 response or stable path-free error response.
         How it works: Matches two routes, validates media type, then delegates service rules.
-        Side effects: Successful calls write app-owned authorization/content records.
+        Side effects: Successful calls write app-owned intake, settings, or activity records.
         Failure behavior: JSON, guard, policy, replay, size, and I/O failures are explicit.
         Safety: Unknown POSTs never reach a service and receive method-not-allowed.
         Example: Authorization JSON precedes ``/<authorization-id>/content`` bytes.
@@ -186,6 +191,19 @@ class MakersAnvilApi:
                 result = self._state_service.create_intake_authorization(metadata, context)
                 return ApiResponse(201, result)
 
+            if path == "/api/workbench/experience":
+                media_type = normalized_headers.get("content-type", "").split(";", 1)[0].strip().lower()
+                if media_type != "application/json" or body is None:
+                    return self._api_error(415, "content_type_not_allowed", "Workbench preferences require an application/json body.")
+                try:
+                    preferences = json.loads(body.decode("utf-8"))
+                except (UnicodeDecodeError, json.JSONDecodeError):
+                    return self._api_error(400, "json_invalid", "Workbench preferences must be valid UTF-8 JSON.")
+                if not isinstance(preferences, dict):
+                    return self._api_error(400, "preferences_invalid", "Workbench preferences must be a JSON object.")
+                result = self._state_service.update_workbench_experience(preferences, context)
+                return ApiResponse(200, result)
+
             prefix = "/api/intake/authorizations/"
             suffix = "/content"
             if path.startswith(prefix) and path.endswith(suffix):
@@ -204,6 +222,10 @@ class MakersAnvilApi:
                 return ApiResponse(201, result)
         except IntakeTransferError as exc:
             return self._api_error(exc.status, exc.code, str(exc))
+        except LocalRequestError as exc:
+            return self._api_error(exc.status, exc.code, str(exc))
+        except WorkbenchExperienceError as exc:
+            return self._api_error(422, "preferences_invalid", str(exc))
         except IntakeCatalogError:
             return self._api_error(422, "intake_record_invalid", "The authorized intake record was rejected.")
         except OSError:
@@ -215,7 +237,7 @@ class MakersAnvilApi:
                 "schemaVersion": "makers-anvil.api.error.v1",
                 "claimState": "blocked",
                 "error": "method_not_allowed",
-                "message": "Only the documented authorized-intake POST routes are enabled.",
+                "message": "Only documented guarded intake and workbench-preference POST routes are enabled.",
                 "allowedMethods": ["GET"],
             },
         )

@@ -7,17 +7,17 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-018",
-    "title": "explicit authorization and portable native/browser intake foundation",
+    "id": "PASS-019",
+    "title": "modular previous-app capability, help, event, and settings migration",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_018_REPORT.md"
+    "reportPath": "docs/passes/PASS_019_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 42.5,
-    "windowsLocal": 47.5,
+    "realApp": 52.5,
+    "windowsLocal": 57.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 7.5,
+    "packagedRelease": 10.0,
     "cleanMachineProof": 0.0
   },
   "sourceTruth": {
@@ -34,7 +34,10 @@
     "previousAppMigrationPath": "state/previous_app_migration.json",
     "intakePolicyPath": "config/intake_policy.json",
     "intakeAuthorizationSchemaPath": "schemas/intake-authorization.schema.json",
-    "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json"
+    "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json",
+    "workbenchExperiencePolicyPath": "config/workbench_experience.json",
+    "capabilityMatrixSchemaPath": "schemas/capability-matrix.schema.json",
+    "activityHistorySchemaPath": "schemas/activity-history.schema.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -103,8 +106,13 @@
     "App-generated physical and logical names prevent a user-supplied file name from controlling the quarantine destination.",
     "The source file is read by the browser only after explicit consent and is never moved, deleted, renamed, or exposed by path.",
     "The API rejects cross-origin evidence, invalid tokens, archives, unsupported suffixes, folders, zero-byte files, oversized files, stale metadata, and wrong media types.",
-    "Only the authorization metadata and exact content endpoints accept POST; every other state-changing API route remains blocked.",
+    "Only guarded intake and complete workbench-preference endpoints accept POST; every other state-changing API route remains blocked.",
     "File intake does not hand content to a route or tool, extract archives, import folders, create outputs, or claim content-type or malware verification."
+    ,"Five capability lanes derive supported inputs, current previews, planned routes, detected tool families, and output plans from existing schema-backed truth while execution stays false."
+    ,"Contextual help uses one keyboard-accessible viewport-contained popover with reviewed purpose and safety boundaries for each major workbench surface."
+    ,"Compact or comfortable density, full or reduced motion, and contextual-help visibility persist atomically in portable app-owned user data through the shared local request guard."
+    ,"Completed intake and preference actions create immutable server-authored redacted activity files; browsers cannot submit arbitrary event text, paths, updates, or deletions."
+    ,"The previous app's capability, help, event-history, settings, and restrained motion ideas are migrated into focused modules without importing legacy dependencies, paths, source storage, or process behavior."
   ],
   "blockedOrNotProven": [
     "route execution",
@@ -133,8 +141,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-019",
-    "title": "modular previous-app capability, help, event, and settings migration",
+    "id": "PASS-020",
+    "title": "single-route contained execution with cancellation, audit, and output proof",
     "claimState": "planned"
   }
 }

@@ -4,7 +4,7 @@ Used by: ``scripts/run_dev.py`` and ``python -m makers_anvil_backend``.
 Inputs: Host/port, HTTP requests, guarded intake streams, and frontend assets.
 Outputs: Static responses or JSON responses delegated to ``MakersAnvilApi``.
 Side effects: Opens a loopback listening socket while the process is running.
-Safety: Static paths are contained; only two guarded intake POST routes can mutate.
+Safety: Static paths are contained; only guarded intake and preference POST routes mutate.
 Failure behavior: Missing assets return 404; startup and socket errors surface.
 Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
 """
@@ -120,16 +120,16 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         headers = {key: value for key, value in self.headers.items()}
         path = self.path.split("?", 1)[0]
         content_length = self._content_length()
-        if path == "/api/intake/authorizations":
+        if path in {"/api/intake/authorizations", "/api/workbench/experience"}:
             if content_length is None:
-                self._send_api(self._request_error(411, "content_length_required", "Authorization metadata requires Content-Length."))
+                self._send_api(self._request_error(411, "content_length_required", "JSON mutation metadata requires Content-Length."))
                 return
             if content_length > MAX_METADATA_BODY_BYTES:
-                self._send_api(self._request_error(413, "metadata_too_large", "Authorization metadata exceeds the request limit."))
+                self._send_api(self._request_error(413, "metadata_too_large", "JSON mutation metadata exceeds the request limit."))
                 return
             body = self.rfile.read(content_length)
             if len(body) != content_length:
-                self._send_api(self._request_error(400, "body_incomplete", "Authorization metadata ended before Content-Length."))
+                self._send_api(self._request_error(400, "body_incomplete", "JSON mutation metadata ended before Content-Length."))
                 return
             self._send_api(
                 self.api.handle(

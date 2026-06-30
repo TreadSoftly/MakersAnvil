@@ -14,7 +14,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.activity_log import ActivityLogService
 from makers_anvil_backend.services.authorized_intake import AuthorizedIntakeService, IntakeRequestContext
+from makers_anvil_backend.services.capability_matrix import CapabilityMatrixService
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
@@ -25,6 +27,7 @@ from makers_anvil_backend.services.tool_detection import ToolDetectionService
 from makers_anvil_backend.services.tool_dry_run import ToolDryRunService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
+from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceService
 
 
 class AppStateService:
@@ -40,7 +43,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-018-authorized-portable-intake"
+    api_build = "makers-anvil-real-pass-019-workbench-experience"
 
     def __init__(
         self,
@@ -55,6 +58,9 @@ class AppStateService:
         execution_gate: ExecutionGateService | None = None,
         execution_request: ExecutionRequestService | None = None,
         job_workspace: JobWorkspaceService | None = None,
+        workbench_experience: WorkbenchExperienceService | None = None,
+        activity_log: ActivityLogService | None = None,
+        capability_matrix: CapabilityMatrixService | None = None,
     ) -> None:
         """Purpose: Compose injected or default services so one request uses coherent snapshots.
 
@@ -69,8 +75,8 @@ class AppStateService:
         """
 
         self._workspace_status = workspace_status or WorkspaceStatusService()
-        self._workspace_config = workspace_config or WorkspaceConfigService()
-        self._intake_catalog = intake_catalog or IntakeCatalogService()
+        self._workspace_config = workspace_config or (intake_catalog.workspace_config if intake_catalog is not None else WorkspaceConfigService())
+        self._intake_catalog = intake_catalog or IntakeCatalogService(workspace_config=self._workspace_config)
         self._authorized_intake = authorized_intake or AuthorizedIntakeService(self._intake_catalog)
         self._route_preview = route_preview or RoutePreviewService(intake_catalog=self._intake_catalog)
         self._output_proof = output_proof or OutputProofService(
@@ -91,6 +97,18 @@ class AppStateService:
         self._job_workspace = job_workspace or JobWorkspaceService(
             workspace_config=self._workspace_config,
             execution_request=self._execution_request,
+        )
+        self._workbench_experience = workbench_experience or WorkbenchExperienceService(
+            workspace_config=self._workspace_config,
+            request_guard=self._authorized_intake.request_guard,
+        )
+        self._activity_log = activity_log or ActivityLogService(
+            workspace_config=self._workspace_config,
+            experience=self._workbench_experience,
+        )
+        self._capability_matrix = capability_matrix or CapabilityMatrixService(
+            intake_catalog=self._intake_catalog,
+            route_preview=self._route_preview,
         )
 
     def health(self) -> dict[str, Any]:
@@ -114,7 +132,7 @@ class AppStateService:
             "service": "bounded-local-api",
             "timeUtc": datetime.now(UTC).isoformat(),
             "mutatingActionsEnabled": True,
-            "enabledMutationScopes": ["authorized-file-intake"],
+            "enabledMutationScopes": ["authorized-file-intake", "workbench-preferences"],
             "routeExecutionEnabled": False,
             "toolLaunchEnabled": False,
         }
@@ -139,6 +157,7 @@ class AppStateService:
         tool_detection = self._tool_detection.detection_catalog()
         tool_dry_run = self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection)
         execution_gates = self._execution_gate.gate_catalog(tool_dry_run)
+        capability_matrix = self._capability_matrix.matrix(intake_catalog, route_preview, output_proof, tool_detection)
         return {
             "schemaVersion": "makers-anvil.api.state.v1",
             "appName": "Makers Anvil",
@@ -157,6 +176,7 @@ class AppStateService:
             "executionGates": execution_gates,
             "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
             "jobWorkspaceCatalog": self._job_workspace.catalog(),
+            "capabilityMatrix": capability_matrix,
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
             "blockedActions": current_status["blockedOrNotProven"],
@@ -285,7 +305,9 @@ class AppStateService:
         Related proof: Authorization API and service tests.
         """
 
-        return self._authorized_intake.authorize(metadata, context)
+        result = self._authorized_intake.authorize(metadata, context)
+        self._record_activity("intake-authorized", result["authorization"]["intakeId"])
+        return result
 
     def ingest_authorized_file(
         self,
@@ -306,7 +328,93 @@ class AppStateService:
         Related proof: Server streaming and authorized-intake transaction tests.
         """
 
-        return self._authorized_intake.ingest(authorization_id, stream, content_length, context)
+        result = self._authorized_intake.ingest(authorization_id, stream, content_length, context)
+        self._record_activity("intake-copied", result["record"]["id"])
+        return result
+
+    def workbench_experience(self) -> dict[str, Any]:
+        """Purpose: Return contextual help and current portable presentation preferences.
+
+        Inputs: No request body or caller-specific data.
+        Outputs: Path-redacted workbench experience contract.
+        How it works: Delegates policy and runtime overlay to the focused service.
+        Side effects: Reads one optional app-owned preference file.
+        Failure behavior: Invalid policy/runtime records propagate honestly.
+        Safety: The response cannot enable route, tool, output, or software actions.
+        Example: ``GET /api/workbench/experience`` initializes UI controls.
+        Related proof: Experience service and API tests.
+        """
+
+        return self._workbench_experience.experience()
+
+    def update_workbench_experience(
+        self,
+        preferences: dict[str, Any],
+        context: IntakeRequestContext,
+    ) -> dict[str, Any]:
+        """Purpose: Persist one complete guarded workbench preference selection.
+
+        Inputs: Exact preference mapping and same-origin local request context.
+        Outputs: Updated public experience contract.
+        How it works: Delegates validation/atomic write, then records fixed activity.
+        Side effects: Replaces one settings file and normally creates one event file.
+        Failure behavior: Preference errors propagate; journal failure does not undo success.
+        Safety: Uses the same process token and origin guard as file intake.
+        Example: Settings chooses compact density, reduced motion, and help enabled.
+        Related proof: API guard, persistence, and activity tests.
+        """
+
+        result = self._workbench_experience.update(preferences, context)
+        self._record_activity("preferences-updated")
+        return result
+
+    def activity_history(self) -> dict[str, Any]:
+        """Purpose: Return bounded server-authored activity without private details.
+
+        Inputs: No caller-supplied values.
+        Outputs: Newest-first activity history contract.
+        How it works: Delegates strict create-only record reads to the activity service.
+        Side effects: Reads app-owned event JSON files only.
+        Failure behavior: Corrupt events propagate instead of being reported as valid.
+        Safety: No arbitrary browser event write endpoint exists.
+        Example: ``GET /api/activity/recent`` lists completed intake/settings actions.
+        Related proof: Activity log and API route tests.
+        """
+
+        return self._activity_log.recent()
+
+    def capability_matrix(self) -> dict[str, Any]:
+        """Purpose: Return a coherent capability comparison from current snapshots.
+
+        Inputs: No caller-supplied values.
+        Outputs: Five supported input lanes with route/tool/output truth.
+        How it works: Builds one state snapshot and returns its matrix member.
+        Side effects: Performs read-only policy, record, and tool-presence checks.
+        Failure behavior: Inconsistent source contracts fail instead of guessing.
+        Safety: Every route/tool/output action remains false.
+        Example: ``GET /api/capabilities/matrix`` drives the lane renderer.
+        Related proof: Matrix service, API consistency, and browser tests.
+        """
+
+        return self.state()["capabilityMatrix"]
+
+    def _record_activity(self, event_type: str, subject_id: str | None = None) -> None:
+        """Purpose: Add secondary activity evidence without corrupting a completed action.
+
+        Inputs: Server-owned event type and optional generated subject id.
+        Outputs: ``None`` after a successful record or contained journal failure.
+        How it works: Calls the focused logger and contains expected storage/data errors.
+        Side effects: Normally creates one immutable event file.
+        Failure behavior: Journal failure cannot turn an already committed intake into 500.
+        Safety: Only fixed server event values reach the logger.
+        Example: Completed intake remains completed if its activity disk is unavailable.
+        Related proof: App-state orchestration fault-containment tests.
+        """
+
+        try:
+            self._activity_log.record(event_type, subject_id)
+        except (OSError, ValueError):
+            return
 
     def route_preview(self) -> dict[str, Any]:
         """Purpose: Return metadata-derived candidate steps while every action stays disabled.
@@ -517,6 +625,34 @@ class AppStateService:
                 "claimState": "staged",
                 "summary": "One reviewed file can be explicitly authorized and copied into path-redacted app-owned quarantine storage.",
                 "actionsEnabled": True,
+            },
+            {
+                "id": "workbench-preferences",
+                "label": "Workbench preferences",
+                "claimState": "staged",
+                "summary": "Density, motion, and contextual help persist in portable app-owned user data.",
+                "actionsEnabled": True,
+            },
+            {
+                "id": "context-help",
+                "label": "Contextual help",
+                "claimState": "staged",
+                "summary": "Focused help explains each major surface and its current safety boundary.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "activity-history",
+                "label": "Activity history",
+                "claimState": "staged",
+                "summary": "Completed intake and setting actions create redacted immutable local events.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "capability-matrix",
+                "label": "Capability matrix",
+                "claimState": "preview-only",
+                "summary": "Supported input kinds are compared against route previews and detected tool families.",
+                "actionsEnabled": False,
             },
             {
                 "id": "source-explainability",

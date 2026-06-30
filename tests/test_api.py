@@ -1,10 +1,10 @@
-"""Purpose: Explain and prove read APIs plus one bounded intake mutation surface.
+"""Purpose: Explain and prove read APIs plus bounded intake/settings mutations.
 
 Used by: Developers and CI whenever services, routes, or response contracts change.
 Inputs: Isolated app state and HTTP-style method/path calls.
 Outputs: Assertions over status codes, JSON shapes, joins, and blocked mutations.
 Side effects: Uses temporary runtime directories; never touches user data.
-Safety: Only authorized intake may mutate; every other unsupported route fails closed.
+Safety: Only guarded intake and preferences may mutate; all other routes fail closed.
 Failure behavior: A changed or weakened API contract fails the named example.
 Related proof: ``backend/.../api/app.py`` and public response schemas.
 """
@@ -12,8 +12,8 @@ Related proof: ``backend/.../api/app.py`` and public response schemas.
 from makers_anvil_backend.api.app import MakersAnvilApi
 
 
-def test_health_exposes_only_bounded_intake_mutation() -> None:
-    """Purpose: Health identifies the one enabled intake mutation and blocked execution.
+def test_health_exposes_only_bounded_local_mutations() -> None:
+    """Purpose: Health identifies guarded intake/settings and blocked execution.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -30,13 +30,13 @@ def test_health_exposes_only_bounded_intake_mutation() -> None:
     assert response.status == 200
     assert response.body["claimState"] == "proven"
     assert response.body["mutatingActionsEnabled"] is True
-    assert response.body["enabledMutationScopes"] == ["authorized-file-intake"]
+    assert response.body["enabledMutationScopes"] == ["authorized-file-intake", "workbench-preferences"]
     assert response.body["routeExecutionEnabled"] is False
     assert response.body["toolLaunchEnabled"] is False
 
 
-def test_state_limits_actions_to_file_intake() -> None:
-    """Purpose: Dashboard state reports current progress with only file intake enabled.
+def test_state_limits_actions_to_intake_and_preferences() -> None:
+    """Purpose: Dashboard state enables only guarded intake and preferences.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -51,12 +51,12 @@ def test_state_limits_actions_to_file_intake() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 42.5
-    assert response.body["currentPass"]["id"] == "PASS-018"
-    assert response.body["completion"]["packagedRelease"] == 7.5
+    assert response.body["completion"]["realApp"] == 52.5
+    assert response.body["currentPass"]["id"] == "PASS-019"
+    assert response.body["completion"]["packagedRelease"] == 10.0
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
-    assert enabled_capabilities == ["file-intake"]
+    assert enabled_capabilities == ["file-intake", "workbench-preferences"]
     assert "route execution" in response.body["blockedActions"]
 
 
@@ -77,6 +77,31 @@ def test_non_intake_mutating_requests_are_blocked() -> None:
 
     assert response.status == 405
     assert response.body["claimState"] == "blocked"
+
+
+def test_workbench_experience_activity_and_capability_reads_are_path_free() -> None:
+    """Purpose: Prove migrated workbench contracts are readable and nonexecuting.
+
+    Inputs: Default composed local API and three exact read routes.
+    Outputs: Schema identities, five lanes, help topics, and false safety assertions.
+    How it works: Reads public contracts and scans their serialized values for paths.
+    Side effects: Reads app-owned settings/activity when present but writes nothing.
+    Failure behavior: Missing routes, action widening, or path exposure fails.
+    Safety: This test performs GET only and every matrix action remains false.
+    Example: Capability matrix returns image, mesh, CAD, toolpath, and document.
+    Related proof: Focused service tests and public schemas.
+    """
+
+    api = MakersAnvilApi()
+    experience = api.handle("GET", "/api/workbench/experience")
+    activity = api.handle("GET", "/api/activity/recent")
+    matrix = api.handle("GET", "/api/capabilities/matrix")
+    assert experience.status == activity.status == matrix.status == 200
+    assert len(experience.body["helpTopics"]) == 6
+    assert activity.body["safety"]["arbitraryEventAccepted"] is False
+    assert matrix.body["summary"]["laneCount"] == 5
+    assert all(lane["executionReady"] is False for lane in matrix.body["lanes"])
+    assert all(value is False for value in matrix.body["safety"].values())
 
 
 def test_unknown_read_route_is_not_proven() -> None:
@@ -116,11 +141,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-018"
+    assert workspace.body["currentPass"]["id"] == "PASS-019"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-018"
+    assert ledger.body["passes"][-1]["id"] == "PASS-019"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

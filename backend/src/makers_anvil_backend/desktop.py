@@ -192,9 +192,9 @@ def run_package_smoke() -> int:
             health_response.status == 200
             and state_response.status == 200
             and payload.get("apiBuild", "").startswith("makers-anvil-real-pass-")
-            and state.get("currentPass", {}).get("id") == "PASS-018"
-            and state.get("completion", {}).get("realApp") == 42.5
-            and payload.get("enabledMutationScopes") == ["authorized-file-intake"]
+            and state.get("currentPass", {}).get("id") == "PASS-019"
+            and state.get("completion", {}).get("realApp") == 52.5
+            and payload.get("enabledMutationScopes") == ["authorized-file-intake", "workbench-preferences"]
             and payload.get("routeExecutionEnabled") is False
         )
         result = {

@@ -28,12 +28,16 @@ For intake, follow `initializeIntakeControls()` -> `reviewSelectedIntakeFile()` 
 | --- | --- | --- |
 | `backend/src/makers_anvil_backend/__init__.py` | Package identity/version without startup effects. | `tests/test_api.py` |
 | `backend/src/makers_anvil_backend/__main__.py` | Module-execution handoff to the server. | `server.py` |
-| `backend/src/makers_anvil_backend/api/app.py` | Read routing, exact intake POST dispatch, media checks, status codes, and 404/405 behavior. | `tests/test_api.py`, `tests/test_authorized_intake.py` |
+| `backend/src/makers_anvil_backend/api/app.py` | Read routing, guarded intake/preferences POST dispatch, media checks, status codes, and 404/405 behavior. | `tests/test_api.py`, `tests/test_authorized_intake.py` |
 | `backend/src/makers_anvil_backend/domain/claim_state.py` | Closed proof-state vocabulary. | `schemas/claim-state.schema.json` |
 | `backend/src/makers_anvil_backend/server.py` | Loopback HTTP, static containment, security headers, bounded JSON, exact content streaming, and response encoding. | `tests/test_server.py` and runtime smoke |
 | `backend/src/makers_anvil_backend/runtime_resources.py` | Source/PyInstaller resource resolution without fixed paths. | `tests/test_runtime_resources.py` |
 | `backend/src/makers_anvil_backend/desktop.py` | Native window, ephemeral server ownership, shutdown, and binary smoke. | `tests/test_desktop.py` |
 | `backend/src/makers_anvil_backend/services/app_state.py` | Constructs services and composes one coherent dashboard snapshot. | `schemas/app-state.schema.json` |
+| `backend/src/makers_anvil_backend/services/activity_log.py` | Creates and reads fixed redacted immutable completion events under portable user data. | `tests/test_workbench_experience.py`, activity schemas |
+| `backend/src/makers_anvil_backend/services/capability_matrix.py` | Joins current intake, route, output, and tool snapshots into five nonexecuting lanes. | `tests/test_capability_matrix.py`, matrix schema |
+| `backend/src/makers_anvil_backend/services/local_request_guard.py` | Applies one process token and exact same-origin loopback rules to bounded mutations. | `tests/test_local_request_guard.py` |
+| `backend/src/makers_anvil_backend/services/workbench_experience.py` | Validates help policy and atomically stores three portable presentation preferences. | `tests/test_workbench_experience.py`, experience schemas |
 | `backend/src/makers_anvil_backend/services/workspace_status.py` | Reads current status and pass history. | `state/*.json` |
 | `backend/src/makers_anvil_backend/services/runtime_paths.py` | Separates private resolved paths from public logical location truth. | `tests/test_runtime_paths.py` |
 | `backend/src/makers_anvil_backend/services/workspace_config.py` | Validates settings and creates contained app directories. | `tests/test_workspace_config.py` |
@@ -55,7 +59,10 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 | File | What it owns | Important blocks |
 | --- | --- | --- |
 | `frontend/public/index.html` | Preview-first workbench structure, one-file picker/review controls, and accessible live state. | Rail -> command bar -> source deck -> intake review -> tools -> command deck -> proof inspector -> Dev evidence. |
-| `frontend/public/assets/app.js` | State fetch, exact two-POST authorized transfer, safe rendering, selected/expected summaries, and local navigation. | Endpoints -> renderers -> intake helpers -> workbench summary -> controls -> `renderState` -> `loadState`. |
+| `frontend/public/assets/app.js` | Coherent state fetch, two-step authorized transfer, core rendering, summaries, and local navigation. | Endpoints -> renderers -> intake helpers -> workbench summary -> controls -> `renderState` -> `loadState`. |
+| `frontend/public/assets/capability-lanes.js` | Safe fixed-grid rendering for the schema-backed five-lane capability matrix. | Element helper -> lane builder -> complete matrix renderer. |
+| `frontend/public/assets/context-help.js` | One accessible viewport-contained help dialog with Escape/outside close and focus restoration. | Position -> close/open -> topic configuration -> global listeners. |
+| `frontend/public/assets/workbench-experience.js` | Portable preference application/save, transient notices, and redacted activity rendering. | Apply -> notice -> guarded save -> experience/activity renderers. |
 | `frontend/public/assets/styles.css` | Industrial tokens, one-viewport desktop geometry, stable tabs, local scrolling, and mobile flow. | Tokens -> shell -> rail/topbar -> zones -> command deck -> inspector -> responsive rules. |
 | `frontend/public/assets/mark.svg` | Embedded product identity with no remote or script dependency. | Accessible SVG geometry. |
 

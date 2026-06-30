@@ -2,15 +2,15 @@
 
 ## Current Pass
 
-PASS-018 - explicit authorization and portable native/browser intake foundation.
+PASS-019 - modular previous-app capability, help, event, and settings migration.
 
 ## Track Percentages
 
-- Real app completion: `42.5000%`
-- Windows local app: `47.5000%`
+- Real app completion: `52.5000%`
+- Windows local app: `57.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `7.5000%`
+- Packaged release: `10.0000%`
 - Clean-machine proof: `0.0000%`
 
 ## Proven
@@ -21,8 +21,8 @@ PASS-018 - explicit authorization and portable native/browser intake foundation.
 - Read-only Python backend exposes `GET /api/workspace/status` and `GET /api/passes/ledger`.
 - Read-only Python backend exposes `GET /api/workspace/config` and `GET /api/workspace/layout`.
 - Read-only Python backend exposes `GET /api/intake/policy` and `GET /api/intake/catalog`.
-- Only `/api/intake/authorizations` and `/api/intake/authorizations/{id}/content` accept POST; all other state-changing API methods return a blocked response.
-- Browser dashboard renders app state and performs only the bounded two-step authorized intake mutation.
+- Only guarded intake and complete workbench-preference routes accept POST; all other state-changing API methods return a blocked response.
+- Browser dashboard renders app state and performs only bounded authorized intake and presentation-preference mutations.
 - Browser dashboard renders current pass, next pass, and source-truth path from durable status records.
 - Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
 - Default local settings enable only user-authorized intake; route execution, tool launch, archive extraction, folder import, deletion, and release packaging remain disabled.
@@ -92,6 +92,7 @@ PASS-018 - explicit authorization and portable native/browser intake foundation.
 - PASS-016 expands every Python and JavaScript component into a nine-field teaching contract, adds purpose/mechanism/example/safety comments to every CSS and semantic HTML block, and generates hash-checked numbered explanations for every physical implementation and contract line. Runtime capability remains `35.0000%` because this remediation pass enables no new action.
 - PASS-017 inventories the previous working app without importing its 3.7 GB dependency/generated tree, records every capability migration decision, locally explains all 14,611 lines in 29 first-party legacy source files, and adds a secured native-window plus deterministic one-file Windows executable path over the same current core.
 - PASS-018 adds a process-local request token, same-origin checks, a ten-minute one-time authorization, allowlisted one-file intake, bounded exact-length streaming, SHA-256 proof, atomic app-owned quarantine storage, rollback, and the reviewed browser/native workbench flow.
+- PASS-019 migrates the prior app's strongest capability-lane, contextual-help, event-history, settings, and restrained-motion ideas into focused current modules. The matrix derives from existing contracts, preferences use portable app-owned settings, activity is fixed/redacted/create-only, and all route/tool/output/software actions remain blocked.
 
 ## Blocked Or Not Proven
 
@@ -118,4 +119,4 @@ PASS-018 - explicit authorization and portable native/browser intake foundation.
 
 ## Next Pass
 
-PASS-019 - modular previous-app capability, help, event, and settings migration.
+PASS-020 - single-route contained execution with cancellation, audit, and output proof.

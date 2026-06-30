@@ -24,7 +24,7 @@ Browser HTML/CSS/JavaScript
   -> visible dashboard region
 ```
 
-The HTTP boundary accepts POST only for intake authorization metadata and the exact matching content stream. Every other non-GET API request is rejected. Local scripts retain their separate bounded mutation entrypoints, and every mutation delegates to a focused service that validates authorization, containment, and safety.
+The HTTP boundary accepts POST only for intake authorization metadata, its exact matching content stream, and one complete workbench-preference record. Every other non-GET API request is rejected. Local scripts retain separate bounded entrypoints, and every mutation delegates to a focused service that validates authorization, containment, and safety.
 
 ## Durable Truth Order
 
@@ -151,7 +151,7 @@ A mutation is not a read-only feature with a button added. Before one is enabled
 - restart/recovery behavior when state must survive a process;
 - negative tests and visible browser state.
 
-Until the operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies only app-owned intake copy gates; execution gates remain false.
+Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates and PASS-019 adds presentation preferences plus fixed redacted activity; execution gates remain false.
 
 ## Portability Rules
 

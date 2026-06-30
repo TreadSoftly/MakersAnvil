@@ -256,6 +256,20 @@
         "only two POST endpoints are enabled while route execution, tool launch, selected-file handoff, extraction, output actions, and software changes remain blocked",
         "source, browser, native-window, packaged-binary, schema, explainability, pytest, and GitHub CI proof cover the bounded intake path"
       ]
+    },
+    {
+      "id": "PASS-019",
+      "title": "modular previous-app capability, help, event, and settings migration",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_019_REPORT.md",
+      "proof": [
+        "five capability lanes derive current input, route, output, and tool truth without execution readiness",
+        "one accessible contextual-help module supplies reviewed purpose and safety boundaries for major workbench surfaces",
+        "density, motion, and help preferences persist atomically under portable app-owned user data through the shared local guard",
+        "completed intake and preference actions create fixed redacted create-only activity events with no arbitrary browser event endpoint",
+        "legacy dependencies, monoliths, personal paths, source-adjacent storage, direct processes, broad intake, and output opening remain excluded",
+        "source schemas, focused service tests, complete line explanations, browser/native/package proof, and cross-platform CI cover the pass"
+      ]
     }
   ]
 }

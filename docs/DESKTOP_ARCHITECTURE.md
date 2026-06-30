@@ -23,7 +23,7 @@ Tauri remains a possible later shell if the core is rewritten in Rust. Today it 
 - Use port zero so the operating system selects an available private port.
 - Expose no direct Python-to-JavaScript bridge in the initial shell.
 - Disable downloads, file URLs, automatic devtools, and remote debugging in desktop mode.
-- Permit only the two authorized intake POST routes; retain blocked behavior for every other non-GET route.
+- Permit only guarded two-step intake and complete presentation-preference POST routes; retain blocked behavior for every other non-GET route.
 - Keep file choice in the webview/browser picker rather than exposing a direct Python-to-JavaScript filesystem bridge.
 - Stop and close the owned server when the native window exits.
 - Accept no desktop CLI path, URL, command, tool, authorization, or launch argument.

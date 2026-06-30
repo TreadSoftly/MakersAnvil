@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/workbench-experience.schema.json",
+  "title": "Makers Anvil public workbench experience",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "preferences", "options", "helpTopics", "storage", "updateAction", "safety"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.workbench-experience.v1"}, "claimState": {"const": "staged"},
+    "preferences": {"$ref": "workbench-experience-policy.schema.json#/$defs/preferences"},
+    "options": {"type": "object", "additionalProperties": false, "required": ["density", "motion"], "properties": {"density": {"const": ["compact", "comfortable"]}, "motion": {"const": ["full", "reduced"]}}},
+    "helpTopics": {"type": "array", "minItems": 1, "items": {"$ref": "workbench-experience-policy.schema.json#/$defs/helpTopic"}},
+    "storage": {"type": "string", "pattern": "^makers-anvil-data://user/"},
+    "updateAction": {"type": "object", "additionalProperties": false, "required": ["enabledInApi", "endpoint", "explicitAuthorizationRequired"], "properties": {"enabledInApi": {"const": true}, "endpoint": {"const": "/api/workbench/experience"}, "explicitAuthorizationRequired": {"const": true}}},
+    "safety": {"$ref": "workbench-experience-policy.schema.json#/$defs/safety"}
+  }
+}

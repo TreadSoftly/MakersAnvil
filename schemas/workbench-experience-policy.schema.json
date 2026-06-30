@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/workbench-experience-policy.schema.json",
+  "title": "Makers Anvil workbench experience policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "preferences", "helpTopics", "activity", "safety"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.workbench-experience.v1"},
+    "claimState": {"const": "staged"},
+    "preferences": {
+      "type": "object", "additionalProperties": false,
+      "required": ["defaults", "densityOptions", "motionOptions", "runtimeFile"],
+      "properties": {
+        "defaults": {"$ref": "#/$defs/preferences"},
+        "densityOptions": {"const": ["compact", "comfortable"]},
+        "motionOptions": {"const": ["full", "reduced"]},
+        "runtimeFile": {"const": "settings/workbench-preferences.json"}
+      }
+    },
+    "helpTopics": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/helpTopic"}},
+    "activity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["directory", "recentLimit", "allowedEventTypes"],
+      "properties": {
+        "directory": {"const": "logs/activity"},
+        "recentLimit": {"const": 30},
+        "allowedEventTypes": {"const": ["intake-authorized", "intake-copied", "preferences-updated"]}
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  },
+  "$defs": {
+    "preferences": {
+      "type": "object", "additionalProperties": false,
+      "required": ["density", "motion", "contextHelp"],
+      "properties": {"density": {"enum": ["compact", "comfortable"]}, "motion": {"enum": ["full", "reduced"]}, "contextHelp": {"type": "boolean"}}
+    },
+    "helpTopic": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "title", "summary", "boundary"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "title": {"type": "string", "minLength": 1}, "summary": {"type": "string", "minLength": 1}, "boundary": {"type": "string", "minLength": 1}}
+    },
+    "safety": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourcePathStored", "personalDataStored", "arbitraryEventAccepted", "routeExecutionEnabled", "toolLaunchEnabled", "outputOpenEnabled", "softwareChangeEnabled"],
+      "properties": {
+        "sourcePathStored": {"const": false}, "personalDataStored": {"const": false}, "arbitraryEventAccepted": {"const": false},
+        "routeExecutionEnabled": {"const": false}, "toolLaunchEnabled": {"const": false}, "outputOpenEnabled": {"const": false}, "softwareChangeEnabled": {"const": false}
+      }
+    }
+  }
+}

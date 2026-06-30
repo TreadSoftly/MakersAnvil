@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/activity-history.schema.json",
+  "title": "Makers Anvil recent activity history",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "mode", "logicalRoot", "summary", "events", "safety"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.activity-history.v1"}, "claimState": {"const": "proven"}, "mode": {"const": "server-authored-create-only"},
+    "logicalRoot": {"type": "string", "pattern": "^makers-anvil-data://user/logs/activity$"},
+    "summary": {"type": "object", "additionalProperties": false, "required": ["eventCount", "recentLimit"], "properties": {"eventCount": {"type": "integer", "minimum": 0, "maximum": 30}, "recentLimit": {"const": 30}}},
+    "events": {"type": "array", "maxItems": 30, "items": {"$ref": "activity-event.schema.json"}},
+    "safety": {"type": "object", "additionalProperties": false, "required": ["sourcePathStored", "arbitraryEventAccepted", "eventMutationEnabled", "eventDeletionEnabled"], "properties": {"sourcePathStored": {"const": false}, "arbitraryEventAccepted": {"const": false}, "eventMutationEnabled": {"const": false}, "eventDeletionEnabled": {"const": false}}}
+  }
+}

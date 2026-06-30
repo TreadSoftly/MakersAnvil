@@ -9,8 +9,11 @@
  * Related proof: tests/test_api.py and browser smoke assertions.
  */
 
+import { renderCapabilityMatrix } from "./capability-lanes.js";
+import { renderActivityHistory, renderWorkbenchExperience, showWorkbenchNotice } from "./workbench-experience.js";
+
 // Endpoint constants keep read routes and the bounded intake boundary visible in one place.
-// Adding a URL here authorizes nothing: state refresh uses GET and intake names its two POST routes separately.
+// Adding a URL here authorizes nothing: refresh uses GET; intake/settings name their guarded POST routes separately.
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";
@@ -24,6 +27,9 @@ const toolDryRunUrl = "/api/tools/dry-run";
 const executionGatesUrl = "/api/execution/gates";
 const executionRequestUrl = "/api/execution/requests/preview";
 const jobWorkspaceUrl = "/api/jobs/catalog";
+const workbenchExperienceUrl = "/api/workbench/experience";
+const activityHistoryUrl = "/api/activity/recent";
+const capabilityMatrixUrl = "/api/capabilities/matrix";
 
 // Intake session/token and File objects remain in process/browser memory only.
 // Neither value enters durable app state, URLs, logs, or rendered HTML.
@@ -132,6 +138,13 @@ const fallbackState = {
       cancel: { claimState: "staged", enabledInApi: false },
       execute: { claimState: "blocked", enabledInApi: false },
     },
+  },
+  capabilityMatrix: {
+    claimState: "unknown",
+    summary: { laneCount: 0, previewReadyLaneCount: 0 },
+    ingressMethods: [],
+    lanes: [],
+    honesty: ["Execution remains blocked."],
   },
 };
 
@@ -493,6 +506,7 @@ async function authorizePendingIntake() {
     }
     resetPendingIntake(true);
     setIntakeFeedback("Copy complete. Content remains quarantined until later proof gates pass.", "success");
+    showWorkbenchNotice("Authorized file copied into app-owned storage.");
     await loadState();
   } catch (error) {
     setIntakeFeedback(error instanceof Error ? error.message : "File intake failed.", "error");
@@ -1200,7 +1214,7 @@ function initializeWorkbenchControls() {
  * Example: ``renderState(fallbackState, {})`` renders a conservative empty/blocked example.
  * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, intakeSession = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, intakeSession = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}, experience = {}, activity = {}, capabilityMatrix = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -1215,6 +1229,9 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, in
   renderExecutionGates(state, executionGates);
   renderExecutionRequest(state, executionRequest);
   renderJobWorkspaces(state, jobWorkspace);
+  renderCapabilityMatrix(capabilityMatrix.schemaVersion ? capabilityMatrix : state.capabilityMatrix || fallbackState.capabilityMatrix);
+  renderWorkbenchExperience(experience, intakeSession.requestToken || "", loadState);
+  renderActivityHistory(activity);
   renderWorkbenchSummary(state, health, intake, routePreview, outputProof);
   renderTracks(state.tracks || []);
   renderCapabilities(state.capabilities || []);
@@ -1235,7 +1252,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, in
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, intakeSessionResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, intakeSessionResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse, experienceResponse, activityResponse, capabilityMatrixResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -1249,8 +1266,11 @@ async function loadState() {
       fetch(executionGatesUrl, { method: "GET", cache: "no-store" }),
       fetch(executionRequestUrl, { method: "GET", cache: "no-store" }),
       fetch(jobWorkspaceUrl, { method: "GET", cache: "no-store" }),
+      fetch(workbenchExperienceUrl, { method: "GET", cache: "no-store" }),
+      fetch(activityHistoryUrl, { method: "GET", cache: "no-store" }),
+      fetch(capabilityMatrixUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !intakeSessionResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !intakeSessionResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok || !experienceResponse.ok || !activityResponse.ok || !capabilityMatrixResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -1267,6 +1287,9 @@ async function loadState() {
       await executionGatesResponse.json(),
       await executionRequestResponse.json(),
       await jobWorkspaceResponse.json(),
+      await experienceResponse.json(),
+      await activityResponse.json(),
+      await capabilityMatrixResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

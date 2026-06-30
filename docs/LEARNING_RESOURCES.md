@@ -42,9 +42,10 @@ References:
 Local study path:
 
 1. `server.py` for loopback HTTP and static serving.
-2. `api/app.py` for read routing, the exact two intake POST patterns, media checks, and error responses.
+2. `api/app.py` for read routing, guarded intake/preferences POST patterns, media checks, and error responses.
 3. `tests/test_api.py` and `tests/test_server.py` for expected behavior.
 4. `services/authorized_intake.py` and `tests/test_authorized_intake.py` for consent, same-origin checks, exact streaming, hashing, rollback, and replay prevention.
+5. `services/local_request_guard.py` for the shared process token, Origin/Host match, loopback, and Fetch Metadata boundary.
 
 References:
 
@@ -56,6 +57,7 @@ References:
 - MDN CORS guide: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS>
 - OWASP File Upload Cheat Sheet: <https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html>
 - Python temporary files: <https://docs.python.org/3/library/tempfile.html>
+- Python atomic replacement with `os.replace`: <https://docs.python.org/3/library/os.html#os.replace>
 
 ## JSON And JSON Schema
 
@@ -78,12 +80,15 @@ Local study path:
 2. `frontend/public/assets/app.js` for GET requests and DOM rendering.
 3. `frontend/public/assets/styles.css` for responsive layout.
 4. Browser smoke tests and screenshots recorded in the current pass report.
+5. `context-help.js`, `capability-lanes.js`, and `workbench-experience.js` for focused PASS-019 interaction modules.
 
 References:
 
 - Fetch API: <https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API>
 - DOM `textContent`: <https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent>
 - Web accessibility introduction: <https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility>
+- WAI-ARIA dialog keyboard and focus guidance: <https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/>
+- MDN reduced-motion media feature: <https://developer.mozilla.org/docs/Web/CSS/@media/prefers-reduced-motion>
 
 ## Testing And Verification
 
