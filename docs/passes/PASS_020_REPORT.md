@@ -50,7 +50,8 @@
 - Live browser screenshot and viewport interaction proof was not run because the in-app browser surface was unavailable; static DOM/CSS, frontend purity, API, responsive, and complete test proof passed.
 - Fresh Windows one-file build completed at `artifacts/windows/MakersAnvil.exe`; the final post-documentation artifact hash is reported with the pass handoff.
 - Fresh executable `--smoke`: exit 0 with PASS-020, `62.5%`, all three bounded mutation scopes, and full route execution false.
-- GitHub commit and hosted CI evidence are added after publication.
+- Implementation commit `3f5eb55` updated draft PR #1 for passes 001-020.
+- Hosted CI run `28482883138`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build/smoke all passed.
 
 ## Next Pass
 
