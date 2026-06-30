@@ -64,7 +64,11 @@ Every new Python component and test has all nine teaching fields. New HTML block
 
 ## GitHub And CI
 
-The implementation is published through draft pull request `https://github.com/TreadSoftly/MakersAnvil/pull/1`. Exact commit and GitHub Actions evidence are added in the closeout update after hosted verification completes.
+- Implementation commit: `d7880d1036729c37cfe94c8c15487b9336297f07`.
+- Draft pull request: `https://github.com/TreadSoftly/MakersAnvil/pull/1`, titled `[codex] Build Makers Anvil passes 001-018`.
+- GitHub Actions run `28411032843` passed on the implementation commit.
+- `windows-latest`, `ubuntu-latest`, and `macos-latest` each passed the canonical project verifier and all 130 tests.
+- The hosted Windows job built and smoked the windowed executable, then uploaded `MakersAnvil-windows-x64-pass-018` (14,329,584-byte artifact archive).
 
 ## Blocked Or Not Proven
 
