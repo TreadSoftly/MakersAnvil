@@ -1,10 +1,10 @@
-"""Purpose: Prove the preview-first frontend workbench structure and controls.
+"""Purpose: Prove workbench structure plus bounded choose-review-authorize intake.
 
 Used by: Developers and CI whenever dashboard layout or client navigation changes.
 Inputs: Checked-in HTML, CSS, and JavaScript frontend source.
 Outputs: Assertions for required zones, render targets, controls, and responsive rules.
 Side effects: Reads product source only and never starts a browser or server.
-Safety: Prevents visual restructuring from adding upload or mutation behavior.
+Safety: Permits only explicit one-file intake; all operational actions stay absent.
 Failure behavior: Missing zones, duplicate IDs, unsafe controls, or stale wiring fail CI.
 Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
 """
@@ -140,8 +140,8 @@ def test_every_javascript_id_target_exists_in_html() -> None:
     assert target_ids <= set(parser.ids)
 
 
-def test_workbench_controls_cannot_upload_or_mutate() -> None:
-    """Purpose: Only view navigation, local search, refresh, and a disabled intake affordance exist.
+def test_workbench_controls_allow_only_one_file_with_separate_consent() -> None:
+    """Purpose: Require one file picker, one consent command, and no folder/form intake.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -149,7 +149,7 @@ def test_workbench_controls_cannot_upload_or_mutate() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_workbench_controls_cannot_upload_or_mutate``.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_workbench_controls_allow_only_one_file_with_separate_consent``.
     Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
     """
 
@@ -158,15 +158,23 @@ def test_workbench_controls_cannot_upload_or_mutate() -> None:
     inputs = [attributes for tag, attributes in parser.controls if tag == "input"]
     forms = [attributes for tag, attributes in parser.controls if tag == "form"]
 
-    add_files = next(attributes for attributes in buttons if attributes.get("class") == "primary-command")
-    assert "disabled" in add_files
+    add_file = next(attributes for attributes in buttons if attributes.get("id") == "intake-add-button")
+    authorize = next(attributes for attributes in buttons if attributes.get("id") == "intake-authorize-button")
+    cancel = next(attributes for attributes in buttons if attributes.get("id") == "intake-cancel-button")
+    file_input = next(attributes for attributes in inputs if attributes.get("id") == "intake-file-input")
+    assert "disabled" in add_file
+    assert "disabled" in authorize
+    assert cancel.get("aria-label") == "Cancel selected file"
+    assert file_input.get("type") == "file"
+    assert "multiple" not in file_input
+    assert "webkitdirectory" not in file_input
     assert forms == []
-    assert inputs and all(attributes.get("type") == "search" for attributes in inputs)
+    assert {attributes.get("type") for attributes in inputs} == {"search", "file"}
     assert all("onclick" not in attributes for attributes in buttons)
 
 
-def test_controller_wires_read_only_views_and_safe_text_summaries() -> None:
-    """Purpose: Tabs and summaries remain browser-only and render source names as text.
+def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
+    """Purpose: Tabs stay local while intake uses two guarded POSTs and text-only names.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -174,7 +182,7 @@ def test_controller_wires_read_only_views_and_safe_text_summaries() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_controller_wires_read_only_views_and_safe_text_summaries``.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_controller_wires_guarded_intake_and_safe_text_summaries``.
     Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
     """
 
@@ -182,10 +190,17 @@ def test_controller_wires_read_only_views_and_safe_text_summaries() -> None:
 
     assert "function selectWorkbenchView" in javascript
     assert "function initializeWorkbenchControls" in javascript
+    assert "function initializeIntakeControls" in javascript
+    assert "function reviewSelectedIntakeFile" in javascript
+    assert "async function authorizePendingIntake" in javascript
     assert "function renderWorkbenchSummary" in javascript
     assert 'document.querySelector("#selected-input-title").textContent' in javascript
     assert 'method: "GET"' in javascript
-    assert 'method: "POST"' not in javascript
+    assert javascript.count('method: "POST"') == 2
+    assert 'mode: "same-origin"' in javascript
+    assert '"X-Makers-Anvil-Request-Token"' in javascript
+    assert "dragover" not in javascript.lower()
+    assert 'addEventListener("paste"' not in javascript
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
@@ -208,3 +223,5 @@ def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
     assert "@media (max-width: 900px)" in styles
     assert "overflow: auto" in styles
     assert "@media (prefers-reduced-motion: reduce)" in styles
+    assert ".intake-review" in styles
+    assert ".authorize-command:disabled" in styles

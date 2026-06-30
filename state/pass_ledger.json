@@ -241,6 +241,21 @@
         "the deterministic Windows one-file plan creates MakersAnvil.exe with a headless bundled-resource/API smoke mode",
         "file upload, route execution, tool launch, output opening, installation, signing, release, and clean-machine claims remain blocked"
       ]
+    },
+    {
+      "id": "PASS-018",
+      "title": "explicit authorization and portable native/browser intake foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_018_REPORT.md",
+      "proof": [
+        "one same-origin browser session uses one opaque process-local request token and exposes no source path",
+        "explicit consent binds one reviewed allowlisted file to a short-lived one-time authorization",
+        "exact-length bounded streaming creates a SHA-256-identified app-owned quarantine copy through atomic replacement",
+        "partial transfer, replay, expired consent, cross-origin evidence, bad tokens, wrong media, archives, folders, and unsupported files fail closed",
+        "the workbench provides choose, review, authorize, cancel, progress, success, and error states without drag-drop or paste",
+        "only two POST endpoints are enabled while route execution, tool launch, selected-file handoff, extraction, output actions, and software changes remain blocked",
+        "source, browser, native-window, packaged-binary, schema, explainability, pytest, and GitHub CI proof cover the bounded intake path"
+      ]
     }
   ]
 }

@@ -1,4 +1,4 @@
-"""Purpose: Explain and prove metadata-only intake privacy and containment.
+"""Purpose: Prove legacy metadata records remain private beside authorized intake.
 
 Used by: Developers and CI whenever file intake policy or records change.
 Inputs: Temporary files, isolated runtime roots, and valid/invalid policies.
@@ -47,10 +47,10 @@ def write_config(root: Path) -> None:
                     "absolutePathExposed": False,
                 },
                 "directories": [
-                    {"id": "intake", "relativePath": "intake", "purpose": "metadata-only intake records"}
+                    {"id": "intake", "relativePath": "intake", "purpose": "authorized app-owned intake"}
                 ],
                 "safety": {
-                    "userUploadEnabled": False,
+                    "userUploadEnabled": True,
                     "routeExecutionEnabled": False,
                     "toolLaunchEnabled": False,
                     "archiveExtractionEnabled": False,
@@ -65,26 +65,39 @@ def write_config(root: Path) -> None:
     (config_dir / "intake_policy.json").write_text(
         json.dumps(
             {
-                "schemaVersion": "makers-anvil.config.intake-policy.v1",
+                "schemaVersion": "makers-anvil.config.intake-policy.v2",
                 "claimState": "staged",
-                "mode": "metadata-only",
+                "mode": "authorized-local-copy",
                 "recordsDirectory": "intake/records",
+                "filesDirectory": "intake/files",
+                "authorizationsDirectory": "intake/authorizations",
+                "maxFileBytes": 536870912,
+                "authorizationLifetimeSeconds": 600,
+                "uploadAllowedKinds": ["mesh"],
                 "fileKinds": [
                     {"id": "mesh", "extensions": [".stl"]},
                     {"id": "archive", "extensions": [".zip"]},
                 ],
+                "capabilities": {
+                    "apiMutationEnabled": True,
+                    "browserFilePickerEnabled": True,
+                    "explicitAuthorizationRequired": True,
+                    "appOwnedCopyEnabled": True,
+                    "dragDropEnabled": False,
+                    "clipboardPasteEnabled": False,
+                },
                 "safety": {
-                    "apiMutationEnabled": False,
-                    "browserUploadEnabled": False,
                     "sourcePathStored": False,
-                    "sourceContentStored": False,
-                    "sourceFileCopied": False,
                     "sourceFileMoved": False,
                     "sourceFileDeleted": False,
                     "folderImportEnabled": False,
+                    "archiveUploadEnabled": False,
                     "archiveExtractionEnabled": False,
+                    "selectedFileHandoffEnabled": False,
                     "routeExecutionEnabled": False,
                     "toolLaunchEnabled": False,
+                    "contentTypeVerified": False,
+                    "malwareScanEnabled": False,
                 },
             }
         ),

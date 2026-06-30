@@ -42,13 +42,20 @@ References:
 Local study path:
 
 1. `server.py` for loopback HTTP and static serving.
-2. `api/app.py` for GET-only routing and error responses.
+2. `api/app.py` for read routing, the exact two intake POST patterns, media checks, and error responses.
 3. `tests/test_api.py` and `tests/test_server.py` for expected behavior.
+4. `services/authorized_intake.py` and `tests/test_authorized_intake.py` for consent, same-origin checks, exact streaming, hashing, rollback, and replay prevention.
 
 References:
 
 - Python `http.server`: <https://docs.python.org/3/library/http.server.html>
 - HTTP semantics: <https://www.rfc-editor.org/rfc/rfc9110>
+- MDN Fetch API: <https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API>
+- MDN using Fetch: <https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch>
+- MDN Fetch Metadata: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Fetch_metadata>
+- MDN CORS guide: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS>
+- OWASP File Upload Cheat Sheet: <https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html>
+- Python temporary files: <https://docs.python.org/3/library/tempfile.html>
 
 ## JSON And JSON Schema
 

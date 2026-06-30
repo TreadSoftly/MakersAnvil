@@ -1,7 +1,7 @@
 """Purpose: Prove loopback ownership and injectable static server behavior.
 
 Used by: Developers and CI before browser or desktop runtime proof.
-Inputs: Temporary static bundles, local sockets, and the read-only API facade.
+Inputs: Temporary static bundles, local sockets, and the bounded local API facade.
 Outputs: Assertions for host rejection, static serving, health, and mutation block.
 Side effects: Opens short-lived loopback sockets and temporary files only.
 Safety: Tests never bind a LAN interface or mutate application/user state.
@@ -18,6 +18,9 @@ from urllib.request import Request, urlopen
 import pytest
 
 from makers_anvil_backend.server import create_server, require_loopback_host
+from makers_anvil_backend.api.app import MakersAnvilApi
+from makers_anvil_backend.services.app_state import AppStateService
+from test_authorized_intake import build_transfer, valid_metadata
 
 
 def make_bundle(root: Path) -> None:
@@ -80,6 +83,9 @@ def test_owned_server_serves_static_health_and_blocked_post(tmp_path: Path) -> N
     try:
         with urlopen(base, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
             assert "fixture" in response.read().decode("utf-8")
+            assert response.headers["Content-Security-Policy"].startswith("default-src 'self'")
+            assert response.headers["X-Content-Type-Options"] == "nosniff"
+            assert response.headers.get("Access-Control-Allow-Origin") is None
         with urlopen(f"{base}/api/health", timeout=5) as response:  # noqa: S310 - test-owned loopback URL
             health = json.loads(response.read().decode("utf-8"))
         assert health["claimState"] == "proven"
@@ -87,6 +93,71 @@ def test_owned_server_serves_static_health_and_blocked_post(tmp_path: Path) -> N
         with pytest.raises(HTTPError) as blocked:
             urlopen(request, timeout=5)  # noqa: S310 - test-owned loopback URL
         assert blocked.value.code == 405
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_http_intake_uses_one_shared_token_and_rejects_preflight(tmp_path: Path) -> None:
+    """Purpose: Prove a real loopback server completes the two-step intake contract.
+
+    Inputs: Temporary frontend, injected runtime service, and urllib HTTP requests.
+    Outputs: Session, authorization, content result, catalog bytes, and blocked OPTIONS.
+    How it works: Starts one server, reads its stable token, then posts metadata and bytes.
+    Side effects: Opens one local socket and writes one pytest-owned intake transaction.
+    Failure behavior: Token churn, routing, header, stream, or CORS regression fails.
+    Safety: Uses no source path; preflight receives no cross-origin permission.
+    Example: Mirrors browser fetch over a kernel-selected loopback port.
+    Related proof: Browser live intake and packaged executable smoke.
+    """
+
+    make_bundle(tmp_path)
+    transfer, data_root = build_transfer(tmp_path)
+    state = AppStateService(intake_catalog=transfer.intake_catalog, authorized_intake=transfer)
+    server = create_server(port=0, static_root=tmp_path, api=MakersAnvilApi(state))
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base = f"http://127.0.0.1:{server.server_address[1]}"
+    try:
+        with urlopen(f"{base}/api/intake/session", timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            session = json.loads(response.read().decode("utf-8"))
+        common_headers = {
+            "X-Makers-Anvil-Request-Token": session["requestToken"],
+            "Origin": base,
+            "Sec-Fetch-Site": "same-origin",
+        }
+        metadata = json.dumps(valid_metadata()).encode("utf-8")
+        authorize_request = Request(
+            f"{base}/api/intake/authorizations",
+            data=metadata,
+            method="POST",
+            headers={**common_headers, "Content-Type": "application/json"},
+        )
+        with urlopen(authorize_request, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            assert response.status == 201
+            authorization = json.loads(response.read().decode("utf-8"))["authorization"]
+        payload = b"solid fixture\nendsolid x\n"
+        content_request = Request(
+            f"{base}/api/intake/authorizations/{authorization['id']}/content",
+            data=payload,
+            method="POST",
+            headers={**common_headers, "Content-Type": "application/octet-stream"},
+        )
+        with urlopen(content_request, timeout=5) as response:  # noqa: S310 - test-owned loopback URL
+            assert response.status == 201
+            result = json.loads(response.read().decode("utf-8"))
+        assert result["record"]["storage"]["sizeBytes"] == len(payload)
+        assert len(list((data_root / "intake" / "files").glob("*"))) == 1
+        options = Request(
+            f"{base}/api/intake/authorizations",
+            method="OPTIONS",
+            headers={"Origin": "https://attacker.example"},
+        )
+        with pytest.raises(HTTPError) as preflight:
+            urlopen(options, timeout=5)  # noqa: S310 - test-owned loopback URL
+        assert preflight.value.code == 405
+        assert preflight.value.headers.get("Access-Control-Allow-Origin") is None
     finally:
         server.shutdown()
         server.server_close()

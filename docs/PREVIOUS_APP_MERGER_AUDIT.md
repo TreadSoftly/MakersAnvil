@@ -24,7 +24,7 @@ The generator selects 29 first-party files and explains all 14,611 physical line
 | Previous behavior or design | Decision | Product destination |
 | --- | --- | --- |
 | Dense industrial workbench, rail, command search, tool strip, Work Flow/Plans/Dev views, output inspector | Already adopted and continue refining | Current static frontend modules |
-| Intake tile, drag/drop/paste, selected file, classification, preview | Rebuild behind explicit authorization and app-owned storage | Intake service plus future native/browser adapters |
+| Intake tile, selected file, classification, preview | One-file picker rebuilt behind explicit authorization and app-owned storage; drag/drop/paste remain deferred | Current browser/native intake adapter and focused service |
 | Contextual help and capability lanes | Migrate as modular read-only views | Focused frontend renderers and strict API contracts |
 | Tool cards and route-aware tool selection | Reuse concepts and verified wording | Existing tool detection/dry-run services |
 | Event history and notices | Rebuild with redaction and append-only schema | Future audit service, not source-tree logs |

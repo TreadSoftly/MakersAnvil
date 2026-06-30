@@ -88,7 +88,7 @@ class FakeWebview(SimpleNamespace):
 def test_desktop_window_owns_server_and_cleans_up() -> None:
     """Purpose: Native launch uses secure options and releases its ephemeral port.
 
-    Inputs: Fake pywebview module and the real read-only app server.
+    Inputs: Fake pywebview module and the real bounded local app server.
     Outputs: Assertions for URL, dimensions, settings, health, and shutdown.
     How it works: Runs the complete desktop function through fake GUI closure.
     Side effects: Opens and closes one loopback socket.
@@ -108,7 +108,9 @@ def test_desktop_window_owns_server_and_cleans_up() -> None:
     assert fake.settings["ALLOW_DOWNLOADS"] is False
     assert fake.settings["ALLOW_FILE_URLS"] is False
     assert fake.settings["REMOTE_DEBUGGING_PORT"] is None
-    assert fake.health["mutatingActionsEnabled"] is False
+    assert fake.health["mutatingActionsEnabled"] is True
+    assert fake.health["enabledMutationScopes"] == ["authorized-file-intake"]
+    assert fake.health["routeExecutionEnabled"] is False
     with pytest.raises(URLError):
         urlopen(str(fake.window["url"]), timeout=1)  # noqa: S310 - closed loopback URL
 
@@ -129,10 +131,31 @@ def test_package_smoke_proves_bundled_core(capsys: pytest.CaptureFixture[str]) -
     assert desktop.run_package_smoke() == 0
     result = json.loads(capsys.readouterr().out)
     assert result["passed"] is True
-    assert result["mutatingActionsEnabled"] is False
+    assert result["mutatingActionsEnabled"] is True
+    assert result["enabledMutationScopes"] == ["authorized-file-intake"]
+    assert result["routeExecutionEnabled"] is False
     assert result["apiBuild"].startswith("makers-anvil-real-pass-")
-    assert result["currentPass"] == "PASS-017"
-    assert result["realAppCompletion"] == 37.5
+    assert result["currentPass"] == "PASS-018"
+    assert result["realAppCompletion"] == 42.5
+
+
+def test_package_smoke_handles_windowed_stdout(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Purpose: Windowed executable smoke succeeds without a console stream.
+
+    Inputs: Monkeypatched ``sys.stdout`` matching PyInstaller windowed runtime.
+    Outputs: Zero exit code after the same bundled-core checks pass.
+    How it works: Removes stdout, runs smoke, and relies on its exit status.
+    Side effects: Opens and closes one short-lived loopback socket.
+    Failure behavior: An unconditional print raises and fails this regression.
+    Safety: No native window, intake mutation, tool, or external process opens.
+    Example: The production ``--windowed`` executable follows this exact branch.
+    Related proof: Relocated ``MakersAnvil.exe --smoke`` package verification.
+    """
+
+    monkeypatch.setattr(desktop.sys, "stdout", None)
+    monkeypatch.setattr(desktop.sys, "stderr", None)
+
+    assert desktop.run_package_smoke() == 0
 
 
 def test_cli_dispatches_only_explicit_smoke(monkeypatch: pytest.MonkeyPatch) -> None:

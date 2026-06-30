@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-session.schema.json",
+  "title": "Makers Anvil process-local intake session",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "requestToken", "authorizeEndpoint", "contentEndpointTemplate", "constraints", "capabilities", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.api.intake-session.v1" },
+    "claimState": { "const": "staged" },
+    "mode": { "const": "same-origin-one-file" },
+    "requestToken": { "type": "string", "minLength": 32 },
+    "authorizeEndpoint": { "const": "/api/intake/authorizations" },
+    "contentEndpointTemplate": { "const": "/api/intake/authorizations/{authorizationId}/content" },
+    "constraints": {
+      "type": "object",
+      "required": ["maxFileBytes", "authorizationLifetimeSeconds", "allowedExtensions", "oneFilePerAuthorization"],
+      "additionalProperties": false,
+      "properties": {
+        "maxFileBytes": { "type": "integer", "minimum": 1 },
+        "authorizationLifetimeSeconds": { "type": "integer", "minimum": 60 },
+        "allowedExtensions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^\\.[a-z0-9]+$" } },
+        "oneFilePerAuthorization": { "const": true }
+      }
+    },
+    "capabilities": { "type": "object" },
+    "safety": { "type": "object" }
+  }
+}

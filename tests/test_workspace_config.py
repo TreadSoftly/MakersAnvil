@@ -50,7 +50,7 @@ def write_settings(root: Path, source_root_dependency: bool = False) -> None:
                     {"id": "jobs", "relativePath": "jobs", "purpose": "future job records"},
                 ],
                 "safety": {
-                    "userUploadEnabled": False,
+                    "userUploadEnabled": True,
                     "routeExecutionEnabled": False,
                     "toolLaunchEnabled": False,
                     "archiveExtractionEnabled": False,

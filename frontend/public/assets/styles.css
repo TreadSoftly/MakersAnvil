@@ -756,6 +756,15 @@ ol {
   overflow: hidden;
 }
 
+/* Block purpose: Allows only the intake zone to scroll when its explicit review row appears.
+ * How it works: Vertical overflow stays inside the bounded source card instead of resizing the page grid.
+ * Example: a 1366x768 workbench can review a long file name without covering the tool zone.
+ * Safety: Scrolling changes presentation only and does not authorize the selected file.
+ */
+.intake-zone {
+  overflow-y: auto;
+}
+
 /* Block purpose: Styles the ``.intake-command`` selector block as one interface responsibility.
  * How it works: The declarations below define layout, state feedback, or responsive presentation for this exact scope.
  * Example: elements matching this selector receive the declarations below while nonmatching elements remain unchanged.
@@ -842,6 +851,146 @@ ol {
   font-weight: 700;
   min-height: 32px;
   padding: 0 10px;
+}
+
+/* Block purpose: Distinguishes the available file-picker command from its disabled/loading state.
+ * How it works: The selector applies only after JavaScript has received the same-origin intake session.
+ * Example: Add file becomes cyan and keyboard-focusable when the session endpoint is healthy.
+ * Safety: This command opens a browser picker only; it does not copy or authorize bytes.
+ */
+.primary-command:not(:disabled) {
+  background: var(--cyan-soft);
+  border-color: #397985;
+  color: var(--cyan);
+  cursor: pointer;
+}
+
+/* Block purpose: Presents one selected file and the separate consent/cancel commands compactly.
+ * How it works: A stable three-column grid reserves name, authorization, and icon-button widths.
+ * Example: part.stl and its byte size appear before the user selects Authorize copy.
+ * Safety: The row is hidden until selection and never displays a source path.
+ */
+.intake-review {
+  align-items: center;
+  background: #0b1012;
+  border-block: 1px solid var(--line);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto 28px;
+  min-height: 42px;
+  padding: 6px 10px;
+}
+
+/* Block purpose: Keeps untrusted selected-file name and size inside the review column.
+ * How it works: Grid children truncate long text without changing action-button dimensions.
+ * Example: a 180-character allowed display name ends with an ellipsis in the card.
+ * Safety: Text comes through textContent and cannot become markup or executable UI.
+ */
+.intake-review-copy {
+  display: grid;
+  min-width: 0;
+}
+
+/* Block purpose: Applies compact typography and truncation to review metadata.
+ * How it works: Both lines occupy one stable column and use ellipsis for overflow.
+ * Example: the first line shows a filename and the second shows type and byte size.
+ * Safety: Typography does not alter authorization or transfer state.
+ */
+.intake-review-copy strong,
+.intake-review-copy span {
+  font-size: 0.62rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Block purpose: Separates secondary review metadata from the selected filename.
+ * How it works: Muted color preserves visual hierarchy inside the compact row.
+ * Example: ``STL - 25 bytes`` reads below ``fixture.STL``.
+ * Safety: Color does not imply content validation or execution readiness.
+ */
+.intake-review-copy span {
+  color: var(--muted);
+}
+
+/* Block purpose: Styles the explicit consent command as the only intake mutation action.
+ * How it works: Fixed minimum dimensions prevent busy labels or state changes from shifting layout.
+ * Example: the user selects Authorize copy after reviewing one file.
+ * Safety: JavaScript keeps this disabled until policy and path-free metadata checks pass.
+ */
+.authorize-command {
+  background: var(--green-soft);
+  border: 1px solid #3c8055;
+  border-radius: 5px;
+  color: var(--green);
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 700;
+  min-height: 28px;
+  min-width: 94px;
+  padding: 0 8px;
+}
+
+/* Block purpose: Shows that consent is temporarily unavailable during invalid or active states.
+ * How it works: Disabled styling removes action emphasis while preserving stable dimensions.
+ * Example: the button dims while bytes are being copied or after cancel.
+ * Safety: Pointer events follow the native disabled attribute enforced by JavaScript.
+ */
+.authorize-command:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* Block purpose: Provides a familiar icon command to discard the pending browser selection.
+ * How it works: A stable square button clears only in-memory file state through its listener.
+ * Example: the multiplication symbol is named Cancel selected file by its tooltip/ARIA label.
+ * Safety: It does not delete source or app-owned files.
+ */
+.intake-cancel {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 5px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  font-size: 1rem;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+/* Block purpose: Reserves one line for intake guidance, progress, success, or rejection.
+ * How it works: Status text truncates inside the card and state classes change only color.
+ * Example: ``Copy complete. Content remains quarantined.`` follows a successful transfer.
+ * Safety: Messages avoid paths and never claim type scanning, routing, or execution.
+ */
+.intake-feedback {
+  color: var(--muted);
+  font-size: 0.58rem;
+  min-height: 18px;
+  overflow: hidden;
+  padding: 4px 10px 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Block purpose: Maps intake success/error state to the established green/red vocabulary.
+ * How it works: JavaScript sets exactly one class after a completed or rejected action.
+ * Example: a server rejection appears red while a contained copy appears green.
+ * Safety: Color supplements, rather than replaces, the explicit status text.
+ */
+.intake-feedback.is-success {
+  color: var(--green);
+}
+
+/* Block purpose: Applies the established rejection color to intake failure text.
+ * How it works: The class is added only after client or server validation rejects the action.
+ * Example: an archive selection displays its path-free rejection in red.
+ * Safety: The explicit message remains available without relying on color alone.
+ */
+.intake-feedback.is-error {
+  color: var(--red);
 }
 
 /* Block purpose: Styles the ``.compact-facts`` selector block as one interface responsibility.

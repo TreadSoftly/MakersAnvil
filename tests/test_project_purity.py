@@ -35,8 +35,8 @@ def test_reference_folder_is_not_tracked_product_source() -> None:
     assert "Previous Working MA For References/" in gitignore
 
 
-def test_frontend_has_no_mutating_api_calls() -> None:
-    """Purpose: Browser code may fetch state but cannot call mutation or tool routes.
+def test_frontend_mutation_is_limited_to_two_authorized_intake_calls() -> None:
+    """Purpose: Browser mutation is limited to metadata consent and matching file bytes.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -44,16 +44,20 @@ def test_frontend_has_no_mutating_api_calls() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Reference material and one developer's machine can never become dependencies.
-    Example: Run ``python -m pytest tests/test_project_purity.py -k test_frontend_has_no_mutating_api_calls``.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_frontend_mutation_is_limited_to_two_authorized_intake_calls``.
     Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
     """
 
     app_js = (ROOT / "frontend" / "public" / "assets" / "app.js").read_text(encoding="utf-8")
 
     assert 'method: "GET"' in app_js
-    assert 'method: "POST"' not in app_js
+    assert app_js.count('method: "POST"') == 2
+    assert 'const intakeSessionUrl = "/api/intake/session"' in app_js
+    assert '"X-Makers-Anvil-Request-Token"' in app_js
+    assert 'mode: "same-origin"' in app_js
     assert 'method: "DELETE"' not in app_js
     assert "/api/tools/open" not in app_js
+    assert "/api/jobs/run" not in app_js
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -157,15 +161,15 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-017"
-    assert current["trackPercentages"]["realApp"] == 37.5
+    assert current["currentPass"]["id"] == "PASS-018"
+    assert current["trackPercentages"]["realApp"] == 42.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-017"
+    assert ledger["passes"][-1]["id"] == "PASS-018"
 
 
-def test_default_settings_are_safe_and_relative() -> None:
-    """Purpose: Committed defaults preserve user-data portability and disabled actions.
+def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:
+    """Purpose: Defaults enable one intake scope while preserving portable blocked effects.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -173,7 +177,7 @@ def test_default_settings_are_safe_and_relative() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Reference material and one developer's machine can never become dependencies.
-    Example: Run ``python -m pytest tests/test_project_purity.py -k test_default_settings_are_safe_and_relative``.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_default_settings_enable_only_authorized_intake_and_stay_relative``.
     Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
     """
 
@@ -184,7 +188,8 @@ def test_default_settings_are_safe_and_relative() -> None:
     assert settings["runtimeData"]["mode"] == "platform-user-data"
     assert settings["runtimeData"]["sourceRootDependency"] is False
     assert settings["runtimeData"]["absolutePathExposed"] is False
-    assert all(value is False for value in settings["safety"].values())
+    assert settings["safety"]["userUploadEnabled"] is True
+    assert all(value is False for key, value in settings["safety"].items() if key != "userUploadEnabled")
     assert all(".." not in item["relativePath"] for item in settings["directories"])
 
 
@@ -232,8 +237,8 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
     assert offenders == []
 
 
-def test_intake_policy_never_enables_data_or_action_mutations() -> None:
-    """Purpose: Every intake safety flag remains false in committed policy.
+def test_intake_policy_enables_only_explicit_one_file_copy() -> None:
+    """Purpose: Intake policy enables consent/copy while every downstream effect is false.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -241,7 +246,7 @@ def test_intake_policy_never_enables_data_or_action_mutations() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Reference material and one developer's machine can never become dependencies.
-    Example: Run ``python -m pytest tests/test_project_purity.py -k test_intake_policy_never_enables_data_or_action_mutations``.
+    Example: Run ``python -m pytest tests/test_project_purity.py -k test_intake_policy_enables_only_explicit_one_file_copy``.
     Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
     """
 
@@ -249,8 +254,19 @@ def test_intake_policy_never_enables_data_or_action_mutations() -> None:
 
     policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
 
-    assert policy["mode"] == "metadata-only"
+    assert policy["mode"] == "authorized-local-copy"
     assert policy["recordsDirectory"] == "intake/records"
+    assert policy["filesDirectory"] == "intake/files"
+    assert policy["authorizationsDirectory"] == "intake/authorizations"
+    assert policy["capabilities"] == {
+        "apiMutationEnabled": True,
+        "browserFilePickerEnabled": True,
+        "explicitAuthorizationRequired": True,
+        "appOwnedCopyEnabled": True,
+        "dragDropEnabled": False,
+        "clipboardPasteEnabled": False,
+    }
+    assert "archive" not in policy["uploadAllowedKinds"]
     assert all(value is False for value in policy["safety"].values())
 
 

@@ -32,7 +32,7 @@
     {"id": "windows-one-file", "decision": "rebuild", "status": "staged", "destination": "scripts/build_windows_exe.py", "reason": "PyInstaller plan bundles one frontend/core without source-tree dependency."},
     {"id": "context-help", "decision": "migrate", "status": "planned", "destination": "focused frontend module", "reason": "Useful learner guidance must be split from the previous App.tsx monolith."},
     {"id": "capability-lanes", "decision": "migrate", "status": "planned", "destination": "schema-backed read-only service and renderer", "reason": "Old lane vocabulary is useful after contract normalization."},
-    {"id": "file-upload-drop-paste", "decision": "rebuild", "status": "blocked", "destination": "authorized intake adapter", "reason": "Old upload copies files and bypasses current authorization/containment gates."},
+    {"id": "file-upload-drop-paste", "decision": "rebuild", "status": "staged", "destination": "authorized intake adapter", "reason": "The one-file picker and explicit app-owned copy are staged; legacy drag, paste, multi-file, path, and immediate-upload behavior remain blocked."},
     {"id": "event-history", "decision": "rebuild", "status": "planned", "destination": "redacted append-only audit service", "reason": "Old source-tree JSONL logs are not portable runtime storage."},
     {"id": "route-execution", "decision": "rebuild", "status": "blocked", "destination": "contained execution service", "reason": "Old direct subprocess behavior lacks the complete current proof chain."},
     {"id": "tool-launch", "decision": "rebuild", "status": "blocked", "destination": "allowlisted execution service", "reason": "Old path/process launch behavior includes private assumptions."},

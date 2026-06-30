@@ -1,10 +1,10 @@
-"""Purpose: Serve the static dashboard and read-only API on loopback.
+"""Purpose: Serve the dashboard and narrowly bounded local API on loopback.
 
 Used by: ``scripts/run_dev.py`` and ``python -m makers_anvil_backend``.
-Inputs: Host/port settings, HTTP requests, and checked-in frontend assets.
+Inputs: Host/port, HTTP requests, guarded intake streams, and frontend assets.
 Outputs: Static responses or JSON responses delegated to ``MakersAnvilApi``.
 Side effects: Opens a loopback listening socket while the process is running.
-Safety: Static paths are contained and all mutating API methods stay blocked.
+Safety: Static paths are contained; only two guarded intake POST routes can mutate.
 Failure behavior: Missing assets return 404; startup and socket errors surface.
 Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
 """
@@ -14,6 +14,7 @@ from __future__ import annotations
 import argparse
 import ipaddress
 import json
+import sys
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -24,20 +25,38 @@ from makers_anvil_backend.runtime_resources import frontend_root
 
 
 DEFAULT_STATIC_ROOT = frontend_root()
+MAX_METADATA_BODY_BYTES = 16 * 1024
 
 
 class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
-    """Purpose: Serve static UI files and the read-only API on loopback.
+    """Purpose: Serve static UI, read APIs, and guarded one-file intake on loopback.
 
     Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
     Outputs: An instance of ``MakersAnvilRequestHandler`` exposing the state and operations defined below.
     How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
     Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
     Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-    Safety: Static paths are contained and all mutating API methods stay blocked.
+    Safety: Adds browser isolation headers and streams only authorized intake bytes.
     Example: Construct with ``instance = MakersAnvilRequestHandler(...)`` using values described by ``__init__``.
     Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
     """
+
+    def log_message(self, format: str, *args: Any) -> None:
+        """Purpose: Emit normal development request logs only when stderr exists.
+
+        Inputs: Standard-library format string and redacted request-log values.
+        Outputs: ``None`` after delegating or intentionally remaining silent.
+        How it works: Detects windowed Python's absent stderr before superclass I/O.
+        Side effects: Writes one conventional HTTP line in console-based runs only.
+        Failure behavior: Formatting/I/O errors propagate when a real stream exists.
+        Safety: Prevents no-console desktop requests from failing; logs no body/token.
+        Example: PyInstaller ``--windowed`` serves health while ``sys.stderr`` is None.
+        Related proof: No-console desktop smoke and packaged executable smoke tests.
+        """
+
+        if sys.stderr is None:
+            return
+        super().log_message(format, *args)
 
     def __init__(
         self,
@@ -61,6 +80,9 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         self.api = api or MakersAnvilApi()
         super().__init__(*args, directory=str(static_root or DEFAULT_STATIC_ROOT), **kwargs)
 
+    server_version = "MakersAnvilLocal/1"
+    sys_version = ""
+
     def do_GET(self) -> None:  # noqa: N802 - stdlib handler API
         """Purpose: Serve an API response or a static dashboard asset for one GET request.
 
@@ -82,19 +104,72 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         super().do_GET()
 
     def do_POST(self) -> None:  # noqa: N802 - stdlib handler API
-        """Purpose: Send the API's standard blocked response for a POST request.
+        """Purpose: Stream two guarded intake POST shapes and block every other POST.
 
         Inputs: No caller-supplied values beyond an implicit instance/class when present.
         Outputs: Returns ``None``, or raises before returning when validation fails.
-        How it works: It executes the focused statements in source order.
-        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
-        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-        Safety: Static paths are contained and all mutating API methods stay blocked.
-        Example: Call ``result = instance.do_POST(...)`` with values satisfying the documented inputs.
-        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        How it works: Bounds JSON metadata or forwards the request stream with exact length.
+        Side effects: Successful authorized intake writes only app-owned runtime files.
+        Failure behavior: Missing/invalid lengths and bodies receive explicit JSON errors.
+        Safety: Unknown routes do not read/upload bytes and CORS is never enabled.
+        Example: File bytes reach only ``/<authorization-id>/content``.
+        Related proof: ``tests/test_server.py`` and authorized-intake HTTP smoke.
         """
 
-        self._send_api(self.api.handle("POST", self.path))
+        self.close_connection = True
+        headers = {key: value for key, value in self.headers.items()}
+        path = self.path.split("?", 1)[0]
+        content_length = self._content_length()
+        if path == "/api/intake/authorizations":
+            if content_length is None:
+                self._send_api(self._request_error(411, "content_length_required", "Authorization metadata requires Content-Length."))
+                return
+            if content_length > MAX_METADATA_BODY_BYTES:
+                self._send_api(self._request_error(413, "metadata_too_large", "Authorization metadata exceeds the request limit."))
+                return
+            body = self.rfile.read(content_length)
+            if len(body) != content_length:
+                self._send_api(self._request_error(400, "body_incomplete", "Authorization metadata ended before Content-Length."))
+                return
+            self._send_api(
+                self.api.handle(
+                    "POST",
+                    path,
+                    headers=headers,
+                    body=body,
+                    content_length=content_length,
+                )
+            )
+            return
+        is_content_route = path.startswith("/api/intake/authorizations/") and path.endswith("/content")
+        if is_content_route:
+            self._send_api(
+                self.api.handle(
+                    "POST",
+                    path,
+                    headers=headers,
+                    body_stream=self.rfile,
+                    content_length=content_length,
+                )
+            )
+            return
+        self._send_api(self.api.handle("POST", path, headers=headers, content_length=content_length))
+
+    def do_OPTIONS(self) -> None:  # noqa: N802 - stdlib handler API
+        """Purpose: Reject CORS preflight so other origins cannot mutate localhost.
+
+        Inputs: Browser OPTIONS request and its untrusted origin headers.
+        Outputs: Standard JSON method-not-allowed response with no CORS grant.
+        How it works: Delegates an unsupported method through the API fail-closed path.
+        Side effects: Writes one response only.
+        Failure behavior: Serialization/socket failures remain normal HTTP errors.
+        Safety: Never returns Access-Control-Allow-Origin/Methods/Headers.
+        Example: A website attempting cross-origin intake cannot pass preflight.
+        Related proof: ``tests/test_server.py`` cross-origin/preflight assertions.
+        """
+
+        self.close_connection = True
+        self._send_api(self.api.handle("OPTIONS", self.path))
 
     def do_PUT(self) -> None:  # noqa: N802 - stdlib handler API
         """Purpose: Send the API's standard blocked response for a PUT request.
@@ -148,6 +223,72 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def end_headers(self) -> None:
+        """Purpose: Add browser isolation and content-sniffing defenses to every response.
+
+        Inputs: Pending static/API response headers assembled by the base handler.
+        Outputs: Completed response header section.
+        How it works: Adds one strict same-origin policy set before superclass finalization.
+        Side effects: Writes HTTP headers to the current loopback connection.
+        Failure behavior: Socket errors propagate through the standard handler lifecycle.
+        Safety: No CORS grant exists; framing, external connections, and referrers are denied.
+        Example: Static UI receives ``connect-src 'self'`` and ``frame-ancestors 'none'``.
+        Related proof: ``tests/test_server.py`` checks exact defensive headers.
+        """
+
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; "
+            "connect-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",
+        )
+        self.send_header("Cross-Origin-Resource-Policy", "same-origin")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        super().end_headers()
+
+    def _content_length(self) -> int | None:
+        """Purpose: Parse a nonnegative decimal Content-Length without guessing.
+
+        Inputs: Current request's Content-Length header.
+        Outputs: Integer length or ``None`` when absent/malformed.
+        How it works: Requires decimal digits only and converts once.
+        Side effects: None.
+        Failure behavior: Malformed/negative text becomes absent and is rejected upstream.
+        Safety: Transfer services never read an unbounded or ambiguous request body.
+        Example: ``Content-Length: 2048`` returns 2048; chunked/negative returns none.
+        Related proof: Missing and malformed length tests.
+        """
+
+        raw = self.headers.get("Content-Length")
+        if raw is None or not raw.isdecimal():
+            return None
+        return int(raw)
+
+    @staticmethod
+    def _request_error(status: int, code: str, message: str) -> ApiResponse:
+        """Purpose: Build one transport-level JSON rejection before API dispatch.
+
+        Inputs: HTTP status, stable code, and reviewed path-free message.
+        Outputs: Blocked ``ApiResponse``.
+        How it works: Uses the same public error schema as the API facade.
+        Side effects: None.
+        Failure behavior: Invalid constants remain visible implementation defects.
+        Safety: Does not echo headers, bodies, tokens, origins, or filesystem data.
+        Example: Oversize authorization metadata returns 413.
+        Related proof: Server body-boundary tests.
+        """
+
+        return ApiResponse(
+            status,
+            {
+                "schemaVersion": "makers-anvil.api.error.v1",
+                "claimState": "blocked",
+                "error": code,
+                "message": message,
+            },
+        )
+
 
 def require_loopback_host(host: str) -> str:
     """Purpose: Reject any server bind that could expose the local API remotely.
@@ -197,7 +338,10 @@ def create_server(
     if not 0 <= port <= 65535:
         raise ValueError("port must be between 0 and 65535")
     resolved_static_root = frontend_root(static_root) if static_root else DEFAULT_STATIC_ROOT
-    handler = partial(MakersAnvilRequestHandler, api=api, static_root=resolved_static_root)
+    # One API instance is shared by every request so its process-local intake
+    # token and one-time authorization lock remain stable for this server.
+    resolved_api = api or MakersAnvilApi()
+    handler = partial(MakersAnvilRequestHandler, api=resolved_api, static_root=resolved_static_root)
     return ThreadingHTTPServer((host, port), handler)
 
 

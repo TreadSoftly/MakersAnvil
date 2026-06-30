@@ -7,17 +7,17 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-017",
-    "title": "previous-app unification and Windows desktop executable foundation",
+    "id": "PASS-018",
+    "title": "explicit authorization and portable native/browser intake foundation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_017_REPORT.md"
+    "reportPath": "docs/passes/PASS_018_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 37.5,
-    "windowsLocal": 40.0,
+    "realApp": 42.5,
+    "windowsLocal": 47.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 5.0,
+    "packagedRelease": 7.5,
     "cleanMachineProof": 0.0
   },
   "sourceTruth": {
@@ -31,7 +31,10 @@
     "learningCoveragePath": "state/learning_coverage.json",
     "desktopArchitecturePath": "docs/DESKTOP_ARCHITECTURE.md",
     "previousAppMergerAuditPath": "docs/PREVIOUS_APP_MERGER_AUDIT.md",
-    "previousAppMigrationPath": "state/previous_app_migration.json"
+    "previousAppMigrationPath": "state/previous_app_migration.json",
+    "intakePolicyPath": "config/intake_policy.json",
+    "intakeAuthorizationSchemaPath": "schemas/intake-authorization.schema.json",
+    "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -92,11 +95,18 @@
     "Native desktop mode owns one ephemeral loopback server and one secured pywebview window over the same current frontend and API.",
     "Closing the native window deterministically shuts down its owned server; remote binds, downloads, file URLs, direct JavaScript bridging, devtools, and remote debugging remain disabled.",
     "A deterministic Windows PyInstaller plan bundles the frontend and Python core into MakersAnvil.exe without a source-checkout path dependency.",
-    "The packaged executable has a headless smoke mode that proves bundled resources, API health, and blocked mutation truth.",
-    "State-changing API methods remain blocked."
+    "The packaged executable has a headless smoke mode that proves bundled resources, API health, the bounded intake scope, and blocked route/tool truth.",
+    "A same-origin browser session receives an opaque process-local request token without exposing a selected source path.",
+    "One explicit authorization binds a reviewed file name, final allowlisted suffix, classified kind, byte length, and modification time for ten minutes.",
+    "The authorized transfer streams exactly one file into private app-owned quarantine storage in bounded chunks and records its SHA-256 digest.",
+    "Incomplete transfers roll back partial content and records; successful authorizations are one-time and cannot be replayed.",
+    "App-generated physical and logical names prevent a user-supplied file name from controlling the quarantine destination.",
+    "The source file is read by the browser only after explicit consent and is never moved, deleted, renamed, or exposed by path.",
+    "The API rejects cross-origin evidence, invalid tokens, archives, unsupported suffixes, folders, zero-byte files, oversized files, stale metadata, and wrong media types.",
+    "Only the authorization metadata and exact content endpoints accept POST; every other state-changing API route remains blocked.",
+    "File intake does not hand content to a route or tool, extract archives, import folders, create outputs, or claim content-type or malware verification."
   ],
   "blockedOrNotProven": [
-    "runtime user upload",
     "route execution",
     "output creation",
     "output open action",
@@ -105,21 +115,26 @@
     "tool version proof",
     "runnable tool command construction",
     "execution request persistence",
-    "user authorization acceptance",
+    "execution authorization acceptance",
     "process cancellation signaling and stop proof",
     "execution logging",
     "selected-file handoff",
+    "drag-and-drop intake",
+    "clipboard-paste intake",
+    "archive upload",
     "software install/update/uninstall/repair",
     "archive extraction",
     "folder import",
+    "content-type verification",
+    "malware scanning",
     "packaged release",
     "clean-machine proof",
     "macOS/Linux runtime proof",
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-018",
-    "title": "explicit authorization and portable native/browser intake foundation",
+    "id": "PASS-019",
+    "title": "modular previous-app capability, help, event, and settings migration",
     "claimState": "planned"
   }
 }

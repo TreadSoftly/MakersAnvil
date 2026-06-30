@@ -2,7 +2,7 @@
 
 ## Product Shape
 
-Makers Anvil is a local-first control panel for maker workflows. The current application is intentionally small and read-only while safety gates are built. The browser dashboard reads JSON state from a loopback Python server. Explicit local scripts may create app-owned runtime records, but the HTTP API cannot mutate state.
+Makers Anvil is a local-first control panel for maker workflows. The browser dashboard reads JSON state from a loopback Python server and may perform one bounded mutation: an explicitly authorized copy of one reviewed file into private app-owned quarantine storage. Every route, tool, output, archive, folder, software, and release action remains gated.
 
 ## Experience Direction
 
@@ -14,15 +14,15 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. The browser calls only `GET` endpoints. Its full-height desktop shell places normal source/tool/workflow/output work first and moves raw status, delivery tracks, execution gates, and blocked-action detail into Dev. Rail navigation, quick-jump search, and Work Flow/Plans/Dev tabs only change local visibility and focus.
+`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. It reads state through `GET` and uses exactly two `POST` calls for authorization metadata and the matching byte stream. Its full-height desktop shell places normal source/tool/workflow/output work first and moves raw status, delivery tracks, execution gates, and blocked-action detail into Dev. Rail navigation, quick-jump search, and Work Flow/Plans/Dev tabs only change local visibility and focus.
 
 ### HTTP Boundary
 
-`backend/src/makers_anvil_backend/server.py` serves static files and delegates `/api/*` requests to `MakersAnvilApi`. The server listens on loopback by default. Every non-GET API request returns a blocked `405` response.
+`backend/src/makers_anvil_backend/server.py` serves static files and delegates `/api/*` requests to `MakersAnvilApi`. It listens on loopback, emits restrictive browser security headers, refuses CORS preflight, bounds authorization JSON, and streams content by exact declared length. Every POST except the two intake routes returns `405`.
 
 ### API Facade
 
-`backend/src/makers_anvil_backend/api/app.py` maps stable read-only routes to service methods. It owns HTTP-like status codes and error records, but it does not own filesystem rules or business state.
+`backend/src/makers_anvil_backend/api/app.py` maps stable reads and the exact intake authorization/content routes to service methods. It owns status codes, media-type checks, request-context translation, and typed error records; filesystem and authorization rules remain in focused services.
 
 ### Services
 
@@ -30,7 +30,8 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 - `WorkspaceStatusService` reads committed status and pass-ledger truth.
 - `RuntimePathsService` resolves OS-standard per-user data locations without exposing personal paths.
 - `WorkspaceConfigService` validates settings and creates contained app-owned directories.
-- `IntakeCatalogService` records metadata for one explicit regular file without storing its path or contents.
+- `IntakeCatalogService` validates legacy metadata records and authorized app-owned copy records without exposing source paths.
+- `AuthorizedIntakeService` verifies same-origin process tokens, creates one-time short-lived consent records, streams exact bytes in bounded chunks, hashes content, atomically publishes a generated-name quarantine copy, and rolls back failed transfers.
 - `RoutePreviewService` maps validated intake metadata to deterministic candidate steps without reopening files or enabling actions.
 - `OutputProofService` maps route previews to expected artifacts and required evidence without creating, opening, or proving outputs.
 - `ToolDetectionService` checks PATH and narrow platform locations while withholding resolved paths and executing nothing.
@@ -72,6 +73,23 @@ Browser
   -> browser render
 ```
 
+## Authorized Intake Flow
+
+```text
+Human chooses one regular file
+  -> browser displays name, classified kind, and size for review
+  -> human selects Authorize copy
+  -> POST metadata with same-origin process token
+  -> service validates origin, token, suffix, kind, size, timestamp, and policy
+  -> service creates a ten-minute one-time authorization without a source path
+  -> POST exact bytes to that authorization
+  -> service streams bounded chunks, verifies exact length, and computes SHA-256
+  -> atomic replacement publishes an app-generated quarantine file
+  -> strict path-redacted record enters the intake catalog
+```
+
+The browser never submits a filesystem path. Failed or incomplete streams remove partial content and catalog state. A successful or expired authorization cannot be replayed. Content-type verification and malware scanning are not yet proven, so no intake record becomes execution-ready or eligible for direct tool handoff.
+
 ## Explicit Mutation Flow
 
 ```text
@@ -82,14 +100,13 @@ Human invokes a local script
   -> source file remains unchanged
 ```
 
-The browser and HTTP API do not participate in this mutation flow yet.
-
 PASS-013 adds two bounded examples of this flow: job preparation creates empty app-owned directories and logical records, while cancellation recording changes only an app-owned control file. Neither action accepts authorization, resolves a user file, constructs a command, starts or signals a process, writes an output artifact, appends an audit event, or captures proof.
 
 ## Trust And Safety Boundaries
 
 - User files are untrusted inputs.
-- Source files are never copied, moved, deleted, extracted, executed, or handed to tools by current intake code.
+- The browser may read one explicitly authorized file to create an app-owned copy; the selected source is never moved, deleted, renamed, path-exposed, extracted, executed, or handed to a tool.
+- Authorization is process-local, same-origin, short-lived, one-file, exact-metadata, exact-length, and one-time.
 - Runtime records live in OS user-data storage or an explicit absolute override, never beside the source checkout.
 - Resolved source and home paths are not returned by APIs.
 - Route execution, external tool launch, installers, archive extraction, folder import, packaging, and clean-machine claims remain blocked until separate proof gates pass.
@@ -103,4 +120,4 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Prepared jobs are app-owned runtime records but remain non-executable. The next capability is explicit authorization and command preview; it may model consent and exact arguments but must not start a process or hand a source file to a tool.
+Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy and is not execution authorization. Prepared jobs remain non-executable. The next capability migrates modular help, event, settings, and capability-lane behavior from the previous-app evidence without importing its runtime or monoliths.

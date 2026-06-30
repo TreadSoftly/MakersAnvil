@@ -1,10 +1,10 @@
-"""Purpose: Explain and prove the complete read-only API surface.
+"""Purpose: Explain and prove read APIs plus one bounded intake mutation surface.
 
 Used by: Developers and CI whenever services, routes, or response contracts change.
 Inputs: Isolated app state and HTTP-style method/path calls.
 Outputs: Assertions over status codes, JSON shapes, joins, and blocked mutations.
 Side effects: Uses temporary runtime directories; never touches user data.
-Safety: Every mutating method and unsupported route must fail closed.
+Safety: Only authorized intake may mutate; every other unsupported route fails closed.
 Failure behavior: A changed or weakened API contract fails the named example.
 Related proof: ``backend/.../api/app.py`` and public response schemas.
 """
@@ -12,8 +12,8 @@ Related proof: ``backend/.../api/app.py`` and public response schemas.
 from makers_anvil_backend.api.app import MakersAnvilApi
 
 
-def test_health_is_read_only_and_proven() -> None:
-    """Purpose: Health identifies a proven read-only service with mutations disabled.
+def test_health_exposes_only_bounded_intake_mutation() -> None:
+    """Purpose: Health identifies the one enabled intake mutation and blocked execution.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -21,7 +21,7 @@ def test_health_is_read_only_and_proven() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Every mutating method and unsupported route must fail closed.
-    Example: Run ``python -m pytest tests/test_api.py -k test_health_is_read_only_and_proven``.
+    Example: Run ``python -m pytest tests/test_api.py -k test_health_exposes_only_bounded_intake_mutation``.
     Related proof: ``backend/.../api/app.py`` and public response schemas.
     """
 
@@ -29,11 +29,14 @@ def test_health_is_read_only_and_proven() -> None:
 
     assert response.status == 200
     assert response.body["claimState"] == "proven"
-    assert response.body["mutatingActionsEnabled"] is False
+    assert response.body["mutatingActionsEnabled"] is True
+    assert response.body["enabledMutationScopes"] == ["authorized-file-intake"]
+    assert response.body["routeExecutionEnabled"] is False
+    assert response.body["toolLaunchEnabled"] is False
 
 
-def test_state_keeps_actions_blocked() -> None:
-    """Purpose: Dashboard state reports current progress without enabling capabilities.
+def test_state_limits_actions_to_file_intake() -> None:
+    """Purpose: Dashboard state reports current progress with only file intake enabled.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -41,23 +44,24 @@ def test_state_keeps_actions_blocked() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Every mutating method and unsupported route must fail closed.
-    Example: Run ``python -m pytest tests/test_api.py -k test_state_keeps_actions_blocked``.
+    Example: Run ``python -m pytest tests/test_api.py -k test_state_limits_actions_to_file_intake``.
     Related proof: ``backend/.../api/app.py`` and public response schemas.
     """
 
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 37.5
-    assert response.body["currentPass"]["id"] == "PASS-017"
-    assert response.body["completion"]["packagedRelease"] == 5.0
+    assert response.body["completion"]["realApp"] == 42.5
+    assert response.body["currentPass"]["id"] == "PASS-018"
+    assert response.body["completion"]["packagedRelease"] == 7.5
     assert response.body["completion"]["cleanMachineProof"] == 0.0
-    assert all(not capability["actionsEnabled"] for capability in response.body["capabilities"])
+    enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
+    assert enabled_capabilities == ["file-intake"]
     assert "route execution" in response.body["blockedActions"]
 
 
-def test_mutating_requests_are_blocked() -> None:
-    """Purpose: Every POST request receives the shared blocked response.
+def test_non_intake_mutating_requests_are_blocked() -> None:
+    """Purpose: POST outside authorized intake plus PUT and DELETE remain blocked.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -65,7 +69,7 @@ def test_mutating_requests_are_blocked() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Every mutating method and unsupported route must fail closed.
-    Example: Run ``python -m pytest tests/test_api.py -k test_mutating_requests_are_blocked``.
+    Example: Run ``python -m pytest tests/test_api.py -k test_non_intake_mutating_requests_are_blocked``.
     Related proof: ``backend/.../api/app.py`` and public response schemas.
     """
 
@@ -112,11 +116,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-017"
+    assert workspace.body["currentPass"]["id"] == "PASS-018"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-017"
+    assert ledger.body["passes"][-1]["id"] == "PASS-018"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
@@ -142,7 +146,8 @@ def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
     assert runtime_location["sourceRootDependency"] is False
     assert runtime_location["absolutePathExposed"] is False
     assert "runtimeRoot" not in config.body
-    assert all(value is False for value in config.body["safety"].values())
+    assert config.body["safety"]["userUploadEnabled"] is True
+    assert all(value is False for key, value in config.body["safety"].items() if key != "userUploadEnabled")
     assert layout.status == 200
     assert layout.body["runtimeLocation"]["logicalRoot"] == "makers-anvil-data://user"
     assert all(not item["relativePath"].startswith(("/", "\\")) for item in layout.body["directories"])
@@ -150,8 +155,8 @@ def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
     assert layout.body["creationAction"]["script"] == "python scripts/init_workspace.py"
 
 
-def test_intake_endpoints_are_metadata_only_and_read_only() -> None:
-    """Purpose: Intake APIs expose metadata policy and never enable upload or mutation.
+def test_intake_endpoints_expose_guarded_authorized_copy_policy() -> None:
+    """Purpose: Intake reads expose one-file authorization without path or execution claims.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -159,22 +164,27 @@ def test_intake_endpoints_are_metadata_only_and_read_only() -> None:
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
     Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
     Safety: Every mutating method and unsupported route must fail closed.
-    Example: Run ``python -m pytest tests/test_api.py -k test_intake_endpoints_are_metadata_only_and_read_only``.
+    Example: Run ``python -m pytest tests/test_api.py -k test_intake_endpoints_expose_guarded_authorized_copy_policy``.
     Related proof: ``backend/.../api/app.py`` and public response schemas.
     """
 
     api = MakersAnvilApi()
     policy = api.handle("GET", "/api/intake/policy")
     catalog = api.handle("GET", "/api/intake/catalog")
+    session = api.handle("GET", "/api/intake/session")
 
     assert policy.status == 200
-    assert policy.body["mode"] == "metadata-only"
+    assert policy.body["mode"] == "authorized-local-copy"
     assert all(value is False for value in policy.body["safety"].values())
     assert catalog.status == 200
-    assert catalog.body["creationAction"]["enabledInApi"] is False
+    assert catalog.body["creationAction"]["enabledInApi"] is True
+    assert catalog.body["creationAction"]["requiresExplicitAuthorization"] is True
     assert catalog.body["safety"]["sourcePathStored"] is False
-    assert catalog.body["safety"]["sourceContentStored"] is False
     assert catalog.body["recordsPath"] == "makers-anvil-data://user/intake/records"
+    assert session.status == 200
+    assert session.body["mode"] == "same-origin-one-file"
+    assert session.body["constraints"]["oneFilePerAuthorization"] is True
+    assert ".zip" not in session.body["constraints"]["allowedExtensions"]
 
 
 def test_route_preview_is_metadata_derived_and_non_executing() -> None:

@@ -3,7 +3,7 @@
 Used by: ``MakersAnvilApi`` for state, policy, preview, and catalog routes.
 Inputs: Repository roots, runtime configuration, and optional injected services.
 Outputs: JSON-shaped status records assembled from one observation chain.
-Side effects: Reads committed policy and app-owned runtime records only.
+Side effects: Reads state; explicit intake methods can write authorized app-owned files.
 Safety: Reuses earlier snapshots so one response cannot mix incompatible truth.
 Failure behavior: Invalid policy or runtime records fail through their service.
 Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
@@ -14,6 +14,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from makers_anvil_backend.services.authorized_intake import AuthorizedIntakeService, IntakeRequestContext
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
@@ -39,13 +40,14 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-017-desktop-unification-foundation"
+    api_build = "makers-anvil-real-pass-018-authorized-portable-intake"
 
     def __init__(
         self,
         workspace_status: WorkspaceStatusService | None = None,
         workspace_config: WorkspaceConfigService | None = None,
         intake_catalog: IntakeCatalogService | None = None,
+        authorized_intake: AuthorizedIntakeService | None = None,
         route_preview: RoutePreviewService | None = None,
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
@@ -56,7 +58,7 @@ class AppStateService:
     ) -> None:
         """Purpose: Compose injected or default services so one request uses coherent snapshots.
 
-        Inputs: Caller-supplied ``workspace_status``, ``workspace_config``, ``intake_catalog``, ``route_preview``, ``output_proof``, ``tool_detection``, ``tool_dry_run``, ``execution_gate``, ``execution_request``, ``job_workspace`` values from the signature.
+        Inputs: Caller-supplied workspace, intake, planning, tool, gate, request, and job service values.
         Outputs: The initialized instance state; Python constructors return ``None``.
         How it works: It executes the focused statements in source order.
         Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
@@ -69,6 +71,7 @@ class AppStateService:
         self._workspace_status = workspace_status or WorkspaceStatusService()
         self._workspace_config = workspace_config or WorkspaceConfigService()
         self._intake_catalog = intake_catalog or IntakeCatalogService()
+        self._authorized_intake = authorized_intake or AuthorizedIntakeService(self._intake_catalog)
         self._route_preview = route_preview or RoutePreviewService(intake_catalog=self._intake_catalog)
         self._output_proof = output_proof or OutputProofService(
             route_preview=self._route_preview,
@@ -91,7 +94,7 @@ class AppStateService:
         )
 
     def health(self) -> dict[str, Any]:
-        """Purpose: Describe the live API build without claiming that mutations are enabled.
+        """Purpose: Describe the live API and its one bounded mutation scope honestly.
 
         Inputs: No caller-supplied values beyond an implicit instance/class when present.
         Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
@@ -108,9 +111,12 @@ class AppStateService:
             "appName": "Makers Anvil",
             "apiBuild": self.api_build,
             "claimState": "proven",
-            "service": "read-only-local-api",
+            "service": "bounded-local-api",
             "timeUtc": datetime.now(UTC).isoformat(),
-            "mutatingActionsEnabled": False,
+            "mutatingActionsEnabled": True,
+            "enabledMutationScopes": ["authorized-file-intake"],
+            "routeExecutionEnabled": False,
+            "toolLaunchEnabled": False,
         }
 
     def state(self) -> dict[str, Any]:
@@ -138,7 +144,7 @@ class AppStateService:
             "appName": "Makers Anvil",
             "apiBuild": self.api_build,
             "claimState": current_status["claimState"],
-            "mode": "local-read-only",
+            "mode": "local-bounded-actions",
             "completion": current_status["trackPercentages"],
             "currentPass": current_status["currentPass"],
             "sourceTruth": current_status["sourceTruth"],
@@ -246,6 +252,61 @@ class AppStateService:
         """
 
         return self._intake_catalog.catalog()
+
+    def intake_session(self) -> dict[str, Any]:
+        """Purpose: Return the process-local browser intake token and safe constraints.
+
+        Inputs: No request body; the token belongs to this running app process.
+        Outputs: Same-origin session record consumed only by the workbench controller.
+        How it works: Delegates to the focused authorization service.
+        Side effects: Reads policy and process memory only.
+        Failure behavior: Policy/service failures propagate instead of enabling intake.
+        Safety: The response exposes no filesystem path and is never placed in app state.
+        Example: ``GET /api/intake/session`` supplies file-picker accept constraints.
+        Related proof: API, server, and authorized-intake tests.
+        """
+
+        return self._authorized_intake.session()
+
+    def create_intake_authorization(
+        self,
+        metadata: dict[str, Any],
+        context: IntakeRequestContext,
+    ) -> dict[str, Any]:
+        """Purpose: Record explicit one-file consent after server-side validation.
+
+        Inputs: Path-free browser metadata and same-origin request context.
+        Outputs: Short-lived public authorization response.
+        How it works: Delegates all validation/persistence to ``AuthorizedIntakeService``.
+        Side effects: Writes one app-owned authorization JSON record.
+        Failure behavior: Typed transfer errors propagate to the API facade.
+        Safety: Does not receive source paths or file bytes and cannot run a route.
+        Example: The UI calls this only after the user selects Authorize copy.
+        Related proof: Authorization API and service tests.
+        """
+
+        return self._authorized_intake.authorize(metadata, context)
+
+    def ingest_authorized_file(
+        self,
+        authorization_id: str,
+        stream: Any,
+        content_length: int,
+        context: IntakeRequestContext,
+    ) -> dict[str, Any]:
+        """Purpose: Consume one authorization and contain its exact byte stream.
+
+        Inputs: Random authorization id, binary stream, exact length, and request context.
+        Outputs: Path-redacted authorized intake result.
+        How it works: Delegates streaming, hashing, atomic commit, and replay protection.
+        Side effects: Writes only app-owned quarantined content and intake records.
+        Failure behavior: Typed transfer errors and I/O failures propagate for honest status.
+        Safety: No handoff, parsing, extraction, route, tool, or output action occurs.
+        Example: The second browser POST sends the selected ``File`` as octet-stream.
+        Related proof: Server streaming and authorized-intake transaction tests.
+        """
+
+        return self._authorized_intake.ingest(authorization_id, stream, content_length, context)
 
     def route_preview(self) -> dict[str, Any]:
         """Purpose: Return metadata-derived candidate steps while every action stays disabled.
@@ -454,8 +515,8 @@ class AppStateService:
                 "id": "file-intake",
                 "label": "File intake",
                 "claimState": "staged",
-                "summary": "Local metadata records can be staged without storing paths, copying content, importing folders, or enabling uploads.",
-                "actionsEnabled": False,
+                "summary": "One reviewed file can be explicitly authorized and copied into path-redacted app-owned quarantine storage.",
+                "actionsEnabled": True,
             },
             {
                 "id": "source-explainability",

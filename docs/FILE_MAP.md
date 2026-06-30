@@ -19,7 +19,7 @@ Contains the Python application package. `server.py` owns loopback HTTP serving,
 
 ## `frontend/`
 
-Contains the static dashboard. It has no build step and performs read-only API calls. HTML defines structure, CSS defines responsive presentation, JavaScript fetches and renders state, and the SVG is the product mark.
+Contains the static dashboard. It has no build step. HTML defines structure and the reviewed one-file picker, CSS defines responsive presentation, JavaScript fetches/renders state and performs the exact authorized intake pair, and the SVG is the product mark.
 
 ## `config/`
 
@@ -39,7 +39,7 @@ Contains explicit developer and local-user entrypoints. Scripts resolve the repo
 
 ## `tests/`
 
-Contains executable behavior examples. Tests cover API safety, intake privacy, runtime containment, portability, source purity, documentation governance, and verifier integrity.
+Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, runtime containment, portability, source purity, documentation governance, and verifier integrity.
 
 ## `docs/`
 

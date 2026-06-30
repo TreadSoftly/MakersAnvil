@@ -1,10 +1,10 @@
 """Purpose: Run Makers Anvil as one native desktop window over its local core.
 
 Used by: ``scripts/run_desktop.py`` and the packaged Windows executable.
-Inputs: The bundled frontend, read-only API, loopback socket, and pywebview runtime.
+Inputs: The bundled frontend, bounded local API, loopback socket, and pywebview runtime.
 Outputs: A native app window or a machine-readable package smoke result.
 Side effects: Opens one ephemeral loopback server and, normally, one native window.
-Safety: Uses no JavaScript bridge, remote URL, fixed port, or enabled API mutation.
+Safety: Uses no JavaScript bridge, remote URL, fixed port, or mutation beyond guarded intake.
 Failure behavior: Missing desktop dependencies or startup failures remain explicit.
 Related proof: ``tests/test_desktop.py`` and Windows executable smoke verification.
 """
@@ -172,8 +172,8 @@ def run_desktop(webview_module: ModuleType | None = None) -> int:
 def run_package_smoke() -> int:
     """Purpose: Prove a source or packaged binary can serve its bundled core.
 
-    Inputs: Bundled static resources and the in-process read-only health endpoint.
-    Outputs: JSON result on stdout and zero only for the expected build marker.
+    Inputs: Bundled static resources and the in-process bounded health endpoint.
+    Outputs: JSON when stdout exists and zero only for the expected build marker.
     How it works: Starts an ephemeral session, requests health, validates, stops.
     Side effects: Opens one short-lived loopback socket; no native window appears.
     Failure behavior: HTTP, JSON, marker, and resource failures return nonzero.
@@ -192,8 +192,10 @@ def run_package_smoke() -> int:
             health_response.status == 200
             and state_response.status == 200
             and payload.get("apiBuild", "").startswith("makers-anvil-real-pass-")
-            and state.get("currentPass", {}).get("id") == "PASS-017"
-            and state.get("completion", {}).get("realApp") == 37.5
+            and state.get("currentPass", {}).get("id") == "PASS-018"
+            and state.get("completion", {}).get("realApp") == 42.5
+            and payload.get("enabledMutationScopes") == ["authorized-file-intake"]
+            and payload.get("routeExecutionEnabled") is False
         )
         result = {
             "schemaVersion": "makers-anvil.desktop-smoke.v1",
@@ -203,9 +205,14 @@ def run_package_smoke() -> int:
             "currentPass": state.get("currentPass", {}).get("id", "missing"),
             "realAppCompletion": state.get("completion", {}).get("realApp"),
             "mutatingActionsEnabled": payload.get("mutatingActionsEnabled"),
+            "enabledMutationScopes": payload.get("enabledMutationScopes"),
+            "routeExecutionEnabled": payload.get("routeExecutionEnabled"),
         }
-        print(json.dumps(result, indent=2, sort_keys=True))
-        return 0 if passed and payload.get("mutatingActionsEnabled") is False else 1
+        # Windowed PyInstaller binaries intentionally have no stdout. The exit
+        # code remains CI's proof signal, while source/console runs retain JSON.
+        if sys.stdout is not None:
+            print(json.dumps(result, indent=2, sort_keys=True))
+        return 0 if passed and payload.get("mutatingActionsEnabled") is True else 1
     finally:
         session.stop()
 

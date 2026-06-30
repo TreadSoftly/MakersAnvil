@@ -4,8 +4,8 @@
   Used by: The loopback server as the browser application's only HTML entrypoint.
   Inputs: CSS, the product mark, and JSON rendered later by assets/app.js.
   Outputs: Named work zones for intake, selected input, tools, plans, jobs, and proof.
-  Side effects: Client-side navigation changes visible panels but never product data.
-  Safety: Contains no upload, execution, tool-launch, or other mutating control.
+  Side effects: Navigation changes views; explicit intake can copy one reviewed file.
+  Safety: Intake requires two user actions; execution/tool/output controls stay absent.
   Failure behavior: Loading and blocked labels remain visible when APIs are unavailable.
   Related proof: Browser viewport checks and frontend purity tests.
 -->
@@ -96,7 +96,7 @@
             <!-- Block purpose: The section named "work-zone intake-zone" groups one semantic workbench responsibility.
                  How it works: Child controls and output regions share this heading, layout scope, and accessibility context.
                  Example: Keyboard and screen-reader navigation can identify this block without relying on visual position.
-                 Safety: Structure and local view controls do not enable any blocked maker operation. -->
+                 Safety: This region enables only explicitly authorized one-file intake. -->
             <section class="work-zone intake-zone" id="intake-zone" data-search-key="intake add source files">
               <div class="zone-head">
                 <div>
@@ -111,8 +111,22 @@
                   <strong>Source file intake</strong>
                   <span id="intake-records">0 staged</span>
                 </div>
-                <button class="primary-command" type="button" disabled title="Browser intake remains blocked">Add files</button>
+                <button id="intake-add-button" class="primary-command" type="button" disabled title="Choose one source file">Add file</button>
+                <input id="intake-file-input" class="sr-only" type="file" aria-label="Choose one source file">
               </div>
+              <!-- Block purpose: Review one browser-selected file before explicit authorization.
+                   How it works: JavaScript fills path-free name/size text, then enables one bounded consent command.
+                   Example: Choosing part.stl reveals its size but sends nothing until Authorize copy is selected.
+                   Safety: Cancel clears browser memory; no path, folder, archive, route, or tool action is accepted. -->
+              <div id="intake-review" class="intake-review" hidden>
+                <div class="intake-review-copy">
+                  <strong id="intake-review-name">No file selected</strong>
+                  <span id="intake-review-meta">Choose one supported file</span>
+                </div>
+                <button id="intake-authorize-button" class="authorize-command" type="button" disabled>Authorize copy</button>
+                <button id="intake-cancel-button" class="intake-cancel" type="button" title="Cancel selected file" aria-label="Cancel selected file">&times;</button>
+              </div>
+              <p id="intake-feedback" class="intake-feedback" role="status" aria-live="polite">Choose one supported file to review.</p>
               <div class="compact-facts">
                 <p><span>Mode</span><strong id="intake-mode">loading</strong></p>
                 <p><span>API</span><strong id="intake-api-action">loading</strong></p>

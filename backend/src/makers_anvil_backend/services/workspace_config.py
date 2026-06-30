@@ -4,7 +4,7 @@ Used by: Workspace APIs, initialization scripts, and dependent services.
 Inputs: Default settings plus a private runtime root from ``RuntimePathsService``.
 Outputs: Redacted config/layout records and optionally created safe directories.
 Side effects: Initialization creates only allowlisted directories under the root.
-Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+Safety: Traversal/source coupling fail; only bounded authorized intake is enabled.
 Failure behavior: Invalid settings or containment violations raise ``ValueError``.
 Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
 """
@@ -121,8 +121,8 @@ class WorkspaceConfigService:
                 "Source files and runtime data have independent locations.",
                 "Runtime data uses the operating system user-data directory or an explicit absolute override.",
                 "Resolved personal filesystem paths are not exposed through API records.",
-                "No user files are imported, moved, copied, deleted, or executed.",
-                "Upload, route execution, tool launch, archive extraction, and folder import remain blocked.",
+                "One reviewed file may be copied into app-owned intake only after explicit authorization.",
+                "Source paths, moving, deletion, route execution, tool launch, archive intake/extraction, and folder import remain blocked.",
             ],
         }
 

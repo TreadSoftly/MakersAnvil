@@ -237,9 +237,9 @@ def explain_line(relative: str, line: str, line_number: int, contexts: list[Sour
         if "textContent" in stripped:
             return "Writes display text through ``textContent`` so untrusted metadata cannot become executable HTML."
         if "addEventListener" in stripped:
-            return "Registers a browser-only event handler; the handler changes local view state or refreshes GET data."
+            return "Registers a documented browser event handler; surrounding code limits it to local UI state, state refresh, or explicit intake consent."
         if "fetch(" in stripped or "method: \"GET\"" in stripped:
-            return "Participates in a GET-only loopback request; it reads state and does not authorize a mutation."
+            return "Participates in a documented same-origin loopback request; surrounding options distinguish state reads from the two authorized intake calls."
         if stripped in {"}", "};", "]", "];", "),", ");"}:
             return "Closes the current JavaScript block, collection, or call."
         return "Executes part of the surrounding documented JavaScript block; neighboring comments describe the UI contract and safety boundary."

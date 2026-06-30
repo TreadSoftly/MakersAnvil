@@ -1,8 +1,13 @@
 {
-  "schemaVersion": "makers-anvil.config.intake-policy.v1",
+  "schemaVersion": "makers-anvil.config.intake-policy.v2",
   "claimState": "staged",
-  "mode": "metadata-only",
+  "mode": "authorized-local-copy",
   "recordsDirectory": "intake/records",
+  "filesDirectory": "intake/files",
+  "authorizationsDirectory": "intake/authorizations",
+  "maxFileBytes": 536870912,
+  "authorizationLifetimeSeconds": 600,
+  "uploadAllowedKinds": ["mesh", "cad", "image", "toolpath", "document"],
   "fileKinds": [
     {
       "id": "mesh",
@@ -29,17 +34,25 @@
       "extensions": [".7z", ".rar", ".tar", ".zip"]
     }
   ],
+  "capabilities": {
+    "apiMutationEnabled": true,
+    "browserFilePickerEnabled": true,
+    "explicitAuthorizationRequired": true,
+    "appOwnedCopyEnabled": true,
+    "dragDropEnabled": false,
+    "clipboardPasteEnabled": false
+  },
   "safety": {
-    "apiMutationEnabled": false,
-    "browserUploadEnabled": false,
     "sourcePathStored": false,
-    "sourceContentStored": false,
-    "sourceFileCopied": false,
     "sourceFileMoved": false,
     "sourceFileDeleted": false,
     "folderImportEnabled": false,
+    "archiveUploadEnabled": false,
     "archiveExtractionEnabled": false,
+    "selectedFileHandoffEnabled": false,
     "routeExecutionEnabled": false,
-    "toolLaunchEnabled": false
+    "toolLaunchEnabled": false,
+    "contentTypeVerified": false,
+    "malwareScanEnabled": false
   }
 }

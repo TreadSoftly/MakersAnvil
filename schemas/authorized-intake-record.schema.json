@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/authorized-intake-record.schema.json",
+  "title": "Makers Anvil authorized app-owned intake record",
+  "type": "object",
+  "required": ["schemaVersion", "id", "claimState", "createdUtc", "source", "authorization", "storage", "privacy", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.runtime.authorized-intake-record.v1" },
+    "id": { "type": "string", "pattern": "^intake-[a-f0-9]{32}$" },
+    "claimState": { "const": "staged" },
+    "createdUtc": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "required": ["displayName", "extension", "kind", "sizeBytes", "modifiedUtc"],
+      "additionalProperties": false,
+      "properties": {
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "extension": { "type": "string", "pattern": "^\\.[a-z0-9]+$" },
+        "kind": { "enum": ["mesh", "cad", "image", "toolpath", "document"] },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "modifiedUtc": { "type": "string", "format": "date-time" }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "required": ["id", "scope", "accepted", "acceptedUtc", "consumedUtc"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^intake-auth-[a-f0-9]{32}$" },
+        "scope": { "const": "copy-one-file-into-app-storage" },
+        "accepted": { "const": true },
+        "acceptedUtc": { "type": "string", "format": "date-time" },
+        "consumedUtc": { "type": "string", "format": "date-time" }
+      }
+    },
+    "storage": {
+      "type": "object",
+      "required": ["logicalReference", "generatedName", "sizeBytes", "sha256", "integrityVerified", "quarantineState", "contentTypeVerified", "malwareScanPassed"],
+      "additionalProperties": false,
+      "properties": {
+        "logicalReference": { "type": "string", "pattern": "^makers-anvil-data://user/intake/files/intake-[a-f0-9]{32}$" },
+        "generatedName": { "type": "string", "pattern": "^content\\.[a-z0-9]+$" },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "integrityVerified": { "const": true },
+        "quarantineState": { "const": "contained-untrusted" },
+        "contentTypeVerified": { "const": false },
+        "malwareScanPassed": { "const": false }
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["sourcePathStored", "sourceContentStored", "originalDisplayNameStored"],
+      "additionalProperties": false,
+      "properties": {
+        "sourcePathStored": { "const": false },
+        "sourceContentStored": { "const": true },
+        "originalDisplayNameStored": { "const": true }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["sourceFileCopied", "sourceFileMoved", "sourceFileDeleted", "archiveExtracted", "selectedFileHandedOff", "routeExecuted", "toolLaunched"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceFileCopied": { "const": true },
+        "sourceFileMoved": { "const": false },
+        "sourceFileDeleted": { "const": false },
+        "archiveExtracted": { "const": false },
+        "selectedFileHandedOff": { "const": false },
+        "routeExecuted": { "const": false },
+        "toolLaunched": { "const": false }
+      }
+    }
+  }
+}

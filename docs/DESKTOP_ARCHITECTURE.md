@@ -2,7 +2,7 @@
 
 ## Selected Architecture
 
-Makers Anvil keeps one Python core and one frontend. Desktop mode starts the same read-only HTTP application on a kernel-selected loopback port, opens that URL in a native pywebview window, and shuts the server down when the final window closes. Browser development mode continues to use the same server and assets.
+Makers Anvil keeps one Python core and one frontend. Desktop mode starts the same bounded local HTTP application on a kernel-selected loopback port, opens that URL in a native pywebview window, and shuts the server down when the final window closes. Browser development mode uses the same server, assets, process-token intake contract, and app-owned data policy.
 
 Windows packaging uses PyInstaller one-file mode. The frontend is bundled as read-only data and resolved from PyInstaller's runtime extraction directory rather than a checkout path. Runtime settings, intake records, jobs, logs, and outputs continue to use the operating system's per-user application-data location and are never written into bundled resources.
 
@@ -23,7 +23,8 @@ Tauri remains a possible later shell if the core is rewritten in Rust. Today it 
 - Use port zero so the operating system selects an available private port.
 - Expose no direct Python-to-JavaScript bridge in the initial shell.
 - Disable downloads, file URLs, automatic devtools, and remote debugging in desktop mode.
-- Retain the HTTP API's blocked non-GET behavior.
+- Permit only the two authorized intake POST routes; retain blocked behavior for every other non-GET route.
+- Keep file choice in the webview/browser picker rather than exposing a direct Python-to-JavaScript filesystem bridge.
 - Stop and close the owned server when the native window exits.
 - Accept no desktop CLI path, URL, command, tool, authorization, or launch argument.
 

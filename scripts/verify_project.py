@@ -251,7 +251,7 @@ def check_forbidden_text() -> list[str]:
 
 
 def check_api() -> list[str]:
-    """Purpose: Exercise read-only API contracts and confirm every mutation remains blocked.
+    """Purpose: Exercise API contracts and confine mutation to authorized one-file intake.
 
     Inputs: No caller-supplied values beyond an implicit instance/class when present.
     Outputs: Returns ``list[str]``, or raises before returning when validation fails.
@@ -273,6 +273,7 @@ def check_api() -> list[str]:
     layout = api.handle("GET", "/api/workspace/layout")
     intake_policy = api.handle("GET", "/api/intake/policy")
     intake_catalog = api.handle("GET", "/api/intake/catalog")
+    intake_session = api.handle("GET", "/api/intake/session")
     route_preview = api.handle("GET", "/api/routes/preview")
     output_proof = api.handle("GET", "/api/outputs/preview")
     tool_detection = api.handle("GET", "/api/tools/detection")
@@ -285,16 +286,27 @@ def check_api() -> list[str]:
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
         errors.append("GET /api/health did not return proven health")
+    if health.body.get("mutatingActionsEnabled") is not True:
+        errors.append("GET /api/health does not report the bounded intake mutation")
+    if health.body.get("enabledMutationScopes") != ["authorized-file-intake"]:
+        errors.append("GET /api/health exposes an unexpected mutation scope")
+    if health.body.get("routeExecutionEnabled") is not False or health.body.get("toolLaunchEnabled") is not False:
+        errors.append("GET /api/health unexpectedly enables route execution or tool launch")
     if state.status != 200 or state.body.get("claimState") not in ALLOWED_CLAIM_STATES:
         errors.append("GET /api/state did not return an allowed claim state")
-    if any(capability.get("actionsEnabled") for capability in state.body.get("capabilities", [])):
-        errors.append("one or more capabilities unexpectedly enable actions")
-    if state.body.get("currentPass", {}).get("id") != "PASS-017":
-        errors.append("GET /api/state does not report PASS-017")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-017":
-        errors.append("GET /api/workspace/status does not report PASS-017")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-017":
-        errors.append("GET /api/passes/ledger does not report PASS-017 as latest")
+    enabled_capabilities = [
+        capability.get("id")
+        for capability in state.body.get("capabilities", [])
+        if capability.get("actionsEnabled")
+    ]
+    if enabled_capabilities != ["file-intake"]:
+        errors.append("GET /api/state does not limit actions to file-intake")
+    if state.body.get("currentPass", {}).get("id") != "PASS-018":
+        errors.append("GET /api/state does not report PASS-018")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-018":
+        errors.append("GET /api/workspace/status does not report PASS-018")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-018":
+        errors.append("GET /api/passes/ledger does not report PASS-018 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -310,22 +322,51 @@ def check_api() -> list[str]:
         errors.append("workspace config unexpectedly exposes an absolute path")
     if "runtimeRoot" in config.body:
         errors.append("workspace config exposes legacy source-adjacent runtimeRoot")
-    if any(config.body.get("safety", {}).values()):
-        errors.append("one or more workspace config safety flags unexpectedly enable unsafe actions")
+    expected_workspace_safety = {
+        "userUploadEnabled": True,
+        "routeExecutionEnabled": False,
+        "toolLaunchEnabled": False,
+        "archiveExtractionEnabled": False,
+        "folderImportEnabled": False,
+        "deleteUserDataEnabled": False,
+        "releasePackagingEnabled": False,
+    }
+    if config.body.get("safety") != expected_workspace_safety:
+        errors.append("workspace config does not limit enabled behavior to user upload")
     if layout.status != 200 or layout.body.get("creationAction", {}).get("enabledInApi") is not False:
         errors.append("GET /api/workspace/layout does not keep API init action disabled")
     if layout.body.get("runtimeLocation", {}).get("logicalRoot") != "makers-anvil-data://user":
         errors.append("GET /api/workspace/layout does not report the logical user-data root")
     if any(Path(item.get("relativePath", "")).is_absolute() for item in layout.body.get("directories", [])):
         errors.append("workspace layout exposes an absolute directory path")
-    if intake_policy.status != 200 or intake_policy.body.get("mode") != "metadata-only":
-        errors.append("GET /api/intake/policy does not report metadata-only mode")
+    if intake_policy.status != 200 or intake_policy.body.get("mode") != "authorized-local-copy":
+        errors.append("GET /api/intake/policy does not report authorized-local-copy mode")
     if any(intake_policy.body.get("safety", {}).values()):
         errors.append("one or more intake policy safety flags unexpectedly enable unsafe actions")
-    if intake_catalog.status != 200 or intake_catalog.body.get("creationAction", {}).get("enabledInApi") is not False:
-        errors.append("GET /api/intake/catalog does not keep API intake action disabled")
-    if state.body.get("intakeCatalog", {}).get("mode") != "metadata-only":
-        errors.append("GET /api/state does not include metadata-only intake status")
+    expected_intake_capabilities = {
+        "apiMutationEnabled": True,
+        "browserFilePickerEnabled": True,
+        "explicitAuthorizationRequired": True,
+        "appOwnedCopyEnabled": True,
+        "dragDropEnabled": False,
+        "clipboardPasteEnabled": False,
+    }
+    if intake_policy.body.get("capabilities") != expected_intake_capabilities:
+        errors.append("GET /api/intake/policy does not preserve the bounded capability set")
+    if "archive" in intake_policy.body.get("uploadAllowedKinds", []):
+        errors.append("GET /api/intake/policy unexpectedly allows archive upload")
+    if intake_catalog.status != 200 or intake_catalog.body.get("creationAction", {}).get("enabledInApi") is not True:
+        errors.append("GET /api/intake/catalog does not expose authorized intake truth")
+    if intake_session.status != 200 or intake_session.body.get("mode") != "same-origin-one-file":
+        errors.append("GET /api/intake/session does not report same-origin-one-file mode")
+    if len(intake_session.body.get("requestToken", "")) < 32:
+        errors.append("GET /api/intake/session does not expose a process-local request token")
+    if intake_session.body.get("constraints", {}).get("oneFilePerAuthorization") is not True:
+        errors.append("GET /api/intake/session does not enforce one file per authorization")
+    if ".zip" in intake_session.body.get("constraints", {}).get("allowedExtensions", []):
+        errors.append("GET /api/intake/session unexpectedly allows archive extensions")
+    if state.body.get("intakeCatalog", {}).get("mode") != "authorized-local-copy":
+        errors.append("GET /api/state does not include authorized intake status")
     if route_preview.status != 200 or route_preview.body.get("mode") != "metadata-derived-read-only":
         errors.append("GET /api/routes/preview does not report metadata-derived read-only mode")
     if any(route_preview.body.get("safety", {}).values()):
@@ -456,14 +497,14 @@ def check_status_records() -> list[str]:
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-017":
-        errors.append("current status does not report PASS-017")
-    if status.get("trackPercentages", {}).get("realApp") != 37.5:
-        errors.append("real app completion is not 37.5 for PASS-017")
+    if status.get("currentPass", {}).get("id") != "PASS-018":
+        errors.append("current status does not report PASS-018")
+    if status.get("trackPercentages", {}).get("realApp") != 42.5:
+        errors.append("real app completion is not 42.5 for PASS-018")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-017":
-        errors.append("pass ledger latest pass is not PASS-017")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-018":
+        errors.append("pass ledger latest pass is not PASS-018")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -487,12 +528,33 @@ def check_status_records() -> list[str]:
         errors.append("default settings unexpectedly depend on the source root")
     if runtime_data.get("absolutePathExposed") is not False:
         errors.append("default settings unexpectedly expose absolute paths")
-    if any(settings.get("safety", {}).values()):
-        errors.append("default settings unexpectedly enable an unsafe action")
-    if intake_policy.get("mode") != "metadata-only":
-        errors.append("intake policy is not metadata-only")
+    expected_settings_safety = {
+        "userUploadEnabled": True,
+        "routeExecutionEnabled": False,
+        "toolLaunchEnabled": False,
+        "archiveExtractionEnabled": False,
+        "folderImportEnabled": False,
+        "deleteUserDataEnabled": False,
+        "releasePackagingEnabled": False,
+    }
+    if settings.get("safety") != expected_settings_safety:
+        errors.append("default settings do not limit enabled behavior to user upload")
+    if intake_policy.get("mode") != "authorized-local-copy":
+        errors.append("intake policy is not authorized-local-copy")
     if any(intake_policy.get("safety", {}).values()):
         errors.append("intake policy unexpectedly enables an unsafe action")
+    expected_intake_capabilities = {
+        "apiMutationEnabled": True,
+        "browserFilePickerEnabled": True,
+        "explicitAuthorizationRequired": True,
+        "appOwnedCopyEnabled": True,
+        "dragDropEnabled": False,
+        "clipboardPasteEnabled": False,
+    }
+    if intake_policy.get("capabilities") != expected_intake_capabilities:
+        errors.append("intake policy capabilities are broader or narrower than PASS-018")
+    if "archive" in intake_policy.get("uploadAllowedKinds", []):
+        errors.append("intake policy unexpectedly permits archive upload")
     if route_catalog.get("mode") != "metadata-derived-read-only":
         errors.append("route catalog is not metadata-derived read-only")
     if any(route_catalog.get("safety", {}).values()):

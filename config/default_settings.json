@@ -17,7 +17,7 @@
     {
       "id": "intake",
       "relativePath": "intake",
-      "purpose": "metadata-only intake records"
+      "purpose": "authorized app-owned intake records and quarantined content"
     },
     {
       "id": "jobs",
@@ -41,7 +41,7 @@
     }
   ],
   "safety": {
-    "userUploadEnabled": false,
+    "userUploadEnabled": true,
     "routeExecutionEnabled": false,
     "toolLaunchEnabled": false,
     "archiveExtractionEnabled": false,

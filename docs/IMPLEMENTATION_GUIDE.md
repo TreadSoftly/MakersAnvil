@@ -8,13 +8,13 @@ Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/LI
 
 ## Application Shape
 
-Makers Anvil is currently a local-first browser dashboard served by a small Python backend. The checked-in frontend has no compilation step. The backend serves static files and read-only JSON APIs from loopback. Product data and runtime records belong in OS-standard user-data storage, not in the source checkout.
+Makers Anvil is currently a local-first browser dashboard served by a small Python backend. The checked-in frontend has no compilation step. The backend serves static files, read APIs, and one bounded two-request intake mutation from loopback. Product data and runtime records belong in OS-standard user-data storage, not in the source checkout.
 
 The same frontend/backend now has a native desktop delivery path. pywebview supplies the operating-system window, while PyInstaller bundles the Python core and static frontend for Windows. This is a delivery adapter, not a second application implementation.
 
 ```text
 Browser HTML/CSS/JavaScript
-  -> GET request
+  -> GET request or exact intake authorization/content POST
   -> RequestHandler in server.py
   -> MakersAnvilApi route table
   -> focused service
@@ -24,7 +24,7 @@ Browser HTML/CSS/JavaScript
   -> visible dashboard region
 ```
 
-The current HTTP boundary rejects every non-GET API request. Local scripts are the only bounded mutation entrypoints, and each script must delegate to a service that validates containment and safety.
+The HTTP boundary accepts POST only for intake authorization metadata and the exact matching content stream. Every other non-GET API request is rejected. Local scripts retain their separate bounded mutation entrypoints, and every mutation delegates to a focused service that validates authorization, containment, and safety.
 
 ## Durable Truth Order
 
@@ -46,7 +46,7 @@ Do not infer current truth from an old chat, commit message, screenshot, or hist
 | Folder | Responsibility | Must not contain |
 | --- | --- | --- |
 | `backend/` | Python HTTP, API, domain vocabulary, and focused services | Personal paths, frontend presentation, hidden install actions |
-| `frontend/` | Accessible read-only dashboard structure, presentation, and rendering | Filesystem access, tool execution, trust decisions |
+| `frontend/` | Accessible dashboard structure, rendering, and reviewed one-file selection | Filesystem paths, tool execution, policy decisions |
 | `config/` | Portable committed policy and allowlists | Runtime records, secrets, personal directories |
 | `schemas/` | Strict JSON contracts for config, state, and API records | Informal or unconstrained truth labels |
 | `state/` | Current build truth, pass history, and source ownership | Runtime user data or chat-only claims |
@@ -60,11 +60,11 @@ The ignored previous application is governed through `docs/PREVIOUS_APP_MERGER_A
 
 ### Server
 
-`backend/src/makers_anvil_backend/server.py` owns loopback serving, static-asset resolution, response encoding, and API delegation. It must prevent path traversal, send no-store headers for API state, and centralize blocked mutation responses. It must not contain workflow business rules.
+`backend/src/makers_anvil_backend/server.py` owns loopback serving, static-asset resolution, response encoding, bounded metadata reads, exact-length content streaming, browser security headers, and API delegation. It must prevent path traversal and CORS access, send no-store headers for API state, and centralize blocked mutation responses. It must not contain workflow business rules.
 
 ### API Facade
 
-`backend/src/makers_anvil_backend/api/app.py` owns the read-only route table. Each path maps to one `AppStateService` method. The API facade normalizes the method and URL path and returns explicit `404` or `405` records. It must not read config or files directly.
+`backend/src/makers_anvil_backend/api/app.py` owns the read route table plus the two exact intake POST patterns. It normalizes method/path, enforces media types and declared content length, creates the request-context value, and returns explicit typed errors. It must not implement storage or authorization policy directly.
 
 ### App Composition
 
@@ -77,7 +77,8 @@ The ignored previous application is governed through `docs/PREVIOUS_APP_MERGER_A
 | `WorkspaceStatusService` | committed state JSON | current status and ledger | read only |
 | `RuntimePathsService` | platform and optional absolute override | private resolved root plus public redacted record | never expose personal resolved paths |
 | `WorkspaceConfigService` | settings policy | validated config and app-owned layout | directories remain contained under one runtime root |
-| `IntakeCatalogService` | intake policy and private runtime records | metadata-only catalog | never expose path/content or modify source |
+| `IntakeCatalogService` | intake policy and private runtime records | validated legacy and authorized-copy catalog | never expose source paths or weaken downstream safety |
+| `AuthorizedIntakeService` | reviewed metadata, same-origin token context, and exact byte stream | one-time authorization plus hashed quarantine record | generated destinations, bounded chunks, atomic publish, rollback, no source modification |
 | `RoutePreviewService` | validated intake snapshot | deterministic route candidates | never reopen or execute source files |
 | `OutputProofService` | route snapshot and workspace policy | logical artifact/proof plan | never create or open outputs |
 | `ToolDetectionService` | tool catalog and platform environment | path-redacted presence evidence | never execute version/tool commands |
@@ -95,7 +96,7 @@ Every capability follows this sequence:
 3. A focused service validates policy again at the behavioral boundary.
 4. An API schema constrains the public result.
 5. `AppStateService` composes the result without weakening it.
-6. `MakersAnvilApi` exposes a read-only route.
+6. `MakersAnvilApi` exposes a read route or the smallest explicitly authorized mutation route.
 7. Frontend HTML provides a labeled region.
 8. Frontend JavaScript renders untrusted text with `textContent` or equivalent safe node creation.
 9. CSS gives the region stable responsive dimensions.
@@ -108,14 +109,15 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 ## Frontend Flow
 
-`frontend/public/index.html` declares the rail, top command bar, source deck, tool inventory, stable command deck, output-proof inspector, and Dev evidence regions. `frontend/public/assets/app.js` performs GET requests, renders each service contract, derives selected-input/expected-output summaries, and handles local-only view navigation. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
+`frontend/public/index.html` declares the rail, top command bar, source deck, reviewed intake controls, tool inventory, stable command deck, output-proof inspector, and Dev evidence regions. `frontend/public/assets/app.js` performs state GETs plus exactly two same-origin intake POSTs, renders each contract, and handles local-only navigation. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
 
 Frontend rules:
 
 - Treat every API string as untrusted display data.
 - Use text nodes rather than HTML string interpolation.
 - Show claim states and blockers exactly; do not convert staged or preview-only work into a success claim.
-- Do not render enabled action controls until a mutation endpoint and its authorization, cancellation, containment, logging, and proof gates are independently proven.
+- Enable a control only for the exact proven mutation scope. Intake authorization does not enable route, tool, output, archive, folder, software, or release actions.
+- Keep the selected `File` and process token in memory only; never render, persist, or submit a source filesystem path.
 - Keep rendering functions focused on one contract so schema changes have an obvious update location.
 - Keep Work Flow, Plans, and Dev inside one stable command-deck footprint on desktop.
 - Put normal maker tasks before raw implementation evidence; Dev retains the complete proof surface.
@@ -137,20 +139,19 @@ Frontend rules:
 
 ## How To Add A Mutation
 
-A mutation is not a read-only feature with a button added. Before one is enabled, the same pass must prove:
+A mutation is not a read-only feature with a button added. Before one is enabled, the same pass must prove every gate relevant to that mutation:
 
 - explicit user intent and authorization;
 - allowlisted operation and bounded input;
 - source and output containment;
-- command and argument construction without shell injection;
-- one-job concurrency policy;
-- cancellation that reaches the owned process;
-- append-only audit events with redaction;
-- output evidence and failure reporting;
-- restart/recovery behavior;
+- destination naming and atomic/transactional behavior;
+- replay, expiry, partial-failure, and rollback behavior;
+- origin, token, media-type, and size enforcement when HTTP is involved;
+- command, process, concurrency, cancellation, audit, and output proof when execution is involved;
+- restart/recovery behavior when state must survive a process;
 - negative tests and visible browser state.
 
-Until all required gates pass, policy, API, service, and UI values must keep the mutation disabled.
+Until the operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies only app-owned intake copy gates; execution gates remain false.
 
 ## Portability Rules
 
@@ -167,7 +168,7 @@ Until all required gates pass, policy, API, service, and UI values must keep the
 2. Reproduce with the smallest focused test.
 3. Inspect the responsible config and schema.
 4. Inspect the focused service and its injected dependencies.
-5. Call the exact GET endpoint directly.
+5. Call the exact endpoint directly with isolated runtime data; for intake, test authorization and content as one pair.
 6. Inspect browser console/network/rendering only after the API record is correct.
 7. Run explainability, project verification, and the full test suite.
 8. Regenerate and check the line guide.

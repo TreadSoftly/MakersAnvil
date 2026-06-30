@@ -2,20 +2,21 @@
  * Purpose: Fetch and render the current Makers Anvil workbench truth.
  * Used by: index.html after the static dashboard structure has loaded.
  * Inputs: JSON from the loopback API's GET endpoints and trusted DOM regions.
- * Outputs: Text, badges, meters, preview cards, proof rows, and blocked states.
- * Side effects: Replaces DOM content and performs GET-only loopback requests.
- * Safety: Performs no POST, PUT, DELETE, file, route, tool, or install action.
+ * Outputs: Workbench truth plus one choose-review-authorize intake interaction.
+ * Side effects: Renders DOM, performs GETs, and may POST one explicitly authorized file.
+ * Safety: Intake is same-origin/one-file; route, tool, output, and install stay blocked.
  * Failure behavior: Missing data falls back to conservative unknown/blocked truth.
  * Related proof: tests/test_api.py and browser smoke assertions.
  */
 
-// Endpoint constants keep the read-only network boundary visible in one place.
-// Adding a URL here does not authorize it: loadState still permits GET only.
+// Endpoint constants keep read routes and the bounded intake boundary visible in one place.
+// Adding a URL here authorizes nothing: state refresh uses GET and intake names its two POST routes separately.
 const stateUrl = "/api/state";
 const healthUrl = "/api/health";
 const workspaceUrl = "/api/workspace/status";
 const layoutUrl = "/api/workspace/layout";
 const intakeUrl = "/api/intake/catalog";
+const intakeSessionUrl = "/api/intake/session";
 const routePreviewUrl = "/api/routes/preview";
 const outputProofUrl = "/api/outputs/preview";
 const toolDetectionUrl = "/api/tools/detection";
@@ -23,6 +24,12 @@ const toolDryRunUrl = "/api/tools/dry-run";
 const executionGatesUrl = "/api/execution/gates";
 const executionRequestUrl = "/api/execution/requests/preview";
 const jobWorkspaceUrl = "/api/jobs/catalog";
+
+// Intake session/token and File objects remain in process/browser memory only.
+// Neither value enters durable app state, URLs, logs, or rendered HTML.
+let activeIntakeSession = null;
+let pendingIntakeFile = null;
+let intakeBusy = false;
 
 // The fallback preserves the page structure when the server is unavailable;
 // it never converts missing evidence into a successful or enabled state.
@@ -53,7 +60,7 @@ const fallbackState = {
     mode: "not proven",
     summary: { recordCount: 0, invalidRecordCount: 0 },
     records: [],
-    safety: { sourcePathStored: false, sourceContentStored: false },
+    safety: { sourcePathStored: false, routeExecutionEnabled: false },
     creationAction: { enabledInApi: false },
   },
   routePreview: {
@@ -278,18 +285,19 @@ function renderLayout(state, layout = {}) {
 }
 
 /**
- * Purpose: Display metadata-only intake counts and privacy/action boundaries.
- * Inputs: Caller supplies ``state``, ``catalog``.
+ * Purpose: Display authorized intake counts, privacy boundaries, and picker readiness.
+ * Inputs: Caller supplies ``state``, ``catalog``, and process-local ``session``.
  * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
  * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
  * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
  * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
  * Safety: Untrusted metadata uses text nodes/textContent; this renderer never authorizes an action.
- * Example: ``renderIntake(fallbackState, {})`` renders a conservative empty/blocked example.
+ * Example: ``renderIntake(fallbackState, {}, {})`` keeps Add file disabled offline.
  * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
-function renderIntake(state, catalog = {}) {
+function renderIntake(state, catalog = {}, session = {}) {
   const intake = catalog.schemaVersion ? catalog : state.intakeCatalog || fallbackState.intakeCatalog;
+  activeIntakeSession = session.schemaVersion === "makers-anvil.api.intake-session.v1" ? session : null;
   const intakeState = document.querySelector("#intake-state");
   intakeState.textContent = intake.claimState || "unknown";
   intakeState.className = `badge ${claimClass(intakeState.textContent)}`;
@@ -297,10 +305,222 @@ function renderIntake(state, catalog = {}) {
   const summary = intake.summary || {};
   document.querySelector("#intake-records").textContent = `${summary.recordCount || 0} staged · ${summary.invalidRecordCount || 0} invalid`;
   const safety = intake.safety || {};
-  document.querySelector("#intake-source-data").textContent = safety.sourcePathStored === false && safety.sourceContentStored === false
-    ? "paths and contents not stored"
+  document.querySelector("#intake-source-data").textContent = safety.sourcePathStored === false
+    ? "source path private · authorized copy app-owned"
     : "not proven";
-  document.querySelector("#intake-api-action").textContent = intake.creationAction?.enabledInApi === false ? "blocked" : "not proven";
+  document.querySelector("#intake-api-action").textContent = intake.creationAction?.enabledInApi === true
+    && intake.creationAction?.requiresExplicitAuthorization === true
+    ? "explicit authorization"
+    : "blocked";
+  const addButton = document.querySelector("#intake-add-button");
+  const fileInput = document.querySelector("#intake-file-input");
+  const allowedExtensions = activeIntakeSession?.constraints?.allowedExtensions || [];
+  fileInput.accept = allowedExtensions.join(",");
+  addButton.disabled = intakeBusy || allowedExtensions.length === 0;
+  addButton.title = allowedExtensions.length ? "Choose one source file" : "Authorized intake is unavailable";
+}
+
+/**
+ * Purpose: Render one path-free intake guidance, progress, success, or error message.
+ * Inputs: Caller supplies visible ``message`` and optional ``stateName``.
+ * Outputs: Returns ``undefined`` after updating the ARIA live status line.
+ * How it works: Writes textContent and maps only success/error to known color classes.
+ * Side effects: Updates one existing DOM status element.
+ * Failure behavior: Unknown state names render neutral text rather than invented success.
+ * Safety: Message text is never interpreted as HTML and must not include paths/tokens.
+ * Example: ``setIntakeFeedback("File rejected.", "error")`` shows a red status.
+ * Related proof: Frontend structural tests and browser intake smoke.
+ */
+function setIntakeFeedback(message, stateName = "") {
+  const feedback = document.querySelector("#intake-feedback");
+  feedback.textContent = message;
+  feedback.className = "intake-feedback";
+  if (stateName === "success" || stateName === "error") {
+    feedback.classList.add(`is-${stateName}`);
+  }
+}
+
+/**
+ * Purpose: Format a nonnegative file byte count for compact review text.
+ * Inputs: Caller supplies browser ``File.size`` bytes.
+ * Outputs: Human-readable bytes, KiB, or MiB string.
+ * How it works: Chooses one fixed unit threshold and one decimal place where useful.
+ * Side effects: None.
+ * Failure behavior: Invalid/negative values return ``size not proven``.
+ * Safety: Formatting does not replace the server's exact integer size validation.
+ * Example: ``formatIntakeBytes(2048)`` returns ``2.0 KiB``.
+ * Related proof: Frontend controller tests and visible review screenshots.
+ */
+function formatIntakeBytes(bytes) {
+  if (!Number.isInteger(bytes) || bytes < 0) {
+    return "size not proven";
+  }
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KiB`;
+  }
+  return `${bytes} bytes`;
+}
+
+/**
+ * Purpose: Clear only the browser's pending file review state.
+ * Inputs: Optional ``preserveFeedback`` flag for completed/error messages.
+ * Outputs: Returns ``undefined`` after restoring the hidden review row.
+ * How it works: Drops the in-memory File reference, clears input value, and disables consent.
+ * Side effects: Updates DOM and releases the browser-selected File reference.
+ * Failure behavior: Missing optional elements surface as implementation errors in tests.
+ * Safety: Does not delete the user's source file or any completed app-owned intake.
+ * Example: Cancel calls ``resetPendingIntake()`` before another selection.
+ * Related proof: Frontend cancel and browser interaction tests.
+ */
+function resetPendingIntake(preserveFeedback = false) {
+  pendingIntakeFile = null;
+  document.querySelector("#intake-file-input").value = "";
+  document.querySelector("#intake-review").hidden = true;
+  document.querySelector("#intake-authorize-button").disabled = true;
+  if (!preserveFeedback) {
+    setIntakeFeedback("Choose one supported file to review.");
+  }
+}
+
+/**
+ * Purpose: Review one browser-selected file without transmitting bytes or a path.
+ * Inputs: Native file-input change event.
+ * Outputs: Returns ``undefined`` after displaying name, extension, and size.
+ * How it works: Applies session extension/size hints, then retains one File in memory.
+ * Side effects: Updates review DOM and in-memory pending selection only.
+ * Failure behavior: Missing, empty, oversize, archive, or unsupported files show an error.
+ * Safety: Client checks improve UX; server policy remains authoritative at authorization.
+ * Example: Choosing ``part.stl`` reveals Authorize copy but sends no request.
+ * Related proof: Frontend tests and server-side negative intake tests.
+ */
+function reviewSelectedIntakeFile(event) {
+  const file = event.target.files?.[0] || null;
+  if (!file || !activeIntakeSession) {
+    resetPendingIntake();
+    return;
+  }
+  const extensionMatch = file.name.toLowerCase().match(/(\.[a-z0-9]+)$/);
+  const extension = extensionMatch ? extensionMatch[1] : "";
+  const constraints = activeIntakeSession.constraints || {};
+  if (!(constraints.allowedExtensions || []).includes(extension)) {
+    resetPendingIntake(true);
+    setIntakeFeedback("That file extension is not enabled for authorized intake.", "error");
+    return;
+  }
+  if (!Number.isInteger(file.size) || file.size <= 0 || file.size > constraints.maxFileBytes) {
+    resetPendingIntake(true);
+    setIntakeFeedback("The selected file is empty or exceeds the intake size limit.", "error");
+    return;
+  }
+  pendingIntakeFile = file;
+  document.querySelector("#intake-review-name").textContent = file.name;
+  document.querySelector("#intake-review-meta").textContent = `${extension.toUpperCase()} · ${formatIntakeBytes(file.size)}`;
+  document.querySelector("#intake-review").hidden = false;
+  document.querySelector("#intake-authorize-button").disabled = false;
+  setIntakeFeedback("Review this file, then authorize one app-owned copy.");
+}
+
+/**
+ * Purpose: Authorize and transfer the exact reviewed file through two guarded POSTs.
+ * Inputs: In-memory File plus process-local session token/endpoints.
+ * Outputs: Promise resolving after contained copy and full state refresh.
+ * How it works: Posts path-free metadata, then sends File bytes as octet-stream once.
+ * Side effects: May create one app-owned authorization, content file, and catalog record.
+ * Failure behavior: Server/client rejection remains visible and selection can be retried.
+ * Safety: Uses same-origin mode, omits credentials, sends no source path, and runs nothing.
+ * Example: Selecting Authorize copy for ``part.stl`` creates quarantined intake only.
+ * Related proof: API/server tests and live desktop/browser intake smoke.
+ */
+async function authorizePendingIntake() {
+  if (!pendingIntakeFile || !activeIntakeSession || intakeBusy) {
+    return;
+  }
+  intakeBusy = true;
+  const file = pendingIntakeFile;
+  const addButton = document.querySelector("#intake-add-button");
+  const authorizeButton = document.querySelector("#intake-authorize-button");
+  addButton.disabled = true;
+  authorizeButton.disabled = true;
+  setIntakeFeedback("Authorizing this file...");
+  const commonOptions = {
+    mode: "same-origin",
+    credentials: "omit",
+    cache: "no-store",
+    redirect: "error",
+  };
+  try {
+    const authorizationResponse = await fetch(activeIntakeSession.authorizeEndpoint, {
+      ...commonOptions,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Makers-Anvil-Request-Token": activeIntakeSession.requestToken,
+      },
+      body: JSON.stringify({
+        displayName: file.name,
+        sizeBytes: file.size,
+        modifiedUtc: new Date(file.lastModified).toISOString(),
+      }),
+    });
+    const authorizationPayload = await authorizationResponse.json();
+    if (!authorizationResponse.ok) {
+      throw new Error(authorizationPayload.message || "File authorization was rejected.");
+    }
+    const authorizationId = authorizationPayload.authorization?.id;
+    if (typeof authorizationId !== "string" || !authorizationId.startsWith("intake-auth-")) {
+      throw new Error("The intake authorization response was invalid.");
+    }
+    const contentUrl = activeIntakeSession.contentEndpointTemplate.replace(
+      "{authorizationId}",
+      encodeURIComponent(authorizationId),
+    );
+    setIntakeFeedback("Copying into app-owned quarantine storage...");
+    const contentResponse = await fetch(contentUrl, {
+      ...commonOptions,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "X-Makers-Anvil-Request-Token": activeIntakeSession.requestToken,
+      },
+      body: file,
+    });
+    const contentPayload = await contentResponse.json();
+    if (!contentResponse.ok) {
+      throw new Error(contentPayload.message || "File copy did not complete.");
+    }
+    resetPendingIntake(true);
+    setIntakeFeedback("Copy complete. Content remains quarantined until later proof gates pass.", "success");
+    await loadState();
+  } catch (error) {
+    setIntakeFeedback(error instanceof Error ? error.message : "File intake failed.", "error");
+  } finally {
+    intakeBusy = false;
+    addButton.disabled = !activeIntakeSession;
+    authorizeButton.disabled = !pendingIntakeFile;
+  }
+}
+
+/**
+ * Purpose: Wire picker, review authorization, and cancel controls once.
+ * Inputs: Existing intake controls from the semantic HTML shell.
+ * Outputs: Returns ``undefined`` after registering event listeners.
+ * How it works: Picker click selects locally; separate listeners review, authorize, or clear.
+ * Side effects: Registers browser handlers and may open the native file chooser on click.
+ * Failure behavior: Session/render logic keeps Add file disabled when the API is unavailable.
+ * Safety: No drag/drop/paste/global listener exists and selection alone sends no request.
+ * Example: Called once with other workbench controls before initial state load.
+ * Related proof: Frontend control tests and live interaction smoke.
+ */
+function initializeIntakeControls() {
+  const addButton = document.querySelector("#intake-add-button");
+  const fileInput = document.querySelector("#intake-file-input");
+  addButton.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", reviewSelectedIntakeFile);
+  document.querySelector("#intake-authorize-button").addEventListener("click", authorizePendingIntake);
+  document.querySelector("#intake-cancel-button").addEventListener("click", () => resetPendingIntake());
 }
 
 /**
@@ -847,8 +1067,8 @@ function renderWorkbenchSummary(state, health, intake, routePreview, outputProof
   selectedState.className = `badge ${claimClass(selectedState.textContent)}`;
   document.querySelector("#selected-input-title").textContent = source?.displayName || "No source selected";
   document.querySelector("#selected-input-meta").textContent = source
-    ? `${source.kind} · ${source.extension} · metadata only`
-    : "Stage one file to create metadata";
+    ? `${source.kind} · ${source.extension} · ${record?.privacy?.sourceContentStored === true ? "authorized app copy" : "metadata only"}`
+    : "Choose and authorize one file";
   document.querySelector("#selected-input-visual").textContent = source?.extension
     ? source.extension.replace(".", "").slice(0, 6)
     : "--";
@@ -966,11 +1186,12 @@ function initializeWorkbenchControls() {
       navigate();
     }
   });
+  initializeIntakeControls();
 }
 
 /**
  * Purpose: Compose one coherent dashboard frame from all read-only API snapshots.
- * Inputs: Caller supplies ``state``, ``health``, ``workspace``, ``layout``, ``intake``, ``routePreview``, ``outputProof``, ``toolDetection``, ``toolDryRun``, ``executionGates``, ``executionRequest``, ``jobWorkspace``.
+ * Inputs: Caller supplies state/health/workspace, intake session/catalog, and all preview snapshots.
  * Outputs: Returns ``undefined`` after updating the owned workbench DOM region.
  * How it works: Reads the supplied schema-shaped snapshot, applies conservative fallbacks, and renders the matching view.
  * Side effects: Replaces or updates text and child nodes inside existing frontend regions.
@@ -979,14 +1200,14 @@ function initializeWorkbenchControls() {
  * Example: ``renderState(fallbackState, {})`` renders a conservative empty/blocked example.
  * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, intakeSession = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
   document.querySelector("#build-label").textContent = `${state.apiBuild || health.apiBuild || "unknown build"} · ${state.claimState}`;
   renderWorkspace(state, workspace);
   renderLayout(state, layout);
-  renderIntake(state, intake);
+  renderIntake(state, intake, intakeSession);
   renderRoutePreview(state, routePreview);
   renderOutputProof(state, outputProof);
   renderToolDetection(state, toolDetection);
@@ -1001,25 +1222,26 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, ro
 }
 
 /**
- * Purpose: Fetch every GET-only endpoint together and fall back to conservative offline truth.
+ * Purpose: Fetch every read snapshot/session together and fall back to conservative truth.
  * Inputs: No caller-supplied values; the function reads documented local DOM/API state.
  * Outputs: Returns a Promise that resolves after one complete dashboard render attempt.
  * How it works: Fetches all related GET endpoints together, validates responses, then renders one coherent frame.
  * Side effects: Performs loopback GET requests and updates existing DOM regions.
  * Failure behavior: Missing/invalid evidence is rendered as unknown, blocked, or empty; unexpected errors remain visible to the caller/fallback path.
- * Safety: Never sends POST/PUT/DELETE or converts missing evidence into ready state.
+ * Safety: This refresh sends GET only; intake POSTs require a separate user action.
  * Example: ``await loadState()`` refreshes the workbench from current loopback truth.
  * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, intakeSessionResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
       fetch(layoutUrl, { method: "GET", cache: "no-store" }),
       fetch(intakeUrl, { method: "GET", cache: "no-store" }),
+      fetch(intakeSessionUrl, { method: "GET", cache: "no-store" }),
       fetch(routePreviewUrl, { method: "GET", cache: "no-store" }),
       fetch(outputProofUrl, { method: "GET", cache: "no-store" }),
       fetch(toolDetectionUrl, { method: "GET", cache: "no-store" }),
@@ -1028,7 +1250,7 @@ async function loadState() {
       fetch(executionRequestUrl, { method: "GET", cache: "no-store" }),
       fetch(jobWorkspaceUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !intakeSessionResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -1037,6 +1259,7 @@ async function loadState() {
       await workspaceResponse.json(),
       await layoutResponse.json(),
       await intakeResponse.json(),
+      await intakeSessionResponse.json(),
       await routePreviewResponse.json(),
       await outputProofResponse.json(),
       await toolDetectionResponse.json(),

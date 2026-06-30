@@ -2,15 +2,15 @@
 
 ## Current Pass
 
-PASS-017 - previous-app unification and Windows desktop executable foundation.
+PASS-018 - explicit authorization and portable native/browser intake foundation.
 
 ## Track Percentages
 
-- Real app completion: `37.5000%`
-- Windows local app: `40.0000%`
+- Real app completion: `42.5000%`
+- Windows local app: `47.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `5.0000%`
+- Packaged release: `7.5000%`
 - Clean-machine proof: `0.0000%`
 
 ## Proven
@@ -21,13 +21,13 @@ PASS-017 - previous-app unification and Windows desktop executable foundation.
 - Read-only Python backend exposes `GET /api/workspace/status` and `GET /api/passes/ledger`.
 - Read-only Python backend exposes `GET /api/workspace/config` and `GET /api/workspace/layout`.
 - Read-only Python backend exposes `GET /api/intake/policy` and `GET /api/intake/catalog`.
-- State-changing API methods return a blocked response.
-- Browser dashboard renders app state from the read-only API.
+- Only `/api/intake/authorizations` and `/api/intake/authorizations/{id}/content` accept POST; all other state-changing API methods return a blocked response.
+- Browser dashboard renders app state and performs only the bounded two-step authorized intake mutation.
 - Browser dashboard renders current pass, next pass, and source-truth path from durable status records.
 - Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
-- Default local settings keep upload, route execution, tool launch, archive extraction, folder import, deletion, and packaging disabled.
-- Metadata-only intake records do not store source paths or contents and do not copy, move, delete, extract, execute, or launch source files.
-- Browser dashboard renders intake mode, record counts, source-data privacy, and API action status.
+- Default local settings enable only user-authorized intake; route execution, tool launch, archive extraction, folder import, deletion, and release packaging remain disabled.
+- Authorized intake records expose no source path, use generated logical names, include exact byte size and SHA-256 proof, and keep every downstream action false.
+- Browser dashboard provides choose, review, authorize, cancel, progress, success, and error states for one file without drag/drop or paste.
 - Runtime data uses OS-standard per-user locations or an explicit absolute override, never the source checkout location.
 - API and dashboard records expose logical storage metadata without resolved personal filesystem paths.
 - Source discovery is based on installed module/script locations rather than the current working directory.
@@ -91,10 +91,10 @@ PASS-017 - previous-app unification and Windows desktop executable foundation.
 - PASS-015 replaces the long equal-weight status stack with a preview-first workbench: persistent rail, compact command bar, intake/selected-input deck, tool inventory, stable Work Flow/Plans/Dev command deck, output-proof inspector, and responsive mobile flow. Navigation is client-side only and all operational actions remain blocked.
 - PASS-016 expands every Python and JavaScript component into a nine-field teaching contract, adds purpose/mechanism/example/safety comments to every CSS and semantic HTML block, and generates hash-checked numbered explanations for every physical implementation and contract line. Runtime capability remains `35.0000%` because this remediation pass enables no new action.
 - PASS-017 inventories the previous working app without importing its 3.7 GB dependency/generated tree, records every capability migration decision, locally explains all 14,611 lines in 29 first-party legacy source files, and adds a secured native-window plus deterministic one-file Windows executable path over the same current core.
+- PASS-018 adds a process-local request token, same-origin checks, a ten-minute one-time authorization, allowlisted one-file intake, bounded exact-length streaming, SHA-256 proof, atomic app-owned quarantine storage, rollback, and the reviewed browser/native workbench flow.
 
 ## Blocked Or Not Proven
 
-- Browser/API file upload and direct selected-file handoff.
 - Route execution.
 - Output creation.
 - Output open actions.
@@ -103,10 +103,12 @@ PASS-017 - previous-app unification and Windows desktop executable foundation.
 - Tool version proof.
 - Runnable tool command construction.
 - Execution request persistence.
-- User authorization acceptance.
+- Execution authorization acceptance.
 - Process cancellation signaling and stop proof.
 - Execution logging.
 - Selected-file handoff.
+- Drag-and-drop or clipboard-paste intake.
+- Archive upload, content-type verification, and malware scanning.
 - Install, update, uninstall, or repair actions.
 - Archive extraction.
 - Folder import.
@@ -116,4 +118,4 @@ PASS-017 - previous-app unification and Windows desktop executable foundation.
 
 ## Next Pass
 
-PASS-018 - explicit authorization and portable native/browser intake foundation.
+PASS-019 - modular previous-app capability, help, event, and settings migration.

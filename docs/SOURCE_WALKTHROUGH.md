@@ -18,7 +18,9 @@ frontend/public/index.html
   -> styles.css lays the result out responsively
 ```
 
-The browser performs GET requests only. Local scripts are separate, explicit mutation boundaries.
+The browser performs state GETs plus one explicit two-step intake flow: metadata authorization followed by the exact matching byte stream. Local scripts remain separate mutation boundaries.
+
+For intake, follow `initializeIntakeControls()` -> `reviewSelectedIntakeFile()` -> `authorizePendingIntake()` -> `MakersAnvilApi` -> `AuthorizedIntakeService.authorize()` -> `AuthorizedIntakeService.ingest()`. The first POST creates path-free short-lived consent; the second streams, hashes, atomically publishes, and catalogs one generated-name app-owned copy.
 
 ## Backend Package
 
@@ -26,16 +28,17 @@ The browser performs GET requests only. Local scripts are separate, explicit mut
 | --- | --- | --- |
 | `backend/src/makers_anvil_backend/__init__.py` | Package identity/version without startup effects. | `tests/test_api.py` |
 | `backend/src/makers_anvil_backend/__main__.py` | Module-execution handoff to the server. | `server.py` |
-| `backend/src/makers_anvil_backend/api/app.py` | Method/path routing, status codes, 404/405 behavior. | `tests/test_api.py` |
+| `backend/src/makers_anvil_backend/api/app.py` | Read routing, exact intake POST dispatch, media checks, status codes, and 404/405 behavior. | `tests/test_api.py`, `tests/test_authorized_intake.py` |
 | `backend/src/makers_anvil_backend/domain/claim_state.py` | Closed proof-state vocabulary. | `schemas/claim-state.schema.json` |
-| `backend/src/makers_anvil_backend/server.py` | Loopback HTTP, static containment, JSON encoding, cache headers. | API tests and runtime smoke |
+| `backend/src/makers_anvil_backend/server.py` | Loopback HTTP, static containment, security headers, bounded JSON, exact content streaming, and response encoding. | `tests/test_server.py` and runtime smoke |
 | `backend/src/makers_anvil_backend/runtime_resources.py` | Source/PyInstaller resource resolution without fixed paths. | `tests/test_runtime_resources.py` |
 | `backend/src/makers_anvil_backend/desktop.py` | Native window, ephemeral server ownership, shutdown, and binary smoke. | `tests/test_desktop.py` |
 | `backend/src/makers_anvil_backend/services/app_state.py` | Constructs services and composes one coherent dashboard snapshot. | `schemas/app-state.schema.json` |
 | `backend/src/makers_anvil_backend/services/workspace_status.py` | Reads current status and pass history. | `state/*.json` |
 | `backend/src/makers_anvil_backend/services/runtime_paths.py` | Separates private resolved paths from public logical location truth. | `tests/test_runtime_paths.py` |
 | `backend/src/makers_anvil_backend/services/workspace_config.py` | Validates settings and creates contained app directories. | `tests/test_workspace_config.py` |
-| `backend/src/makers_anvil_backend/services/intake_catalog.py` | Stages metadata only and lists privacy-safe records. | `tests/test_intake_catalog.py` |
+| `backend/src/makers_anvil_backend/services/authorized_intake.py` | Validates one-time consent and creates one hashed app-owned quarantine copy transactionally. | `tests/test_authorized_intake.py` |
+| `backend/src/makers_anvil_backend/services/intake_catalog.py` | Stores and validates legacy metadata plus path-redacted authorized-copy records. | `tests/test_intake_catalog.py` |
 | `backend/src/makers_anvil_backend/services/route_preview.py` | Maps intake kinds to non-executing work candidates. | `tests/test_route_preview.py` |
 | `backend/src/makers_anvil_backend/services/output_proof.py` | Plans logical artifacts and required proof without writing output. | `tests/test_output_proof.py` |
 | `backend/src/makers_anvil_backend/services/tool_detection.py` | Detects tool presence while withholding paths and avoiding processes. | `tests/test_tool_detection.py` |
@@ -51,12 +54,12 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 
 | File | What it owns | Important blocks |
 | --- | --- | --- |
-| `frontend/public/index.html` | Preview-first workbench structure and accessible loading state. | Rail -> command bar -> source deck -> tools -> command deck -> proof inspector -> Dev evidence. |
-| `frontend/public/assets/app.js` | GET-only fetch, safe rendering, selected/expected summaries, and local view navigation. | Endpoints -> fallback -> renderers -> workbench summary -> controls -> `renderState` -> `loadState`. |
+| `frontend/public/index.html` | Preview-first workbench structure, one-file picker/review controls, and accessible live state. | Rail -> command bar -> source deck -> intake review -> tools -> command deck -> proof inspector -> Dev evidence. |
+| `frontend/public/assets/app.js` | State fetch, exact two-POST authorized transfer, safe rendering, selected/expected summaries, and local navigation. | Endpoints -> renderers -> intake helpers -> workbench summary -> controls -> `renderState` -> `loadState`. |
 | `frontend/public/assets/styles.css` | Industrial tokens, one-viewport desktop geometry, stable tabs, local scrolling, and mobile flow. | Tokens -> shell -> rail/topbar -> zones -> command deck -> inspector -> responsive rules. |
 | `frontend/public/assets/mark.svg` | Embedded product identity with no remote or script dependency. | Accessible SVG geometry. |
 
-All values originating outside the static page must be written with DOM text APIs. A renderer must never convert a planned or missing value into a ready action. The disabled Add files affordance is visual workflow context only; no file input or form exists.
+All values originating outside the static page must be written with DOM text APIs. A renderer must never convert planned route/tool/output state into a ready action. The file picker accepts one policy suffix, retains its `File` object only in memory, requires a second explicit click, and never submits a source path. Drag/drop, paste, folders, archives, and multi-file intake remain absent.
 
 ## Explicit Local Commands
 
@@ -83,7 +86,7 @@ Each command parses only its documented arguments and delegates behavior to a se
 Contract families are:
 
 - Local settings and runtime location.
-- Intake policy and records.
+- Intake policy, session, one-time authorization, legacy metadata record, and authorized-copy record.
 - Route catalog and previews.
 - Output policy and proof plans.
 - Tool catalog, detection, and semantic dry runs.
