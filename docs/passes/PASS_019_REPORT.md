@@ -48,7 +48,8 @@
 - Fresh Windows one-file build: `artifacts/windows/MakersAnvil.exe`, 14,316,382 bytes, SHA-256 `a6a9011c9ca3706d47b0cd6c7ce86130f8d77fd38170a483f0f34c16e35008b1`.
 - Fresh executable `--smoke`: exit 0 with PASS-019 bundled API/state and `52.5%` completion.
 - Live browser screenshot and keyboard interaction proof: not run because no controllable browser surface was available in this session; static frontend, API, and 140-test proof passed, but visual proof remains an explicit residual gap.
-- GitHub push and hosted CI evidence are recorded after publication.
+- GitHub commit `b5a5a46` updated draft PR #1 for passes 001-019.
+- Hosted CI run `28456149703`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build all passed.
 
 ## Previous-App Migration Decisions
 
