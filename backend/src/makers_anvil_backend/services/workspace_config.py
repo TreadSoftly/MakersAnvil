@@ -122,6 +122,7 @@ class WorkspaceConfigService:
                 "Runtime data uses the operating system user-data directory or an explicit absolute override.",
                 "Resolved personal filesystem paths are not exposed through API records.",
                 "One reviewed file may be copied into app-owned intake only after explicit authorization.",
+                "Lifecycle backup, restore, update, uninstall, and repair are preview-only and preserve user data.",
                 "Source paths, moving, deletion, route execution, tool launch, archive intake/extraction, and folder import remain blocked.",
             ],
         }

@@ -67,6 +67,10 @@ def test_frontend_mutation_is_limited_to_guarded_intake_preferences_and_prefligh
     assert 'const containedExecutionPolicyUrl = "/api/executions/policy"' in app_js
     assert '"X-Makers-Anvil-Request-Token": token' in scripts["contained-execution.js"]
     assert "externalToolLaunched" not in scripts["contained-execution.js"]
+    assert 'const lifecyclePolicyUrl = "/api/lifecycle/policy"' in app_js
+    assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in app_js
+    assert 'method: "POST"' not in scripts["lifecycle-dry-runs.js"]
+    assert "installerExecutionEnabled" not in scripts["lifecycle-dry-runs.js"]
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -170,11 +174,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-020"
-    assert current["trackPercentages"]["realApp"] == 62.5
+    assert current["currentPass"]["id"] == "PASS-021"
+    assert current["trackPercentages"]["realApp"] == 67.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-020"
+    assert ledger["passes"][-1]["id"] == "PASS-021"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:
@@ -200,6 +204,7 @@ def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> N
     assert settings["safety"]["userUploadEnabled"] is True
     assert all(value is False for key, value in settings["safety"].items() if key != "userUploadEnabled")
     assert all(".." not in item["relativePath"] for item in settings["directories"])
+    assert any(item["id"] == "backups" and item["relativePath"] == "backups" for item in settings["directories"])
 
 
 def test_product_source_contains_no_personal_machine_paths() -> None:

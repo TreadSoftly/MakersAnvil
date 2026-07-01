@@ -52,9 +52,9 @@ def test_state_limits_actions_to_intake_and_preferences() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 62.5
-    assert response.body["currentPass"]["id"] == "PASS-020"
-    assert response.body["completion"]["packagedRelease"] == 12.5
+    assert response.body["completion"]["realApp"] == 67.5
+    assert response.body["currentPass"]["id"] == "PASS-021"
+    assert response.body["completion"]["packagedRelease"] == 17.5
     assert response.body["completion"]["cleanMachineProof"] == 0.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
     assert enabled_capabilities == ["file-intake", "workbench-preferences", "contained-stl-preflight"]
@@ -88,6 +88,41 @@ def test_contained_execution_reads_expose_one_partial_operation_only() -> None:
     assert catalog.body["actions"]["openOutput"]["enabledInApi"] is False
     assert state.body["containedExecutions"] == catalog.body
     assert state.body["containedExecutions"]["executionsPath"] == "makers-anvil-data://user/executions"
+
+
+def test_lifecycle_reads_expose_five_non_mutating_preservation_plans() -> None:
+    """Purpose: Prove lifecycle APIs expose complete planning without executable effects.
+
+    Inputs: Default composed API and exact lifecycle policy/catalog/state GET routes.
+    Outputs: Five-operation coverage, zero readiness, privacy, preservation, and consistency assertions.
+    How it works: Reads all contracts and compares the focused catalog with app state.
+    Side effects: Reads app-owned metadata only and sends no mutation.
+    Failure behavior: Missing operations, enabled effects, paths, or state drift fails.
+    Safety: No content, archive, network, installer, process, mutation, or deletion occurs.
+    Example: Update evidence exposes current version but no available release claim.
+    Related proof: Lifecycle service tests and public schemas.
+    """
+
+    api = MakersAnvilApi()
+    policy = api.handle("GET", "/api/lifecycle/policy")
+    catalog = api.handle("GET", "/api/lifecycle/dry-runs")
+    state = api.handle("GET", "/api/state")
+
+    assert policy.status == 200
+    assert [item["id"] for item in policy.body["operations"]] == ["backup", "restore", "update", "uninstall", "repair"]
+    assert policy.body["backupTarget"] == "makers-anvil-data://user/backups"
+    assert policy.body["executionAction"] == {"claimState": "blocked", "enabledInApi": False}
+    assert all(value is False for value in policy.body["safety"].values())
+    assert catalog.status == 200
+    assert catalog.body["summary"]["operationCount"] == 5
+    assert catalog.body["summary"]["previewReadyCount"] == 5
+    assert catalog.body["summary"]["executionReadyCount"] == 0
+    assert catalog.body["inventory"]["contentRead"] is False
+    assert catalog.body["inventory"]["namesExposed"] is False
+    assert all(plan["preservation"]["existingDataPreserved"] is True for plan in catalog.body["plans"])
+    assert all(plan["preservation"]["userDataDeletionAllowed"] is False for plan in catalog.body["plans"])
+    assert all(not any(plan["effects"].values()) for plan in catalog.body["plans"])
+    assert state.body["lifecycleDryRuns"] == catalog.body
 
 
 def test_non_intake_mutating_requests_are_blocked() -> None:
@@ -171,11 +206,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-020"
+    assert workspace.body["currentPass"]["id"] == "PASS-021"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-020"
+    assert ledger.body["passes"][-1]["id"] == "PASS-021"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

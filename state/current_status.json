@@ -7,17 +7,17 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-020",
-    "title": "contained built-in STL preflight with cancellation, audit, and output proof",
+    "id": "PASS-021",
+    "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_020_REPORT.md"
+    "reportPath": "docs/passes/PASS_021_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 62.5,
-    "windowsLocal": 67.5,
+    "realApp": 67.5,
+    "windowsLocal": 72.5,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 12.5,
+    "packagedRelease": 17.5,
     "cleanMachineProof": 0.0
   },
   "sourceTruth": {
@@ -40,7 +40,9 @@
     "activityHistorySchemaPath": "schemas/activity-history.schema.json",
     "containedExecutionPolicyPath": "config/contained_execution_policy.json",
     "containedExecutionRecordSchemaPath": "schemas/contained-execution-record.schema.json",
-    "executionProofSchemaPath": "schemas/execution-proof.schema.json"
+    "executionProofSchemaPath": "schemas/execution-proof.schema.json",
+    "lifecycleDryRunPolicyPath": "config/lifecycle_dry_run_policy.json",
+    "lifecycleDryRunCatalogSchemaPath": "schemas/lifecycle-dry-run-catalog.schema.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -121,6 +123,12 @@
     ,"Cooperative cancellation is persisted and observed between bounded source reads without claiming an operating-system process signal."
     ,"Successful or failed preflight completion writes a path-redacted report, execution log, hashed proof, terminal manifest, and append-only fixed-vocabulary audit events under portable app-owned storage."
     ,"The guarded API and workbench expose explicit authorize, run, and cancel controls only for the built-in STL preflight while full mesh-to-toolpath execution remains false."
+    ,"Read-only lifecycle policy and catalog APIs expose backup, restore, update, uninstall, and repair plans without adding a mutation endpoint."
+    ,"Backup planning inventories only declared app-owned source directories through bounded entry and size metadata; file content, names, and private paths remain unread and unexposed."
+    ,"Temporary and backup directories are excluded from backup source inventory, preventing recursive backup planning and transient-data claims."
+    ,"Every lifecycle plan preserves existing app data, disallows user-data deletion, reports zero execution readiness, and exposes explicit evidence requirements and blockers."
+    ,"Lifecycle planning performs no archive creation/read/extraction, restore write, network access, package download, installer execution, software mutation, external process, or deletion."
+    ,"The workbench renders five lifecycle preview cards and aggregate app-data counts without adding lifecycle command controls."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -138,7 +146,13 @@
     "drag-and-drop intake",
     "clipboard-paste intake",
     "archive upload",
-    "software install/update/uninstall/repair",
+    "software install/update/uninstall/repair execution",
+    "backup manifest and archive creation",
+    "backup archive reading and restore writes",
+    "release metadata network retrieval and package download",
+    "installer registration checks and installer execution",
+    "software lifecycle process execution",
+    "user-data deletion during uninstall",
     "archive extraction",
     "folder import",
     "content-type verification",
@@ -149,8 +163,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-021",
-    "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
+    "id": "PASS-022",
+    "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
     "claimState": "planned"
   }
 }

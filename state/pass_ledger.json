@@ -285,6 +285,21 @@
         "guarded API and workbench actions remain limited to authorize, run, and cancel for this partial operation",
         "full routes, slicing, G-code, arbitrary commands, external processes/tools, output opening, and software changes remain blocked"
       ]
+    },
+    {
+      "id": "PASS-021",
+      "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
+      "claimState": "preview-only",
+      "reportPath": "docs/passes/PASS_021_REPORT.md",
+      "proof": [
+        "five ordered lifecycle operations are defined through strict schema-backed policy and read-only API records",
+        "backup source inventory returns only bounded app-owned file counts and byte totals without content, names, or private paths",
+        "temporary and backup directories are excluded from backup sources and scan entry count is globally capped",
+        "every plan preserves existing app data, forbids user-data deletion, declares proof requirements, and remains execution-blocked",
+        "archive, restore, network, package, installer, software mutation, process, and deletion effects remain false",
+        "the workbench renders lifecycle evidence and blockers without any lifecycle command control",
+        "focused no-write, fail-closed, API, frontend, schema, package, and cross-platform verification cover the pass"
+      ]
     }
   ]
 }

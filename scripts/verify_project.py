@@ -46,6 +46,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
     "backend/src/makers_anvil_backend/services/job_records.py",
     "backend/src/makers_anvil_backend/services/job_workspace.py",
+    "backend/src/makers_anvil_backend/services/lifecycle_dry_run.py",
     "backend/src/makers_anvil_backend/services/local_request_guard.py",
     "backend/src/makers_anvil_backend/services/output_proof.py",
     "backend/src/makers_anvil_backend/services/route_preview.py",
@@ -61,6 +62,7 @@ REQUIRED_FILES = [
     "config/execution_request_policy.json",
     "config/intake_policy.json",
     "config/job_workspace_policy.json",
+    "config/lifecycle_dry_run_policy.json",
     "config/output_policy.json",
     "config/route_catalog.json",
     "config/tool_catalog.json",
@@ -71,6 +73,7 @@ REQUIRED_FILES = [
     "frontend/public/assets/capability-lanes.js",
     "frontend/public/assets/contained-execution.js",
     "frontend/public/assets/context-help.js",
+    "frontend/public/assets/lifecycle-dry-runs.js",
     "frontend/public/assets/styles.css",
     "frontend/public/assets/workbench-experience.js",
     "schemas/activity-event.schema.json",
@@ -98,6 +101,8 @@ REQUIRED_FILES = [
     "schemas/job-workspace-catalog.schema.json",
     "schemas/job-workspace-policy.schema.json",
     "schemas/job-workspace-record.schema.json",
+    "schemas/lifecycle-dry-run-catalog.schema.json",
+    "schemas/lifecycle-dry-run-policy.schema.json",
     "schemas/output-policy.schema.json",
     "schemas/output-proof.schema.json",
     "schemas/route-catalog.schema.json",
@@ -159,11 +164,13 @@ REQUIRED_FILES = [
     "docs/passes/PASS_018_REPORT.md",
     "docs/passes/PASS_019_REPORT.md",
     "docs/passes/PASS_020_REPORT.md",
+    "docs/passes/PASS_021_REPORT.md",
     "schemas/learning-coverage.schema.json",
     "schemas/previous-app-migration.schema.json",
     "schemas/windows-package-plan.schema.json",
     "tests/test_desktop.py",
     "tests/test_contained_execution.py",
+    "tests/test_lifecycle_dry_run.py",
     "tests/test_previous_app_learning_guide.py",
     "tests/test_runtime_resources.py",
     "tests/test_server.py",
@@ -318,6 +325,8 @@ def check_api() -> list[str]:
     capability_matrix = api.handle("GET", "/api/capabilities/matrix")
     contained_policy = api.handle("GET", "/api/executions/policy")
     contained_catalog = api.handle("GET", "/api/executions/catalog")
+    lifecycle_policy = api.handle("GET", "/api/lifecycle/policy")
+    lifecycle_catalog = api.handle("GET", "/api/lifecycle/dry-runs")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -328,6 +337,8 @@ def check_api() -> list[str]:
         errors.append("GET /api/health exposes an unexpected mutation scope")
     if health.body.get("builtInStlPreflightEnabled") is not True:
         errors.append("GET /api/health does not expose the bounded built-in STL preflight")
+    if health.body.get("lifecycleDryRunEnabled") is not True:
+        errors.append("GET /api/health does not expose read-only lifecycle planning")
     if health.body.get("routeExecutionEnabled") is not False or health.body.get("toolLaunchEnabled") is not False:
         errors.append("GET /api/health unexpectedly enables route execution or tool launch")
     if state.status != 200 or state.body.get("claimState") not in ALLOWED_CLAIM_STATES:
@@ -339,14 +350,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-020":
-        errors.append("GET /api/state does not report PASS-020")
+    if state.body.get("currentPass", {}).get("id") != "PASS-021":
+        errors.append("GET /api/state does not report PASS-021")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-020":
-        errors.append("GET /api/workspace/status does not report PASS-020")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-020":
-        errors.append("GET /api/passes/ledger does not report PASS-020 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-021":
+        errors.append("GET /api/workspace/status does not report PASS-021")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-021":
+        errors.append("GET /api/passes/ledger does not report PASS-021 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -529,6 +540,24 @@ def check_api() -> list[str]:
         errors.append("contained execution catalog unexpectedly enables output opening")
     if state.body.get("containedExecutions") != contained_catalog.body:
         errors.append("GET /api/state contained execution catalog differs from focused route")
+    if lifecycle_policy.status != 200 or lifecycle_policy.body.get("mode") != "read-only-lifecycle-planning":
+        errors.append("GET /api/lifecycle/policy does not expose read-only lifecycle planning")
+    if [item.get("id") for item in lifecycle_policy.body.get("operations", [])] != ["backup", "restore", "update", "uninstall", "repair"]:
+        errors.append("lifecycle policy does not cover the exact five operations")
+    if lifecycle_policy.body.get("backupTarget") != "makers-anvil-data://user/backups":
+        errors.append("lifecycle policy does not expose the logical app-owned backup target")
+    if any(lifecycle_policy.body.get("safety", {}).values()):
+        errors.append("lifecycle policy unexpectedly enables a read, network, archive, installer, mutation, or delete effect")
+    if lifecycle_catalog.status != 200 or lifecycle_catalog.body.get("summary", {}).get("operationCount") != 5:
+        errors.append("GET /api/lifecycle/dry-runs does not expose five operation previews")
+    if lifecycle_catalog.body.get("summary", {}).get("executionReadyCount") != 0:
+        errors.append("lifecycle dry runs unexpectedly report execution readiness")
+    if any(lifecycle_catalog.body.get("safety", {}).values()):
+        errors.append("lifecycle dry runs unexpectedly enable an effect")
+    if any(plan.get("readiness", {}).get("executionReady") for plan in lifecycle_catalog.body.get("plans", [])):
+        errors.append("a lifecycle plan unexpectedly reports execution readiness")
+    if state.body.get("lifecycleDryRuns") != lifecycle_catalog.body:
+        errors.append("GET /api/state lifecycle catalog differs from its focused route")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -562,17 +591,18 @@ def check_status_records() -> list[str]:
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
     contained_execution_policy = json.loads((ROOT / "config" / "contained_execution_policy.json").read_text(encoding="utf-8"))
+    lifecycle_dry_run_policy = json.loads((ROOT / "config" / "lifecycle_dry_run_policy.json").read_text(encoding="utf-8"))
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-020":
-        errors.append("current status does not report PASS-020")
-    if status.get("trackPercentages", {}).get("realApp") != 62.5:
-        errors.append("real app completion is not 62.5 for PASS-020")
+    if status.get("currentPass", {}).get("id") != "PASS-021":
+        errors.append("current status does not report PASS-021")
+    if status.get("trackPercentages", {}).get("realApp") != 67.5:
+        errors.append("real app completion is not 67.5 for PASS-021")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-020":
-        errors.append("pass ledger latest pass is not PASS-020")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-021":
+        errors.append("pass ledger latest pass is not PASS-021")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -637,6 +667,17 @@ def check_status_records() -> list[str]:
         errors.append("contained execution policy concurrency is not exactly one")
     if any(contained_execution_policy.get("safety", {}).values()):
         errors.append("contained execution policy enables an unsafe effect")
+    if lifecycle_dry_run_policy.get("mode") != "read-only-lifecycle-planning":
+        errors.append("lifecycle dry-run policy mode is invalid")
+    if [item.get("id") for item in lifecycle_dry_run_policy.get("operations", [])] != ["backup", "restore", "update", "uninstall", "repair"]:
+        errors.append("lifecycle dry-run policy operation coverage is invalid")
+    if lifecycle_dry_run_policy.get("actions", {}).get("previewEnabled") is not True or any(value for key, value in lifecycle_dry_run_policy.get("actions", {}).items() if key != "previewEnabled"):
+        errors.append("lifecycle dry-run policy actions are broader or narrower than PASS-021")
+    if any(lifecycle_dry_run_policy.get("safety", {}).values()):
+        errors.append("lifecycle dry-run policy enables an unsafe effect")
+    directory_ids = [item.get("id") for item in settings.get("directories", [])]
+    if "backups" not in directory_ids or len(directory_ids) != len(set(directory_ids)):
+        errors.append("default settings do not declare one unique app-owned backups directory")
     if route_catalog.get("mode") != "metadata-derived-read-only":
         errors.append("route catalog is not metadata-derived read-only")
     if any(route_catalog.get("safety", {}).values()):

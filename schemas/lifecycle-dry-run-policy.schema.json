@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/lifecycle-dry-run-policy.schema.json",
+  "title": "Makers Anvil lifecycle dry-run policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "inventory", "operations", "actions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.lifecycle-dry-run.v1"},
+    "claimState": {"const": "preview-only"},
+    "mode": {"const": "read-only-lifecycle-planning"},
+    "inventory": {
+      "type": "object",
+      "required": ["sourceDirectoryIds", "backupTargetDirectoryId", "excludedDirectoryIds", "maxEntries"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceDirectoryIds": {"const": ["settings", "intake", "jobs", "executions", "outputs", "logs"]},
+        "backupTargetDirectoryId": {"const": "backups"},
+        "excludedDirectoryIds": {"const": ["tmp", "backups"]},
+        "maxEntries": {"type": "integer", "minimum": 1, "maximum": 10000}
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "prefixItems": [
+        {"$ref": "#/$defs/backup"},
+        {"$ref": "#/$defs/restore"},
+        {"$ref": "#/$defs/update"},
+        {"$ref": "#/$defs/uninstall"},
+        {"$ref": "#/$defs/repair"}
+      ],
+      "items": false
+    },
+    "actions": {"$ref": "#/$defs/actions"},
+    "safety": {"$ref": "#/$defs/safety"}
+  },
+  "$defs": {
+    "operation": {
+      "type": "object",
+      "required": ["id", "label", "summary", "steps", "requiredEvidence", "blockers", "preservation"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "steps": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id", "label"], "additionalProperties": false, "properties": {"id": {"type": "string", "minLength": 1}, "label": {"type": "string", "minLength": 1}}}},
+        "requiredEvidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "blockers": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "preservation": {"$ref": "#/$defs/preservation"}
+      }
+    },
+    "backup": {"allOf": [{"$ref": "#/$defs/operation"}, {"properties": {"id": {"const": "backup"}}}]},
+    "restore": {"allOf": [{"$ref": "#/$defs/operation"}, {"properties": {"id": {"const": "restore"}}}]},
+    "update": {"allOf": [{"$ref": "#/$defs/operation"}, {"properties": {"id": {"const": "update"}}}]},
+    "uninstall": {"allOf": [{"$ref": "#/$defs/operation"}, {"properties": {"id": {"const": "uninstall"}}}]},
+    "repair": {"allOf": [{"$ref": "#/$defs/operation"}, {"properties": {"id": {"const": "repair"}}}]},
+    "preservation": {
+      "type": "object",
+      "required": ["existingDataPreserved", "userDataDeletionAllowed"],
+      "additionalProperties": false,
+      "properties": {"existingDataPreserved": {"const": true}, "userDataDeletionAllowed": {"const": false}}
+    },
+    "actions": {
+      "type": "object",
+      "required": ["previewEnabled", "backupExecutionEnabled", "restoreExecutionEnabled", "updateExecutionEnabled", "uninstallExecutionEnabled", "repairExecutionEnabled", "apiMutationEnabled", "browserMutationEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "previewEnabled": {"const": true},
+        "backupExecutionEnabled": {"const": false},
+        "restoreExecutionEnabled": {"const": false},
+        "updateExecutionEnabled": {"const": false},
+        "uninstallExecutionEnabled": {"const": false},
+        "repairExecutionEnabled": {"const": false},
+        "apiMutationEnabled": {"const": false},
+        "browserMutationEnabled": {"const": false}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["fileContentRead", "fileNameExposed", "privatePathExposed", "networkAccessEnabled", "archiveCreationEnabled", "archiveReadEnabled", "archiveExtractionEnabled", "restoreWriteEnabled", "packageDownloadEnabled", "installerExecutionEnabled", "softwareMutationEnabled", "userDataDeletionEnabled", "externalProcessEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "fileContentRead": {"const": false}, "fileNameExposed": {"const": false}, "privatePathExposed": {"const": false},
+        "networkAccessEnabled": {"const": false}, "archiveCreationEnabled": {"const": false}, "archiveReadEnabled": {"const": false},
+        "archiveExtractionEnabled": {"const": false}, "restoreWriteEnabled": {"const": false}, "packageDownloadEnabled": {"const": false},
+        "installerExecutionEnabled": {"const": false}, "softwareMutationEnabled": {"const": false}, "userDataDeletionEnabled": {"const": false},
+        "externalProcessEnabled": {"const": false}
+      }
+    }
+  }
+}

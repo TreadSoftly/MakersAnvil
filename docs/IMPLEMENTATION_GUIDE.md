@@ -109,7 +109,7 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 ## Frontend Flow
 
-`frontend/public/index.html` declares the rail, top command bar, source deck, reviewed intake controls, tool inventory, stable command deck, output-proof inspector, and Dev evidence regions. `frontend/public/assets/app.js` performs state GETs plus exactly two same-origin intake POSTs, renders each contract, and handles local-only navigation. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
+`frontend/public/index.html` declares the rail, top command bar, source deck, reviewed intake controls, tool inventory, stable command deck, output-proof inspector, lifecycle previews, and Dev evidence regions. `frontend/public/assets/app.js` coordinates read contracts plus the closed guarded intake, preference, and contained-preflight mutations; `lifecycle-dry-runs.js` is GET-only. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
 
 Frontend rules:
 
@@ -151,7 +151,7 @@ A mutation is not a read-only feature with a button added. Before one is enabled
 - restart/recovery behavior when state must survive a process;
 - negative tests and visible browser state.
 
-Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates, PASS-019 adds presentation preferences plus fixed redacted activity, and PASS-020 enables only the built-in STL structural preflight; full route and external-process execution remain false.
+Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates, PASS-019 adds presentation preferences plus fixed redacted activity, PASS-020 enables only the built-in STL structural preflight, and PASS-021 models lifecycle plans without executing them; full routes, external processes, and software lifecycle mutations remain false.
 
 ## Portability Rules
 

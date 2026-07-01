@@ -22,6 +22,7 @@ from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
 from makers_anvil_backend.services.job_workspace import JobWorkspaceService
+from makers_anvil_backend.services.lifecycle_dry_run import LifecycleDryRunService
 from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.tool_detection import ToolDetectionService
@@ -44,7 +45,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-020-contained-stl-preflight"
+    api_build = "makers-anvil-real-pass-021-lifecycle-dry-runs"
 
     def __init__(
         self,
@@ -63,6 +64,7 @@ class AppStateService:
         activity_log: ActivityLogService | None = None,
         capability_matrix: CapabilityMatrixService | None = None,
         contained_execution: ContainedExecutionService | None = None,
+        lifecycle_dry_run: LifecycleDryRunService | None = None,
     ) -> None:
         """Purpose: Compose injected or default services so one request uses coherent snapshots.
 
@@ -119,6 +121,9 @@ class AppStateService:
             intake_catalog=self._intake_catalog,
             request_guard=self._authorized_intake.request_guard,
         )
+        self._lifecycle_dry_run = lifecycle_dry_run or LifecycleDryRunService(
+            workspace_config=self._workspace_config,
+        )
 
     def health(self) -> dict[str, Any]:
         """Purpose: Describe the live API and its one bounded mutation scope honestly.
@@ -143,6 +148,7 @@ class AppStateService:
             "mutatingActionsEnabled": True,
             "enabledMutationScopes": ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"],
             "builtInStlPreflightEnabled": True,
+            "lifecycleDryRunEnabled": True,
             "routeExecutionEnabled": False,
             "toolLaunchEnabled": False,
         }
@@ -187,6 +193,7 @@ class AppStateService:
             "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
             "jobWorkspaceCatalog": self._job_workspace.catalog(),
             "containedExecutions": self._contained_execution.catalog(),
+            "lifecycleDryRuns": self._lifecycle_dry_run.catalog(),
             "capabilityMatrix": capability_matrix,
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
@@ -622,6 +629,36 @@ class AppStateService:
 
         return self._contained_execution.cancel(execution_id, context)
 
+    def lifecycle_dry_run_policy(self) -> dict[str, Any]:
+        """Purpose: Return strict preview-only lifecycle scope and preservation rules.
+
+        Inputs: No request body or caller-controlled path.
+        Outputs: Validated operation definitions, logical backup target, actions, and safety.
+        How it works: Delegates closed policy validation to ``LifecycleDryRunService``.
+        Side effects: Reads bundled policy and workspace settings only.
+        Failure behavior: Invalid or incomplete policy propagates instead of widening behavior.
+        Safety: No lifecycle mutation endpoint, command, archive, process, or private path exists.
+        Example: ``GET /api/lifecycle/policy`` lists five preview operations.
+        Related proof: Lifecycle service and API tests.
+        """
+
+        return self._lifecycle_dry_run.policy_response()
+
+    def lifecycle_dry_runs(self) -> dict[str, Any]:
+        """Purpose: Return current backup, restore, update, uninstall, and repair previews.
+
+        Inputs: App-owned directory metadata and bundled resource existence.
+        Outputs: Five plans plus bounded path-redacted inventory and current evidence.
+        How it works: Delegates metadata inventory and deterministic plan composition.
+        Side effects: Reads directory entries and size metadata only.
+        Failure behavior: Scan/policy/resource problems remain failed or propagate honestly.
+        Safety: Reads no file content/name and performs no network, archive, installer, or deletion.
+        Example: Backup plan reports aggregate bytes while creation remains blocked.
+        Related proof: Lifecycle catalog, no-write, privacy, and API consistency tests.
+        """
+
+        return self._lifecycle_dry_run.catalog()
+
     def _tracks(self) -> list[dict[str, Any]]:
         """Purpose: Describe platform delivery tracks without claiming untested runtime support.
 
@@ -788,6 +825,13 @@ class AppStateService:
                 "claimState": "staged",
                 "summary": "One authorized app-owned STL can receive an in-process structural preflight with audit and proof.",
                 "actionsEnabled": True,
+            },
+            {
+                "id": "lifecycle-dry-runs",
+                "label": "Lifecycle dry runs",
+                "claimState": "preview-only",
+                "summary": "Backup, restore, update, uninstall, and repair are modeled with preservation evidence while every execution effect stays blocked.",
+                "actionsEnabled": False,
             },
             {
                 "id": "execution-request-preview",

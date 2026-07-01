@@ -22,8 +22,8 @@
 18. Explicit authorization and portable native/browser intake foundation.
 19. Modular previous-app capability, help, event, and settings migration.
 20. Single-route contained execution with cancellation, audit, and output proof.
-21. Backup, restore, update, and uninstall dry-runs.
-22. Signed Windows installer, upgrades, removal, and clean-machine proof.
+21. Backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
+22. Windows installer foundation, upgrade/removal gates, signing path, and clean-machine proof harness.
 
 ## Planned Later
 

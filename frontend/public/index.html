@@ -75,6 +75,7 @@
             <option value="Plans"></option>
             <option value="Output proof"></option>
             <option value="Developer evidence"></option>
+            <option value="Lifecycle"></option>
           </datalist>
         </label>
 
@@ -354,6 +355,23 @@
                 </fieldset>
                 <label class="toggle-setting"><input id="context-help-setting" type="checkbox"> Contextual help</label>
                 <div class="setting-actions"><span id="experience-storage">app-owned settings</span><button id="save-experience-settings" class="primary-command" type="button">Save</button></div>
+              </section>
+              <!-- Block purpose: The lifecycle section explains backup, restore, update, uninstall, and repair plans.
+                   How it works: Two read-only API contracts provide aggregate app-data metadata and five non-executable plans.
+                   Example: Backup shows source totals and required proof while archive creation remains blocked.
+                   Safety: No button, path, filename, archive, network, installer, mutation, process, or deletion is available. -->
+              <section class="dev-block dev-wide" id="lifecycle-dry-runs" aria-label="Lifecycle dry-run plans">
+                <div class="deck-head">
+                  <h3>Lifecycle dry runs</h3>
+                  <span id="lifecycle-dry-run-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="lifecycle-summary">
+                  <strong id="lifecycle-dry-run-summary">0/0 previews · 0 executable</strong>
+                  <span id="lifecycle-inventory-summary">0 app files · 0 B · content unread</span>
+                  <span id="lifecycle-backup-target">not proven</span>
+                </div>
+                <div id="lifecycle-dry-run-list" class="lifecycle-plan-list" aria-live="polite"></div>
+                <p id="lifecycle-dry-run-boundary" class="capability-honesty">Planning only.</p>
               </section>
               <!-- Block purpose: The activity section displays recent fixed server-authored completion events.
                    How it works: The browser reads a bounded newest-first history and renders each reviewed summary as text.

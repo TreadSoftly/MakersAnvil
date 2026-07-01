@@ -2,15 +2,15 @@
 
 ## Current Pass
 
-PASS-020 - contained built-in STL preflight with cancellation, audit, and output proof.
+PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
 
 ## Track Percentages
 
-- Real app completion: `62.5000%`
-- Windows local app: `67.5000%`
+- Real app completion: `67.5000%`
+- Windows local app: `72.5000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `12.5000%`
+- Packaged release: `17.5000%`
 - Clean-machine proof: `0.0000%`
 
 ## Proven
@@ -94,6 +94,7 @@ PASS-020 - contained built-in STL preflight with cancellation, audit, and output
 - PASS-018 adds a process-local request token, same-origin checks, a ten-minute one-time authorization, allowlisted one-file intake, bounded exact-length streaming, SHA-256 proof, atomic app-owned quarantine storage, rollback, and the reviewed browser/native workbench flow.
 - PASS-019 migrates the prior app's strongest capability-lane, contextual-help, event-history, settings, and restrained-motion ideas into focused current modules. The matrix derives from existing contracts, preferences use portable app-owned settings, activity is fixed/redacted/create-only, and all route/tool/output/software actions remain blocked.
 - PASS-020 enables one deliberately partial route stage: an explicitly authorized app-owned STL is streamed through a built-in structural preflight with exact size/hash checks, one concurrency slot, cooperative cancellation, fixed append-only audit events, a report, execution log, and hashed output proof. It starts no external command/process/tool, creates no toolpath or G-code, opens no output, and does not claim full mesh-to-toolpath completion.
+- PASS-021 adds strict read-only backup, restore, update, uninstall, and repair planning. It inventories declared app-owned source directories through bounded counts and bytes only, excludes temporary/backup destinations, preserves existing data, and exposes five plan/evidence/blocker cards without a lifecycle mutation endpoint.
 
 ## Blocked Or Not Proven
 
@@ -111,7 +112,9 @@ PASS-020 - contained built-in STL preflight with cancellation, audit, and output
 - Selected-file handoff.
 - Drag-and-drop or clipboard-paste intake.
 - Archive upload, content-type verification, and malware scanning.
-- Install, update, uninstall, or repair actions.
+- Install, update, uninstall, or repair execution.
+- Backup manifest/archive creation, archive reading, and restore writes.
+- Lifecycle network access, package download, installer execution, software mutation, process execution, and user-data deletion.
 - Archive extraction.
 - Folder import.
 - Packaged release.
@@ -120,4 +123,4 @@ PASS-020 - contained built-in STL preflight with cancellation, audit, and output
 
 ## Next Pass
 
-PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
+PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-machine test harness.

@@ -135,8 +135,8 @@ def test_package_smoke_proves_bundled_core(capsys: pytest.CaptureFixture[str]) -
     assert result["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
     assert result["routeExecutionEnabled"] is False
     assert result["apiBuild"].startswith("makers-anvil-real-pass-")
-    assert result["currentPass"] == "PASS-020"
-    assert result["realAppCompletion"] == 62.5
+    assert result["currentPass"] == "PASS-021"
+    assert result["realAppCompletion"] == 67.5
 
 
 def test_package_smoke_handles_windowed_stdout(monkeypatch: pytest.MonkeyPatch) -> None:

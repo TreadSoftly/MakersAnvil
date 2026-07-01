@@ -2555,6 +2555,71 @@ ol {
   font-size: 0.62rem;
 }
 
+/* Block purpose: Keeps lifecycle totals and logical backup target readable above the plan grid. */
+.lifecycle-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 8px;
+}
+
+/* Block purpose: Distinguishes aggregate lifecycle metadata from plan titles. */
+.lifecycle-summary span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  overflow-wrap: anywhere;
+}
+
+/* Block purpose: Arranges five lifecycle plans in stable responsive columns. */
+.lifecycle-plan-list {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+/* Block purpose: Frames one operation preview without presenting it as an executable command. */
+.lifecycle-plan-card {
+  background: var(--surface-soft);
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  padding: 10px;
+}
+
+/* Block purpose: Aligns lifecycle operation identity with its preview-only truth badge. */
+.lifecycle-plan-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* Block purpose: Matches compact panel typography to the dense developer surface. */
+.lifecycle-plan-head h4 {
+  font-size: 0.76rem;
+  margin: 0;
+}
+
+/* Block purpose: Keeps lifecycle explanation text compact and safely wrapping. */
+.lifecycle-plan-card p {
+  color: var(--text-soft);
+  font-size: 0.66rem;
+  line-height: 1.35;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Block purpose: Gives preservation evidence a distinct positive but non-actionable signal. */
+.lifecycle-plan-card .lifecycle-plan-preservation {
+  color: var(--green);
+}
+
+/* Block purpose: Makes unresolved lifecycle blockers visually explicit. */
+.lifecycle-plan-card .lifecycle-plan-blockers {
+  color: var(--amber);
+}
+
 /* Block purpose: Restores breathing room when the user explicitly chooses comfortable density. */
 html[data-density="comfortable"] .work-zone,
 html[data-density="comfortable"] .capability-band,
@@ -2653,8 +2718,12 @@ html[data-motion="reduced"] *::after {
 }
 
 /* Block purpose: Gives each preflight source or execution one stable two-column command row. */
-.contained-execution-item {
+  .contained-execution-item {
     align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .lifecycle-plan-list {
     grid-template-columns: 1fr;
   }
 }

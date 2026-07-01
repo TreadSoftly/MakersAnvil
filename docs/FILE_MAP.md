@@ -19,7 +19,7 @@ Contains the Python application package. `server.py` owns loopback HTTP serving,
 
 ## `frontend/`
 
-Contains the static dashboard. It has no build step. HTML defines structure and the reviewed one-file picker, CSS defines responsive presentation, JavaScript fetches/renders state and performs the exact authorized intake pair, and the SVG is the product mark.
+Contains the static dashboard. It has no build step. HTML defines structure and reviewed controls, CSS defines responsive presentation, focused JavaScript modules render state and perform only the closed guarded mutations, lifecycle planning remains GET-only, and the SVG is the product mark.
 
 ## `config/`
 
@@ -27,7 +27,7 @@ Contains safe committed defaults. These files describe policy; resolved personal
 
 ## `schemas/`
 
-Contains JSON Schema contracts for API, state, settings, intake, runtime location, and source-manifest records.
+Contains JSON Schema contracts for API, state, settings, intake, planning, contained execution, lifecycle dry runs, runtime location, and source-manifest records.
 
 ## `state/`
 
@@ -39,7 +39,7 @@ Contains explicit developer and local-user entrypoints. Scripts resolve the repo
 
 ## `tests/`
 
-Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, runtime containment, portability, source purity, documentation governance, and verifier integrity.
+Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, contained preflight, lifecycle no-write planning, runtime containment, portability, source purity, documentation governance, and verifier integrity.
 
 ## `docs/`
 

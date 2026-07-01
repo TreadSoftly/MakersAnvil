@@ -30,6 +30,11 @@
       "purpose": "authorized contained execution records, logs, reports, and proof"
     },
     {
+      "id": "backups",
+      "relativePath": "backups",
+      "purpose": "future verified app-data backup bundles"
+    },
+    {
       "id": "outputs",
       "relativePath": "outputs",
       "purpose": "future output bundles"

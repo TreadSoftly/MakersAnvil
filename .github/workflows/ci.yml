@@ -52,6 +52,6 @@ jobs:
       - run: .\artifacts\windows\MakersAnvil.exe --smoke
       - uses: actions/upload-artifact@v6
         with:
-          name: MakersAnvil-windows-x64-pass-018
+          name: MakersAnvil-windows-x64-pass-021
           path: artifacts/windows/MakersAnvil.exe
           if-no-files-found: error

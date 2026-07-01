@@ -80,7 +80,7 @@ Local study path:
 2. `frontend/public/assets/app.js` for GET requests and DOM rendering.
 3. `frontend/public/assets/styles.css` for responsive layout.
 4. Browser smoke tests and screenshots recorded in the current pass report.
-5. `context-help.js`, `capability-lanes.js`, and `workbench-experience.js` for focused PASS-019 interaction modules.
+5. `context-help.js`, `capability-lanes.js`, `workbench-experience.js`, `contained-execution.js`, and `lifecycle-dry-runs.js` for focused interaction modules.
 
 References:
 
@@ -89,6 +89,18 @@ References:
 - Web accessibility introduction: <https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility>
 - WAI-ARIA dialog keyboard and focus guidance: <https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/>
 - MDN reduced-motion media feature: <https://developer.mozilla.org/docs/Web/CSS/@media/prefers-reduced-motion>
+
+## Lifecycle Planning And Preservation
+
+Local study path:
+
+1. `config/lifecycle_dry_run_policy.json` for the exact five operations, evidence, blockers, and false effects.
+2. `services/lifecycle_dry_run.py` for strict policy validation, non-following bounded metadata inventory, and deterministic plan composition.
+3. `schemas/lifecycle-dry-run-*.schema.json` for machine-readable preservation and zero-execution contracts.
+4. `lifecycle-dry-runs.js` for text-only command-free rendering.
+5. `tests/test_lifecycle_dry_run.py` for empty, populated, no-write, fail-closed, and scan-limit examples.
+
+Use the existing Python filesystem, JSON Schema, browser rendering, testing, and desktop packaging references in this document to follow each layer. The repository deliberately does not recommend an installer/update library yet because PASS-021 proves planning only; backend selection belongs to PASS-022 evidence.
 
 ## Testing And Verification
 

@@ -207,9 +207,13 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     assert "configureContextHelp" in javascript
     assert "renderActivityHistory" in javascript
     assert "renderContainedExecutions" in javascript
+    assert "renderLifecycleDryRuns" in javascript
     assert "Authorize preflight" in javascript
     assert "Run preflight" in javascript
     assert "toolpathGenerated" not in javascript
+    assert 'const lifecyclePolicyUrl = "/api/lifecycle/policy"' in javascript
+    assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in javascript
+    assert 'method: "POST"' not in (ROOT / "frontend" / "public" / "assets" / "lifecycle-dry-runs.js").read_text(encoding="utf-8")
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:

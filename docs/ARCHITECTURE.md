@@ -39,6 +39,9 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 - `ExecutionGateService` evaluates ten required evidence classes for one allowlisted route while authorization and execution remain disabled.
 - `ExecutionRequestService` joins coherent dry-run and gate snapshots into path-free intent, unaccepted authorization fields, and an empty audit plan without persistence.
 - `JobWorkspaceService` creates deterministic app-owned prepared workspaces and cancellation-request records through explicit local scripts while processes remain impossible.
+- `ContainedExecutionService` runs only the explicitly authorized built-in STL structural preflight and records cancellation, audit, report, log, and proof evidence.
+- `ExecutionAuditService` creates fixed-vocabulary immutable ordered events for contained preflight lifecycles.
+- `LifecycleDryRunService` inventories bounded app-owned metadata and models backup, restore, update, uninstall, and repair while every lifecycle effect remains false.
 
 ### Schemas And Durable State
 
@@ -69,6 +72,7 @@ Browser
   -> ExecutionGateService separates satisfied planning evidence from blocked operational gates
   -> ExecutionRequestService models logical intent, required consent, and required audit events without saving them
   -> JobWorkspaceService reads path-redacted prepared jobs and unsignaled cancellation requests
+  -> LifecycleDryRunService counts app-owned metadata and derives five non-executable lifecycle plans
   -> JSON response
   -> browser render
 ```
@@ -110,6 +114,7 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 - Runtime records live in OS user-data storage or an explicit absolute override, never beside the source checkout.
 - Resolved source and home paths are not returned by APIs.
 - Route execution, external tool launch, installers, archive extraction, folder import, packaging, and clean-machine claims remain blocked until separate proof gates pass.
+- Lifecycle previews read only bounded metadata, preserve app data, exclude backup/tmp sources, and cannot create/read archives, restore, use the network, download packages, execute installers, mutate software, start processes, or delete data.
 
 ## How To Extend The App
 
@@ -120,4 +125,4 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, and execution-request records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy and is not execution authorization. Prepared jobs remain non-executable. The next capability migrates modular help, event, settings, and capability-lane behavior from the previous-app evidence without importing its runtime or monoliths.
+Route, output/proof, tool-presence, dry-run, execution-gate, execution-request, and lifecycle records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy. Contained execution authorization applies only to the built-in STL structural preflight. Prepared jobs and lifecycle plans remain non-executable.

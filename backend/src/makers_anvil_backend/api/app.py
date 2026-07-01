@@ -99,6 +99,8 @@ class MakersAnvilApi:
             "/api/capabilities/matrix": self._state_service.capability_matrix,
             "/api/executions/policy": self._state_service.contained_execution_policy,
             "/api/executions/catalog": self._state_service.contained_execution_catalog,
+            "/api/lifecycle/policy": self._state_service.lifecycle_dry_run_policy,
+            "/api/lifecycle/dry-runs": self._state_service.lifecycle_dry_runs,
         }
 
     def handle(
