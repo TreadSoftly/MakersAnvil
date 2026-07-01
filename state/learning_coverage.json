@@ -2,9 +2,9 @@
   "schemaVersion": "makers-anvil.learning-coverage.v1",
   "claimState": "proven",
   "guidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
-  "sourceCount": 161,
-  "totalLineCount": 36030,
-  "explainedLineCount": 36030,
+  "sourceCount": 166,
+  "totalLineCount": 36752,
+  "explainedLineCount": 36752,
   "files": [
     {
       "path": ".github/workflows/ci.yml",
@@ -50,14 +50,14 @@
     },
     {
       "path": "backend/src/makers_anvil_backend/api/app.py",
-      "sha256": "7acc2c71e1be4b24c70545d064b80bbaf9abc95a320b0ead4769b34a8b6980c6",
-      "lineCount": 318,
-      "explainedLineCount": 318,
+      "sha256": "f27ea5607486dac865a160bf1a5523c2916baeb741f58f7478ec77c700813ae2",
+      "lineCount": 339,
+      "explainedLineCount": 339,
       "guideAnchor": "source-007"
     },
     {
       "path": "backend/src/makers_anvil_backend/desktop.py",
-      "sha256": "60ec8fa6ef8bdfc21b5975c918fc9b6e7526e69f33727cc7cad26e63b06a87d2",
+      "sha256": "9eabacf0d351bb39236e2a136469927c99e2a19cbabe227589d8feec24e3a3e7",
       "lineCount": 240,
       "explainedLineCount": 240,
       "guideAnchor": "source-008"
@@ -85,7 +85,7 @@
     },
     {
       "path": "backend/src/makers_anvil_backend/server.py",
-      "sha256": "64d143f7bbafc090b3e2cb94920c50135e78178af06afdda26b6e874ae8c81ee",
+      "sha256": "2e9d7de211729e6d937a9908376f8e718a9ce1b546fe09dbc3ab01d61293dd80",
       "lineCount": 391,
       "explainedLineCount": 391,
       "guideAnchor": "source-012"
@@ -106,9 +106,9 @@
     },
     {
       "path": "backend/src/makers_anvil_backend/services/app_state.py",
-      "sha256": "11137a5381503182a5121a2251e34486fd035b1c35eebf70c230683215f14e65",
-      "lineCount": 923,
-      "explainedLineCount": 923,
+      "sha256": "2b2a83bd9bc7b7e27b92f46127cb7815b4ea707de79495d32352c76d632b435a",
+      "lineCount": 957,
+      "explainedLineCount": 957,
       "guideAnchor": "source-015"
     },
     {
@@ -161,977 +161,1012 @@
       "guideAnchor": "source-022"
     },
     {
+      "path": "backend/src/makers_anvil_backend/services/intake_preview.py",
+      "sha256": "25865db4e4ca93e887e6a72a0a146ac5f3813a28b038e85278b9abd7f1bf10e8",
+      "lineCount": 252,
+      "explainedLineCount": 252,
+      "guideAnchor": "source-023"
+    },
+    {
       "path": "backend/src/makers_anvil_backend/services/job_records.py",
       "sha256": "e777bfdd48dd1d74fcfbc24c40c33e3df3b6888e801acff05ad21e56a15ae98b",
       "lineCount": 345,
       "explainedLineCount": 345,
-      "guideAnchor": "source-023"
+      "guideAnchor": "source-024"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/job_workspace.py",
       "sha256": "de971e3e3f954de015c6ae1eefa5c34c3dae531e00cd2738dbcc67e0c5fcb6c3",
       "lineCount": 453,
       "explainedLineCount": 453,
-      "guideAnchor": "source-024"
+      "guideAnchor": "source-025"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/lifecycle_dry_run.py",
       "sha256": "78aabce1f69872b6443fe3841199abfbb660689d06bc5544576bd603dae3d240",
       "lineCount": 411,
       "explainedLineCount": 411,
-      "guideAnchor": "source-025"
+      "guideAnchor": "source-026"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/local_request_guard.py",
       "sha256": "95e3112a63988513f06e7e521fd7225b49ef31fe309490dd3cc50fde60964076",
       "lineCount": 146,
       "explainedLineCount": 146,
-      "guideAnchor": "source-026"
+      "guideAnchor": "source-027"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/output_proof.py",
       "sha256": "420254cf1f16e2706dfedc76c8d17cb0c8c4bbfda5702357b4ba4f819ff5dbd5",
       "lineCount": 310,
       "explainedLineCount": 310,
-      "guideAnchor": "source-027"
+      "guideAnchor": "source-028"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/route_preview.py",
       "sha256": "fef4e31ced92a26aa79001de703f8ae9ba34159aacb296fb422b225bb4e6ae75",
       "lineCount": 246,
       "explainedLineCount": 246,
-      "guideAnchor": "source-028"
+      "guideAnchor": "source-029"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/runtime_paths.py",
       "sha256": "1527a23dc064b46727b52b32adc77a6e443c8bcb7297b3c2f5a74bbda77fe266",
       "lineCount": 233,
       "explainedLineCount": 233,
-      "guideAnchor": "source-029"
+      "guideAnchor": "source-030"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/tool_detection.py",
       "sha256": "340f4650ba931cca7bb8b549c039aa0f7c6591e2492d10dae953c733721b34eb",
       "lineCount": 382,
       "explainedLineCount": 382,
-      "guideAnchor": "source-030"
+      "guideAnchor": "source-031"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/tool_dry_run.py",
       "sha256": "ad9ce6d9e9f17b8a6547f6ebbedfe6fd04682769a2e66bf6766776f04e8b3390",
       "lineCount": 307,
       "explainedLineCount": 307,
-      "guideAnchor": "source-031"
+      "guideAnchor": "source-032"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/windows_installer.py",
       "sha256": "fcbd68ecb947bd37e57eef246c4ab3080271d95dc157b3037fa1618a8c3e4469",
       "lineCount": 324,
       "explainedLineCount": 324,
-      "guideAnchor": "source-032"
+      "guideAnchor": "source-033"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/workbench_experience.py",
       "sha256": "e862aa726bc6480490f274f9f6b76809de3c1711ea533fab56ca1f55792dfe5f",
       "lineCount": 224,
       "explainedLineCount": 224,
-      "guideAnchor": "source-033"
+      "guideAnchor": "source-034"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/workspace_config.py",
       "sha256": "cdb3dc41d316aeff477f274c4df4def26cbbad17b994eb3abb1060bada9d2fe2",
       "lineCount": 253,
       "explainedLineCount": 253,
-      "guideAnchor": "source-034"
+      "guideAnchor": "source-035"
     },
     {
       "path": "backend/src/makers_anvil_backend/services/workspace_status.py",
       "sha256": "f8cf9e6d7020251cf54b7679ccc007b55591b01a7ff61c1833a0ab7d122f6db6",
       "lineCount": 129,
       "explainedLineCount": 129,
-      "guideAnchor": "source-035"
+      "guideAnchor": "source-036"
     },
     {
       "path": "config/clean_machine_scenarios.json",
       "sha256": "4bac441e5c4e4a393a68cb2d931777a5327414aad347e1064922d15b6999d467",
       "lineCount": 60,
       "explainedLineCount": 60,
-      "guideAnchor": "source-036"
+      "guideAnchor": "source-037"
     },
     {
       "path": "config/contained_execution_policy.json",
       "sha256": "d869eb7c77bdfc4d3880c296198634b9ae3f482cd6f52680d3927efdef62087e",
       "lineCount": 42,
       "explainedLineCount": 42,
-      "guideAnchor": "source-037"
+      "guideAnchor": "source-038"
     },
     {
       "path": "config/default_settings.json",
       "sha256": "522713804aa858a09b4ade9612fe6a2f5203116d64002c2c83c79d1486840aab",
       "lineCount": 62,
       "explainedLineCount": 62,
-      "guideAnchor": "source-038"
+      "guideAnchor": "source-039"
     },
     {
       "path": "config/execution_gate_policy.json",
       "sha256": "6505b248b380b6ca0dbe7dea32b931352f8402ee0ecdf352826a18357e469c62",
       "lineCount": 95,
       "explainedLineCount": 95,
-      "guideAnchor": "source-039"
+      "guideAnchor": "source-040"
     },
     {
       "path": "config/execution_request_policy.json",
       "sha256": "e28a23fc8e9156137bf9f0fd38d6eae866c6ca192d0565c1d4f4812251c67aa7",
       "lineCount": 35,
       "explainedLineCount": 35,
-      "guideAnchor": "source-040"
+      "guideAnchor": "source-041"
     },
     {
       "path": "config/intake_policy.json",
       "sha256": "2287840868d1dc87f331cf5dee8e82bbebaa6d884e2b9339ded053900894eb2a",
       "lineCount": 58,
       "explainedLineCount": 58,
-      "guideAnchor": "source-041"
+      "guideAnchor": "source-042"
+    },
+    {
+      "path": "config/intake_preview_policy.json",
+      "sha256": "7781540c9a4613b54154d2b24670f92710d1ff8cb6411a30151ddff25bbcedfc",
+      "lineCount": 20,
+      "explainedLineCount": 20,
+      "guideAnchor": "source-043"
     },
     {
       "path": "config/job_workspace_policy.json",
       "sha256": "aa2ac292d71f32a18b4d148703d379b932fc7169d811bee0ab3cf3e855402d6e",
       "lineCount": 37,
       "explainedLineCount": 37,
-      "guideAnchor": "source-042"
+      "guideAnchor": "source-044"
     },
     {
       "path": "config/lifecycle_dry_run_policy.json",
       "sha256": "8cbd120005f1471246ce88509e2d34543375d32de7d5c6fa9ae23eda8564a5d6",
       "lineCount": 113,
       "explainedLineCount": 113,
-      "guideAnchor": "source-043"
+      "guideAnchor": "source-045"
     },
     {
       "path": "config/output_policy.json",
       "sha256": "2aee81c4642070ceaf24caa37321635d85e977c7dab1510e1385f446927f00fb",
       "lineCount": 81,
       "explainedLineCount": 81,
-      "guideAnchor": "source-044"
+      "guideAnchor": "source-046"
     },
     {
       "path": "config/route_catalog.json",
       "sha256": "10db5e19a5526633e1601b6dbf86f1d6fc175caca74b488069e91eccc4810a9e",
       "lineCount": 99,
       "explainedLineCount": 99,
-      "guideAnchor": "source-045"
+      "guideAnchor": "source-047"
     },
     {
       "path": "config/tool_catalog.json",
       "sha256": "63c1dbdbaeaa3408b8755723267788c6061129d184f79b8069ebcc980c5119f4",
       "lineCount": 98,
       "explainedLineCount": 98,
-      "guideAnchor": "source-046"
+      "guideAnchor": "source-048"
     },
     {
       "path": "config/tool_dry_run_policy.json",
       "sha256": "2093ba69eb0bd6c088bb42178e2afff080fe641ff389f83ae532ba7055319487",
       "lineCount": 59,
       "explainedLineCount": 59,
-      "guideAnchor": "source-047"
+      "guideAnchor": "source-049"
     },
     {
       "path": "config/windows_installer_policy.json",
       "sha256": "435634895503146de9157eae92427ac3c52f58dd37b460df7f0bc1f1250c8611",
       "lineCount": 73,
       "explainedLineCount": 73,
-      "guideAnchor": "source-048"
+      "guideAnchor": "source-050"
     },
     {
       "path": "config/workbench_experience.json",
       "sha256": "f0ab2141d79870f6f42842d5c06fa8583c6356885acb6465883c28da330755b6",
       "lineCount": 32,
       "explainedLineCount": 32,
-      "guideAnchor": "source-049"
+      "guideAnchor": "source-051"
     },
     {
       "path": "frontend/index.html",
       "sha256": "a178a12daa500dba98b6694da94ca0d636b95b26b9175dbe6751bade9919b382",
       "lineCount": 25,
       "explainedLineCount": 25,
-      "guideAnchor": "source-050"
+      "guideAnchor": "source-052"
     },
     {
       "path": "frontend/package-lock.json",
       "sha256": "e7f655cfe3a46975581759179b1dcdcf17b1fb0523a1d2996291ea7632225c49",
       "lineCount": 3179,
       "explainedLineCount": 3179,
-      "guideAnchor": "source-051"
+      "guideAnchor": "source-053"
     },
     {
       "path": "frontend/package.json",
       "sha256": "6b22d5239aac1c84b13e7026e5f371053b3d18f8dd0b01ccba2f7bdad0c3f2c1",
       "lineCount": 32,
       "explainedLineCount": 32,
-      "guideAnchor": "source-052"
+      "guideAnchor": "source-054"
     },
     {
       "path": "frontend/public/favicon.svg",
       "sha256": "3005a5f34aa7d1e7e274317236c2303ddde8c41fa98d6f2ff1575e04256e9e69",
       "lineCount": 55,
       "explainedLineCount": 55,
-      "guideAnchor": "source-053"
-    },
-    {
-      "path": "frontend/src/App.test.tsx",
-      "sha256": "60c5a9167e095f90a466946f925cca5f1998552f6bca5e5e4cb0e43c6dd2493c",
-      "lineCount": 785,
-      "explainedLineCount": 785,
-      "guideAnchor": "source-054"
-    },
-    {
-      "path": "frontend/src/App.tsx",
-      "sha256": "59521adfbd5f141b8d1de7dbf612f5b39b2358d37292d96de9dc16791df93eb6",
-      "lineCount": 3215,
-      "explainedLineCount": 3215,
       "guideAnchor": "source-055"
     },
     {
-      "path": "frontend/src/api.ts",
-      "sha256": "39dc405222304f7ae6cb774994af33e88b64d8c297f7b70c81176004f9b43167",
-      "lineCount": 390,
-      "explainedLineCount": 390,
+      "path": "frontend/src/App.test.tsx",
+      "sha256": "7961d439af8f3026316b6c3dac5ffeecde4737001651fa153081df51c9f63418",
+      "lineCount": 786,
+      "explainedLineCount": 786,
       "guideAnchor": "source-056"
+    },
+    {
+      "path": "frontend/src/App.tsx",
+      "sha256": "8c1d9e60901ebaa65d0a7cfb39cc268ab4df8a409e5dcf2fb9ed48b6adbec394",
+      "lineCount": 3221,
+      "explainedLineCount": 3221,
+      "guideAnchor": "source-057"
+    },
+    {
+      "path": "frontend/src/api.test.ts",
+      "sha256": "f611652233438c23c2ebddac1c228cc94b7ae922b4cba36420912f9f7ced2ec8",
+      "lineCount": 99,
+      "explainedLineCount": 99,
+      "guideAnchor": "source-058"
+    },
+    {
+      "path": "frontend/src/api.ts",
+      "sha256": "6925c54ee353cf854f4a5651beac320b6266348cac2d07a182d6aae766c5fe87",
+      "lineCount": 393,
+      "explainedLineCount": 393,
+      "guideAnchor": "source-059"
     },
     {
       "path": "frontend/src/components/ContextHelp.tsx",
       "sha256": "121947387bfed58ab492dc8645522dca7c502e6d24b901370dea349fffafb5d9",
       "lineCount": 133,
       "explainedLineCount": 133,
-      "guideAnchor": "source-057"
+      "guideAnchor": "source-060"
     },
     {
       "path": "frontend/src/components/ModeTabs.tsx",
       "sha256": "21d8fa35b430dacbcd5ccf14922699cc4539ef62980a4884e8c150bcea41c20d",
       "lineCount": 98,
       "explainedLineCount": 98,
-      "guideAnchor": "source-058"
+      "guideAnchor": "source-061"
     },
     {
       "path": "frontend/src/components/StatusPill.tsx",
       "sha256": "40ccbaff497eed2192a8d6ac03552bf2fed34decd2e13c609633a443e719e6cd",
       "lineCount": 30,
       "explainedLineCount": 30,
-      "guideAnchor": "source-059"
+      "guideAnchor": "source-062"
     },
     {
       "path": "frontend/src/main.tsx",
       "sha256": "d64e7d99262a1bd4badee2ed71b312f8fa8d05761831efbce2f03b0690fef5de",
       "lineCount": 21,
       "explainedLineCount": 21,
-      "guideAnchor": "source-060"
+      "guideAnchor": "source-063"
     },
     {
       "path": "frontend/src/styles.css",
       "sha256": "e2f2416b3a2b2f08e6dd369a77afb51355fe0d027f4a8f179b16fff82c9cef96",
       "lineCount": 5367,
       "explainedLineCount": 5367,
-      "guideAnchor": "source-061"
+      "guideAnchor": "source-064"
     },
     {
       "path": "frontend/src/test/setup.ts",
       "sha256": "3b3e830ac99847dff9e94181b4ddb5391c849c0bbcc2690e4fd912935e5df25e",
       "lineCount": 12,
       "explainedLineCount": 12,
-      "guideAnchor": "source-062"
+      "guideAnchor": "source-065"
     },
     {
       "path": "frontend/src/types.ts",
       "sha256": "6cc0e5ee74e9007978b567da8d7385aca4d13411d10266114f87664f80ef9c23",
       "lineCount": 265,
       "explainedLineCount": 265,
-      "guideAnchor": "source-063"
+      "guideAnchor": "source-066"
     },
     {
       "path": "frontend/tsconfig.json",
       "sha256": "a590c6d45eb6afa9fc72c39ad1553478382b809071ab7b88061b021063a6c2c5",
       "lineCount": 21,
       "explainedLineCount": 21,
-      "guideAnchor": "source-064"
+      "guideAnchor": "source-067"
     },
     {
       "path": "frontend/vite.config.ts",
       "sha256": "6023377ba1c4d11edc615905e237a4e343a8f4d083ceb33e6b0e1aa33ef673d4",
       "lineCount": 33,
       "explainedLineCount": 33,
-      "guideAnchor": "source-065"
+      "guideAnchor": "source-068"
     },
     {
       "path": "package.json",
       "sha256": "65bad03b94098f24a828487d73ef0a4953d4e7fe1054923f87039862ef8ec4d6",
       "lineCount": 29,
       "explainedLineCount": 29,
-      "guideAnchor": "source-066"
+      "guideAnchor": "source-069"
     },
     {
       "path": "pyproject.toml",
       "sha256": "726e3fe34746fdf35381c2daf6cf55bf9700360936ae27cbf7edef21c6cee817",
       "lineCount": 15,
       "explainedLineCount": 15,
-      "guideAnchor": "source-067"
+      "guideAnchor": "source-070"
     },
     {
       "path": "schemas/activity-event.schema.json",
       "sha256": "6f54d0113a1768353e8b814b8ce97263ce319e86f7d51a4994e1ef40a8271111",
       "lineCount": 13,
       "explainedLineCount": 13,
-      "guideAnchor": "source-068"
+      "guideAnchor": "source-071"
     },
     {
       "path": "schemas/activity-history.schema.json",
       "sha256": "5d04afe2c9ba6a8c3f41c62fe9a01795f83c8169003285394dfe2146cc7b0a01",
       "lineCount": 14,
       "explainedLineCount": 14,
-      "guideAnchor": "source-069"
+      "guideAnchor": "source-072"
     },
     {
       "path": "schemas/app-state.schema.json",
       "sha256": "e32ba23fd67c09008f13826b6e7769f19879ea5be8ca3e4db1f6d23664ba8465",
       "lineCount": 70,
       "explainedLineCount": 70,
-      "guideAnchor": "source-070"
+      "guideAnchor": "source-073"
     },
     {
       "path": "schemas/authorized-intake-record.schema.json",
       "sha256": "2a3ae3f82ebb2d6aeb4dbce177e6507033b6dbc706b9f97925c6dfeb73164512",
       "lineCount": 77,
       "explainedLineCount": 77,
-      "guideAnchor": "source-071"
+      "guideAnchor": "source-074"
     },
     {
       "path": "schemas/capability-matrix.schema.json",
       "sha256": "e8560f0ac5a7bbb23e77dbe7a2af7dcc0155e5a726667c6b5976e1d158e025da",
       "lineCount": 15,
       "explainedLineCount": 15,
-      "guideAnchor": "source-072"
+      "guideAnchor": "source-075"
     },
     {
       "path": "schemas/claim-state.schema.json",
       "sha256": "95ad467ae7d7317927aa8b8d6d8a5c176c1a9a598cc5f0917a247b4b33ee2a9c",
       "lineCount": 17,
       "explainedLineCount": 17,
-      "guideAnchor": "source-073"
+      "guideAnchor": "source-076"
     },
     {
       "path": "schemas/clean-machine-harness.schema.json",
       "sha256": "0bc2d43526138bccf9dbd67304037bbd928bd369be798cc0657d82c2f318da94",
       "lineCount": 57,
       "explainedLineCount": 57,
-      "guideAnchor": "source-074"
+      "guideAnchor": "source-077"
     },
     {
       "path": "schemas/contained-execution-catalog.schema.json",
       "sha256": "37f33359e31c50b860ba463362156f3861f4d7442d1bbc4c28ccee3edf02307b",
       "lineCount": 19,
       "explainedLineCount": 19,
-      "guideAnchor": "source-075"
+      "guideAnchor": "source-078"
     },
     {
       "path": "schemas/contained-execution-policy.schema.json",
       "sha256": "a1d3a7a0896a7ee107c264be4590e8ba03a4d67b46766113950b336ceee84ad9",
       "lineCount": 34,
       "explainedLineCount": 34,
-      "guideAnchor": "source-076"
+      "guideAnchor": "source-079"
     },
     {
       "path": "schemas/contained-execution-record.schema.json",
       "sha256": "f12c408ede6c5c382d1e736773035a3e7ea570d2ef7c72f25b6660c90deed9db",
       "lineCount": 18,
       "explainedLineCount": 18,
-      "guideAnchor": "source-077"
+      "guideAnchor": "source-080"
     },
     {
       "path": "schemas/current-status.schema.json",
       "sha256": "696ce03a15a049426f517dce67cd6efc0edaf72be2104f47e25662889cdaf237",
       "lineCount": 76,
       "explainedLineCount": 76,
-      "guideAnchor": "source-078"
+      "guideAnchor": "source-081"
     },
     {
       "path": "schemas/execution-audit-event.schema.json",
       "sha256": "9c282eeb754944f1ce0cc7cf3c35078492361282b52ac35df9f6e6e576579408",
       "lineCount": 20,
       "explainedLineCount": 20,
-      "guideAnchor": "source-079"
+      "guideAnchor": "source-082"
     },
     {
       "path": "schemas/execution-audit-history.schema.json",
       "sha256": "29d5577256286ddc938c423086d16d3d1850d3c1899de80848e6e0253d4ca7fa",
       "lineCount": 18,
       "explainedLineCount": 18,
-      "guideAnchor": "source-080"
+      "guideAnchor": "source-083"
     },
     {
       "path": "schemas/execution-cancellation.schema.json",
       "sha256": "bcee371a817a24bc4a7276a1c7fcff0f361382932cf21f5f62b37fb119901d82",
       "lineCount": 19,
       "explainedLineCount": 19,
-      "guideAnchor": "source-081"
+      "guideAnchor": "source-084"
     },
     {
       "path": "schemas/execution-gate-policy.schema.json",
       "sha256": "61027a635cabd76bebd55b270b03b21e87abf064333ca6e36c77403c40bb3de6",
       "lineCount": 60,
       "explainedLineCount": 60,
-      "guideAnchor": "source-082"
+      "guideAnchor": "source-085"
     },
     {
       "path": "schemas/execution-gates.schema.json",
       "sha256": "c2eb01f1cb51922692ca0057507195301b8b7bc536c3baf465da7772f9b351d2",
       "lineCount": 119,
       "explainedLineCount": 119,
-      "guideAnchor": "source-083"
+      "guideAnchor": "source-086"
     },
     {
       "path": "schemas/execution-proof.schema.json",
       "sha256": "d7b0b8ba8c7b7eaa025d8875256c9ae0afe79dc526a13653a6a5f82b38a55471",
       "lineCount": 23,
       "explainedLineCount": 23,
-      "guideAnchor": "source-084"
+      "guideAnchor": "source-087"
     },
     {
       "path": "schemas/execution-request-policy.schema.json",
       "sha256": "bd9654dc22ade64d5ef53082b7e4f74342a1d7f1997c3adcc735c7f77ede85ea",
       "lineCount": 60,
       "explainedLineCount": 60,
-      "guideAnchor": "source-085"
+      "guideAnchor": "source-088"
     },
     {
       "path": "schemas/execution-request-preview.schema.json",
       "sha256": "287f4c5f19743fec7d46588f58c3633daf7ebe37cc43909acf3bf86995af6f87",
       "lineCount": 142,
       "explainedLineCount": 142,
-      "guideAnchor": "source-086"
+      "guideAnchor": "source-089"
     },
     {
       "path": "schemas/intake-authorization.schema.json",
       "sha256": "75a6e28ea1d359117a2acf2cb86605c9a746393f9df745efd7fd8ba7018397fb",
       "lineCount": 33,
       "explainedLineCount": 33,
-      "guideAnchor": "source-087"
+      "guideAnchor": "source-090"
     },
     {
       "path": "schemas/intake-policy.schema.json",
       "sha256": "2ffe8dee5357505c3974b859091318d9b8793ffe3c084478063a90a5e5836357",
       "lineCount": 73,
       "explainedLineCount": 73,
-      "guideAnchor": "source-088"
+      "guideAnchor": "source-091"
+    },
+    {
+      "path": "schemas/intake-preview-policy.schema.json",
+      "sha256": "57480e11892a20dac5e36f7f0f3718ab92415c16d536147b1de736df3e46030a",
+      "lineCount": 38,
+      "explainedLineCount": 38,
+      "guideAnchor": "source-092"
     },
     {
       "path": "schemas/intake-record.schema.json",
       "sha256": "57687fabf53fdbb5cfdcddaf60480de9b0c36bc70a05c1a67bac7eff2595d3df",
       "lineCount": 53,
       "explainedLineCount": 53,
-      "guideAnchor": "source-089"
+      "guideAnchor": "source-093"
     },
     {
       "path": "schemas/intake-session.schema.json",
       "sha256": "8aac53f2bc1e977fe87f59236192b1de31a35ff40c3692b2eb72e0616235ba22",
       "lineCount": 29,
       "explainedLineCount": 29,
-      "guideAnchor": "source-090"
+      "guideAnchor": "source-094"
     },
     {
       "path": "schemas/job-cancellation-record.schema.json",
       "sha256": "f646a8205d5533e8e8cf608e7c53e646fee95343fa28f8f6ad233091467151e4",
       "lineCount": 28,
       "explainedLineCount": 28,
-      "guideAnchor": "source-091"
+      "guideAnchor": "source-095"
     },
     {
       "path": "schemas/job-workspace-catalog.schema.json",
       "sha256": "f6547bcc4ed83025c1825b588e25d59935ad8ac4e667da94da19571034746560",
       "lineCount": 63,
       "explainedLineCount": 63,
-      "guideAnchor": "source-092"
+      "guideAnchor": "source-096"
     },
     {
       "path": "schemas/job-workspace-policy.schema.json",
       "sha256": "06951540765da6b611921e7034c580b65a9f46a6ff42dc599e2a051057aa70e3",
       "lineCount": 74,
       "explainedLineCount": 74,
-      "guideAnchor": "source-093"
+      "guideAnchor": "source-097"
     },
     {
       "path": "schemas/job-workspace-record.schema.json",
       "sha256": "351ff7cf9e19f0b99a9f6bd7ed6872f2712d080d833638904aa31a6f2e0209c3",
       "lineCount": 104,
       "explainedLineCount": 104,
-      "guideAnchor": "source-094"
+      "guideAnchor": "source-098"
     },
     {
       "path": "schemas/learning-coverage.schema.json",
       "sha256": "fe4aa1cbc08bb5600937efb73ca7109cf89f362cdc2c15046c82ee4945208415",
       "lineCount": 32,
       "explainedLineCount": 32,
-      "guideAnchor": "source-095"
+      "guideAnchor": "source-099"
     },
     {
       "path": "schemas/lifecycle-dry-run-catalog.schema.json",
       "sha256": "bd82d119f7d00f9c6a5214e5c60ae1f3d037890e599263b0b8e52ee7a0e28fc6",
       "lineCount": 67,
       "explainedLineCount": 67,
-      "guideAnchor": "source-096"
+      "guideAnchor": "source-100"
     },
     {
       "path": "schemas/lifecycle-dry-run-policy.schema.json",
       "sha256": "625156475600add6ddbf47c19ec90fad8fa6d7d51081f6bf816f726d676b9ef4",
       "lineCount": 93,
       "explainedLineCount": 93,
-      "guideAnchor": "source-097"
+      "guideAnchor": "source-101"
     },
     {
       "path": "schemas/local-settings.schema.json",
       "sha256": "5d1138c31618acc31754f478c73e80308a53f97d4cd4cf33a4d315a5de606f2f",
       "lineCount": 57,
       "explainedLineCount": 57,
-      "guideAnchor": "source-098"
+      "guideAnchor": "source-102"
     },
     {
       "path": "schemas/output-policy.schema.json",
       "sha256": "eeb13b3c8fbe21f280989ff6b603f5425f70d88ce732fb8e917adb9b4c9a20a1",
       "lineCount": 74,
       "explainedLineCount": 74,
-      "guideAnchor": "source-099"
+      "guideAnchor": "source-103"
     },
     {
       "path": "schemas/output-proof.schema.json",
       "sha256": "d6727ad12ec636980a193132a2e0f26d12473ca0de722c4907b823073075b7af",
       "lineCount": 128,
       "explainedLineCount": 128,
-      "guideAnchor": "source-100"
+      "guideAnchor": "source-104"
     },
     {
       "path": "schemas/previous-app-migration.schema.json",
       "sha256": "52ac768298309bf65e457e688955e8543419c29a9ebe585eba2f1a7a4a7a7f01",
       "lineCount": 59,
       "explainedLineCount": 59,
-      "guideAnchor": "source-101"
+      "guideAnchor": "source-105"
     },
     {
       "path": "schemas/route-catalog.schema.json",
       "sha256": "b137c6057412ab78c67cf4d1480697f53b1167322b1fe53eb2b6421ad99d1d97",
       "lineCount": 60,
       "explainedLineCount": 60,
-      "guideAnchor": "source-102"
+      "guideAnchor": "source-106"
     },
     {
       "path": "schemas/route-preview.schema.json",
       "sha256": "c93a4dbc2a2dbd8060b9a34a08295f0827abb2a15827038a5aa41c2357c66941",
       "lineCount": 94,
       "explainedLineCount": 94,
-      "guideAnchor": "source-103"
+      "guideAnchor": "source-107"
     },
     {
       "path": "schemas/runtime-location.schema.json",
       "sha256": "0f8042384d7599b4758592c74a8b6266f28b5684db26519f963aedce1eb66eeb",
       "lineCount": 36,
       "explainedLineCount": 36,
-      "guideAnchor": "source-104"
+      "guideAnchor": "source-108"
     },
     {
       "path": "schemas/source-manifest.schema.json",
       "sha256": "0804f640c080d054c33416789fb39999fb1933dad44d686b9a12bba95021f9ab",
       "lineCount": 37,
       "explainedLineCount": 37,
-      "guideAnchor": "source-105"
+      "guideAnchor": "source-109"
     },
     {
       "path": "schemas/stl-preflight-report.schema.json",
       "sha256": "e55007bb8a89f9ac84c86653a9ee4b231ae31903d9abf4141f90a339f6b17f55",
       "lineCount": 19,
       "explainedLineCount": 19,
-      "guideAnchor": "source-106"
+      "guideAnchor": "source-110"
     },
     {
       "path": "schemas/tool-catalog.schema.json",
       "sha256": "92bde78092c68a3be4f7d6e1331e7e106a24e6139eda46dd91c4b359c05b1c2d",
       "lineCount": 85,
       "explainedLineCount": 85,
-      "guideAnchor": "source-107"
+      "guideAnchor": "source-111"
     },
     {
       "path": "schemas/tool-detection.schema.json",
       "sha256": "59468e8268596d78f6486556d4092c9335c65517ecc658444aeec4aa9eb94d14",
       "lineCount": 107,
       "explainedLineCount": 107,
-      "guideAnchor": "source-108"
+      "guideAnchor": "source-112"
     },
     {
       "path": "schemas/tool-dry-run-policy.schema.json",
       "sha256": "2862a2e59e6bf596cd6eb028ccf964f6c15dd7ed81028a49a036b9d698bdb386",
       "lineCount": 55,
       "explainedLineCount": 55,
-      "guideAnchor": "source-109"
+      "guideAnchor": "source-113"
     },
     {
       "path": "schemas/tool-dry-run.schema.json",
       "sha256": "9addae8a480a36e3a6c3916b8c33ee7e19e86e6af2fc3849513898b2317559eb",
       "lineCount": 158,
       "explainedLineCount": 158,
-      "guideAnchor": "source-110"
+      "guideAnchor": "source-114"
     },
     {
       "path": "schemas/windows-installer-policy.schema.json",
       "sha256": "5d21c0f001b5c2a71b1d459155d3ee81131aa23df3d5dc10034a7e44a9b6260a",
       "lineCount": 93,
       "explainedLineCount": 93,
-      "guideAnchor": "source-111"
+      "guideAnchor": "source-115"
     },
     {
       "path": "schemas/windows-installer-readiness.schema.json",
       "sha256": "55e9855b8db602556d14b3fb05be88ffd29c75b17715905ca040a3a8f8a50349",
       "lineCount": 86,
       "explainedLineCount": 86,
-      "guideAnchor": "source-112"
+      "guideAnchor": "source-116"
     },
     {
       "path": "schemas/windows-package-plan.schema.json",
       "sha256": "32b7841b4fb7f5fbeb1383440e6ce78bb4cea8fb1f6756019f57a50b0648c9db",
       "lineCount": 45,
       "explainedLineCount": 45,
-      "guideAnchor": "source-113"
+      "guideAnchor": "source-117"
     },
     {
       "path": "schemas/workbench-experience-policy.schema.json",
       "sha256": "15b0c98808e05fd6b3e1f813781c1133a2608b06783bd605f656230c2139f43a",
       "lineCount": 53,
       "explainedLineCount": 53,
-      "guideAnchor": "source-114"
+      "guideAnchor": "source-118"
     },
     {
       "path": "schemas/workbench-experience.schema.json",
       "sha256": "594db2957a1e5d253d33dbe19242eb0f5166db728ae2ff972f4de840b9837122",
       "lineCount": 16,
       "explainedLineCount": 16,
-      "guideAnchor": "source-115"
+      "guideAnchor": "source-119"
     },
     {
       "path": "schemas/workbench-preferences.schema.json",
       "sha256": "0d5242161b9895b2b00398b8e68ce94a41b78b9e44ec342d482e2fa29a47ecf9",
       "lineCount": 12,
       "explainedLineCount": 12,
-      "guideAnchor": "source-116"
+      "guideAnchor": "source-120"
     },
     {
       "path": "scripts/__init__.py",
       "sha256": "3aad57921447985ee7798b4684b75846fba0aacf706fc3446f1a174547a5a8a0",
       "lineCount": 10,
       "explainedLineCount": 10,
-      "guideAnchor": "source-117"
+      "guideAnchor": "source-121"
     },
     {
       "path": "scripts/build_learning_guide.py",
       "sha256": "487061e5432f15f2d91b397528de2f47b2c2eac2b20005937af3d1771c27179a",
       "lineCount": 447,
       "explainedLineCount": 447,
-      "guideAnchor": "source-118"
+      "guideAnchor": "source-122"
     },
     {
       "path": "scripts/build_previous_app_learning_guide.py",
       "sha256": "f0536413018b71ab15a6d834db570b9b5dd937d866cbc59cc9d079f368460c6e",
       "lineCount": 280,
       "explainedLineCount": 280,
-      "guideAnchor": "source-119"
+      "guideAnchor": "source-123"
     },
     {
       "path": "scripts/build_windows_exe.py",
       "sha256": "12bc10f617ec2baf12157d4e424db64c063e00aebb323d9523e948474873d20a",
       "lineCount": 212,
       "explainedLineCount": 212,
-      "guideAnchor": "source-120"
+      "guideAnchor": "source-124"
     },
     {
       "path": "scripts/check_clean_machine.py",
       "sha256": "db0c1d4ef7eb9e0a729308e21d25d585c7a383ebe2a81e12efbe0be3a6152275",
       "lineCount": 49,
       "explainedLineCount": 49,
-      "guideAnchor": "source-121"
+      "guideAnchor": "source-125"
     },
     {
       "path": "scripts/check_explainability.py",
       "sha256": "6e268490924b76822f579f2ae26b52c88ba9757b9376664dba8974ccc9a46c57",
       "lineCount": 357,
       "explainedLineCount": 357,
-      "guideAnchor": "source-122"
+      "guideAnchor": "source-126"
     },
     {
       "path": "scripts/init_workspace.py",
       "sha256": "6e75b21c229a1845e149817ca5bc2f0331a49a3ad93c67744cc0d6737fe5b1bc",
       "lineCount": 44,
       "explainedLineCount": 44,
-      "guideAnchor": "source-123"
+      "guideAnchor": "source-127"
     },
     {
       "path": "scripts/prepare_job.py",
       "sha256": "ee3d2b24176ea934333ff1bddbd58f5d31d2e809d534f97f01a9e180e9696789",
       "lineCount": 64,
       "explainedLineCount": 64,
-      "guideAnchor": "source-124"
+      "guideAnchor": "source-128"
     },
     {
       "path": "scripts/request_job_cancel.py",
       "sha256": "5378528947697f3414be0cfb150b74f568c05bdbe0b3f2f90294a6cf379f8383",
       "lineCount": 64,
       "explainedLineCount": 64,
-      "guideAnchor": "source-125"
+      "guideAnchor": "source-129"
     },
     {
       "path": "scripts/run_desktop.py",
       "sha256": "9bebc02c6b215fc18b2ee682405c95205636a32be4b4db76d235f3cf24e406cd",
       "lineCount": 28,
       "explainedLineCount": 28,
-      "guideAnchor": "source-126"
+      "guideAnchor": "source-130"
     },
     {
       "path": "scripts/run_dev.py",
       "sha256": "5a0a99db17ab7086ea4f2f80763d66212e4596f4ec1e7a6e70e270ab8197b7de",
       "lineCount": 23,
       "explainedLineCount": 23,
-      "guideAnchor": "source-127"
+      "guideAnchor": "source-131"
     },
     {
       "path": "scripts/stage_intake.py",
       "sha256": "5718b10f302acd8e0c56cbbf5eaee31278de1e66fb22f2a42061e3487b9f009f",
       "lineCount": 64,
       "explainedLineCount": 64,
-      "guideAnchor": "source-128"
-    },
-    {
-      "path": "scripts/verify_project.py",
-      "sha256": "be55129ecf0ef9fbeee44cdaf5c0947ecf5505afc3f4ff0ff00fcd6af5afe2bc",
-      "lineCount": 893,
-      "explainedLineCount": 893,
-      "guideAnchor": "source-129"
-    },
-    {
-      "path": "state/current_status.json",
-      "sha256": "1ac27968a1f03f8327e98fd3d120c98217e3be00cc4393f8afba1e46ba5fd8f1",
-      "lineCount": 183,
-      "explainedLineCount": 183,
-      "guideAnchor": "source-130"
-    },
-    {
-      "path": "state/pass_ledger.json",
-      "sha256": "15628910f2d4afcb5611b5d425a70218423c06cc7ee4f6b7fd605720c8c4bb27",
-      "lineCount": 334,
-      "explainedLineCount": 334,
-      "guideAnchor": "source-131"
-    },
-    {
-      "path": "state/previous_app_migration.json",
-      "sha256": "da6cc3f21f774d0d1d86246799e35b2011a1c3c88dc4a5190171e7bc9716b3f6",
-      "lineCount": 51,
-      "explainedLineCount": 51,
       "guideAnchor": "source-132"
     },
     {
-      "path": "state/source_manifest.json",
-      "sha256": "522cca6dd19d29528b0a65bf76d27aca8f2cf53f2954f3a0fb21efd7b8e93a40",
-      "lineCount": 229,
-      "explainedLineCount": 229,
+      "path": "scripts/verify_project.py",
+      "sha256": "76e9fd65b42904889b176f3376b2d99a1ffbb6bc6abe691e263962df38ff81ce",
+      "lineCount": 915,
+      "explainedLineCount": 915,
       "guideAnchor": "source-133"
     },
     {
-      "path": "tests/test_api.py",
-      "sha256": "03da5dbfcb70299aed602d4b68cb6e5dc9a79adb48ad772c88951ac5eb0eb2b2",
-      "lineCount": 515,
-      "explainedLineCount": 515,
+      "path": "state/current_status.json",
+      "sha256": "1253be8eec7bce9d1e722b619b97467ca57ad6246a84fe0be52a78fa91f97c72",
+      "lineCount": 190,
+      "explainedLineCount": 190,
       "guideAnchor": "source-134"
+    },
+    {
+      "path": "state/pass_ledger.json",
+      "sha256": "ad3b09436092b9286ac0472dd1a0aba86035bbeeb20e1a8baf49c7783a2b6483",
+      "lineCount": 348,
+      "explainedLineCount": 348,
+      "guideAnchor": "source-135"
+    },
+    {
+      "path": "state/previous_app_migration.json",
+      "sha256": "c1ace890ba3158f5fc038fe57e2751f861cd0b7633801be4a7f18e21c03b049a",
+      "lineCount": 52,
+      "explainedLineCount": 52,
+      "guideAnchor": "source-136"
+    },
+    {
+      "path": "state/source_manifest.json",
+      "sha256": "d71982c8ac1ccdb72fb50f48bbbffaec873be3f2589fae72f27b0c272a1b5791",
+      "lineCount": 235,
+      "explainedLineCount": 235,
+      "guideAnchor": "source-137"
+    },
+    {
+      "path": "tests/test_api.py",
+      "sha256": "f41a35cf984f918805499c7aba65d010bb7cedea70095b2e9aa9068185320966",
+      "lineCount": 516,
+      "explainedLineCount": 516,
+      "guideAnchor": "source-138"
     },
     {
       "path": "tests/test_authorized_intake.py",
       "sha256": "f474a0881b69093e7c165a8f02b54922daa442dad40836e36f2d3991713931dd",
       "lineCount": 453,
       "explainedLineCount": 453,
-      "guideAnchor": "source-135"
+      "guideAnchor": "source-139"
     },
     {
       "path": "tests/test_capability_matrix.py",
       "sha256": "530da7865874911f5d907c700dcb8c05c7a431ee18ae946c41be853d3b2bfcec",
       "lineCount": 52,
       "explainedLineCount": 52,
-      "guideAnchor": "source-136"
+      "guideAnchor": "source-140"
     },
     {
       "path": "tests/test_contained_execution.py",
       "sha256": "9f37b0681438c6cfb4e2a5685f28716cb0c6068d605b6353699e7dc0646699f4",
       "lineCount": 372,
       "explainedLineCount": 372,
-      "guideAnchor": "source-137"
+      "guideAnchor": "source-141"
     },
     {
       "path": "tests/test_desktop.py",
-      "sha256": "78a36677503f1bf981f5446d9136b2691003dd29ece5a2824aafdfb23824b6ca",
+      "sha256": "1a947e91c872c01eb19bebb8ba9b2a376f2a1f0def258e16d54cf3c505664748",
       "lineCount": 178,
       "explainedLineCount": 178,
-      "guideAnchor": "source-138"
+      "guideAnchor": "source-142"
     },
     {
       "path": "tests/test_execution_gate.py",
       "sha256": "fcf049fd764af7ff13d61395253c932724e8e155cfaf1fd06f21ce8396461eaa",
       "lineCount": 289,
       "explainedLineCount": 289,
-      "guideAnchor": "source-139"
+      "guideAnchor": "source-143"
     },
     {
       "path": "tests/test_execution_request.py",
       "sha256": "d3055c4f22e4b52fea302617a8474c36107cfa1e0b1d1c7cadcff3e18b3cdc75",
       "lineCount": 331,
       "explainedLineCount": 331,
-      "guideAnchor": "source-140"
+      "guideAnchor": "source-144"
     },
     {
       "path": "tests/test_explainability.py",
       "sha256": "15b80848342ce73ee929369ac1840de5e7bb1ea5e5ff38088e9ac931c932db9f",
       "lineCount": 48,
       "explainedLineCount": 48,
-      "guideAnchor": "source-141"
+      "guideAnchor": "source-145"
     },
     {
       "path": "tests/test_frontend_workbench.py",
       "sha256": "9658cf33d41b81659e70bc09c61dc34a27dbbe308af8cabc8c2ea75a6c407c5d",
       "lineCount": 133,
       "explainedLineCount": 133,
-      "guideAnchor": "source-142"
+      "guideAnchor": "source-146"
     },
     {
       "path": "tests/test_intake_catalog.py",
       "sha256": "6d1e09ecc0d86573a4e9f143a761546250c5f26159bd13b500516148ff2cd5f8",
       "lineCount": 322,
       "explainedLineCount": 322,
-      "guideAnchor": "source-143"
+      "guideAnchor": "source-147"
+    },
+    {
+      "path": "tests/test_intake_preview.py",
+      "sha256": "317807cc7980dad75833a7db04fd7236335563ba54b0f710dc8956273ab02d50",
+      "lineCount": 197,
+      "explainedLineCount": 197,
+      "guideAnchor": "source-148"
     },
     {
       "path": "tests/test_job_workspace.py",
       "sha256": "8d1288e8ba7b4e0d839b085ee7e1f59c10001559f8a639d0945e3d3c1422d098",
       "lineCount": 417,
       "explainedLineCount": 417,
-      "guideAnchor": "source-144"
+      "guideAnchor": "source-149"
     },
     {
       "path": "tests/test_learning_guide.py",
       "sha256": "922a4887fd468dc7a662e0bd1293dff65d44abcf103a13e285ae8ab65bc0ada1",
       "lineCount": 77,
       "explainedLineCount": 77,
-      "guideAnchor": "source-145"
+      "guideAnchor": "source-150"
     },
     {
       "path": "tests/test_lifecycle_dry_run.py",
       "sha256": "df0633a2344683128a6f6f0242f8b5a595980c2188a3aac9c5cd932ce454dad7",
       "lineCount": 221,
       "explainedLineCount": 221,
-      "guideAnchor": "source-146"
+      "guideAnchor": "source-151"
     },
     {
       "path": "tests/test_local_request_guard.py",
       "sha256": "521df4eca36cdaa3ad420b2a2abd5806293bf6b4b9dd43e8174b35a25de7e423",
       "lineCount": 81,
       "explainedLineCount": 81,
-      "guideAnchor": "source-147"
+      "guideAnchor": "source-152"
     },
     {
       "path": "tests/test_output_proof.py",
       "sha256": "4d6ce888f39289ddecd7cd8050157e62e6d762770786c81e93ca40c700f98f31",
       "lineCount": 209,
       "explainedLineCount": 209,
-      "guideAnchor": "source-148"
+      "guideAnchor": "source-153"
     },
     {
       "path": "tests/test_previous_app_learning_guide.py",
       "sha256": "c279eb6b19a53382fa8926f56537c247885686a1b9cbfe2489816c2f1f59714e",
       "lineCount": 106,
       "explainedLineCount": 106,
-      "guideAnchor": "source-149"
+      "guideAnchor": "source-154"
     },
     {
       "path": "tests/test_project_purity.py",
-      "sha256": "7a68e646b8bb4bc97532d7876bd06a099c9dbdd241a8d3d63e01d8cc0e91de6a",
+      "sha256": "7725515067fc571c88c2b6aaaff410c095b3e8a3cfdb44785827c372b3360763",
       "lineCount": 475,
       "explainedLineCount": 475,
-      "guideAnchor": "source-150"
+      "guideAnchor": "source-155"
     },
     {
       "path": "tests/test_route_preview.py",
       "sha256": "b2d17c217a0aa206c1a75676c01adb19e8e205f4dcbebe69870107c5b92394a6",
       "lineCount": 190,
       "explainedLineCount": 190,
-      "guideAnchor": "source-151"
+      "guideAnchor": "source-156"
     },
     {
       "path": "tests/test_runtime_paths.py",
       "sha256": "78b582ae092dc9130738c306f387165a7d3be85962a217e65a743dcf684abdb4",
       "lineCount": 191,
       "explainedLineCount": 191,
-      "guideAnchor": "source-152"
+      "guideAnchor": "source-157"
     },
     {
       "path": "tests/test_runtime_resources.py",
       "sha256": "88a76766b9fab22b10f9c1ec69706337265a6a21f84ee49bf6ccf551f8027e68",
       "lineCount": 91,
       "explainedLineCount": 91,
-      "guideAnchor": "source-153"
+      "guideAnchor": "source-158"
     },
     {
       "path": "tests/test_server.py",
       "sha256": "f7c22c6b63da555f224b187cb725e4a35bb621c19dae7b22ecf8b217d0246ba2",
       "lineCount": 200,
       "explainedLineCount": 200,
-      "guideAnchor": "source-154"
+      "guideAnchor": "source-159"
     },
     {
       "path": "tests/test_tool_detection.py",
       "sha256": "082edc1c8f641daed814ce03891de5c1992ef0c12d5b71809db119f1700ecc62",
       "lineCount": 195,
       "explainedLineCount": 195,
-      "guideAnchor": "source-155"
+      "guideAnchor": "source-160"
     },
     {
       "path": "tests/test_tool_dry_run.py",
       "sha256": "0add44603a62ff8d765d90ffbcb866b2e9ca1ec4112862ba1f8e60fc5ca72f67",
       "lineCount": 218,
       "explainedLineCount": 218,
-      "guideAnchor": "source-156"
+      "guideAnchor": "source-161"
     },
     {
       "path": "tests/test_verify_project.py",
       "sha256": "3796bd6a72febbe50f51ee2154e610e7feb653ee4484bcc61f442bb0a08ebdeb",
       "lineCount": 28,
       "explainedLineCount": 28,
-      "guideAnchor": "source-157"
+      "guideAnchor": "source-162"
     },
     {
       "path": "tests/test_windows_installer.py",
       "sha256": "f1197eae94bbfbef822b52c171a07fcff961e3eff50a3fe412a72cb73d3e04e3",
       "lineCount": 181,
       "explainedLineCount": 181,
-      "guideAnchor": "source-158"
+      "guideAnchor": "source-163"
     },
     {
       "path": "tests/test_windows_packaging.py",
       "sha256": "ff2b857d053b7ba84dd67d6af0cbc2ea9ce619d2dc5e8e2a13750c17c590979a",
       "lineCount": 97,
       "explainedLineCount": 97,
-      "guideAnchor": "source-159"
+      "guideAnchor": "source-164"
     },
     {
       "path": "tests/test_workbench_experience.py",
       "sha256": "87a3520a6c6884d72c8ee0a6620421b058923be980c1871fef0b82b1f57bf45e",
       "lineCount": 140,
       "explainedLineCount": 140,
-      "guideAnchor": "source-160"
+      "guideAnchor": "source-165"
     },
     {
       "path": "tests/test_workspace_config.py",
       "sha256": "278b3a691a251d76d62b5d7f0c3d21d2267a5c7f0e9a49fea0aeddac1e7db7e0",
       "lineCount": 161,
       "explainedLineCount": 161,
-      "guideAnchor": "source-161"
+      "guideAnchor": "source-166"
     }
   ]
 }

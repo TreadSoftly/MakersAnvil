@@ -25,6 +25,8 @@ The browser performs state GETs plus the closed guarded intake, preference, and 
 
 For intake, follow picker/drop/paste -> `App.handleFilesUpload()` -> `api.uploadFiles()` -> `MakersAnvilApi` -> `AuthorizedIntakeService.authorize()` -> `AuthorizedIntakeService.ingest()`. The first POST creates path-free short-lived consent; the second streams, hashes, atomically publishes, and catalogs one generated-name app-owned copy.
 
+For image display, follow `api.adaptFiles()` -> generated `/api/intake/previews/<intake-id>` -> `MakersAnvilApi.handle()` -> `AppStateService.intake_preview()` -> `IntakePreviewService.preview()`. The service reloads the strict authorized record, privately resolves generated content, bounds the read, rechecks exact size and SHA-256, verifies the extension-specific raster signature, and returns no source path or original name.
+
 ## Backend Package
 
 | File | What it owns | Read next / proof |
@@ -46,6 +48,7 @@ For intake, follow picker/drop/paste -> `App.handleFilesUpload()` -> `api.upload
 | `backend/src/makers_anvil_backend/services/workspace_config.py` | Validates settings and creates contained app directories. | `tests/test_workspace_config.py` |
 | `backend/src/makers_anvil_backend/services/authorized_intake.py` | Validates one-time consent and creates one hashed app-owned quarantine copy transactionally. | `tests/test_authorized_intake.py` |
 | `backend/src/makers_anvil_backend/services/intake_catalog.py` | Stores and validates legacy metadata plus path-redacted authorized-copy records. | `tests/test_intake_catalog.py` |
+| `backend/src/makers_anvil_backend/services/intake_preview.py` | Revalidates bounded authorized raster bytes for same-origin selected-media display. | `tests/test_intake_preview.py`, preview policy/schema |
 | `backend/src/makers_anvil_backend/services/route_preview.py` | Maps intake kinds to non-executing work candidates. | `tests/test_route_preview.py` |
 | `backend/src/makers_anvil_backend/services/output_proof.py` | Plans logical artifacts and required proof without writing output. | `tests/test_output_proof.py` |
 | `backend/src/makers_anvil_backend/services/tool_detection.py` | Detects tool presence while withholding paths and avoiding processes. | `tests/test_tool_detection.py` |
@@ -69,6 +72,7 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 | `frontend/src/main.tsx` | Creates the one StrictMode React tree. | Root lookup -> App mount -> shared styles. |
 | `frontend/src/App.tsx` | Promoted rail, command search, source board, tool carousel, workflows, plans, proof, help, and settings. | State/actions -> workbench regions -> component helpers -> presentation helpers. |
 | `frontend/src/api.ts` | Current-state adaptation, guarded intake, contained preflight, activity reads, and explicit blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
+| `frontend/src/api.test.ts` | Current-record to view-model preview URL and privacy proof. | Authorized image fixture -> generated URL -> metadata-only fallback. |
 | `frontend/src/components/ContextHelp.tsx` | Accessible viewport-contained help dialog with Escape close and focus restoration. | Position -> listeners -> dialog portal. |
 | `frontend/src/components/ModeTabs.tsx` | Keyboard-operable Work Flow, Plans, and Dev selection. | ARIA tabs -> arrow/Home/End movement -> tab panels. |
 | `frontend/src/components/StatusPill.tsx` | Conservative status-to-tone presentation that retains original text. | Normalize -> choose tone -> render. |

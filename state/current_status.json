@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-023",
-    "title": "previous working application promotion and portable API adaptation",
+    "id": "PASS-024",
+    "title": "verified app-owned raster previews in the promoted workbench",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_023_REPORT.md"
+    "reportPath": "docs/passes/PASS_024_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 80.0,
-    "windowsLocal": 84.0,
+    "realApp": 82.5,
+    "windowsLocal": 86.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 30.0,
@@ -33,8 +33,10 @@
     "previousAppMergerAuditPath": "docs/PREVIOUS_APP_MERGER_AUDIT.md",
     "previousAppMigrationPath": "state/previous_app_migration.json",
     "intakePolicyPath": "config/intake_policy.json",
+    "intakePreviewPolicyPath": "config/intake_preview_policy.json",
     "intakeAuthorizationSchemaPath": "schemas/intake-authorization.schema.json",
     "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json",
+    "intakePreviewPolicySchemaPath": "schemas/intake-preview-policy.schema.json",
     "workbenchExperiencePolicyPath": "config/workbench_experience.json",
     "capabilityMatrixSchemaPath": "schemas/capability-matrix.schema.json",
     "activityHistorySchemaPath": "schemas/activity-history.schema.json",
@@ -144,6 +146,11 @@
     ,"A typed adapter maps current path-redacted backend records into the promoted workbench while legacy private-path, process-launch, output-open, and broad route endpoints remain absent."
     ,"Picker, drag-and-drop, and clipboard file gestures converge on the same one-file short-lived authorization and exact-byte app-owned quarantine copy."
     ,"Twenty retained React interaction tests pass against the current safety boundary, and the Python runtime packages only the compiled React dist tree."
+    ,"Authorized app-owned raster images now render in the promoted selected-media board through a same-origin read-only preview URL."
+    ,"Every preview request revalidates the strict authorized record, private storage containment, byte ceiling, exact length, SHA-256 digest, allowed raster extension, and matching binary signature."
+    ,"Preview responses use generated names plus no-store, no-sniff, same-origin headers and expose no original source name or physical path."
+    ,"Metadata-only records, SVG or active content, archives, non-images, oversized files, missing records, symlinks, altered bytes, and signature mismatches remain blocked."
+    ,"The live app-owned PNG on this machine passed the complete preview gate as 222,982 verified bytes; automated service, API, HTTP, adapter, and React tests cover the behavior."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -176,8 +183,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-024",
-    "title": "promoted workbench interaction parity, safe previews, and proof-gated desktop adapters",
+    "id": "PASS-025",
+    "title": "contained proof and report viewer with proof-gated output interaction",
     "claimState": "planned"
   }
 }

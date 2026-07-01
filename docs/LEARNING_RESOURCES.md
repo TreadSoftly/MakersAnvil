@@ -79,7 +79,7 @@ Local study path:
 1. `frontend/src/App.tsx` for the promoted semantic regions and interaction flow.
 2. `frontend/src/api.ts` for portable state adaptation and guarded mutations.
 3. `frontend/src/styles.css` for the accepted visual system, motion, and responsive layout.
-4. `frontend/src/App.test.tsx` for twenty executable workflow and safety examples.
+4. `frontend/src/App.test.tsx` and `frontend/src/api.test.ts` for twenty-two executable workflow, adapter, preview, and safety examples.
 4. Browser smoke tests and screenshots recorded in the current pass report.
 5. `context-help.js`, `capability-lanes.js`, `workbench-experience.js`, `contained-execution.js`, and `lifecycle-dry-runs.js` for focused interaction modules.
 

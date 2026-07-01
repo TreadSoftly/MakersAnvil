@@ -96,6 +96,9 @@ function adaptFiles(current: JsonRecord): IntakeFile[] {
       classification: classification(String(record.source?.kind || "unsupported")),
       route: routeInfo(preview),
       pathDisplay: String(record.storage?.logicalReference || "makers-anvil-data://user/intake"),
+      previewUrl: record.source?.kind === "image" && record.storage?.integrityVerified === true
+        ? `/api/intake/previews/${encodeURIComponent(String(record.id || ""))}`
+        : undefined,
       isCandidate: Boolean(preview),
       sourceKind: "authorized-app-copy",
       relativePathStatus: "private-source-path-not-stored",

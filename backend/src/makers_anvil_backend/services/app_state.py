@@ -21,6 +21,7 @@ from makers_anvil_backend.services.contained_execution import ContainedExecution
 from makers_anvil_backend.services.execution_gate import ExecutionGateService
 from makers_anvil_backend.services.execution_request import ExecutionRequestService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
+from makers_anvil_backend.services.intake_preview import IntakePreview, IntakePreviewService
 from makers_anvil_backend.services.job_workspace import JobWorkspaceService
 from makers_anvil_backend.services.lifecycle_dry_run import LifecycleDryRunService
 from makers_anvil_backend.services.output_proof import OutputProofService
@@ -46,7 +47,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-023-promoted-workbench"
+    api_build = "makers-anvil-real-pass-024-verified-image-previews"
 
     def __init__(
         self,
@@ -54,6 +55,7 @@ class AppStateService:
         workspace_config: WorkspaceConfigService | None = None,
         intake_catalog: IntakeCatalogService | None = None,
         authorized_intake: AuthorizedIntakeService | None = None,
+        intake_preview: IntakePreviewService | None = None,
         route_preview: RoutePreviewService | None = None,
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
@@ -84,6 +86,7 @@ class AppStateService:
         self._workspace_config = workspace_config or (intake_catalog.workspace_config if intake_catalog is not None else WorkspaceConfigService())
         self._intake_catalog = intake_catalog or IntakeCatalogService(workspace_config=self._workspace_config)
         self._authorized_intake = authorized_intake or AuthorizedIntakeService(self._intake_catalog)
+        self._intake_preview = intake_preview or IntakePreviewService(self._intake_catalog)
         self._route_preview = route_preview or RoutePreviewService(intake_catalog=self._intake_catalog)
         self._output_proof = output_proof or OutputProofService(
             route_preview=self._route_preview,
@@ -151,6 +154,7 @@ class AppStateService:
             "mutatingActionsEnabled": True,
             "enabledMutationScopes": ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"],
             "builtInStlPreflightEnabled": True,
+            "authorizedRasterPreviewEnabled": True,
             "lifecycleDryRunEnabled": True,
             "windowsInstallerFoundationEnabled": True,
             "cleanMachineExecutionEnabled": False,
@@ -312,6 +316,36 @@ class AppStateService:
         """
 
         return self._authorized_intake.session()
+
+    def intake_preview_policy(self) -> dict[str, Any]:
+        """Purpose: Return the bounded authorized-raster preview policy.
+
+        Inputs: No caller-supplied values.
+        Outputs: Path-free endpoint, extension, size, and safety rules.
+        How it works: Delegates strict policy validation to the preview service.
+        Side effects: Reads one committed JSON policy file.
+        Failure behavior: Missing or weakened policy fails instead of advertising previews.
+        Safety: No private content path, source name, token, or action is exposed.
+        Example: ``GET /api/intake/previews/policy`` explains the 25 MiB ceiling.
+        Related proof: Intake preview policy, API, and schema tests.
+        """
+
+        return self._intake_preview.policy_response()
+
+    def intake_preview(self, intake_id: str) -> IntakePreview:
+        """Purpose: Return one reverified app-owned raster payload for HTTP transport.
+
+        Inputs: Generated authorized intake identifier from the URL path.
+        Outputs: Immutable bytes, fixed media type, generated name, and digest.
+        How it works: Delegates record, containment, integrity, size, and signature checks.
+        Side effects: Reads one app-owned record and bounded content file.
+        Failure behavior: Preview service raises a typed closed error for API mapping.
+        Safety: Source paths, original names, active content, handoff, and processes remain absent.
+        Example: A current authorized PNG becomes a same-origin ``image/png`` response.
+        Related proof: Preview service, API, and HTTP tests.
+        """
+
+        return self._intake_preview.preview(intake_id)
 
     def create_intake_authorization(
         self,

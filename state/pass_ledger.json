@@ -329,6 +329,20 @@
         "legacy tool launch, selected-file handoff, output opening, intake-folder opening, and arbitrary route calls remain visibly blocked",
         "twenty React interaction tests plus Python, HTTP, native, package, schema, purity, and explainability gates cover the promoted application"
       ]
+    },
+    {
+      "id": "PASS-024",
+      "title": "verified app-owned raster previews in the promoted workbench",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_024_REPORT.md",
+      "proof": [
+        "authorized app-owned raster records receive generated same-origin preview URLs in the promoted selected-media board",
+        "each read revalidates record shape, storage containment, byte ceiling, exact length, SHA-256, extension, and binary raster signature",
+        "responses use generated filenames plus no-store, no-sniff, and same-origin headers without original names or physical paths",
+        "metadata-only, active, non-raster, archive, oversized, missing, symlinked, tampered, and signature-mismatched content fails closed",
+        "the current live app-owned PNG passed the endpoint with 222982 verified bytes and image/png transport",
+        "service, API, loopback HTTP, frontend adapter, React, native, package, portability, purity, and cross-platform CI proof cover the pass"
+      ]
     }
   ]
 }

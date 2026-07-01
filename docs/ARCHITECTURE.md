@@ -16,6 +16,8 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 
 `frontend/` contains the promoted React/TypeScript application, reviewed tool icons, accepted industrial styling, and Vite build. `frontend/src/api.ts` maps current path-redacted backend records into the workbench and permits only guarded one-file intake plus the contained STL preflight. Picker, drop, and paste share that intake path. Rail navigation, quick-jump search, tool carousel, and Work Flow/Plans/Dev tabs preserve the accepted previous-app experience without importing its Python backend or private paths.
 
+Authorized image preview is a separate read-only boundary. The browser receives only `/api/intake/previews/<generated-id>`; the service reloads the authorized record, privately resolves generated storage, caps bytes, rechecks size and SHA-256, and accepts only matching raster signatures. The server supplies a generated inline name and no-store/no-sniff/same-origin headers. This does not prove general content type, malware safety, output opening, or selected-file handoff.
+
 ### HTTP Boundary
 
 `backend/src/makers_anvil_backend/server.py` serves static files and delegates `/api/*` requests to `MakersAnvilApi`. It listens on loopback, emits restrictive browser security headers, refuses CORS preflight, bounds authorization JSON, and streams content by exact declared length. Every POST except the two intake routes returns `405`.

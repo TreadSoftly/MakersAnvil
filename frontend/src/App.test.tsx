@@ -451,6 +451,7 @@ describe("Makers Anvil control panel", () => {
     expect(screen.getByRole("button", { name: /Intake status: 1 file, plan ready/i })).toBeInTheDocument();
     expect(screen.getAllByText("Image files can become visual reference planes inside a Blender scene.").length).toBeGreaterThan(0);
     expect(document.querySelector('img[src="/api/intake/preview/reference.png"]')).toBeInTheDocument();
+    expect(screen.getAllByAltText("Authorized preview of reference.png").length).toBeGreaterThan(0);
     expect(document.querySelector('img[src="/tool-icons/blender.png"]')).toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Latest job output" })).toBeInTheDocument();
     expect(screen.getByText(/Latest output proof: Images to Blender reference work scene/i)).toBeInTheDocument();

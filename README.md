@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: PASS-023 promotes the previous working React application as the real product interface and connects it to the portable, path-redacted backend. Picker, drag, and paste use one guarded one-file intake path; unsafe legacy path, launch, handoff, output-open, and broad route actions remain blocked.
+Current status: PASS-024 restores verified authorized-image previews in the promoted React workbench. Preview reads recheck app-owned containment, size, SHA-256, raster extension, and binary signature while unsafe legacy path, launch, handoff, output-open, archive, and broad route actions remain blocked.
 
 ## Run Locally
 

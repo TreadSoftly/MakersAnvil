@@ -19,7 +19,7 @@ Contains the Python application package. `server.py` owns loopback HTTP serving,
 
 ## `frontend/`
 
-Contains the static dashboard. It has no build step. HTML defines structure and reviewed controls, CSS defines responsive presentation, focused JavaScript modules render state and perform only the closed guarded mutations, lifecycle and installer planning remain GET-only, and the SVG is the product mark.
+Contains the promoted React/TypeScript workbench and reviewed local assets. Vite compiles `src/` and `public/` into ignored `dist/`, which is the one browser, native-window, and Windows-package resource tree. The API adapter permits guarded intake, contained preflight, and verified raster reads while legacy machine-specific actions remain blocked.
 
 ## `config/`
 

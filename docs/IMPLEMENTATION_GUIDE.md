@@ -111,6 +111,8 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 `frontend/src/App.tsx` renders the promoted rail, command search, source board, reviewed intake controls, tool carousel, Work Flow/Plans/Dev deck, proof inspector, settings, and gated future surfaces. `frontend/src/api.ts` adapts current read contracts plus guarded one-file intake and contained preflight; all legacy machine-specific actions throw visible blockers. `frontend/src/styles.css` preserves the accepted responsive appearance, motion, and reduced-motion behavior. Vite compiles these sources to `frontend/dist` for the local server, native window, and Windows executable.
 
+For selected-image display, `frontend/src/api.ts` assigns a generated preview URL only when an image record has authorized storage and integrity proof. `IntakePreviewService` then revalidates the record and private content on every GET before the server returns raster bytes. Do not reuse this endpoint for arbitrary files, outputs, SVG, HTML, archives, downloads, or operating-system opening.
+
 Frontend rules:
 
 - Treat every API string as untrusted display data.

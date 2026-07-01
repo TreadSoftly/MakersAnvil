@@ -209,19 +209,19 @@ class MakersAnvilRequestHandler(SimpleHTTPRequestHandler):
         self._send_api(self.api.handle("DELETE", self.path))
 
     def _send_api(self, response: ApiResponse) -> None:
-        """Purpose: Serialize one API result with explicit JSON, cache, and length headers.
+        """Purpose: Serialize one JSON result or verified raster with cache and length headers.
 
-        Inputs: Caller-supplied ``response`` values from the signature.
-        Outputs: Returns ``None``, or raises before returning when validation fails.
-        How it works: It iterates over bounded records.
-        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
-        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-        Safety: Static paths are contained and all mutating API methods stay blocked.
-        Example: Call ``result = instance._send_api(...)`` with values satisfying the documented inputs.
-        Related proof: ``tests/test_api.py`` and runtime/browser smoke tests.
+        Inputs: API response containing a mapping or already verified bounded bytes.
+        Outputs: Complete HTTP status, headers, exact content length, and body.
+        How it works: Encodes mappings as indented JSON while forwarding verified bytes unchanged.
+        Side effects: Writes one response to the current loopback connection.
+        Failure behavior: Serialization and socket errors propagate; partial success is never claimed.
+        Safety: All responses remain no-store, no-sniff, and same-origin; this method never reads a path.
+        Example: Preview bytes keep ``image/png`` while ordinary state remains JSON.
+        Related proof: ``tests/test_server.py`` and ``tests/test_intake_preview.py``.
         """
 
-        payload = json.dumps(response.body, indent=2).encode("utf-8")
+        payload = response.body if isinstance(response.body, bytes) else json.dumps(response.body, indent=2).encode("utf-8")
         self.send_response(response.status)
         for key, value in response.headers.items():
             self.send_header(key, value)

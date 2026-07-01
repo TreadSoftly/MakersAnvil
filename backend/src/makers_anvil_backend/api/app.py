@@ -2,9 +2,9 @@
 
 Used by: ``server.RequestHandler`` for every ``/api/*`` request.
 Inputs: HTTP method/path, bounded body/stream, security headers, and service state.
-Outputs: An HTTP-like status code and a JSON-serializable response mapping.
+Outputs: An HTTP-like response containing JSON or one verified bounded raster payload.
 Side effects: Two intake POST routes may write app-owned authorized content.
-Safety: Every other mutation, unknown route, execution, and launch fails closed.
+Safety: Raster reads require app-owned proof; every unknown mutation, execution, and launch fails closed.
 Failure behavior: Unsupported requests return explicit 404 or 405 records.
 Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
 """
@@ -21,11 +21,13 @@ from makers_anvil_backend.services.app_state import AppStateService
 from makers_anvil_backend.services.authorized_intake import IntakeRequestContext, IntakeTransferError
 from makers_anvil_backend.services.contained_execution import ContainedExecutionError
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogError
+from makers_anvil_backend.services.intake_preview import IntakePreviewError
 from makers_anvil_backend.services.local_request_guard import LocalRequestError
 from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceError
 
 
 JsonDict = dict[str, Any]
+ApiBody = JsonDict | bytes
 RouteHandler = Callable[[], JsonDict]
 
 
@@ -44,7 +46,7 @@ class ApiResponse:
     """
 
     status: int
-    body: JsonDict
+    body: ApiBody
     headers: dict[str, str] = field(default_factory=lambda: {"Content-Type": "application/json; charset=utf-8"})
 
 
@@ -86,6 +88,7 @@ class MakersAnvilApi:
             "/api/intake/policy": self._state_service.intake_policy,
             "/api/intake/catalog": self._state_service.intake_catalog,
             "/api/intake/session": self._state_service.intake_session,
+            "/api/intake/previews/policy": self._state_service.intake_preview_policy,
             "/api/routes/preview": self._state_service.route_preview,
             "/api/outputs/preview": self._state_service.output_proof,
             "/api/tools/detection": self._state_service.tool_detection,
@@ -141,6 +144,24 @@ class MakersAnvilApi:
                     "error": "method_not_allowed",
                     "message": "This state-changing request is blocked.",
                     "allowedMethods": ["GET"],
+                },
+            )
+
+        preview_prefix = "/api/intake/previews/"
+        if path.startswith(preview_prefix) and path != "/api/intake/previews/policy":
+            intake_id = path[len(preview_prefix) :]
+            try:
+                preview = self._state_service.intake_preview(intake_id)
+            except IntakePreviewError as exc:
+                return self._api_error(exc.status, exc.code, str(exc))
+            return ApiResponse(
+                200,
+                preview.content,
+                {
+                    "Content-Type": preview.content_type,
+                    "Content-Disposition": f'inline; filename="{preview.generated_name}"',
+                    "ETag": f'"sha256-{preview.sha256}"',
+                    "X-Makers-Anvil-Intake-Id": preview.intake_id,
                 },
             )
 

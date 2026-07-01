@@ -44,6 +44,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/execution_gate.py",
     "backend/src/makers_anvil_backend/services/execution_request.py",
     "backend/src/makers_anvil_backend/services/intake_catalog.py",
+    "backend/src/makers_anvil_backend/services/intake_preview.py",
     "backend/src/makers_anvil_backend/services/job_records.py",
     "backend/src/makers_anvil_backend/services/job_workspace.py",
     "backend/src/makers_anvil_backend/services/lifecycle_dry_run.py",
@@ -62,6 +63,7 @@ REQUIRED_FILES = [
     "config/execution_gate_policy.json",
     "config/execution_request_policy.json",
     "config/intake_policy.json",
+    "config/intake_preview_policy.json",
     "config/job_workspace_policy.json",
     "config/lifecycle_dry_run_policy.json",
     "config/output_policy.json",
@@ -100,6 +102,7 @@ REQUIRED_FILES = [
     "schemas/local-settings.schema.json",
     "schemas/runtime-location.schema.json",
     "schemas/intake-policy.schema.json",
+    "schemas/intake-preview-policy.schema.json",
     "schemas/intake-record.schema.json",
     "schemas/job-cancellation-record.schema.json",
     "schemas/job-workspace-catalog.schema.json",
@@ -180,6 +183,7 @@ REQUIRED_FILES = [
     "tests/test_desktop.py",
     "tests/test_contained_execution.py",
     "tests/test_lifecycle_dry_run.py",
+    "tests/test_intake_preview.py",
     "tests/test_previous_app_learning_guide.py",
     "tests/test_runtime_resources.py",
     "tests/test_server.py",
@@ -322,6 +326,7 @@ def check_api() -> list[str]:
     intake_policy = api.handle("GET", "/api/intake/policy")
     intake_catalog = api.handle("GET", "/api/intake/catalog")
     intake_session = api.handle("GET", "/api/intake/session")
+    intake_preview_policy = api.handle("GET", "/api/intake/previews/policy")
     route_preview = api.handle("GET", "/api/routes/preview")
     output_proof = api.handle("GET", "/api/outputs/preview")
     tool_detection = api.handle("GET", "/api/tools/detection")
@@ -350,6 +355,8 @@ def check_api() -> list[str]:
         errors.append("GET /api/health exposes an unexpected mutation scope")
     if health.body.get("builtInStlPreflightEnabled") is not True:
         errors.append("GET /api/health does not expose the bounded built-in STL preflight")
+    if health.body.get("authorizedRasterPreviewEnabled") is not True:
+        errors.append("GET /api/health does not expose verified authorized raster previews")
     if health.body.get("lifecycleDryRunEnabled") is not True:
         errors.append("GET /api/health does not expose read-only lifecycle planning")
     if health.body.get("windowsInstallerFoundationEnabled") is not True or health.body.get("cleanMachineExecutionEnabled") is not False:
@@ -365,14 +372,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-023":
-        errors.append("GET /api/state does not report PASS-023")
+    if state.body.get("currentPass", {}).get("id") != "PASS-024":
+        errors.append("GET /api/state does not report PASS-024")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-023":
-        errors.append("GET /api/workspace/status does not report PASS-023")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-023":
-        errors.append("GET /api/passes/ledger does not report PASS-023 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-024":
+        errors.append("GET /api/workspace/status does not report PASS-024")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-024":
+        errors.append("GET /api/passes/ledger does not report PASS-024 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -429,6 +436,13 @@ def check_api() -> list[str]:
         errors.append("GET /api/intake/session does not expose a process-local request token")
     if intake_session.body.get("constraints", {}).get("oneFilePerAuthorization") is not True:
         errors.append("GET /api/intake/session does not enforce one file per authorization")
+    if intake_preview_policy.status != 200 or intake_preview_policy.body.get("mode") != "verified-app-owned-raster":
+        errors.append("GET /api/intake/previews/policy does not expose verified app-owned raster mode")
+    preview_safety = intake_preview_policy.body.get("safety", {})
+    if not all(preview_safety.get(key) is True for key in ("readOnly", "authorizedRecordRequired", "appOwnedContentRequired", "sizeAndDigestReverified", "rasterSignatureRequired")):
+        errors.append("intake preview policy is missing required read and verification proofs")
+    if any(preview_safety.get(key) is not False for key in ("sourcePathExposed", "activeContentAllowed", "archiveReadEnabled", "selectedFileHandoffEnabled", "externalProcessEnabled")):
+        errors.append("intake preview policy unexpectedly enables an unsafe effect")
     if experience.status != 200 or experience.body.get("schemaVersion") != "makers-anvil.api.workbench-experience.v1":
         errors.append("GET /api/workbench/experience does not expose the staged experience contract")
     if len(experience.body.get("helpTopics", [])) != 6 or any(experience.body.get("safety", {}).values()):
@@ -617,6 +631,7 @@ def check_status_records() -> list[str]:
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
     settings = json.loads((ROOT / "config" / "default_settings.json").read_text(encoding="utf-8"))
     intake_policy = json.loads((ROOT / "config" / "intake_policy.json").read_text(encoding="utf-8"))
+    intake_preview_policy = json.loads((ROOT / "config" / "intake_preview_policy.json").read_text(encoding="utf-8"))
     route_catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
     output_policy = json.loads((ROOT / "config" / "output_policy.json").read_text(encoding="utf-8"))
     tool_catalog = json.loads((ROOT / "config" / "tool_catalog.json").read_text(encoding="utf-8"))
@@ -631,14 +646,14 @@ def check_status_records() -> list[str]:
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-023":
-        errors.append("current status does not report PASS-023")
-    if status.get("trackPercentages", {}).get("realApp") != 80.0:
-        errors.append("real app completion is not 80.0 for PASS-023")
+    if status.get("currentPass", {}).get("id") != "PASS-024":
+        errors.append("current status does not report PASS-024")
+    if status.get("trackPercentages", {}).get("realApp") != 82.5:
+        errors.append("real app completion is not 82.5 for PASS-024")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-023":
-        errors.append("pass ledger latest pass is not PASS-023")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-024":
+        errors.append("pass ledger latest pass is not PASS-024")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -692,6 +707,13 @@ def check_status_records() -> list[str]:
         errors.append("intake policy capabilities are broader or narrower than PASS-019")
     if "archive" in intake_policy.get("uploadAllowedKinds", []):
         errors.append("intake policy unexpectedly permits archive upload")
+    if intake_preview_policy.get("mode") != "verified-app-owned-raster" or intake_preview_policy.get("maxPreviewBytes") != 26_214_400:
+        errors.append("intake preview policy identity or size ceiling is invalid")
+    preview_safety = intake_preview_policy.get("safety", {})
+    if not all(preview_safety.get(key) is True for key in ("readOnly", "authorizedRecordRequired", "appOwnedContentRequired", "sizeAndDigestReverified", "rasterSignatureRequired")):
+        errors.append("intake preview policy verification gates are incomplete")
+    if any(preview_safety.get(key) is not False for key in ("sourcePathExposed", "activeContentAllowed", "archiveReadEnabled", "selectedFileHandoffEnabled", "externalProcessEnabled")):
+        errors.append("intake preview policy enables an unsafe effect")
     if experience_policy.get("schemaVersion") != "makers-anvil.config.workbench-experience.v1":
         errors.append("workbench experience policy schema identity is invalid")
     if any(experience_policy.get("safety", {}).values()):

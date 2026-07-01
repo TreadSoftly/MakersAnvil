@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "makers-anvil.config.intake-preview.v1",
+  "claimState": "staged",
+  "mode": "verified-app-owned-raster",
+  "endpointTemplate": "/api/intake/previews/{intakeId}",
+  "maxPreviewBytes": 26214400,
+  "allowedExtensions": [".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"],
+  "safety": {
+    "readOnly": true,
+    "authorizedRecordRequired": true,
+    "appOwnedContentRequired": true,
+    "sizeAndDigestReverified": true,
+    "rasterSignatureRequired": true,
+    "sourcePathExposed": false,
+    "activeContentAllowed": false,
+    "archiveReadEnabled": false,
+    "selectedFileHandoffEnabled": false,
+    "externalProcessEnabled": false
+  }
+}

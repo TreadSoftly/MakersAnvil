@@ -24,7 +24,7 @@ The generator selects 29 first-party files and explains all 14,611 physical line
 | Previous behavior or design | Decision | Product destination |
 | --- | --- | --- |
 | Dense industrial workbench, rail, command search, tool strip, Work Flow/Plans/Dev views, output inspector | Promoted as authoritative experience | Current React frontend |
-| Intake tile, selected file, classification, preview | Picker/drop/paste share explicit one-file authorization and app-owned storage; persistent media preview remains next | Current React adapter and authorized-intake service |
+| Intake tile, selected file, classification, preview | Picker/drop/paste share explicit one-file authorization; authorized raster previews recheck app-owned integrity and signature | Current React adapter, authorized-intake service, and preview service |
 | Contextual help and capability lanes | Migrate as modular read-only views | Focused frontend renderers and strict API contracts |
 | Tool cards and route-aware tool selection | Reuse concepts and verified wording | Existing tool detection/dry-run services |
 | Event history and notices | Rebuild with redaction and append-only schema | Future audit service, not source-tree logs |

@@ -25,7 +25,8 @@
 21. Backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
 22. Windows installer foundation, upgrade/removal gates, signing path, and clean-machine proof harness.
 23. Promote the previous working React application and adapt it to portable current services.
-24. Restore safe preview and desktop interaction parity, then split large frontend responsibilities without visual regression.
+24. Restore selected-image parity through verified app-owned raster previews.
+25. Add a contained in-app proof/report viewer before any operating-system output-open adapter.
 
 ## Planned Later
 

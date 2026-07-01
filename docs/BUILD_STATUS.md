@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-023 - Previous working application promotion and portable API adaptation.
+PASS-024 - Verified app-owned raster previews in the promoted workbench.
 
 ## Track Percentages
 
-- Real app completion: `80.0000%`
-- Windows local app: `84.0000%`
+- Real app completion: `82.5000%`
+- Windows local app: `86.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `30.0000%`
@@ -97,6 +97,7 @@ PASS-023 - Previous working application promotion and portable API adaptation.
 - PASS-021 adds strict read-only backup, restore, update, uninstall, and repair planning. It inventories declared app-owned source directories through bounded counts and bytes only, excludes temporary/backup destinations, preserves existing data, and exposes five plan/evidence/blocker cards without a lifecycle mutation endpoint.
 - PASS-022 selects MSIX as the Windows installer target, adds strict package/identity/runtime/signing/preservation policy, evaluates nine release gates, and defines six clean-machine scenarios. Only three foundation gates pass; no package build, signature, install, upgrade, removal, or machine scenario is claimed.
 - PASS-023 makes the previous working React application the authoritative frontend, adapts current path-redacted state and guarded mutations into its accepted workflow, packages the compiled bundle, preserves all 20 interaction tests, and keeps unsafe legacy operations visibly blocked.
+- PASS-024 restores selected-image display through a generated same-origin URL only after authorized-record, containment, size, SHA-256, extension, and raster-signature checks. Active content, paths, altered bytes, and non-images fail closed.
 
 ## Blocked Or Not Proven
 
@@ -124,4 +125,4 @@ PASS-023 - Previous working application promotion and portable API adaptation.
 
 ## Next Pass
 
-PASS-024 - Promoted workbench interaction parity, safe previews, and proof-gated desktop adapters.
+PASS-025 - Contained proof and report viewer with proof-gated output interaction.

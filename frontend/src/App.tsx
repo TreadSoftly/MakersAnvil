@@ -1441,11 +1441,17 @@ function MediaBoard({
 }
 
 function FilePreview({ file }: { file: IntakeFile }) {
-  if (file.classification === "image" && file.previewUrl) {
+  const [previewFailed, setPreviewFailed] = useState(false);
+  if (file.classification === "image" && file.previewUrl && !previewFailed) {
     return (
       <span className="file-preview">
         <span className="file-badge">{file.extension.replace(".", "").toUpperCase()}</span>
-        <img src={file.previewUrl} alt="" />
+        <img
+          src={file.previewUrl}
+          alt={`Authorized preview of ${file.name}`}
+          decoding="async"
+          onError={() => setPreviewFailed(true)}
+        />
       </span>
     );
   }
