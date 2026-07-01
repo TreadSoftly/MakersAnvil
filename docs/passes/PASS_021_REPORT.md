@@ -51,7 +51,7 @@
 - Live browser screenshot and viewport interaction proof was not run because the in-app browser surface was unavailable; static DOM/CSS, responsive, API, frontend purity, and complete test proof passed.
 - Fresh source desktop smoke: exit 0 with PASS-021, `67.5%`, unchanged bounded mutation scopes, and full route execution false.
 - Fresh Windows one-file build completed at `artifacts/windows/MakersAnvil.exe`; packaged `--smoke` exited 0 with the bundled PASS-021 lifecycle contracts.
-- Final local artifact identity: 14,386,249-byte `artifacts/windows/MakersAnvil.exe` with SHA-256 `94bea9dab3c5015fac708372fd5677911a919ef96e7c89ae83e6dce683d87fb6`.
+- Final local artifact identity: 14,386,242-byte `artifacts/windows/MakersAnvil.exe` with SHA-256 `9c53da8cc61c69c9d476ca1353ea1208034786e50c7bb3d11500c1ac77fec179`.
 - Implementation commit `5eec067a4cedc99d474fd9b640594a1ae25d147c` is published on `codex/pass-001-clean-foundation` through draft PR #1.
 - GitHub Actions run `28522933226` passed Windows, macOS, and Ubuntu verification plus the Windows executable build, smoke, and artifact upload jobs.
 
