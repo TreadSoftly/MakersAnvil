@@ -101,6 +101,9 @@ class MakersAnvilApi:
             "/api/executions/catalog": self._state_service.contained_execution_catalog,
             "/api/lifecycle/policy": self._state_service.lifecycle_dry_run_policy,
             "/api/lifecycle/dry-runs": self._state_service.lifecycle_dry_runs,
+            "/api/windows/installer/policy": self._state_service.windows_installer_policy,
+            "/api/windows/installer/readiness": self._state_service.windows_installer_readiness,
+            "/api/windows/clean-machine/harness": self._state_service.clean_machine_harness,
         }
 
     def handle(

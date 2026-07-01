@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "makers-anvil.config.clean-machine-scenarios.v1",
+  "claimState": "planned",
+  "mode": "declarative-no-execution-harness",
+  "environment": {
+    "operatingSystem": "windows",
+    "architecture": "x64",
+    "sourceCheckoutPresent": false,
+    "developerToolsRequired": false,
+    "administratorRequired": false,
+    "networkRequired": false
+  },
+  "scenarios": [
+    {
+      "id": "fresh-install",
+      "label": "Fresh install",
+      "purpose": "Prove a trusted package installs for a standard user without a source checkout.",
+      "assertions": ["package signature is trusted", "package registration succeeds", "Makers Anvil appears as an installed application"]
+    },
+    {
+      "id": "first-launch",
+      "label": "First launch",
+      "purpose": "Prove the installed application starts and creates only portable app-owned user data.",
+      "assertions": ["native window opens", "local API health is proven", "source checkout is not required", "runtime data uses the platform user-data location"]
+    },
+    {
+      "id": "upgrade-preserves-data",
+      "label": "Upgrade preserves data",
+      "purpose": "Prove a higher package version replaces the application while preserving user settings and projects.",
+      "assertions": ["package identity is unchanged", "installed version increases", "user data remains readable", "downgrade is rejected"]
+    },
+    {
+      "id": "repair",
+      "label": "Repair",
+      "purpose": "Prove trusted package repair restores application payload without replacing user data.",
+      "assertions": ["payload integrity is restored", "user data remains unchanged", "application launches after repair"]
+    },
+    {
+      "id": "uninstall-preserves-data",
+      "label": "Uninstall preserves data",
+      "purpose": "Prove package removal unregisters application payload while preserving app-owned user data by default.",
+      "assertions": ["package registration is removed", "application payload is unavailable", "user data remains present", "no purge occurs"]
+    },
+    {
+      "id": "reinstall-after-removal",
+      "label": "Reinstall after removal",
+      "purpose": "Prove a later trusted install can reuse preserved data without a source checkout.",
+      "assertions": ["trusted package installs again", "preserved settings load", "native launch and local API health pass"]
+    }
+  ],
+  "actions": {"inspectEnabled": true, "executeEnabled": false, "recordEvidenceEnabled": false},
+  "safety": {
+    "installerExecutionEnabled": false,
+    "softwareMutationEnabled": false,
+    "registryMutationEnabled": false,
+    "certificateStoreMutationEnabled": false,
+    "externalProcessEnabled": false,
+    "userDataDeletionEnabled": false
+  }
+}

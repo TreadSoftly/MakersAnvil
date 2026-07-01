@@ -300,6 +300,21 @@
         "the workbench renders lifecycle evidence and blockers without any lifecycle command control",
         "focused no-write, fail-closed, API, frontend, schema, package, and cross-platform verification cover the pass"
       ]
+    },
+    {
+      "id": "PASS-022",
+      "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_022_REPORT.md",
+      "proof": [
+        "MSIX is selected through a strict Windows x64 per-user installer policy without building or installing a package",
+        "nine readiness gates separate three proven foundation choices from six unproven release and machine proofs",
+        "provisional package identity cannot become locked until publisher and signing evidence exist",
+        "upgrade and removal contracts preserve portable app-owned user data while downgrade, purge, and execution remain disabled",
+        "six ordered clean-machine scenarios cover install, launch, upgrade, repair, removal, and reinstall with zero runs and zero evidence",
+        "three GET-only APIs and one inspection-only CLI expose the same blocked release truth",
+        "registry, certificate store, package registration, software mutation, processes, publication, and user-data deletion remain false"
+      ]
     }
   ]
 }

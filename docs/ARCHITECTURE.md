@@ -115,6 +115,8 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 - Resolved source and home paths are not returned by APIs.
 - Route execution, external tool launch, installers, archive extraction, folder import, packaging, and clean-machine claims remain blocked until separate proof gates pass.
 - Lifecycle previews read only bounded metadata, preserve app data, exclude backup/tmp sources, and cannot create/read archives, restore, use the network, download packages, execute installers, mutate software, start processes, or delete data.
+- The Windows installer foundation is a separate read-only layer over the executable payload. It selects MSIX, requires a stable identity and trusted signature, preserves portable user data across upgrade/removal, and exposes nine gates without building or registering a package.
+- Clean-machine proof is a six-scenario harness, not a label. Fresh install, first launch, upgrade, repair, removal, and reinstall each remain `not-run` with empty evidence until executed in an isolated Windows environment.
 
 ## How To Extend The App
 
@@ -125,4 +127,4 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, execution-request, and lifecycle records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy. Contained execution authorization applies only to the built-in STL structural preflight. Prepared jobs and lifecycle plans remain non-executable.
+Route, output/proof, tool-presence, dry-run, execution-gate, execution-request, lifecycle, installer, and clean-machine records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy. Contained execution authorization applies only to the built-in STL structural preflight. Prepared jobs, lifecycle plans, installer gates, and machine scenarios remain non-executable.

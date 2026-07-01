@@ -7,18 +7,18 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-021",
-    "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
+    "id": "PASS-022",
+    "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_021_REPORT.md"
+    "reportPath": "docs/passes/PASS_022_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 67.5,
-    "windowsLocal": 72.5,
+    "realApp": 72.5,
+    "windowsLocal": 80.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
-    "packagedRelease": 17.5,
-    "cleanMachineProof": 0.0
+    "packagedRelease": 30.0,
+    "cleanMachineProof": 5.0
   },
   "sourceTruth": {
     "statusPath": "state/current_status.json",
@@ -43,6 +43,10 @@
     "executionProofSchemaPath": "schemas/execution-proof.schema.json",
     "lifecycleDryRunPolicyPath": "config/lifecycle_dry_run_policy.json",
     "lifecycleDryRunCatalogSchemaPath": "schemas/lifecycle-dry-run-catalog.schema.json"
+    ,"windowsInstallerPolicyPath": "config/windows_installer_policy.json"
+    ,"cleanMachineScenariosPath": "config/clean_machine_scenarios.json"
+    ,"windowsInstallerReadinessSchemaPath": "schemas/windows-installer-readiness.schema.json"
+    ,"cleanMachineHarnessSchemaPath": "schemas/clean-machine-harness.schema.json"
   },
   "referencePolicy": {
     "folder": "Refrences For Makers Anvil Application",
@@ -129,6 +133,12 @@
     ,"Every lifecycle plan preserves existing app data, disallows user-data deletion, reports zero execution readiness, and exposes explicit evidence requirements and blockers."
     ,"Lifecycle planning performs no archive creation/read/extraction, restore write, network access, package download, installer execution, software mutation, external process, or deletion."
     ,"The workbench renders five lifecycle preview cards and aggregate app-data counts without adding lifecycle command controls."
+    ,"MSIX is selected as the Windows installer target through a strict package, identity, runtime, upgrade, removal, signing, action, and safety policy."
+    ,"Nine installer readiness gates distinguish three proven foundation choices from unproven identity, build, signing, upgrade, removal, and clean-machine evidence."
+    ,"Upgrade requires one locked identity and higher version while preserving user data; downgrade and upgrade execution remain disabled."
+    ,"Removal preserves user data by default, requires future explicit purge consent, and keeps purge and uninstall execution disabled."
+    ,"Six clean-machine scenarios cover fresh install, launch, upgrade, repair, removal, and reinstall with zero runs and zero fabricated evidence."
+    ,"The clean-machine CLI and three read-only APIs validate and expose the harness without invoking packages, processes, registry, certificates, network, publication, or deletion."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -150,7 +160,7 @@
     "backup manifest and archive creation",
     "backup archive reading and restore writes",
     "release metadata network retrieval and package download",
-    "installer registration checks and installer execution",
+    "installer package build, registration checks, and installer execution",
     "software lifecycle process execution",
     "user-data deletion during uninstall",
     "archive extraction",
@@ -158,13 +168,13 @@
     "content-type verification",
     "malware scanning",
     "packaged release",
-    "clean-machine proof",
+    "executed clean-machine proof",
     "macOS/Linux runtime proof",
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-022",
-    "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
+    "id": "PASS-023",
+    "title": "MSIX manifest, development package build, and isolated install execution foundation",
     "claimState": "planned"
   }
 }

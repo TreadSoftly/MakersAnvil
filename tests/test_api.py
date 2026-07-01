@@ -32,6 +32,8 @@ def test_health_exposes_only_bounded_local_mutations() -> None:
     assert response.body["mutatingActionsEnabled"] is True
     assert response.body["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
     assert response.body["builtInStlPreflightEnabled"] is True
+    assert response.body["windowsInstallerFoundationEnabled"] is True
+    assert response.body["cleanMachineExecutionEnabled"] is False
     assert response.body["routeExecutionEnabled"] is False
     assert response.body["toolLaunchEnabled"] is False
 
@@ -52,10 +54,10 @@ def test_state_limits_actions_to_intake_and_preferences() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 67.5
-    assert response.body["currentPass"]["id"] == "PASS-021"
-    assert response.body["completion"]["packagedRelease"] == 17.5
-    assert response.body["completion"]["cleanMachineProof"] == 0.0
+    assert response.body["completion"]["realApp"] == 72.5
+    assert response.body["currentPass"]["id"] == "PASS-022"
+    assert response.body["completion"]["packagedRelease"] == 30.0
+    assert response.body["completion"]["cleanMachineProof"] == 5.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
     assert enabled_capabilities == ["file-intake", "workbench-preferences", "contained-stl-preflight"]
     assert any("full route execution" in action for action in response.body["blockedActions"])
@@ -123,6 +125,43 @@ def test_lifecycle_reads_expose_five_non_mutating_preservation_plans() -> None:
     assert all(plan["preservation"]["userDataDeletionAllowed"] is False for plan in catalog.body["plans"])
     assert all(not any(plan["effects"].values()) for plan in catalog.body["plans"])
     assert state.body["lifecycleDryRuns"] == catalog.body
+
+
+def test_windows_installer_reads_expose_foundation_without_release_claims() -> None:
+    """Purpose: Prove installer APIs distinguish planning, readiness, and machine proof.
+
+    Inputs: Default API and three exact Windows installer GET routes.
+    Outputs: MSIX scope, gate counts, zero scenario execution, safety, and state consistency assertions.
+    How it works: Reads focused contracts and compares readiness/harness with composed state.
+    Side effects: Reads bundled policy files only.
+    Failure behavior: Missing routes, enabled effects, false readiness, or state drift fails.
+    Safety: No package, signing, registry, process, installation, removal, or deletion occurs.
+    Example: Three gates pass while installerReady and cleanMachineProven stay false.
+    Related proof: Windows installer service tests and public schemas.
+    """
+
+    api = MakersAnvilApi()
+    policy = api.handle("GET", "/api/windows/installer/policy")
+    readiness = api.handle("GET", "/api/windows/installer/readiness")
+    harness = api.handle("GET", "/api/windows/clean-machine/harness")
+    state = api.handle("GET", "/api/state")
+
+    assert policy.status == 200
+    assert policy.body["package"]["format"] == "msix"
+    assert policy.body["identity"]["publisher"] == "not-proven"
+    assert {key for key, value in policy.body["actions"].items() if value} == {"foundationInspectionEnabled", "harnessInspectionEnabled"}
+    assert all(value is False for value in policy.body["safety"].values())
+    assert readiness.status == 200
+    assert readiness.body["summary"]["gateCount"] == 9
+    assert readiness.body["summary"]["passedGateCount"] == 3
+    assert readiness.body["summary"]["installerReady"] is False
+    assert readiness.body["summary"]["releaseReady"] is False
+    assert harness.status == 200
+    assert harness.body["summary"]["scenarioCount"] == 6
+    assert harness.body["summary"]["executedCount"] == 0
+    assert harness.body["summary"]["cleanMachineProven"] is False
+    assert state.body["windowsInstaller"] == readiness.body
+    assert state.body["cleanMachineHarness"] == harness.body
 
 
 def test_non_intake_mutating_requests_are_blocked() -> None:
@@ -206,11 +245,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-021"
+    assert workspace.body["currentPass"]["id"] == "PASS-022"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-021"
+    assert ledger.body["passes"][-1]["id"] == "PASS-022"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: PASS-021 adds read-only backup, restore, update, uninstall, and repair plans with bounded path-redacted app-data inventory and preservation rules. Lifecycle execution, archives, restore writes, network/package access, installers, software mutation, deletion, release, and clean-machine claims remain gated.
+Current status: PASS-022 adds a schema-backed MSIX installer foundation, upgrade/removal preservation gates, signing blockers, and six declarative clean-machine scenarios. No installer is built or executed; signing, package registration, release publication, destructive removal, and clean-machine success remain unproven.
 
 ## Run Locally
 

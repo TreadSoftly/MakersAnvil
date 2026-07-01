@@ -3,7 +3,7 @@
   "$id": "https://schemas.makers-anvil.local/windows-package-plan.schema.json",
   "title": "Makers Anvil Windows package plan",
   "type": "object",
-  "required": ["schemaVersion", "claimState", "platform", "format", "entrypoint", "frontend", "bundledReadOnlyData", "expectedArtifact", "dependencies", "arguments", "safety"],
+  "required": ["schemaVersion", "claimState", "platform", "format", "entrypoint", "frontend", "bundledReadOnlyData", "expectedArtifact", "installerFoundation", "dependencies", "arguments", "safety"],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": {"const": "makers-anvil.windows-package-plan.v1"},
@@ -14,6 +14,18 @@
     "frontend": {"const": "frontend/public"},
     "bundledReadOnlyData": {"const": ["config", "schemas", "state"]},
     "expectedArtifact": {"const": "artifacts/windows/MakersAnvil.exe"},
+    "installerFoundation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["format", "expectedArtifact", "policy", "cleanMachineScenarios", "installerBuilt"],
+      "properties": {
+        "format": {"const": "msix"},
+        "expectedArtifact": {"const": "artifacts/windows/MakersAnvil.msix"},
+        "policy": {"const": "config/windows_installer_policy.json"},
+        "cleanMachineScenarios": {"const": "config/clean_machine_scenarios.json"},
+        "installerBuilt": {"const": false}
+      }
+    },
     "dependencies": {
       "type": "object",
       "required": ["pywebview", "pyinstaller", "webview2"],

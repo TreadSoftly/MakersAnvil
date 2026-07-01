@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "makers-anvil.config.windows-installer.v1",
+  "claimState": "staged",
+  "mode": "read-only-installer-foundation",
+  "platform": {"operatingSystem": "windows", "architecture": "x64", "minimumVersion": "10-2004"},
+  "package": {
+    "format": "msix",
+    "payloadArtifact": "artifacts/windows/MakersAnvil.exe",
+    "installerArtifact": "artifacts/windows/MakersAnvil.msix",
+    "scope": "per-user",
+    "elevationRequired": false,
+    "installLocation": "windows-managed-package-location"
+  },
+  "identity": {
+    "name": "TreadSoftly.MakersAnvil",
+    "displayName": "Makers Anvil",
+    "publisher": "not-proven",
+    "publisherDisplayName": "TreadSoftly",
+    "version": "0.1.0.0",
+    "locked": false
+  },
+  "runtime": {
+    "webView2Mode": "evergreen-runtime",
+    "sourceCheckoutRequired": false,
+    "workingDirectoryRequired": false,
+    "userDataLocation": "makers-anvil-data://user",
+    "userDataInsideInstallLocation": false
+  },
+  "upgrade": {
+    "sameIdentityRequired": true,
+    "higherVersionRequired": true,
+    "downgradeAllowed": false,
+    "preserveUserData": true,
+    "executionEnabled": false
+  },
+  "removal": {
+    "preserveUserDataByDefault": true,
+    "explicitPurgeConsentRequired": true,
+    "userDataPurgeEnabled": false,
+    "executionEnabled": false
+  },
+  "signing": {
+    "requiredForInstallation": true,
+    "productionMethod": "not-selected",
+    "certificatePresent": false,
+    "publisherMatched": false,
+    "signatureVerified": false,
+    "timestampVerified": false
+  },
+  "actions": {
+    "foundationInspectionEnabled": true,
+    "harnessInspectionEnabled": true,
+    "installerBuildEnabled": false,
+    "installerExecutionEnabled": false,
+    "upgradeExecutionEnabled": false,
+    "uninstallExecutionEnabled": false,
+    "repairExecutionEnabled": false,
+    "signingEnabled": false,
+    "publishingEnabled": false,
+    "apiMutationEnabled": false,
+    "browserMutationEnabled": false
+  },
+  "safety": {
+    "networkAccessEnabled": false,
+    "registryMutationEnabled": false,
+    "certificateStoreMutationEnabled": false,
+    "packageRegistrationEnabled": false,
+    "softwareMutationEnabled": false,
+    "externalProcessEnabled": false,
+    "userDataDeletionEnabled": false,
+    "releasePublicationEnabled": false
+  }
+}

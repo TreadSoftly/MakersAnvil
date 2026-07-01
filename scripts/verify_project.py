@@ -54,6 +54,7 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/tool_detection.py",
     "backend/src/makers_anvil_backend/services/tool_dry_run.py",
     "backend/src/makers_anvil_backend/services/workbench_experience.py",
+    "backend/src/makers_anvil_backend/services/windows_installer.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
     "backend/src/makers_anvil_backend/services/workspace_status.py",
     "config/default_settings.json",
@@ -68,6 +69,8 @@ REQUIRED_FILES = [
     "config/tool_catalog.json",
     "config/tool_dry_run_policy.json",
     "config/workbench_experience.json",
+    "config/windows_installer_policy.json",
+    "config/clean_machine_scenarios.json",
     "frontend/public/index.html",
     "frontend/public/assets/app.js",
     "frontend/public/assets/capability-lanes.js",
@@ -76,6 +79,7 @@ REQUIRED_FILES = [
     "frontend/public/assets/lifecycle-dry-runs.js",
     "frontend/public/assets/styles.css",
     "frontend/public/assets/workbench-experience.js",
+    "frontend/public/assets/windows-installer.js",
     "schemas/activity-event.schema.json",
     "schemas/activity-history.schema.json",
     "schemas/claim-state.schema.json",
@@ -103,6 +107,9 @@ REQUIRED_FILES = [
     "schemas/job-workspace-record.schema.json",
     "schemas/lifecycle-dry-run-catalog.schema.json",
     "schemas/lifecycle-dry-run-policy.schema.json",
+    "schemas/windows-installer-policy.schema.json",
+    "schemas/windows-installer-readiness.schema.json",
+    "schemas/clean-machine-harness.schema.json",
     "schemas/output-policy.schema.json",
     "schemas/output-proof.schema.json",
     "schemas/route-catalog.schema.json",
@@ -120,6 +127,7 @@ REQUIRED_FILES = [
     "scripts/build_previous_app_learning_guide.py",
     "scripts/build_windows_exe.py",
     "scripts/check_explainability.py",
+    "scripts/check_clean_machine.py",
     "scripts/prepare_job.py",
     "scripts/request_job_cancel.py",
     "scripts/run_desktop.py",
@@ -165,6 +173,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_019_REPORT.md",
     "docs/passes/PASS_020_REPORT.md",
     "docs/passes/PASS_021_REPORT.md",
+    "docs/passes/PASS_022_REPORT.md",
     "schemas/learning-coverage.schema.json",
     "schemas/previous-app-migration.schema.json",
     "schemas/windows-package-plan.schema.json",
@@ -175,6 +184,7 @@ REQUIRED_FILES = [
     "tests/test_runtime_resources.py",
     "tests/test_server.py",
     "tests/test_windows_packaging.py",
+    "tests/test_windows_installer.py",
 ]
 
 REFERENCE_FOLDERS = [
@@ -327,6 +337,9 @@ def check_api() -> list[str]:
     contained_catalog = api.handle("GET", "/api/executions/catalog")
     lifecycle_policy = api.handle("GET", "/api/lifecycle/policy")
     lifecycle_catalog = api.handle("GET", "/api/lifecycle/dry-runs")
+    windows_installer_policy = api.handle("GET", "/api/windows/installer/policy")
+    windows_installer_readiness = api.handle("GET", "/api/windows/installer/readiness")
+    clean_machine_harness = api.handle("GET", "/api/windows/clean-machine/harness")
     blocked = api.handle("POST", "/api/state")
     missing = api.handle("GET", "/api/missing")
     if health.status != 200 or health.body.get("claimState") != "proven":
@@ -339,6 +352,8 @@ def check_api() -> list[str]:
         errors.append("GET /api/health does not expose the bounded built-in STL preflight")
     if health.body.get("lifecycleDryRunEnabled") is not True:
         errors.append("GET /api/health does not expose read-only lifecycle planning")
+    if health.body.get("windowsInstallerFoundationEnabled") is not True or health.body.get("cleanMachineExecutionEnabled") is not False:
+        errors.append("GET /api/health does not expose the blocked Windows installer foundation")
     if health.body.get("routeExecutionEnabled") is not False or health.body.get("toolLaunchEnabled") is not False:
         errors.append("GET /api/health unexpectedly enables route execution or tool launch")
     if state.status != 200 or state.body.get("claimState") not in ALLOWED_CLAIM_STATES:
@@ -350,14 +365,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-021":
-        errors.append("GET /api/state does not report PASS-021")
+    if state.body.get("currentPass", {}).get("id") != "PASS-022":
+        errors.append("GET /api/state does not report PASS-022")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-021":
-        errors.append("GET /api/workspace/status does not report PASS-021")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-021":
-        errors.append("GET /api/passes/ledger does not report PASS-021 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-022":
+        errors.append("GET /api/workspace/status does not report PASS-022")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-022":
+        errors.append("GET /api/passes/ledger does not report PASS-022 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -558,6 +573,25 @@ def check_api() -> list[str]:
         errors.append("a lifecycle plan unexpectedly reports execution readiness")
     if state.body.get("lifecycleDryRuns") != lifecycle_catalog.body:
         errors.append("GET /api/state lifecycle catalog differs from its focused route")
+    if windows_installer_policy.status != 200 or windows_installer_policy.body.get("package", {}).get("format") != "msix":
+        errors.append("GET /api/windows/installer/policy does not expose the MSIX foundation")
+    true_installer_actions = {key for key, enabled in windows_installer_policy.body.get("actions", {}).items() if enabled}
+    if true_installer_actions != {"foundationInspectionEnabled", "harnessInspectionEnabled"}:
+        errors.append("Windows installer policy enables unexpected actions")
+    if any(windows_installer_policy.body.get("safety", {}).values()):
+        errors.append("Windows installer policy enables an operating-system or release effect")
+    installer_summary = windows_installer_readiness.body.get("summary", {})
+    if windows_installer_readiness.status != 200 or installer_summary.get("gateCount") != 9 or installer_summary.get("passedGateCount") != 3:
+        errors.append("GET /api/windows/installer/readiness does not expose exact foundation gates")
+    if installer_summary.get("installerReady") is not False or installer_summary.get("releaseReady") is not False:
+        errors.append("Windows installer readiness makes an unproven release claim")
+    harness_summary = clean_machine_harness.body.get("summary", {})
+    if clean_machine_harness.status != 200 or harness_summary.get("scenarioCount") != 6 or harness_summary.get("executedCount") != 0:
+        errors.append("GET /api/windows/clean-machine/harness does not expose six unexecuted scenarios")
+    if harness_summary.get("cleanMachineProven") is not False or any(clean_machine_harness.body.get("safety", {}).values()):
+        errors.append("clean-machine harness claims proof or enables a machine effect")
+    if state.body.get("windowsInstaller") != windows_installer_readiness.body or state.body.get("cleanMachineHarness") != clean_machine_harness.body:
+        errors.append("GET /api/state installer foundation differs from focused routes")
     if blocked.status != 405 or blocked.body.get("claimState") != "blocked":
         errors.append("state-changing API request was not blocked")
     if missing.status != 404 or missing.body.get("claimState") != "not proven":
@@ -592,17 +626,19 @@ def check_status_records() -> list[str]:
     job_workspace_policy = json.loads((ROOT / "config" / "job_workspace_policy.json").read_text(encoding="utf-8"))
     contained_execution_policy = json.loads((ROOT / "config" / "contained_execution_policy.json").read_text(encoding="utf-8"))
     lifecycle_dry_run_policy = json.loads((ROOT / "config" / "lifecycle_dry_run_policy.json").read_text(encoding="utf-8"))
+    windows_installer_policy = json.loads((ROOT / "config" / "windows_installer_policy.json").read_text(encoding="utf-8"))
+    clean_machine_scenarios = json.loads((ROOT / "config" / "clean_machine_scenarios.json").read_text(encoding="utf-8"))
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-021":
-        errors.append("current status does not report PASS-021")
-    if status.get("trackPercentages", {}).get("realApp") != 67.5:
-        errors.append("real app completion is not 67.5 for PASS-021")
+    if status.get("currentPass", {}).get("id") != "PASS-022":
+        errors.append("current status does not report PASS-022")
+    if status.get("trackPercentages", {}).get("realApp") != 72.5:
+        errors.append("real app completion is not 72.5 for PASS-022")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-021":
-        errors.append("pass ledger latest pass is not PASS-021")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-022":
+        errors.append("pass ledger latest pass is not PASS-022")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -614,6 +650,9 @@ def check_status_records() -> list[str]:
         errors.append("Windows package plan does not target the portable MakersAnvil.exe artifact")
     if any(windows_plan.get("safety", {}).values()):
         errors.append("Windows package check plan unexpectedly claims build, signing, publish, install, or clean-machine proof")
+    installer_foundation = windows_plan.get("installerFoundation", {})
+    if installer_foundation.get("format") != "msix" or installer_foundation.get("expectedArtifact") != "artifacts/windows/MakersAnvil.msix" or installer_foundation.get("installerBuilt") is not False:
+        errors.append("Windows executable plan does not expose the blocked MSIX foundation")
     try:
         require_loopback_host("127.0.0.1")
         frontend_root()
@@ -675,6 +714,16 @@ def check_status_records() -> list[str]:
         errors.append("lifecycle dry-run policy actions are broader or narrower than PASS-021")
     if any(lifecycle_dry_run_policy.get("safety", {}).values()):
         errors.append("lifecycle dry-run policy enables an unsafe effect")
+    if windows_installer_policy.get("mode") != "read-only-installer-foundation" or windows_installer_policy.get("package", {}).get("format") != "msix":
+        errors.append("Windows installer policy identity is invalid")
+    if {key for key, value in windows_installer_policy.get("actions", {}).items() if value} != {"foundationInspectionEnabled", "harnessInspectionEnabled"}:
+        errors.append("Windows installer policy action scope is invalid")
+    if any(windows_installer_policy.get("safety", {}).values()) or windows_installer_policy.get("removal", {}).get("userDataPurgeEnabled") is not False:
+        errors.append("Windows installer policy enables a machine effect or user-data purge")
+    if [item.get("id") for item in clean_machine_scenarios.get("scenarios", [])] != ["fresh-install", "first-launch", "upgrade-preserves-data", "repair", "uninstall-preserves-data", "reinstall-after-removal"]:
+        errors.append("clean-machine scenario registry coverage is invalid")
+    if clean_machine_scenarios.get("actions") != {"inspectEnabled": True, "executeEnabled": False, "recordEvidenceEnabled": False} or any(clean_machine_scenarios.get("safety", {}).values()):
+        errors.append("clean-machine scenario registry enables execution, evidence, or a machine effect")
     directory_ids = [item.get("id") for item in settings.get("directories", [])]
     if "backups" not in directory_ids or len(directory_ids) != len(set(directory_ids)):
         errors.append("default settings do not declare one unique app-owned backups directory")
@@ -768,6 +817,9 @@ def check_portable_paths() -> list[str]:
         api.handle("GET", "/api/execution/requests/preview").body,
         api.handle("GET", "/api/jobs/policy").body,
         api.handle("GET", "/api/jobs/catalog").body,
+        api.handle("GET", "/api/windows/installer/policy").body,
+        api.handle("GET", "/api/windows/installer/readiness").body,
+        api.handle("GET", "/api/windows/clean-machine/harness").body,
     ]
     values = [text for payload in payloads for text in _string_values(payload)]
     private_paths = {str(ROOT.resolve()), str(Path.home().resolve())}

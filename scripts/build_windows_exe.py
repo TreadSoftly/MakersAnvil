@@ -100,6 +100,8 @@ def validate_source(root: Path = ROOT) -> None:
         root / "frontend" / "public" / "index.html",
         root / "frontend" / "public" / "assets",
         root / "config",
+        root / "config" / "windows_installer_policy.json",
+        root / "config" / "clean_machine_scenarios.json",
         root / "schemas",
         root / "state" / "current_status.json",
     ]
@@ -132,6 +134,13 @@ def package_plan(root: Path = ROOT) -> dict[str, object]:
         "frontend": "frontend/public",
         "bundledReadOnlyData": ["config", "schemas", "state"],
         "expectedArtifact": "artifacts/windows/MakersAnvil.exe",
+        "installerFoundation": {
+            "format": "msix",
+            "expectedArtifact": "artifacts/windows/MakersAnvil.msix",
+            "policy": "config/windows_installer_policy.json",
+            "cleanMachineScenarios": "config/clean_machine_scenarios.json",
+            "installerBuilt": False,
+        },
         "dependencies": {"pywebview": "6.2.1", "pyinstaller": "6.21.0", "webview2": "evergreen-runtime"},
         "arguments": arguments,
         "safety": {

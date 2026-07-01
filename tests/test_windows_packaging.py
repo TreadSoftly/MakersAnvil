@@ -35,6 +35,13 @@ def test_package_plan_is_one_file_portable_and_non_publishing() -> None:
     assert plan["format"] == "one-file-executable"
     assert plan["entrypoint"] == "scripts/run_desktop.py"
     assert plan["expectedArtifact"] == "artifacts/windows/MakersAnvil.exe"
+    assert plan["installerFoundation"] == {
+        "format": "msix",
+        "expectedArtifact": "artifacts/windows/MakersAnvil.msix",
+        "policy": "config/windows_installer_policy.json",
+        "cleanMachineScenarios": "config/clean_machine_scenarios.json",
+        "installerBuilt": False,
+    }
     assert plan["bundledReadOnlyData"] == ["config", "schemas", "state"]
     assert plan["dependencies"] == {
         "pywebview": "6.2.1",

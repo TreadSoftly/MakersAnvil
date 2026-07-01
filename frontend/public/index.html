@@ -373,6 +373,36 @@
                 <div id="lifecycle-dry-run-list" class="lifecycle-plan-list" aria-live="polite"></div>
                 <p id="lifecycle-dry-run-boundary" class="capability-honesty">Planning only.</p>
               </section>
+              <!-- Block purpose: The Windows installer panel separates foundation progress from installable-release proof.
+                   How it works: Three GET-only contracts expose package policy, nine gates, and six not-run machine scenarios.
+                   Example: MSIX selection passes while identity, signing, package build, upgrade, and removal stay blocked.
+                   Safety: No button, package command, registry action, certificate action, process, publication, or deletion exists. -->
+              <section class="dev-block dev-wide" id="windows-installer-panel" aria-label="Windows installer foundation">
+                <div class="deck-head">
+                  <h3>Windows installer foundation</h3>
+                  <span id="windows-installer-state" class="badge unknown">unknown</span>
+                </div>
+                <div class="installer-foundation-summary">
+                  <strong id="windows-installer-summary">0/0 gates passed · installer blocked</strong>
+                  <span id="windows-installer-identity">identity not proven</span>
+                  <span id="clean-machine-summary">0/0 scenarios run · clean-machine proof false</span>
+                </div>
+                <!-- Block purpose: Two stable evidence columns compare release gates with the machine scenarios they require.
+                     How it works: JavaScript appends text-only rows to each named list in committed order.
+                     Example: Trusted signature appears beside fresh-install and first-launch scenario plans.
+                     Safety: Lists are output regions only and never contain executable controls. -->
+                <div class="installer-foundation-grid">
+                  <div>
+                    <h4>Installer gates</h4>
+                    <div id="windows-installer-gates" class="installer-evidence-list" aria-live="polite"></div>
+                  </div>
+                  <div>
+                    <h4>Clean-machine scenarios</h4>
+                    <div id="clean-machine-scenarios" class="installer-evidence-list" aria-live="polite"></div>
+                  </div>
+                </div>
+                <p id="windows-installer-boundary" class="capability-honesty">Foundation only.</p>
+              </section>
               <!-- Block purpose: The activity section displays recent fixed server-authored completion events.
                    How it works: The browser reads a bounded newest-first history and renders each reviewed summary as text.
                    Example: A successful app-owned file copy appears with its completion time.

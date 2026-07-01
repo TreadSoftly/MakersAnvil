@@ -15,6 +15,7 @@
     "learn:check": "python scripts/build_learning_guide.py --check",
     "package:windows": "python scripts/build_windows_exe.py",
     "package:windows:check": "python scripts/build_windows_exe.py --check",
+    "installer:windows:check": "python scripts/check_clean_machine.py",
     "test": "python -m pytest -q",
     "verify": "python scripts/verify_project.py"
   },

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/windows-installer-policy.schema.json",
+  "title": "Makers Anvil Windows installer foundation policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "mode", "platform", "package", "identity", "runtime", "upgrade", "removal", "signing", "actions", "safety"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.windows-installer.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "read-only-installer-foundation"},
+    "platform": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operatingSystem", "architecture", "minimumVersion"],
+      "properties": {"operatingSystem": {"const": "windows"}, "architecture": {"const": "x64"}, "minimumVersion": {"const": "10-2004"}}
+    },
+    "package": {
+      "type": "object", "additionalProperties": false,
+      "required": ["format", "payloadArtifact", "installerArtifact", "scope", "elevationRequired", "installLocation"],
+      "properties": {
+        "format": {"const": "msix"}, "payloadArtifact": {"const": "artifacts/windows/MakersAnvil.exe"},
+        "installerArtifact": {"const": "artifacts/windows/MakersAnvil.msix"}, "scope": {"const": "per-user"},
+        "elevationRequired": {"const": false}, "installLocation": {"const": "windows-managed-package-location"}
+      }
+    },
+    "identity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "displayName", "publisher", "publisherDisplayName", "version", "locked"],
+      "properties": {
+        "name": {"const": "TreadSoftly.MakersAnvil"}, "displayName": {"const": "Makers Anvil"},
+        "publisher": {"const": "not-proven"}, "publisherDisplayName": {"const": "TreadSoftly"},
+        "version": {"const": "0.1.0.0"}, "locked": {"const": false}
+      }
+    },
+    "runtime": {
+      "type": "object", "additionalProperties": false,
+      "required": ["webView2Mode", "sourceCheckoutRequired", "workingDirectoryRequired", "userDataLocation", "userDataInsideInstallLocation"],
+      "properties": {
+        "webView2Mode": {"const": "evergreen-runtime"}, "sourceCheckoutRequired": {"const": false},
+        "workingDirectoryRequired": {"const": false}, "userDataLocation": {"const": "makers-anvil-data://user"},
+        "userDataInsideInstallLocation": {"const": false}
+      }
+    },
+    "upgrade": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sameIdentityRequired", "higherVersionRequired", "downgradeAllowed", "preserveUserData", "executionEnabled"],
+      "properties": {
+        "sameIdentityRequired": {"const": true}, "higherVersionRequired": {"const": true},
+        "downgradeAllowed": {"const": false}, "preserveUserData": {"const": true}, "executionEnabled": {"const": false}
+      }
+    },
+    "removal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["preserveUserDataByDefault", "explicitPurgeConsentRequired", "userDataPurgeEnabled", "executionEnabled"],
+      "properties": {
+        "preserveUserDataByDefault": {"const": true}, "explicitPurgeConsentRequired": {"const": true},
+        "userDataPurgeEnabled": {"const": false}, "executionEnabled": {"const": false}
+      }
+    },
+    "signing": {
+      "type": "object", "additionalProperties": false,
+      "required": ["requiredForInstallation", "productionMethod", "certificatePresent", "publisherMatched", "signatureVerified", "timestampVerified"],
+      "properties": {
+        "requiredForInstallation": {"const": true}, "productionMethod": {"const": "not-selected"},
+        "certificatePresent": {"const": false}, "publisherMatched": {"const": false},
+        "signatureVerified": {"const": false}, "timestampVerified": {"const": false}
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": ["foundationInspectionEnabled", "harnessInspectionEnabled", "installerBuildEnabled", "installerExecutionEnabled", "upgradeExecutionEnabled", "uninstallExecutionEnabled", "repairExecutionEnabled", "signingEnabled", "publishingEnabled", "apiMutationEnabled", "browserMutationEnabled"],
+      "properties": {
+        "foundationInspectionEnabled": {"const": true}, "harnessInspectionEnabled": {"const": true},
+        "installerBuildEnabled": {"const": false}, "installerExecutionEnabled": {"const": false},
+        "upgradeExecutionEnabled": {"const": false}, "uninstallExecutionEnabled": {"const": false},
+        "repairExecutionEnabled": {"const": false}, "signingEnabled": {"const": false},
+        "publishingEnabled": {"const": false}, "apiMutationEnabled": {"const": false}, "browserMutationEnabled": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "safety": {
+      "type": "object",
+      "required": ["networkAccessEnabled", "registryMutationEnabled", "certificateStoreMutationEnabled", "packageRegistrationEnabled", "softwareMutationEnabled", "externalProcessEnabled", "userDataDeletionEnabled", "releasePublicationEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "networkAccessEnabled": {"const": false}, "registryMutationEnabled": {"const": false},
+        "certificateStoreMutationEnabled": {"const": false}, "packageRegistrationEnabled": {"const": false},
+        "softwareMutationEnabled": {"const": false}, "externalProcessEnabled": {"const": false},
+        "userDataDeletionEnabled": {"const": false}, "releasePublicationEnabled": {"const": false}
+      }
+    }
+  }
+}

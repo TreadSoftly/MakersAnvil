@@ -36,8 +36,9 @@ Tauri remains a possible later shell if the core is rewritten in Rust. Today it 
 4. Run `artifacts/windows/MakersAnvil.exe --smoke` to prove bundled assets and health without opening a GUI.
 5. Open the executable and inspect the native window on a real Windows desktop.
 6. Upload an ephemeral CI artifact for tester access.
-7. Later, add icon/version metadata, code signing, an installer, WebView2 prerequisite detection, upgrade/uninstall behavior, and clean-machine proof before publishing a release.
+7. Validate the PASS-022 MSIX identity, upgrade/removal, signing, and clean-machine contracts before creating an installer artifact.
+8. Later, add manifest visual assets, development package construction, trusted signing, isolated installation, and scenario evidence before publishing a release.
 
 ## Current Non-Claims
 
-An executable that launches and passes smoke is not yet a signed release, installer, automatic updater, clean-machine proof, or macOS/Linux bundle. Each platform must build on that platform and receive its own runtime, packaging, signing, installation, update, removal, and clean-machine evidence.
+An executable that launches and passes smoke is not yet a signed release, installer, automatic updater, clean-machine proof, or macOS/Linux bundle. PASS-022 selects MSIX and defines the required evidence, but `MakersAnvil.msix` does not yet exist. Each platform must build on that platform and receive its own runtime, packaging, signing, installation, update, removal, and clean-machine evidence.

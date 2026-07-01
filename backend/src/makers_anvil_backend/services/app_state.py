@@ -30,6 +30,7 @@ from makers_anvil_backend.services.tool_dry_run import ToolDryRunService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceService
+from makers_anvil_backend.services.windows_installer import WindowsInstallerService
 
 
 class AppStateService:
@@ -45,7 +46,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-021-lifecycle-dry-runs"
+    api_build = "makers-anvil-real-pass-022-windows-installer-foundation"
 
     def __init__(
         self,
@@ -65,6 +66,7 @@ class AppStateService:
         capability_matrix: CapabilityMatrixService | None = None,
         contained_execution: ContainedExecutionService | None = None,
         lifecycle_dry_run: LifecycleDryRunService | None = None,
+        windows_installer: WindowsInstallerService | None = None,
     ) -> None:
         """Purpose: Compose injected or default services so one request uses coherent snapshots.
 
@@ -124,6 +126,7 @@ class AppStateService:
         self._lifecycle_dry_run = lifecycle_dry_run or LifecycleDryRunService(
             workspace_config=self._workspace_config,
         )
+        self._windows_installer = windows_installer or WindowsInstallerService()
 
     def health(self) -> dict[str, Any]:
         """Purpose: Describe the live API and its one bounded mutation scope honestly.
@@ -149,6 +152,8 @@ class AppStateService:
             "enabledMutationScopes": ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"],
             "builtInStlPreflightEnabled": True,
             "lifecycleDryRunEnabled": True,
+            "windowsInstallerFoundationEnabled": True,
+            "cleanMachineExecutionEnabled": False,
             "routeExecutionEnabled": False,
             "toolLaunchEnabled": False,
         }
@@ -194,6 +199,8 @@ class AppStateService:
             "jobWorkspaceCatalog": self._job_workspace.catalog(),
             "containedExecutions": self._contained_execution.catalog(),
             "lifecycleDryRuns": self._lifecycle_dry_run.catalog(),
+            "windowsInstaller": self._windows_installer.readiness(),
+            "cleanMachineHarness": self._windows_installer.clean_machine_harness(),
             "capabilityMatrix": capability_matrix,
             "tracks": self._tracks(),
             "capabilities": self._capabilities(),
@@ -659,6 +666,51 @@ class AppStateService:
 
         return self._lifecycle_dry_run.catalog()
 
+    def windows_installer_policy(self) -> dict[str, Any]:
+        """Purpose: Return the closed MSIX installer-foundation policy.
+
+        Inputs: No request body, package path, certificate, command, or user value.
+        Outputs: Validated platform, package, identity, preservation, signing, action, and safety truth.
+        How it works: Delegates strict bundled-policy validation to ``WindowsInstallerService``.
+        Side effects: Reads one bundled JSON policy only.
+        Failure behavior: Missing or widened policy raises instead of implying release readiness.
+        Safety: No build, sign, install, upgrade, repair, removal, publish, or delete action exists.
+        Example: ``GET /api/windows/installer/policy`` reports provisional publisher truth.
+        Related proof: Windows installer service, API, schema, and package smoke tests.
+        """
+
+        return self._windows_installer.policy()
+
+    def windows_installer_readiness(self) -> dict[str, Any]:
+        """Purpose: Return installer readiness gates distinct from foundation progress.
+
+        Inputs: Valid committed Windows installer policy.
+        Outputs: Nine gates with foundation ready but installer and release readiness false.
+        How it works: Delegates deterministic gate evaluation to ``WindowsInstallerService``.
+        Side effects: Reads one bundled JSON policy only.
+        Failure behavior: Invalid gate prerequisites propagate without partial readiness.
+        Safety: Gate evaluation cannot inspect or mutate machine registration or certificates.
+        Example: Format passes while identity, package build, signing, and machine proof remain blocked.
+        Related proof: Readiness service, focused API, schema, and frontend tests.
+        """
+
+        return self._windows_installer.readiness()
+
+    def clean_machine_harness(self) -> dict[str, Any]:
+        """Purpose: Return six declarative Windows clean-machine scenarios without running them.
+
+        Inputs: Valid scenario registry and installer policy.
+        Outputs: Ordered not-run scenarios with zero evidence and false clean-machine proof.
+        How it works: Delegates strict scenario validation and response composition.
+        Side effects: Reads two bundled JSON files only.
+        Failure behavior: Missing, duplicate, empty, or unsafe scenarios raise.
+        Safety: No VM, process, installer, registry, certificate, network, or deletion is touched.
+        Example: Fresh install lists assertions while executionState stays ``not-run``.
+        Related proof: Clean-machine CLI, API, schema, no-write, and frontend tests.
+        """
+
+        return self._windows_installer.clean_machine_harness()
+
     def _tracks(self) -> list[dict[str, Any]]:
         """Purpose: Describe platform delivery tracks without claiming untested runtime support.
 
@@ -864,8 +916,8 @@ class AppStateService:
             {
                 "id": "release-package",
                 "label": "Release package",
-                "claimState": "not proven",
-                "summary": "No packaged release or installer has been built.",
+                "claimState": "staged",
+                "summary": "MSIX identity, upgrade, removal, signing, and clean-machine gates are modeled; no installer or release is built.",
                 "actionsEnabled": False,
             },
         ]

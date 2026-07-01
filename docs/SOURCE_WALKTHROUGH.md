@@ -54,6 +54,7 @@ For intake, follow `initializeIntakeControls()` -> `reviewSelectedIntakeFile()` 
 | `backend/src/makers_anvil_backend/services/contained_execution.py` | Runs one authorized built-in STL structural preflight with cooperative cancellation and real proof artifacts. | `tests/test_contained_execution.py` |
 | `backend/src/makers_anvil_backend/services/execution_audit.py` | Creates strict immutable lifecycle events for contained preflight. | `tests/test_contained_execution.py` and audit schemas |
 | `backend/src/makers_anvil_backend/services/lifecycle_dry_run.py` | Counts bounded app-owned metadata and composes five preservation-first non-executable lifecycle plans. | `tests/test_lifecycle_dry_run.py` and lifecycle schemas |
+| `backend/src/makers_anvil_backend/services/windows_installer.py` | Validates MSIX foundation policy, nine release gates, and six unexecuted clean-machine scenarios. | `tests/test_windows_installer.py` and installer schemas |
 
 Package-marker `__init__.py` files only establish namespaces. Their headers explicitly state that import has no side effects.
 
@@ -67,6 +68,7 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 | `frontend/public/assets/context-help.js` | One accessible viewport-contained help dialog with Escape/outside close and focus restoration. | Position -> close/open -> topic configuration -> global listeners. |
 | `frontend/public/assets/contained-execution.js` | Explicit STL preflight authorization, run, cancellation, lifecycle, audit, and proof rendering. | Guarded command helper -> source eligibility -> execution rows. |
 | `frontend/public/assets/lifecycle-dry-runs.js` | GET-only aggregate inventory and five lifecycle plan cards. | Claim/byte formatters -> complete lifecycle renderer. |
+| `frontend/public/assets/windows-installer.js` | GET-only installer gates and clean-machine scenario rendering. | Badge helper -> gate/scenario rows -> complete foundation renderer. |
 | `frontend/public/assets/workbench-experience.js` | Portable preference application/save, transient notices, and redacted activity rendering. | Apply -> notice -> guarded save -> experience/activity renderers. |
 | `frontend/public/assets/styles.css` | Industrial tokens, one-viewport desktop geometry, stable tabs, local scrolling, and mobile flow. | Tokens -> shell -> rail/topbar -> zones -> command deck -> inspector -> responsive rules. |
 | `frontend/public/assets/mark.svg` | Embedded product identity with no remote or script dependency. | Accessible SVG geometry. |
@@ -80,6 +82,7 @@ All values originating outside the static page must be written with DOM text API
 | `scripts/run_dev.py` | Start local dashboard. | Opens loopback server process. |
 | `scripts/run_desktop.py` | Start native desktop app or package smoke. | Owns one window/session; accepts no path or command. |
 | `scripts/build_windows_exe.py` | Inspect/build Windows one-file artifact. | Writes ignored build/artifact trees only in build mode. |
+| `scripts/check_clean_machine.py` | Inspect the clean-machine scenario registry. | Reads policy and prints six not-run scenarios; has no execution mode. |
 | `scripts/build_previous_app_learning_guide.py` | Explain selected old-app first-party lines. | Writes two ignored guide artifacts; never edits source. |
 | `scripts/init_workspace.py` | Initialize app data. | Creates allowlisted app-owned directories. |
 | `scripts/stage_intake.py` | Stage one file. | Writes metadata record only. |
@@ -107,6 +110,7 @@ Contract families are:
 - Job workspace policy, prepared jobs, cancellations, and catalogs.
 - Contained execution policy, records, cancellation, audit, report, proof, and catalog.
 - Lifecycle dry-run policy, bounded inventory, bundled-core evidence, operation plans, and catalog.
+- Windows installer policy/readiness plus declarative clean-machine scenario/harness contracts.
 - Current status, pass ledger, app state, and source manifest.
 
 ## Tests

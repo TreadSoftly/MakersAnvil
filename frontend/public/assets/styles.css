@@ -2620,6 +2620,67 @@ ol {
   color: var(--amber);
 }
 
+/* Block purpose: Keeps installer gate totals, identity truth, and machine proof readable on one wrapping row. */
+.installer-foundation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 8px;
+}
+
+/* Block purpose: Makes provisional installer identity and proof counts visually secondary to readiness. */
+.installer-foundation-summary span {
+  color: var(--muted);
+  font-size: 0.66rem;
+  overflow-wrap: anywhere;
+}
+
+/* Block purpose: Gives installer gates and clean-machine scenarios equal stable evidence columns. */
+.installer-foundation-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+/* Block purpose: Matches compact subhead typography to the dense developer evidence surface. */
+.installer-foundation-grid h4 {
+  font-size: 0.7rem;
+  margin: 0 0 6px;
+}
+
+/* Block purpose: Stacks installer evidence without nesting decorative cards. */
+.installer-evidence-list {
+  display: grid;
+  gap: 1px;
+}
+
+/* Block purpose: Frames one gate or scenario as a stable text-only evidence row. */
+.installer-evidence-row {
+  background: var(--surface-soft);
+  display: grid;
+  gap: 4px;
+  min-height: 48px;
+  padding: 8px 10px;
+}
+
+/* Block purpose: Aligns one evidence label with its current truth badge. */
+.installer-evidence-row > div {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* Block purpose: Keeps gate and scenario explanation text compact and wrapping. */
+.installer-evidence-row p {
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.35;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 /* Block purpose: Restores breathing room when the user explicitly chooses comfortable density. */
 html[data-density="comfortable"] .work-zone,
 html[data-density="comfortable"] .capability-band,
@@ -2724,6 +2785,10 @@ html[data-motion="reduced"] *::after {
   }
 
   .lifecycle-plan-list {
+    grid-template-columns: 1fr;
+  }
+
+  .installer-foundation-grid {
     grid-template-columns: 1fr;
   }
 }

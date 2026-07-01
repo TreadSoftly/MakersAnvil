@@ -71,6 +71,10 @@ def test_frontend_mutation_is_limited_to_guarded_intake_preferences_and_prefligh
     assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in app_js
     assert 'method: "POST"' not in scripts["lifecycle-dry-runs.js"]
     assert "installerExecutionEnabled" not in scripts["lifecycle-dry-runs.js"]
+    assert 'const windowsInstallerPolicyUrl = "/api/windows/installer/policy"' in app_js
+    assert 'const windowsInstallerReadinessUrl = "/api/windows/installer/readiness"' in app_js
+    assert 'const cleanMachineHarnessUrl = "/api/windows/clean-machine/harness"' in app_js
+    assert 'method: "POST"' not in scripts["windows-installer.js"]
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -174,11 +178,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-021"
-    assert current["trackPercentages"]["realApp"] == 67.5
+    assert current["currentPass"]["id"] == "PASS-022"
+    assert current["trackPercentages"]["realApp"] == 72.5
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-021"
+    assert ledger["passes"][-1]["id"] == "PASS-022"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:

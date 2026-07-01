@@ -151,7 +151,18 @@ A mutation is not a read-only feature with a button added. Before one is enabled
 - restart/recovery behavior when state must survive a process;
 - negative tests and visible browser state.
 
-Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates, PASS-019 adds presentation preferences plus fixed redacted activity, PASS-020 enables only the built-in STL structural preflight, and PASS-021 models lifecycle plans without executing them; full routes, external processes, and software lifecycle mutations remain false.
+Until operation-specific gates pass, policy, API, service, and UI values must keep that mutation disabled. PASS-018 satisfies app-owned intake copy gates, PASS-019 adds presentation preferences plus fixed redacted activity, PASS-020 enables only the built-in STL structural preflight, PASS-021 models lifecycle plans, and PASS-022 models installer/machine proof without executing them; full routes, external processes, and software lifecycle mutations remain false.
+
+## How To Advance Windows Installer Proof
+
+1. Keep the PyInstaller executable and MSIX installer as separate artifacts with separate hashes.
+2. Lock package name, publisher, version, architecture, and upgrade identity before signing.
+3. Build from committed manifest/assets in an isolated Windows job; never package from a developer home path.
+4. Use development trust only for isolated testing and keep production signing credentials outside the repository.
+5. Prove fresh install and launch before attempting upgrade, repair, or removal.
+6. Verify portable user data remains outside the Windows-managed package location and survives allowed lifecycle transitions.
+7. Record each scenario's exact machine image, package hash, command result, app health, and post-condition before changing its state from `not-run`.
+8. Keep purge disabled until a separate explicit-consent and recovery design is reviewed.
 
 ## Portability Rules
 

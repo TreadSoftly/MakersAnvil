@@ -115,6 +115,9 @@ def test_primary_workbench_zones_and_views_exist_once() -> None:
         "plan-surface",
         "dev-surface",
         "proof-inspector",
+        "windows-installer-panel",
+        "windows-installer-gates",
+        "clean-machine-scenarios",
     }
 
     assert required <= set(parser.ids)
@@ -208,12 +211,16 @@ def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
     assert "renderActivityHistory" in javascript
     assert "renderContainedExecutions" in javascript
     assert "renderLifecycleDryRuns" in javascript
+    assert "renderWindowsInstaller" in javascript
     assert "Authorize preflight" in javascript
     assert "Run preflight" in javascript
     assert "toolpathGenerated" not in javascript
     assert 'const lifecyclePolicyUrl = "/api/lifecycle/policy"' in javascript
     assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in javascript
     assert 'method: "POST"' not in (ROOT / "frontend" / "public" / "assets" / "lifecycle-dry-runs.js").read_text(encoding="utf-8")
+    assert 'const windowsInstallerReadinessUrl = "/api/windows/installer/readiness"' in javascript
+    assert 'const cleanMachineHarnessUrl = "/api/windows/clean-machine/harness"' in javascript
+    assert 'method: "POST"' not in (ROOT / "frontend" / "public" / "assets" / "windows-installer.js").read_text(encoding="utf-8")
 
 
 def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
@@ -234,6 +241,7 @@ def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
     assert "height: 100dvh" in styles
     assert "grid-template-columns: minmax(0, 1fr) minmax(300px, 360px)" in styles
     assert "@media (max-width: 900px)" in styles
+    assert ".installer-foundation-grid" in styles
     assert "overflow: auto" in styles
     assert "@media (prefers-reduced-motion: reduce)" in styles
     assert ".intake-review" in styles

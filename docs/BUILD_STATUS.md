@@ -2,16 +2,16 @@
 
 ## Current Pass
 
-PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
+PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-machine test harness.
 
 ## Track Percentages
 
-- Real app completion: `67.5000%`
-- Windows local app: `72.5000%`
+- Real app completion: `72.5000%`
+- Windows local app: `80.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
-- Packaged release: `17.5000%`
-- Clean-machine proof: `0.0000%`
+- Packaged release: `30.0000%`
+- Clean-machine proof: `5.0000%` (harness foundation only; zero scenarios executed)
 
 ## Proven
 
@@ -95,6 +95,7 @@ PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle cont
 - PASS-019 migrates the prior app's strongest capability-lane, contextual-help, event-history, settings, and restrained-motion ideas into focused current modules. The matrix derives from existing contracts, preferences use portable app-owned settings, activity is fixed/redacted/create-only, and all route/tool/output/software actions remain blocked.
 - PASS-020 enables one deliberately partial route stage: an explicitly authorized app-owned STL is streamed through a built-in structural preflight with exact size/hash checks, one concurrency slot, cooperative cancellation, fixed append-only audit events, a report, execution log, and hashed output proof. It starts no external command/process/tool, creates no toolpath or G-code, opens no output, and does not claim full mesh-to-toolpath completion.
 - PASS-021 adds strict read-only backup, restore, update, uninstall, and repair planning. It inventories declared app-owned source directories through bounded counts and bytes only, excludes temporary/backup destinations, preserves existing data, and exposes five plan/evidence/blocker cards without a lifecycle mutation endpoint.
+- PASS-022 selects MSIX as the Windows installer target, adds strict package/identity/runtime/signing/preservation policy, evaluates nine release gates, and defines six clean-machine scenarios. Only three foundation gates pass; no package build, signature, install, upgrade, removal, or machine scenario is claimed.
 
 ## Blocked Or Not Proven
 
@@ -117,10 +118,10 @@ PASS-021 - backup, restore, update, uninstall, and repair dry-run lifecycle cont
 - Lifecycle network access, package download, installer execution, software mutation, process execution, and user-data deletion.
 - Archive extraction.
 - Folder import.
-- Packaged release.
-- Clean-machine setup proof.
+- Built, signed, trusted, or published MSIX release.
+- Executed clean-machine install, launch, upgrade, repair, removal, and reinstall proof.
 - macOS, Linux, and browser-hosted runtime support.
 
 ## Next Pass
 
-PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-machine test harness.
+PASS-023 - MSIX manifest, development package build, and isolated install execution foundation.

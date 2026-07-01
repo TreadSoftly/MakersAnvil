@@ -12,6 +12,7 @@
 import { renderCapabilityMatrix } from "./capability-lanes.js";
 import { renderContainedExecutions } from "./contained-execution.js";
 import { renderLifecycleDryRuns } from "./lifecycle-dry-runs.js";
+import { renderWindowsInstaller } from "./windows-installer.js";
 import { renderActivityHistory, renderWorkbenchExperience, showWorkbenchNotice } from "./workbench-experience.js";
 
 // Endpoint constants keep read routes and the bounded intake boundary visible in one place.
@@ -36,6 +37,9 @@ const containedExecutionPolicyUrl = "/api/executions/policy";
 const containedExecutionCatalogUrl = "/api/executions/catalog";
 const lifecyclePolicyUrl = "/api/lifecycle/policy";
 const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs";
+const windowsInstallerPolicyUrl = "/api/windows/installer/policy";
+const windowsInstallerReadinessUrl = "/api/windows/installer/readiness";
+const cleanMachineHarnessUrl = "/api/windows/clean-machine/harness";
 
 // Intake session/token and File objects remain in process/browser memory only.
 // Neither value enters durable app state, URLs, logs, or rendered HTML.
@@ -1189,6 +1193,8 @@ function initializeWorkbenchControls() {
     "output proof": ["workflow", "proof-inspector"],
     "developer evidence": ["dev", "dev-surface"],
     "lifecycle": ["dev", "lifecycle-dry-runs"],
+    "installer": ["dev", "windows-installer-panel"],
+    "clean machine": ["dev", "windows-installer-panel"],
   };
   const search = document.querySelector("#command-search");
   const navigate = () => {
@@ -1221,7 +1227,7 @@ function initializeWorkbenchControls() {
  * Example: ``renderState(fallbackState, {})`` renders a conservative empty/blocked example.
  * Related proof: tests/test_frontend_workbench.py and browser viewport checks.
  */
-function renderState(state, health, workspace = {}, layout = {}, intake = {}, intakeSession = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}, experience = {}, activity = {}, capabilityMatrix = {}, containedPolicy = {}, containedCatalog = {}, lifecyclePolicy = {}, lifecycleCatalog = {}) {
+function renderState(state, health, workspace = {}, layout = {}, intake = {}, intakeSession = {}, routePreview = {}, outputProof = {}, toolDetection = {}, toolDryRun = {}, executionGates = {}, executionRequest = {}, jobWorkspace = {}, experience = {}, activity = {}, capabilityMatrix = {}, containedPolicy = {}, containedCatalog = {}, lifecyclePolicy = {}, lifecycleCatalog = {}, windowsInstallerPolicy = {}, windowsInstallerReadiness = {}, cleanMachineHarness = {}) {
   const completion = Number(state.completion?.realApp || 0);
   document.querySelector("#completion").textContent = `${completion.toFixed(4)}%`;
   document.querySelector("#completion-bar").style.width = `${Math.min(completion, 100)}%`;
@@ -1239,6 +1245,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, in
   renderCapabilityMatrix(capabilityMatrix.schemaVersion ? capabilityMatrix : state.capabilityMatrix || fallbackState.capabilityMatrix);
   renderContainedExecutions(containedPolicy, containedCatalog.schemaVersion ? containedCatalog : state.containedExecutions || {}, intake, intakeSession.requestToken || "", loadState);
   renderLifecycleDryRuns(lifecyclePolicy, lifecycleCatalog.schemaVersion ? lifecycleCatalog : state.lifecycleDryRuns || {});
+  renderWindowsInstaller(windowsInstallerReadiness.schemaVersion ? windowsInstallerReadiness : state.windowsInstaller || {}, cleanMachineHarness.schemaVersion ? cleanMachineHarness : state.cleanMachineHarness || {});
   renderWorkbenchExperience(experience, intakeSession.requestToken || "", loadState);
   renderActivityHistory(activity);
   renderWorkbenchSummary(state, health, intake, routePreview, outputProof);
@@ -1261,7 +1268,7 @@ function renderState(state, health, workspace = {}, layout = {}, intake = {}, in
 async function loadState() {
   // Fetch related records together so one refresh renders a coherent snapshot.
   try {
-    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, intakeSessionResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse, experienceResponse, activityResponse, capabilityMatrixResponse, containedPolicyResponse, containedCatalogResponse, lifecyclePolicyResponse, lifecycleCatalogResponse] = await Promise.all([
+    const [stateResponse, healthResponse, workspaceResponse, layoutResponse, intakeResponse, intakeSessionResponse, routePreviewResponse, outputProofResponse, toolDetectionResponse, toolDryRunResponse, executionGatesResponse, executionRequestResponse, jobWorkspaceResponse, experienceResponse, activityResponse, capabilityMatrixResponse, containedPolicyResponse, containedCatalogResponse, lifecyclePolicyResponse, lifecycleCatalogResponse, windowsInstallerPolicyResponse, windowsInstallerReadinessResponse, cleanMachineHarnessResponse] = await Promise.all([
       fetch(stateUrl, { method: "GET", cache: "no-store" }),
       fetch(healthUrl, { method: "GET", cache: "no-store" }),
       fetch(workspaceUrl, { method: "GET", cache: "no-store" }),
@@ -1282,8 +1289,11 @@ async function loadState() {
       fetch(containedExecutionCatalogUrl, { method: "GET", cache: "no-store" }),
       fetch(lifecyclePolicyUrl, { method: "GET", cache: "no-store" }),
       fetch(lifecycleDryRunsUrl, { method: "GET", cache: "no-store" }),
+      fetch(windowsInstallerPolicyUrl, { method: "GET", cache: "no-store" }),
+      fetch(windowsInstallerReadinessUrl, { method: "GET", cache: "no-store" }),
+      fetch(cleanMachineHarnessUrl, { method: "GET", cache: "no-store" }),
     ]);
-    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !intakeSessionResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok || !experienceResponse.ok || !activityResponse.ok || !capabilityMatrixResponse.ok || !containedPolicyResponse.ok || !containedCatalogResponse.ok || !lifecyclePolicyResponse.ok || !lifecycleCatalogResponse.ok) {
+    if (!stateResponse.ok || !healthResponse.ok || !workspaceResponse.ok || !layoutResponse.ok || !intakeResponse.ok || !intakeSessionResponse.ok || !routePreviewResponse.ok || !outputProofResponse.ok || !toolDetectionResponse.ok || !toolDryRunResponse.ok || !executionGatesResponse.ok || !executionRequestResponse.ok || !jobWorkspaceResponse.ok || !experienceResponse.ok || !activityResponse.ok || !capabilityMatrixResponse.ok || !containedPolicyResponse.ok || !containedCatalogResponse.ok || !lifecyclePolicyResponse.ok || !lifecycleCatalogResponse.ok || !windowsInstallerPolicyResponse.ok || !windowsInstallerReadinessResponse.ok || !cleanMachineHarnessResponse.ok) {
       throw new Error("state request failed");
     }
     renderState(
@@ -1307,6 +1317,9 @@ async function loadState() {
       await containedCatalogResponse.json(),
       await lifecyclePolicyResponse.json(),
       await lifecycleCatalogResponse.json(),
+      await windowsInstallerPolicyResponse.json(),
+      await windowsInstallerReadinessResponse.json(),
+      await cleanMachineHarnessResponse.json(),
     );
   } catch (error) {
     renderState(fallbackState, { apiBuild: "offline" });

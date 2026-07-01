@@ -100,7 +100,25 @@ Local study path:
 4. `lifecycle-dry-runs.js` for text-only command-free rendering.
 5. `tests/test_lifecycle_dry_run.py` for empty, populated, no-write, fail-closed, and scan-limit examples.
 
-Use the existing Python filesystem, JSON Schema, browser rendering, testing, and desktop packaging references in this document to follow each layer. The repository deliberately does not recommend an installer/update library yet because PASS-021 proves planning only; backend selection belongs to PASS-022 evidence.
+Use the existing Python filesystem, JSON Schema, browser rendering, testing, and desktop packaging references in this document to follow each layer. PASS-022 selects MSIX as the Windows installer target but deliberately performs no package or machine mutation.
+
+## Windows Installer And Clean-Machine Gates
+
+Local study path:
+
+1. `config/windows_installer_policy.json` for package identity, runtime, preservation, signing, action, and safety truth.
+2. `config/clean_machine_scenarios.json` for the exact six required machine workflows.
+3. `services/windows_installer.py` for strict validation and nine readiness gates.
+4. `scripts/check_clean_machine.py` for the inspection-only harness command.
+5. `windows-installer.js` for text-only release evidence rendering.
+6. `tests/test_windows_installer.py` for valid, weakened, incomplete, and CLI examples.
+
+References:
+
+- Microsoft MSIX overview: <https://learn.microsoft.com/en-us/windows/msix/overview>
+- Microsoft Windows packaging decision overview: <https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/packaging/>
+- Microsoft MSIX signing overview: <https://learn.microsoft.com/en-us/windows/msix/package/signing-package-overview>
+- Microsoft MSIX troubleshooting guide: <https://learn.microsoft.com/en-us/windows/msix/msix-troubleshooting-guide>
 
 ## Testing And Verification
 
