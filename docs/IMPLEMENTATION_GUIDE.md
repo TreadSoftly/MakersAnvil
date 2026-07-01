@@ -10,7 +10,7 @@ Use this guide with `docs/START_HERE.md`, `docs/SOURCE_WALKTHROUGH.md`, `docs/LI
 
 Makers Anvil is currently a local-first browser dashboard served by a small Python backend. The checked-in frontend has no compilation step. The backend serves static files, read APIs, and one bounded two-request intake mutation from loopback. Product data and runtime records belong in OS-standard user-data storage, not in the source checkout.
 
-The same frontend/backend now has a native desktop delivery path. pywebview supplies the operating-system window, while PyInstaller bundles the Python core and static frontend for Windows. This is a delivery adapter, not a second application implementation.
+The same frontend/backend now has a native desktop delivery path. pywebview supplies the operating-system window, while PyInstaller bundles the Python core and compiled React `frontend/dist` for Windows. This is a delivery adapter, not a second application implementation.
 
 ```text
 Browser HTML/CSS/JavaScript
@@ -109,7 +109,7 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 ## Frontend Flow
 
-`frontend/public/index.html` declares the rail, top command bar, source deck, reviewed intake controls, tool inventory, stable command deck, output-proof inspector, lifecycle previews, and Dev evidence regions. `frontend/public/assets/app.js` coordinates read contracts plus the closed guarded intake, preference, and contained-preflight mutations; `lifecycle-dry-runs.js` is GET-only. `frontend/public/assets/styles.css` keeps the desktop workbench inside one viewport and restores normal document flow below 900px.
+`frontend/src/App.tsx` renders the promoted rail, command search, source board, reviewed intake controls, tool carousel, Work Flow/Plans/Dev deck, proof inspector, settings, and gated future surfaces. `frontend/src/api.ts` adapts current read contracts plus guarded one-file intake and contained preflight; all legacy machine-specific actions throw visible blockers. `frontend/src/styles.css` preserves the accepted responsive appearance, motion, and reduced-motion behavior. Vite compiles these sources to `frontend/dist` for the local server, native window, and Windows executable.
 
 Frontend rules:
 

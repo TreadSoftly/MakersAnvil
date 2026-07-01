@@ -20,7 +20,7 @@ def make_bundle(root: Path) -> Path:
     """Purpose: Create the smallest valid frontend resource tree for one test.
 
     Inputs: Pytest-owned temporary root.
-    Outputs: The created ``frontend/public`` directory.
+    Outputs: The created ``frontend/dist`` directory.
     How it works: Makes directories and writes one harmless HTML fixture.
     Side effects: Writes only below the supplied temporary root.
     Failure behavior: Filesystem errors propagate to pytest.
@@ -29,10 +29,10 @@ def make_bundle(root: Path) -> Path:
     Related proof: Resource tests below consume this fixture helper.
     """
 
-    public = root / "frontend" / "public"
-    public.mkdir(parents=True)
-    (public / "index.html").write_text("<!doctype html><title>test</title>", encoding="utf-8")
-    return public
+    dist = root / "frontend" / "dist"
+    dist.mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>test</title>", encoding="utf-8")
+    return dist
 
 
 def test_source_application_root_is_repository_relative() -> None:
@@ -50,8 +50,8 @@ def test_source_application_root_is_repository_relative() -> None:
 
     root = runtime_resources.application_root()
 
-    assert (root / "frontend" / "public" / "index.html").is_file()
-    assert runtime_resources.frontend_root() == root / "frontend" / "public"
+    assert (root / "frontend" / "dist" / "index.html").is_file()
+    assert runtime_resources.frontend_root() == root / "frontend" / "dist"
 
 
 def test_frozen_application_root_uses_pyinstaller_marker(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

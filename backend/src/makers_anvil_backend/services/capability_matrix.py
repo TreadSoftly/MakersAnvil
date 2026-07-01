@@ -137,8 +137,8 @@ class CapabilityMatrixService:
             },
             "ingressMethods": [
                 {"id": "file-picker", "label": "Choose one file", "claimState": "staged", "enabled": True},
-                {"id": "drag-drop", "label": "Drag and drop", "claimState": "blocked", "enabled": False},
-                {"id": "clipboard", "label": "Clipboard paste", "claimState": "blocked", "enabled": False},
+                {"id": "drag-drop", "label": "Drag and drop", "claimState": "staged", "enabled": True},
+                {"id": "clipboard", "label": "Clipboard paste", "claimState": "staged", "enabled": True},
                 {"id": "folder", "label": "Folder import", "claimState": "blocked", "enabled": False},
             ],
             "lanes": lanes,

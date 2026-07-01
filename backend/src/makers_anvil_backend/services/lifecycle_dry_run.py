@@ -342,7 +342,7 @@ class LifecycleDryRunService:
         """
 
         required = (
-            Path("frontend/public/index.html"),
+            Path("frontend/dist/index.html"),
             Path("config/default_settings.json"),
             Path("state/current_status.json"),
             Path("schemas/app-state.schema.json"),

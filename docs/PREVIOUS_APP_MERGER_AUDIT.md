@@ -2,7 +2,7 @@
 
 ## Decision
 
-The ignored previous application is a verified behavior and design source, not a second product tree. Makers Anvil will keep one backend, one frontend, one contract vocabulary, one runtime-data policy, and one desktop packaging path. Features migrate only after their behavior, safety boundaries, tests, and instructional coverage fit the current architecture.
+The ignored previous application remains the preserved baseline, while its reviewed React source and presentation assets are now the authoritative product experience. Makers Anvil still keeps one portable backend, one tracked frontend, one contract vocabulary, one runtime-data policy, and one desktop packaging path. The legacy Python backend, generated dependencies, runtime data, and machine-specific behavior remain excluded.
 
 The old source is preserved in place. Two generated local artifacts explain its first-party source without editing the baseline:
 
@@ -23,8 +23,8 @@ The generator selects 29 first-party files and explains all 14,611 physical line
 
 | Previous behavior or design | Decision | Product destination |
 | --- | --- | --- |
-| Dense industrial workbench, rail, command search, tool strip, Work Flow/Plans/Dev views, output inspector | Already adopted and continue refining | Current static frontend modules |
-| Intake tile, selected file, classification, preview | One-file picker rebuilt behind explicit authorization and app-owned storage; drag/drop/paste remain deferred | Current browser/native intake adapter and focused service |
+| Dense industrial workbench, rail, command search, tool strip, Work Flow/Plans/Dev views, output inspector | Promoted as authoritative experience | Current React frontend |
+| Intake tile, selected file, classification, preview | Picker/drop/paste share explicit one-file authorization and app-owned storage; persistent media preview remains next | Current React adapter and authorized-intake service |
 | Contextual help and capability lanes | Migrate as modular read-only views | Focused frontend renderers and strict API contracts |
 | Tool cards and route-aware tool selection | Reuse concepts and verified wording | Existing tool detection/dry-run services |
 | Event history and notices | Rebuild with redaction and append-only schema | Future audit service, not source-tree logs |
@@ -32,7 +32,7 @@ The generator selects 29 first-party files and explains all 14,611 physical line
 | CAD review/derivative behavior | Study tests and output contracts | Separate route adapters after tool-version and clean-input proof |
 | Source-adjacent project/workspace layout | Reject | OS-standard per-user runtime storage |
 | Absolute workspace and executable paths | Reject | Private runtime resolution with public logical identifiers |
-| Monolithic React/Python/CSS files | Reject | Focused modules with file/component/block/line teaching coverage |
+| Large React/CSS source | Adopt temporarily to preserve the accepted application, then split behind tests without visual or workflow changes | Current React frontend |
 
 ## Confirmed Legacy Risks
 
@@ -49,7 +49,7 @@ The generator selects 29 first-party files and explains all 14,611 physical line
 1. Preserve the old app until each retained behavior has a tested replacement.
 2. Never copy `.venv`, `node_modules`, `dist`, caches, logs, runtime records, screenshots, generated jobs, or private project media.
 3. Port behavior through current config, schema, service, API, frontend, test, verifier, and proof layers.
-4. Split migrated UI and backend responsibilities before they approach legacy monolith size.
+4. Split the promoted React/CSS responsibilities incrementally behind retained interaction and visual proof; never replace the accepted experience during cleanup.
 5. Keep private paths out of public state and use OS-standard user-data roots.
 6. Keep execution and launch behavior blocked until the current gate chain is complete.
 7. Apply direct component/block documentation and generated every-line coverage to every migrated product file.

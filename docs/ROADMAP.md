@@ -24,7 +24,8 @@
 20. Single-route contained execution with cancellation, audit, and output proof.
 21. Backup, restore, update, uninstall, and repair dry-run lifecycle contracts.
 22. Windows installer foundation, upgrade/removal gates, signing path, and clean-machine proof harness.
-23. MSIX manifest, development package build, and isolated install execution foundation.
+23. Promote the previous working React application and adapt it to portable current services.
+24. Restore safe preview and desktop interaction parity, then split large frontend responsibilities without visual regression.
 
 ## Planned Later
 

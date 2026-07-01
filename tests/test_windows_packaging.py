@@ -34,6 +34,7 @@ def test_package_plan_is_one_file_portable_and_non_publishing() -> None:
 
     assert plan["format"] == "one-file-executable"
     assert plan["entrypoint"] == "scripts/run_desktop.py"
+    assert plan["frontend"] == "frontend/dist"
     assert plan["expectedArtifact"] == "artifacts/windows/MakersAnvil.exe"
     assert plan["installerFoundation"] == {
         "format": "msix",
@@ -51,6 +52,7 @@ def test_package_plan_is_one_file_portable_and_non_publishing() -> None:
     assert "--onefile" in arguments
     assert "--windowed" in arguments
     assert "webview" in arguments
+    assert any("frontend\\dist:frontend/dist" in value or "frontend/dist:frontend/dist" in value for value in arguments)
     assert any("config:config" in value for value in arguments)
     assert any("schemas:schemas" in value for value in arguments)
     assert any("state:state" in value for value in arguments)

@@ -71,15 +71,15 @@ REQUIRED_FILES = [
     "config/workbench_experience.json",
     "config/windows_installer_policy.json",
     "config/clean_machine_scenarios.json",
-    "frontend/public/index.html",
-    "frontend/public/assets/app.js",
-    "frontend/public/assets/capability-lanes.js",
-    "frontend/public/assets/contained-execution.js",
-    "frontend/public/assets/context-help.js",
-    "frontend/public/assets/lifecycle-dry-runs.js",
-    "frontend/public/assets/styles.css",
-    "frontend/public/assets/workbench-experience.js",
-    "frontend/public/assets/windows-installer.js",
+    "frontend/index.html",
+    "frontend/package.json",
+    "frontend/package-lock.json",
+    "frontend/src/App.tsx",
+    "frontend/src/api.ts",
+    "frontend/src/main.tsx",
+    "frontend/src/styles.css",
+    "frontend/src/types.ts",
+    "frontend/vite.config.ts",
     "schemas/activity-event.schema.json",
     "schemas/activity-history.schema.json",
     "schemas/claim-state.schema.json",
@@ -365,14 +365,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-022":
-        errors.append("GET /api/state does not report PASS-022")
+    if state.body.get("currentPass", {}).get("id") != "PASS-023":
+        errors.append("GET /api/state does not report PASS-023")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-022":
-        errors.append("GET /api/workspace/status does not report PASS-022")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-022":
-        errors.append("GET /api/passes/ledger does not report PASS-022 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-023":
+        errors.append("GET /api/workspace/status does not report PASS-023")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-023":
+        errors.append("GET /api/passes/ledger does not report PASS-023 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -414,8 +414,8 @@ def check_api() -> list[str]:
         "browserFilePickerEnabled": True,
         "explicitAuthorizationRequired": True,
         "appOwnedCopyEnabled": True,
-        "dragDropEnabled": False,
-        "clipboardPasteEnabled": False,
+        "dragDropEnabled": True,
+        "clipboardPasteEnabled": True,
     }
     if intake_policy.body.get("capabilities") != expected_intake_capabilities:
         errors.append("GET /api/intake/policy does not preserve the bounded capability set")
@@ -631,14 +631,14 @@ def check_status_records() -> list[str]:
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-022":
-        errors.append("current status does not report PASS-022")
-    if status.get("trackPercentages", {}).get("realApp") != 72.5:
-        errors.append("real app completion is not 72.5 for PASS-022")
+    if status.get("currentPass", {}).get("id") != "PASS-023":
+        errors.append("current status does not report PASS-023")
+    if status.get("trackPercentages", {}).get("realApp") != 80.0:
+        errors.append("real app completion is not 80.0 for PASS-023")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-022":
-        errors.append("pass ledger latest pass is not PASS-022")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-023":
+        errors.append("pass ledger latest pass is not PASS-023")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -685,8 +685,8 @@ def check_status_records() -> list[str]:
         "browserFilePickerEnabled": True,
         "explicitAuthorizationRequired": True,
         "appOwnedCopyEnabled": True,
-        "dragDropEnabled": False,
-        "clipboardPasteEnabled": False,
+        "dragDropEnabled": True,
+        "clipboardPasteEnabled": True,
     }
     if intake_policy.get("capabilities") != expected_intake_capabilities:
         errors.append("intake policy capabilities are broader or narrower than PASS-019")

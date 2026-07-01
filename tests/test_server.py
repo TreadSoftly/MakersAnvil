@@ -28,7 +28,7 @@ def make_bundle(root: Path) -> None:
 
     Inputs: Pytest temporary directory.
     Outputs: ``None`` after writing a minimal index document.
-    How it works: Reproduces the packaged ``frontend/public`` layout.
+    How it works: Reproduces the packaged compiled ``frontend/dist`` layout.
     Side effects: Writes only inside pytest-owned storage.
     Failure behavior: Filesystem failures propagate.
     Safety: Fixture HTML contains no script, remote URL, or user data.
@@ -36,9 +36,9 @@ def make_bundle(root: Path) -> None:
     Related proof: The following server test uses this exact layout.
     """
 
-    public = root / "frontend" / "public"
-    public.mkdir(parents=True)
-    (public / "index.html").write_text("<!doctype html><title>fixture</title>", encoding="utf-8")
+    dist = root / "frontend" / "dist"
+    dist.mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>fixture</title>", encoding="utf-8")
 
 
 def test_only_loopback_hosts_are_accepted() -> None:

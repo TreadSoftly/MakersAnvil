@@ -92,7 +92,8 @@ def tracked_files() -> list[str]:
             capture_output=True,
             text=True,
         )
-        return sorted({line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip()})
+        paths = {line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip()}
+        return sorted(relative for relative in paths if (ROOT / relative).is_file())
     manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     return sorted({entry["path"] for entry in manifest.get("files", [])})
 

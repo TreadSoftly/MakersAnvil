@@ -2,17 +2,19 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: PASS-022 adds a schema-backed MSIX installer foundation, upgrade/removal preservation gates, signing blockers, and six declarative clean-machine scenarios. No installer is built or executed; signing, package registration, release publication, destructive removal, and clean-machine success remain unproven.
+Current status: PASS-023 promotes the previous working React application as the real product interface and connects it to the portable, path-redacted backend. Picker, drag, and paste use one guarded one-file intake path; unsafe legacy path, launch, handoff, output-open, and broad route actions remain blocked.
 
 ## Run Locally
 
 Requirements for the current pass:
 
 - Python 3.11 or newer
+- Node.js 24 and npm for source builds
 
 Start the local app:
 
 ```powershell
+npm run frontend:build
 python scripts/run_dev.py
 ```
 

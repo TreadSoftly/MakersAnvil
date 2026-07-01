@@ -1,0 +1,17 @@
+{
+  "name": "Makers Anvil",
+  "short_name": "Makers Anvil",
+  "description": "Local engineering workspace control app.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050607",
+  "theme_color": "#050607",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

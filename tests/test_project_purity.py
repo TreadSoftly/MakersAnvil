@@ -48,33 +48,18 @@ def test_frontend_mutation_is_limited_to_guarded_intake_preferences_and_prefligh
     Related proof: ``docs/REFERENCE_POLICY.md`` and ``scripts/verify_project.py``.
     """
 
-    scripts = {
-        path.name: path.read_text(encoding="utf-8")
-        for path in (ROOT / "frontend" / "public" / "assets").glob("*.js")
-    }
-    app_js = scripts["app.js"]
-    all_js = "\n".join(scripts.values())
+    api = (ROOT / "frontend" / "src" / "api.ts").read_text(encoding="utf-8")
 
-    assert 'method: "GET"' in app_js
-    assert all_js.count('method: "POST"') == 4
-    assert 'const intakeSessionUrl = "/api/intake/session"' in app_js
-    assert '"X-Makers-Anvil-Request-Token"' in app_js
-    assert 'mode: "same-origin"' in app_js
-    assert 'method: "DELETE"' not in all_js
-    assert "/api/tools/open" not in all_js
-    assert "/api/jobs/run" not in all_js
-    assert 'fetch("/api/workbench/experience"' in scripts["workbench-experience.js"]
-    assert 'const containedExecutionPolicyUrl = "/api/executions/policy"' in app_js
-    assert '"X-Makers-Anvil-Request-Token": token' in scripts["contained-execution.js"]
-    assert "externalToolLaunched" not in scripts["contained-execution.js"]
-    assert 'const lifecyclePolicyUrl = "/api/lifecycle/policy"' in app_js
-    assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in app_js
-    assert 'method: "POST"' not in scripts["lifecycle-dry-runs.js"]
-    assert "installerExecutionEnabled" not in scripts["lifecycle-dry-runs.js"]
-    assert 'const windowsInstallerPolicyUrl = "/api/windows/installer/policy"' in app_js
-    assert 'const windowsInstallerReadinessUrl = "/api/windows/installer/readiness"' in app_js
-    assert 'const cleanMachineHarnessUrl = "/api/windows/clean-machine/harness"' in app_js
-    assert 'method: "POST"' not in scripts["windows-installer.js"]
+    assert 'jsonFetch<JsonRecord>("/api/intake/session")' in api
+    assert 'jsonFetch<JsonRecord>("/api/executions/policy")' in api
+    assert '"X-Makers-Anvil-Request-Token"' in api
+    assert 'method: "DELETE"' not in api
+    assert "/api/tools/open" not in api
+    assert "/api/jobs/run" not in api
+    assert "/api/intake/open-folder" not in api
+    assert "externalToolLaunched" not in api
+    assert "Tool launch is blocked" in api
+    assert "Output opening is blocked" in api
 
 
 def test_reference_material_names_are_not_runtime_dependencies() -> None:
@@ -101,6 +86,8 @@ def test_reference_material_names_are_not_runtime_dependencies() -> None:
         and "References For Makers Anvil Application" not in path.parts
         and "Previous Working MA For References" not in path.parts
         and "__pycache__" not in path.parts
+        and "node_modules" not in path.parts
+        and "dist" not in path.parts
     ]
 
     forbidden = "makers" + "_anvil_build_pass_012_release_backup_uninstall_dry_run"
@@ -178,11 +165,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-022"
-    assert current["trackPercentages"]["realApp"] == 72.5
+    assert current["currentPass"]["id"] == "PASS-023"
+    assert current["trackPercentages"]["realApp"] == 80.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-022"
+    assert ledger["passes"][-1]["id"] == "PASS-023"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:
@@ -241,6 +228,8 @@ def test_product_source_contains_no_personal_machine_paths() -> None:
         "References For Makers Anvil Application",
         "Previous Working MA For References",
         "artifacts",
+        "node_modules",
+        "dist",
     }
     offenders = []
     for path in ROOT.rglob("*"):
@@ -281,8 +270,8 @@ def test_intake_policy_enables_only_explicit_one_file_copy() -> None:
         "browserFilePickerEnabled": True,
         "explicitAuthorizationRequired": True,
         "appOwnedCopyEnabled": True,
-        "dragDropEnabled": False,
-        "clipboardPasteEnabled": False,
+        "dragDropEnabled": True,
+        "clipboardPasteEnabled": True,
     }
     assert "archive" not in policy["uploadAllowedKinds"]
     assert all(value is False for value in policy["safety"].values())

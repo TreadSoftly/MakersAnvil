@@ -39,8 +39,8 @@
     "browserFilePickerEnabled": true,
     "explicitAuthorizationRequired": true,
     "appOwnedCopyEnabled": true,
-    "dragDropEnabled": false,
-    "clipboardPasteEnabled": false
+    "dragDropEnabled": true,
+    "clipboardPasteEnabled": true
   },
   "safety": {
     "sourcePathStored": false,

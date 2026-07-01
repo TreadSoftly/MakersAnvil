@@ -44,7 +44,7 @@ def build_service(tmp_path: Path) -> tuple[LifecycleDryRunService, Path, Path]:
     shutil.copy2(ROOT / "config" / "default_settings.json", config_root / "default_settings.json")
     policy_path = config_root / "lifecycle_dry_run_policy.json"
     shutil.copy2(ROOT / "config" / "lifecycle_dry_run_policy.json", policy_path)
-    for relative in ("frontend/public/index.html", "state/current_status.json", "schemas/app-state.schema.json"):
+    for relative in ("frontend/dist/index.html", "state/current_status.json", "schemas/app-state.schema.json"):
         target = source_root / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("fixture\n", encoding="utf-8")

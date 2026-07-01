@@ -21,7 +21,7 @@ from typing import Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 ENTRYPOINT = ROOT / "scripts" / "run_desktop.py"
-FRONTEND = ROOT / "frontend" / "public"
+FRONTEND = ROOT / "frontend" / "dist"
 DIST = ROOT / "artifacts" / "windows"
 WORK = ROOT / ".build" / "pyinstaller"
 
@@ -61,7 +61,7 @@ def build_arguments(root: Path = ROOT) -> list[str]:
         "--paths",
         str(root / "backend" / "src"),
         "--add-data",
-        f"{root / 'frontend' / 'public'}:frontend/public",
+        f"{root / 'frontend' / 'dist'}:frontend/dist",
         "--add-data",
         f"{root / 'config'}:config",
         "--add-data",
@@ -97,8 +97,8 @@ def validate_source(root: Path = ROOT) -> None:
 
     required = [
         root / "scripts" / "run_desktop.py",
-        root / "frontend" / "public" / "index.html",
-        root / "frontend" / "public" / "assets",
+        root / "frontend" / "dist" / "index.html",
+        root / "frontend" / "dist" / "assets",
         root / "config",
         root / "config" / "windows_installer_policy.json",
         root / "config" / "clean_machine_scenarios.json",
@@ -131,7 +131,7 @@ def package_plan(root: Path = ROOT) -> dict[str, object]:
         "platform": "windows",
         "format": "one-file-executable",
         "entrypoint": "scripts/run_desktop.py",
-        "frontend": "frontend/public",
+        "frontend": "frontend/dist",
         "bundledReadOnlyData": ["config", "schemas", "state"],
         "expectedArtifact": "artifacts/windows/MakersAnvil.exe",
         "installerFoundation": {

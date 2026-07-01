@@ -153,7 +153,8 @@ def test_session_exposes_only_bounded_same_origin_constraints(tmp_path: Path) ->
     assert ".zip" not in session["constraints"]["allowedExtensions"]
     assert session["constraints"]["oneFilePerAuthorization"] is True
     assert session["capabilities"]["explicitAuthorizationRequired"] is True
-    assert session["capabilities"]["dragDropEnabled"] is False
+    assert session["capabilities"]["dragDropEnabled"] is True
+    assert session["capabilities"]["clipboardPasteEnabled"] is True
     assert session["safety"]["routeExecutionEnabled"] is False
     assert not data_root.exists()
 

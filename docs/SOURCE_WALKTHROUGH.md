@@ -7,20 +7,23 @@ This guide connects the actual files, call order, data contracts, effects, and p
 ## One Browser Request
 
 ```text
-frontend/public/index.html
-  -> frontend/public/assets/app.js loadState()
+frontend/index.html
+  -> frontend/src/main.tsx mounts App
+  -> frontend/src/App.tsx calls getState()
+  -> frontend/src/api.ts fetches /api/state
   -> backend/src/makers_anvil_backend/server.py RequestHandler
   -> backend/src/makers_anvil_backend/api/app.py MakersAnvilApi.handle()
   -> backend/src/makers_anvil_backend/services/app_state.py
   -> focused service reads validated config/runtime state
   -> schema-shaped dictionary returns through API
-  -> app.js renderer writes untrusted values with textContent
-  -> styles.css lays the result out responsively
+  -> api.ts maps path-redacted records into the promoted view contract
+  -> React escapes text values while App.tsx renders the workbench
+  -> frontend/src/styles.css lays the result out responsively
 ```
 
 The browser performs state GETs plus the closed guarded intake, preference, and contained-STL-preflight mutations. Lifecycle planning performs GET requests only and creates no command control. Local scripts remain separate mutation boundaries.
 
-For intake, follow `initializeIntakeControls()` -> `reviewSelectedIntakeFile()` -> `authorizePendingIntake()` -> `MakersAnvilApi` -> `AuthorizedIntakeService.authorize()` -> `AuthorizedIntakeService.ingest()`. The first POST creates path-free short-lived consent; the second streams, hashes, atomically publishes, and catalogs one generated-name app-owned copy.
+For intake, follow picker/drop/paste -> `App.handleFilesUpload()` -> `api.uploadFiles()` -> `MakersAnvilApi` -> `AuthorizedIntakeService.authorize()` -> `AuthorizedIntakeService.ingest()`. The first POST creates path-free short-lived consent; the second streams, hashes, atomically publishes, and catalogs one generated-name app-owned copy.
 
 ## Backend Package
 
@@ -62,18 +65,17 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 
 | File | What it owns | Important blocks |
 | --- | --- | --- |
-| `frontend/public/index.html` | Preview-first workbench structure, one-file picker/review controls, and accessible live state. | Rail -> command bar -> source deck -> intake review -> tools -> command deck -> proof inspector -> Dev evidence. |
-| `frontend/public/assets/app.js` | Coherent state fetch, two-step authorized transfer, core rendering, summaries, and local navigation. | Endpoints -> renderers -> intake helpers -> workbench summary -> controls -> `renderState` -> `loadState`. |
-| `frontend/public/assets/capability-lanes.js` | Safe fixed-grid rendering for the schema-backed five-lane capability matrix. | Element helper -> lane builder -> complete matrix renderer. |
-| `frontend/public/assets/context-help.js` | One accessible viewport-contained help dialog with Escape/outside close and focus restoration. | Position -> close/open -> topic configuration -> global listeners. |
-| `frontend/public/assets/contained-execution.js` | Explicit STL preflight authorization, run, cancellation, lifecycle, audit, and proof rendering. | Guarded command helper -> source eligibility -> execution rows. |
-| `frontend/public/assets/lifecycle-dry-runs.js` | GET-only aggregate inventory and five lifecycle plan cards. | Claim/byte formatters -> complete lifecycle renderer. |
-| `frontend/public/assets/windows-installer.js` | GET-only installer gates and clean-machine scenario rendering. | Badge helper -> gate/scenario rows -> complete foundation renderer. |
-| `frontend/public/assets/workbench-experience.js` | Portable preference application/save, transient notices, and redacted activity rendering. | Apply -> notice -> guarded save -> experience/activity renderers. |
-| `frontend/public/assets/styles.css` | Industrial tokens, one-viewport desktop geometry, stable tabs, local scrolling, and mobile flow. | Tokens -> shell -> rail/topbar -> zones -> command deck -> inspector -> responsive rules. |
-| `frontend/public/assets/mark.svg` | Embedded product identity with no remote or script dependency. | Accessible SVG geometry. |
+| `frontend/index.html` | Minimal trusted React mount document and local product identity metadata. | One root -> module entry -> local favicon/manifest. |
+| `frontend/src/main.tsx` | Creates the one StrictMode React tree. | Root lookup -> App mount -> shared styles. |
+| `frontend/src/App.tsx` | Promoted rail, command search, source board, tool carousel, workflows, plans, proof, help, and settings. | State/actions -> workbench regions -> component helpers -> presentation helpers. |
+| `frontend/src/api.ts` | Current-state adaptation, guarded intake, contained preflight, activity reads, and explicit blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
+| `frontend/src/components/ContextHelp.tsx` | Accessible viewport-contained help dialog with Escape close and focus restoration. | Position -> listeners -> dialog portal. |
+| `frontend/src/components/ModeTabs.tsx` | Keyboard-operable Work Flow, Plans, and Dev selection. | ARIA tabs -> arrow/Home/End movement -> tab panels. |
+| `frontend/src/components/StatusPill.tsx` | Conservative status-to-tone presentation that retains original text. | Normalize -> choose tone -> render. |
+| `frontend/src/styles.css` | Accepted industrial tokens, animation, desktop geometry, and mobile flow. | Tokens -> shell -> zones -> dialogs -> motion -> responsive/reduced-motion rules. |
+| `frontend/src/App.test.tsx` | Twenty retained interaction and portable-safety examples. | Fixture -> API mocks -> workflow assertions -> blocker assertions. |
 
-All values originating outside the static page must be written with DOM text APIs. A renderer must never convert planned route/tool/output state into a ready action. The file picker accepts one policy suffix, retains its `File` object only in memory, requires a second explicit click, and never submits a source path. Drag/drop, paste, folders, archives, and multi-file intake remain absent.
+React escapes values originating outside the document. A renderer must never convert planned route/tool/output state into a ready action. Picker, drop, and paste retain one `File` object only in browser memory and submit metadata plus exact bytes through the same authorization; they never submit a source path. Folders, archives, and multi-file intake remain absent.
 
 ## Explicit Local Commands
 

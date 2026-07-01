@@ -315,6 +315,20 @@
         "three GET-only APIs and one inspection-only CLI expose the same blocked release truth",
         "registry, certificate store, package registration, software mutation, processes, publication, and user-data deletion remain false"
       ]
+    },
+    {
+      "id": "PASS-023",
+      "title": "previous working application promotion and portable API adaptation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_023_REPORT.md",
+      "proof": [
+        "the previous working React source, reviewed tool icons, visual system, navigation, workflows, and motion are the one current product frontend",
+        "the promoted frontend compiles to frontend/dist and is served by browser, native desktop, and Windows executable runtime-resource paths",
+        "a typed adapter maps current path-redacted state and guarded mutations without importing the legacy Python backend or private paths",
+        "picker, drop, and paste gestures share one exact one-file authorization and app-owned quarantine-copy path",
+        "legacy tool launch, selected-file handoff, output opening, intake-folder opening, and arbitrary route calls remain visibly blocked",
+        "twenty React interaction tests plus Python, HTTP, native, package, schema, purity, and explainability gates cover the promoted application"
+      ]
     }
   ]
 }

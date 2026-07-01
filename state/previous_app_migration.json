@@ -26,19 +26,19 @@
     "source-adjacent runtime storage"
   ],
   "capabilities": [
-    {"id": "workbench-layout", "decision": "adopted", "status": "staged", "destination": "frontend/public", "reason": "PASS-015 translated the accepted rail, source, tools, workflow, and proof composition."},
-    {"id": "command-search", "decision": "adopted", "status": "staged", "destination": "frontend/public/assets/app.js", "reason": "Current quick-jump search keeps navigation local and non-mutating."},
+    {"id": "workbench-layout", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx", "reason": "PASS-023 promotes the accepted rail, source board, tools, workflow, proof, settings, responsive layout, and motion as the product frontend."},
+    {"id": "command-search", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx", "reason": "The promoted command search keeps navigation local and delegates allowed actions through the portable adapter."},
     {"id": "native-desktop-window", "decision": "rebuild", "status": "staged", "destination": "backend/src/makers_anvil_backend/desktop.py", "reason": "One owned pywebview window now wraps the current portable core."},
     {"id": "windows-one-file", "decision": "rebuild", "status": "staged", "destination": "scripts/build_windows_exe.py", "reason": "PyInstaller plan bundles one frontend/core without source-tree dependency."},
-    {"id": "context-help", "decision": "migrate", "status": "staged", "destination": "frontend/public/assets/context-help.js", "reason": "PASS-019 migrates reviewed contextual guidance into one accessible module outside the legacy monolith."},
+    {"id": "context-help", "decision": "adopted", "status": "staged", "destination": "frontend/src/components/ContextHelp.tsx", "reason": "The reviewed accessible previous-app contextual-help component is now current product source."},
     {"id": "capability-lanes", "decision": "migrate", "status": "staged", "destination": "backend capability matrix and frontend lane renderer", "reason": "PASS-019 derives normalized lanes from current intake, route, output, and tool contracts."},
-    {"id": "file-upload-drop-paste", "decision": "rebuild", "status": "staged", "destination": "authorized intake adapter", "reason": "The one-file picker and explicit app-owned copy are staged; legacy drag, paste, multi-file, path, and immediate-upload behavior remain blocked."},
+    {"id": "file-upload-drop-paste", "decision": "adopted", "status": "staged", "destination": "frontend/src/api.ts and authorized intake service", "reason": "Picker, drop, and paste now share one one-file explicit authorization and app-owned copy; multi-file, paths, folders, archives, and immediate legacy upload remain blocked."},
     {"id": "event-history", "decision": "rebuild", "status": "staged", "destination": "backend activity log and frontend recent-activity renderer", "reason": "PASS-019 replaces source-tree JSONL with fixed create-only events in portable app-owned user data."},
     {"id": "route-execution", "decision": "rebuild", "status": "staged", "destination": "contained execution service", "reason": "PASS-020 adds only a built-in authorized STL structural preflight; full route and external-process execution remain blocked."},
     {"id": "tool-launch", "decision": "rebuild", "status": "blocked", "destination": "allowlisted execution service", "reason": "Old path/process launch behavior includes private assumptions."},
     {"id": "output-open", "decision": "rebuild", "status": "blocked", "destination": "proof-gated output service", "reason": "Old path opening precedes current proof and privacy boundaries."},
     {"id": "source-adjacent-workspace", "decision": "reject", "status": "blocked", "destination": "none", "reason": "Runtime data must use portable OS user-data locations."},
-    {"id": "legacy-monoliths", "decision": "reject", "status": "blocked", "destination": "none", "reason": "Responsibilities migrate into focused tested modules rather than copied files."}
+    {"id": "legacy-monoliths", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx and frontend/src/styles.css", "reason": "The user-selected working experience is authoritative; later splits must preserve tested behavior and appearance while reducing file size incrementally."}
   ],
   "safety": {
     "referenceRuntimeImported": false,

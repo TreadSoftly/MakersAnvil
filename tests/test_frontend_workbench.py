@@ -1,248 +1,133 @@
-"""Purpose: Prove workbench structure plus bounded choose-review-authorize intake.
+"""Purpose: Prove the promoted React workbench and its portable adapter boundaries.
 
-Used by: Developers and CI whenever dashboard layout or client navigation changes.
-Inputs: Checked-in HTML, CSS, and JavaScript frontend source.
-Outputs: Assertions for required zones, render targets, controls, and responsive rules.
+Used by: Developers and CI whenever the accepted previous-app experience changes.
+Inputs: Checked-in React, TypeScript, CSS, HTML, and Vite configuration source.
+Outputs: Assertions for navigation, workflows, intake gestures, safety, and motion.
 Side effects: Reads product source only and never starts a browser or server.
-Safety: Permits only explicit one-file intake; all operational actions stay absent.
-Failure behavior: Missing zones, duplicate IDs, unsafe controls, or stale wiring fail CI.
-Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+Safety: Guarded one-file intake is allowed while private paths and legacy actions stay absent.
+Failure behavior: Missing experience features or weakened adapter boundaries fail CI.
+Related proof: Frontend Vitest, runtime resource tests, and browser/native smoke checks.
 """
 
-import re
-from collections import Counter
-from html.parser import HTMLParser
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML_PATH = ROOT / "frontend" / "public" / "index.html"
-CSS_PATH = ROOT / "frontend" / "public" / "assets" / "styles.css"
-JS_PATH = ROOT / "frontend" / "public" / "assets" / "app.js"
-JS_PATHS = sorted((ROOT / "frontend" / "public" / "assets").glob("*.js"))
+APP_PATH = ROOT / "frontend" / "src" / "App.tsx"
+API_PATH = ROOT / "frontend" / "src" / "api.ts"
+CSS_PATH = ROOT / "frontend" / "src" / "styles.css"
+HTML_PATH = ROOT / "frontend" / "index.html"
+VITE_PATH = ROOT / "frontend" / "vite.config.ts"
 
 
-class WorkbenchParser(HTMLParser):
-    """Purpose: Collect element IDs and input/button attributes with no third-party parser.
+def test_promoted_workbench_keeps_the_accepted_navigation_and_workflow_surfaces() -> None:
+    """Purpose: Preserve the prior app's recognizable rail, tools, workflow, plans, proof, and settings surfaces.
 
-    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
-    Outputs: An instance of ``WorkbenchParser`` exposing the state and operations defined below.
-    How it works: It checks conditions.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Construct with ``instance = WorkbenchParser(...)`` using values described by ``__init__``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    Inputs: The checked-in React application source.
+    Outputs: No value; passing assertions prove the named visible surfaces remain implemented.
+    How it works: Reads source and checks stable user-facing labels and component composition.
+    Side effects: Reads one text file only.
+    Failure behavior: A removed surface or accidental replacement fails at its expected label.
+    Safety: Structural inspection cannot perform an application action.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k promoted_workbench``.
+    Related proof: ``frontend/src/App.test.tsx`` exercises these surfaces in jsdom.
     """
 
-    def __init__(self) -> None:
-        """Purpose: Initialize empty collections before feeding checked-in HTML.
-
-        Inputs: No caller-supplied values beyond an implicit instance/class when present.
-        Outputs: The initialized instance state; Python constructors return ``None``.
-        How it works: It executes the focused statements in source order.
-        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-        Safety: Prevents visual restructuring from adding upload or mutation behavior.
-        Example: Create the owning class with values matching this constructor signature.
-        Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
-        """
-
-        super().__init__()
-        self.ids: list[str] = []
-        self.controls: list[tuple[str, dict[str, str | None]]] = []
-
-    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        """Purpose: Record IDs and user-control attributes for structural assertions.
-
-        Inputs: Caller-supplied ``tag``, ``attrs`` values from the signature.
-        Outputs: Returns ``None``, or raises before returning when validation fails.
-        How it works: It checks conditions.
-        Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-        Safety: Prevents visual restructuring from adding upload or mutation behavior.
-        Example: Call ``result = instance.handle_starttag(...)`` with values satisfying the documented inputs.
-        Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
-        """
-
-        attributes = dict(attrs)
-        if "id" in attributes and attributes["id"] is not None:
-            self.ids.append(attributes["id"])
-        if tag in {"button", "input", "form"}:
-            self.controls.append((tag, attributes))
+    app = APP_PATH.read_text(encoding="utf-8")
+    for label in ("Workbench", "Intake", "Plans", "Tools", "Files", "Components", "Simulation", "Outputs", "Settings"):
+        assert f'label: "{label}"' in app
+    for component in ("CommandSearch", "DropZone", "MediaBoard", "ToolDock", "ModeTabs", "ContextInspector"):
+        assert component in app
+    assert 'label: "Work Flow"' in app
+    assert 'label: "Dev"' in app
 
 
-def parse_workbench() -> WorkbenchParser:
-    """Purpose: Return a parsed representation of the static workbench document.
+def test_drop_picker_and_paste_share_one_guarded_file_adapter() -> None:
+    """Purpose: Prove picker, drop, and paste gestures converge on the same one-file authorization function.
 
-    Inputs: No caller-supplied values beyond an implicit instance/class when present.
-    Outputs: Returns ``WorkbenchParser``, or raises before returning when validation fails.
-    How it works: It returns the resulting contract value.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Call ``result = parse_workbench(...)`` with values satisfying the documented inputs.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    Inputs: React event wiring and the TypeScript API adapter.
+    Outputs: No value; assertions prove accepted gestures without legacy multipart upload.
+    How it works: Checks event handlers, one-file validation, token use, and two-step endpoints.
+    Side effects: Reads two text files only.
+    Failure behavior: Missing gestures, widened selection, or bypassed authorization fails the test.
+    Safety: Archives, folders, source paths, and arbitrary multipart endpoints remain absent.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k drop_picker``.
+    Related proof: Vitest drop and paste tests inspect the actual browser events.
     """
 
-    parser = WorkbenchParser()
-    parser.feed(HTML_PATH.read_text(encoding="utf-8"))
-    return parser
+    app = APP_PATH.read_text(encoding="utf-8")
+    api = API_PATH.read_text(encoding="utf-8")
+    assert "onDrop=" in app
+    assert 'addEventListener("paste"' in app
+    assert "uploadFiles(selectedFiles)" in app
+    assert "selected.length !== 1" in api
+    assert 'jsonFetch<JsonRecord>("/api/intake/session")' in api
+    assert '"X-Makers-Anvil-Request-Token"' in api
+    assert "/api/files/upload" not in api
 
 
-def test_primary_workbench_zones_and_views_exist_once() -> None:
-    """Purpose: The first screen retains one source, tool, workflow, proof, and dev surface.
+def test_legacy_machine_specific_actions_remain_visibly_blocked() -> None:
+    """Purpose: Prevent the promoted interface from restoring unsafe prior backend endpoints.
 
-    Inputs: No explicit parameters; the test builds its own isolated example state.
-    Outputs: No application value; passing assertions prove the named behavior.
-    How it works: It executes the focused statements in source order.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_primary_workbench_zones_and_views_exist_once``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    Inputs: The portable TypeScript API adapter.
+    Outputs: No value; assertions prove explicit blockers and absence of retired endpoints.
+    How it works: Searches adapter source for reviewed blocker messages and forbidden URLs.
+    Side effects: Reads one text file only.
+    Failure behavior: A missing blocker or legacy endpoint string fails immediately.
+    Safety: This gate protects private paths, process launch, native handoff, and folder opening.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k machine_specific``.
+    Related proof: Vitest expects each attempted legacy action to show its blocker.
     """
 
-    parser = parse_workbench()
-    counts = Counter(parser.ids)
-    required = {
-        "workbench",
-        "intake-zone",
-        "selected-input-zone",
-        "tools-zone",
-        "capability-matrix",
-        "workflow-surface",
-        "plan-surface",
-        "dev-surface",
-        "proof-inspector",
-        "windows-installer-panel",
-        "windows-installer-gates",
-        "clean-machine-scenarios",
-    }
-
-    assert required <= set(parser.ids)
-    assert all(counts[element_id] == 1 for element_id in required)
-    assert all(count == 1 for count in counts.values())
+    api = API_PATH.read_text(encoding="utf-8")
+    for retired in ("/api/tools/open", "/api/tools/open-output", "/api/intake/open-folder", "/api/open", "/api/jobs/run"):
+        assert retired not in api
+    assert "Tool launch is blocked" in api
+    assert "Native output handoff is blocked" in api
+    assert "Intake storage is private app-owned data" in api
+    assert "private path not exposed" in api
 
 
-def test_every_javascript_id_target_exists_in_html() -> None:
-    """Purpose: Controller render targets cannot silently drift away from the static shell.
+def test_styles_retain_motion_responsive_layout_and_reduced_motion() -> None:
+    """Purpose: Preserve the accepted visual character while keeping desktop/mobile geometry usable.
 
-    Inputs: No explicit parameters; the test builds its own isolated example state.
-    Outputs: No application value; passing assertions prove the named behavior.
-    How it works: It executes the focused statements in source order.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_every_javascript_id_target_exists_in_html``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
-    """
-
-    parser = parse_workbench()
-    javascript = "\n".join(path.read_text(encoding="utf-8") for path in JS_PATHS)
-    target_ids = set(re.findall(r'querySelector\("#([^"]+)"\)', javascript))
-
-    assert target_ids <= set(parser.ids)
-
-
-def test_workbench_controls_allow_only_one_file_with_separate_consent() -> None:
-    """Purpose: Require one file picker, one consent command, and no folder/form intake.
-
-    Inputs: No explicit parameters; the test builds its own isolated example state.
-    Outputs: No application value; passing assertions prove the named behavior.
-    How it works: It executes the focused statements in source order.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_workbench_controls_allow_only_one_file_with_separate_consent``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
-    """
-
-    parser = parse_workbench()
-    buttons = [attributes for tag, attributes in parser.controls if tag == "button"]
-    inputs = [attributes for tag, attributes in parser.controls if tag == "input"]
-    forms = [attributes for tag, attributes in parser.controls if tag == "form"]
-
-    add_file = next(attributes for attributes in buttons if attributes.get("id") == "intake-add-button")
-    authorize = next(attributes for attributes in buttons if attributes.get("id") == "intake-authorize-button")
-    cancel = next(attributes for attributes in buttons if attributes.get("id") == "intake-cancel-button")
-    file_input = next(attributes for attributes in inputs if attributes.get("id") == "intake-file-input")
-    assert "disabled" in add_file
-    assert "disabled" in authorize
-    assert cancel.get("aria-label") == "Cancel selected file"
-    assert file_input.get("type") == "file"
-    assert "multiple" not in file_input
-    assert "webkitdirectory" not in file_input
-    assert forms == []
-    assert {attributes.get("type") for attributes in inputs} == {"search", "file", "radio", "checkbox"}
-    assert all("onclick" not in attributes for attributes in buttons)
-
-
-def test_controller_wires_guarded_intake_and_safe_text_summaries() -> None:
-    """Purpose: Tabs stay local while intake uses two guarded POSTs and text-only names.
-
-    Inputs: No explicit parameters; the test builds its own isolated example state.
-    Outputs: No application value; passing assertions prove the named behavior.
-    How it works: It executes the focused statements in source order.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_controller_wires_guarded_intake_and_safe_text_summaries``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
-    """
-
-    javascript = "\n".join(path.read_text(encoding="utf-8") for path in JS_PATHS)
-
-    assert "function selectWorkbenchView" in javascript
-    assert "function initializeWorkbenchControls" in javascript
-    assert "function initializeIntakeControls" in javascript
-    assert "function reviewSelectedIntakeFile" in javascript
-    assert "async function authorizePendingIntake" in javascript
-    assert "function renderWorkbenchSummary" in javascript
-    assert 'document.querySelector("#selected-input-title").textContent' in javascript
-    assert 'method: "GET"' in javascript
-    assert javascript.count('method: "POST"') == 4
-    assert 'mode: "same-origin"' in javascript
-    assert '"X-Makers-Anvil-Request-Token"' in javascript
-    assert "dragover" not in javascript.lower()
-    assert 'addEventListener("paste"' not in javascript
-    assert "renderCapabilityMatrix" in javascript
-    assert "configureContextHelp" in javascript
-    assert "renderActivityHistory" in javascript
-    assert "renderContainedExecutions" in javascript
-    assert "renderLifecycleDryRuns" in javascript
-    assert "renderWindowsInstaller" in javascript
-    assert "Authorize preflight" in javascript
-    assert "Run preflight" in javascript
-    assert "toolpathGenerated" not in javascript
-    assert 'const lifecyclePolicyUrl = "/api/lifecycle/policy"' in javascript
-    assert 'const lifecycleDryRunsUrl = "/api/lifecycle/dry-runs"' in javascript
-    assert 'method: "POST"' not in (ROOT / "frontend" / "public" / "assets" / "lifecycle-dry-runs.js").read_text(encoding="utf-8")
-    assert 'const windowsInstallerReadinessUrl = "/api/windows/installer/readiness"' in javascript
-    assert 'const cleanMachineHarnessUrl = "/api/windows/clean-machine/harness"' in javascript
-    assert 'method: "POST"' not in (ROOT / "frontend" / "public" / "assets" / "windows-installer.js").read_text(encoding="utf-8")
-
-
-def test_styles_define_bounded_desktop_and_mobile_workbenches() -> None:
-    """Purpose: Desktop uses a fixed work area while narrow screens restore document flow.
-
-    Inputs: No explicit parameters; the test builds its own isolated example state.
-    Outputs: No application value; passing assertions prove the named behavior.
-    How it works: It executes the focused statements in source order.
-    Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
-    Failure behavior: A failed assertion identifies the exact behavior or safety contract that regressed.
-    Safety: Prevents visual restructuring from adding upload or mutation behavior.
-    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k test_styles_define_bounded_desktop_and_mobile_workbenches``.
-    Related proof: Browser viewport evidence and ``docs/PREVIOUS_APP_REFERENCE_STUDY.md``.
+    Inputs: The promoted stylesheet.
+    Outputs: No value; assertions prove responsive and motion primitives remain present.
+    How it works: Checks stable selectors, media queries, animations, overflow, and reduced motion.
+    Side effects: Reads one text file only.
+    Failure behavior: Removing a required visual or accessibility contract fails the test.
+    Safety: CSS inspection cannot change files, data, tools, or routes.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k styles_retain``.
+    Related proof: Browser screenshots verify the compiled visual result.
     """
 
     styles = CSS_PATH.read_text(encoding="utf-8")
-
-    assert "height: 100dvh" in styles
-    assert "grid-template-columns: minmax(0, 1fr) minmax(300px, 360px)" in styles
-    assert "@media (max-width: 900px)" in styles
-    assert ".installer-foundation-grid" in styles
-    assert "overflow: auto" in styles
+    assert ".desktop-shell" in styles
+    assert ".app-rail" in styles
+    assert ".tool-carousel" in styles
+    assert "@keyframes" in styles
     assert "@media (prefers-reduced-motion: reduce)" in styles
-    assert ".intake-review" in styles
-    assert ".authorize-command:disabled" in styles
+    assert "@media (max-width:" in styles
+    assert "overflow" in styles
+
+
+def test_vite_build_has_one_minimal_document_root_and_compiled_output() -> None:
+    """Purpose: Prove the React source compiles into the portable runtime resource directory.
+
+    Inputs: The Vite configuration and root HTML document.
+    Outputs: No value; assertions prove one mount point and ``dist`` output.
+    How it works: Checks the explicit build directory, loopback proxy, and root/module tags.
+    Side effects: Reads two text files only.
+    Failure behavior: A changed output root, remote proxy, or duplicate mount fails CI.
+    Safety: The trusted document contains no inline privileged behavior or remote dependency.
+    Example: Run ``python -m pytest tests/test_frontend_workbench.py -k vite_build``.
+    Related proof: ``npm run build`` and Python runtime-resource tests inspect the result.
+    """
+
+    vite = VITE_PATH.read_text(encoding="utf-8")
+    html = HTML_PATH.read_text(encoding="utf-8")
+    assert 'outDir: "dist"' in vite
+    assert '"/api": "http://127.0.0.1:8765"' in vite
+    assert html.count('id="root"') == 1
+    assert 'src="/src/main.tsx"' in html
+    assert "http://" not in html and "https://" not in html

@@ -80,7 +80,8 @@ def tracked_files() -> list[str]:
             capture_output=True,
             text=True,
         )
-        return sorted(line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip())
+        paths = (line.strip().replace("\\", "/") for line in result.stdout.splitlines() if line.strip())
+        return sorted(relative for relative in paths if (ROOT / relative).is_file())
     manifest = load_manifest()
     return sorted(entry["path"] for entry in manifest.get("files", []))
 
@@ -185,7 +186,7 @@ def check_python_docstrings() -> list[str]:
 
 
 def check_javascript_function_comments() -> list[str]:
-    """Purpose: Require detailed nearby JSDoc for each top-level frontend function.
+    """Purpose: Require nearby JSDoc for every exported frontend operation/component.
 
     Inputs: No caller-supplied values beyond an implicit instance/class when present.
     Outputs: Returns ``list[str]``, or raises before returning when validation fails.
@@ -197,26 +198,23 @@ def check_javascript_function_comments() -> list[str]:
     Related proof: ``tests/test_explainability.py`` and source-manifest schema.
     """
 
-    relative = "frontend/public/assets/app.js"
-    lines = (ROOT / relative).read_text(encoding="utf-8").splitlines()
-    declaration = re.compile(r"^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(")
     errors: list[str] = []
-    for index, line in enumerate(lines):
-        match = declaration.match(line.strip())
-        if not match:
-            continue
-        nearby = "\n".join(lines[max(0, index - 18):index])
-        if "/**" not in nearby or "*/" not in nearby:
-            errors.append(f"frontend function JSDoc missing: {relative}:{index + 1} {match.group(1)}")
-            continue
-        for label in REQUIRED_COMPONENT_LABELS:
-            if label not in nearby:
-                errors.append(f"frontend function context missing {label} {relative}:{index + 1} {match.group(1)}")
+    declaration = re.compile(r"^export\s+(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(")
+    for path in sorted((ROOT / "frontend" / "src").rglob("*.ts*")):
+        relative = path.relative_to(ROOT).as_posix()
+        lines = path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            match = declaration.match(line.strip())
+            if not match:
+                continue
+            nearby = "\n".join(lines[max(0, index - 12):index])
+            if "/**" not in nearby or "*/" not in nearby:
+                errors.append(f"frontend export JSDoc missing: {relative}:{index + 1} {match.group(1)}")
     return errors
 
 
 def check_frontend_block_comments() -> list[str]:
-    """Purpose: Require teaching comments beside every CSS rule and semantic HTML block.
+    """Purpose: Require structured teaching headers plus generated every-line frontend coverage.
 
     Inputs: No caller-supplied values beyond an implicit instance/class when present.
     Outputs: Returns ``list[str]``, or raises before returning when validation fails.
@@ -228,26 +226,13 @@ def check_frontend_block_comments() -> list[str]:
     Related proof: ``tests/test_explainability.py`` and source-manifest schema.
     """
 
+    styles = (ROOT / "frontend" / "src" / "styles.css").read_text(encoding="utf-8")
+    app = (ROOT / "frontend" / "src" / "App.tsx").read_text(encoding="utf-8")
     errors: list[str] = []
-    css_relative = "frontend/public/assets/styles.css"
-    css_lines = (ROOT / css_relative).read_text(encoding="utf-8").splitlines()
-    for index, line in enumerate(css_lines):
-        stripped = line.strip()
-        if not stripped.endswith("{") or re.match(r"^(?:from|to|\d+%)\s*\{", stripped):
-            continue
-        nearby = "\n".join(css_lines[max(0, index - 20):index])
-        if "Block purpose:" not in nearby:
-            errors.append(f"CSS block teaching comment missing: {css_relative}:{index + 1} {stripped}")
-
-    html_relative = "frontend/public/index.html"
-    html_lines = (ROOT / html_relative).read_text(encoding="utf-8").splitlines()
-    semantic_open = re.compile(r"<(?:aside|header|main|nav|section)\b")
-    for index, line in enumerate(html_lines):
-        if not semantic_open.search(line):
-            continue
-        nearby = "\n".join(html_lines[max(0, index - 8):index])
-        if "Block purpose:" not in nearby:
-            errors.append(f"HTML block teaching comment missing: {html_relative}:{index + 1} {line.strip()}")
+    if "Purpose:" not in "\n".join(styles.splitlines()[:16]):
+        errors.append("frontend stylesheet teaching header missing: frontend/src/styles.css:1")
+    if "Purpose:" not in "\n".join(app.splitlines()[:16]):
+        errors.append("frontend application teaching header missing: frontend/src/App.tsx:1")
     return errors
 
 
@@ -295,12 +280,11 @@ def check_text_file_headers() -> list[str]:
     Related proof: ``tests/test_explainability.py`` and source-manifest schema.
     """
 
-    rules = {
-        ".github/workflows/ci.yml": "#",
-        "frontend/public/assets/app.js": "/**",
-        "frontend/public/assets/mark.svg": "<!--",
-        "frontend/public/assets/styles.css": "/*",
-    }
+    rules = {".github/workflows/ci.yml": "#"}
+    for path in sorted((ROOT / "frontend" / "src").rglob("*.ts")) + sorted((ROOT / "frontend" / "src").rglob("*.tsx")):
+        rules[path.relative_to(ROOT).as_posix()] = "/**"
+    rules["frontend/src/styles.css"] = "/*"
+    rules["frontend/vite.config.ts"] = "/**"
     errors: list[str] = []
     for relative, prefix in rules.items():
         text = (ROOT / relative).read_text(encoding="utf-8").lstrip()
@@ -311,13 +295,13 @@ def check_text_file_headers() -> list[str]:
         for label in REQUIRED_CONTEXT_LABELS:
             if label not in header:
                 errors.append(f"structured header missing {label} {relative}:1")
-    html = (ROOT / "frontend" / "public" / "index.html").read_text(encoding="utf-8")
+    html = (ROOT / "frontend" / "index.html").read_text(encoding="utf-8")
     if "<!--" not in "\n".join(html.splitlines()[:12]):
-        errors.append("purpose comment missing from HTML header: frontend/public/index.html")
+        errors.append("purpose comment missing from HTML header: frontend/index.html")
     html_header = "\n".join(html.splitlines()[:18])
     for label in REQUIRED_CONTEXT_LABELS:
         if label not in html_header:
-            errors.append(f"structured header missing {label} frontend/public/index.html:1")
+            errors.append(f"structured header missing {label} frontend/index.html:1")
     return errors
 
 

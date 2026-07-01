@@ -14,7 +14,7 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 
 ### Browser UI
 
-`frontend/public/` contains static HTML, CSS, JavaScript, and the product mark. It reads state through `GET` and uses exactly two `POST` calls for authorization metadata and the matching byte stream. Its full-height desktop shell places normal source/tool/workflow/output work first and moves raw status, delivery tracks, execution gates, and blocked-action detail into Dev. Rail navigation, quick-jump search, and Work Flow/Plans/Dev tabs only change local visibility and focus.
+`frontend/` contains the promoted React/TypeScript application, reviewed tool icons, accepted industrial styling, and Vite build. `frontend/src/api.ts` maps current path-redacted backend records into the workbench and permits only guarded one-file intake plus the contained STL preflight. Picker, drop, and paste share that intake path. Rail navigation, quick-jump search, tool carousel, and Work Flow/Plans/Dev tabs preserve the accepted previous-app experience without importing its Python backend or private paths.
 
 ### HTTP Boundary
 

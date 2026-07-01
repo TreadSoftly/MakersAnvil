@@ -83,8 +83,8 @@ def write_config(root: Path) -> None:
                     "browserFilePickerEnabled": True,
                     "explicitAuthorizationRequired": True,
                     "appOwnedCopyEnabled": True,
-                    "dragDropEnabled": False,
-                    "clipboardPasteEnabled": False,
+                    "dragDropEnabled": True,
+                    "clipboardPasteEnabled": True,
                 },
                 "safety": {
                     "sourcePathStored": False,

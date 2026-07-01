@@ -53,16 +53,16 @@ def frontend_root(root: Path | None = None) -> Path:
 
     Inputs: Optional test/build root; normal callers use ``application_root``.
     Outputs: Absolute directory containing ``index.html`` and local assets.
-    How it works: Appends the package-stable ``frontend/public`` relative path.
+    How it works: Appends the package-stable compiled ``frontend/dist`` relative path.
     Side effects: Checks directory and file existence only.
     Failure behavior: Raises ``ResourceResolutionError`` with the missing location.
     Safety: Never falls back to a nearby directory that could expose private files.
-    Example: ``frontend_root(Path("bundle"))`` validates ``bundle/frontend/public``.
+    Example: ``frontend_root(Path("bundle"))`` validates ``bundle/frontend/dist``.
     Related proof: ``tests/test_runtime_resources.py`` and PyInstaller data config.
     """
 
     base = (root or application_root()).resolve()
-    candidate = (base / "frontend" / "public").resolve()
+    candidate = (base / "frontend" / "dist").resolve()
     index = candidate / "index.html"
     if not candidate.is_dir() or not index.is_file():
         raise ResourceResolutionError(f"Makers Anvil frontend resources are incomplete: {candidate}")

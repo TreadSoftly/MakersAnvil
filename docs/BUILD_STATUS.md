@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-machine test harness.
+PASS-023 - Previous working application promotion and portable API adaptation.
 
 ## Track Percentages
 
-- Real app completion: `72.5000%`
-- Windows local app: `80.0000%`
+- Real app completion: `80.0000%`
+- Windows local app: `84.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `30.0000%`
@@ -27,7 +27,7 @@ PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-ma
 - Browser dashboard renders the local workspace runtime root, detected directories, and init script status.
 - Default local settings enable only user-authorized intake; route execution, tool launch, archive extraction, folder import, deletion, and release packaging remain disabled.
 - Authorized intake records expose no source path, use generated logical names, include exact byte size and SHA-256 proof, and keep every downstream action false.
-- Browser dashboard provides choose, review, authorize, cancel, progress, success, and error states for one file without drag/drop or paste.
+- The promoted React workbench provides picker, drop, and paste gestures through one guarded one-file authorization and app-owned copy.
 - Runtime data uses OS-standard per-user locations or an explicit absolute override, never the source checkout location.
 - API and dashboard records expose logical storage metadata without resolved personal filesystem paths.
 - Source discovery is based on installed module/script locations rather than the current working directory.
@@ -96,6 +96,7 @@ PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-ma
 - PASS-020 enables one deliberately partial route stage: an explicitly authorized app-owned STL is streamed through a built-in structural preflight with exact size/hash checks, one concurrency slot, cooperative cancellation, fixed append-only audit events, a report, execution log, and hashed output proof. It starts no external command/process/tool, creates no toolpath or G-code, opens no output, and does not claim full mesh-to-toolpath completion.
 - PASS-021 adds strict read-only backup, restore, update, uninstall, and repair planning. It inventories declared app-owned source directories through bounded counts and bytes only, excludes temporary/backup destinations, preserves existing data, and exposes five plan/evidence/blocker cards without a lifecycle mutation endpoint.
 - PASS-022 selects MSIX as the Windows installer target, adds strict package/identity/runtime/signing/preservation policy, evaluates nine release gates, and defines six clean-machine scenarios. Only three foundation gates pass; no package build, signature, install, upgrade, removal, or machine scenario is claimed.
+- PASS-023 makes the previous working React application the authoritative frontend, adapts current path-redacted state and guarded mutations into its accepted workflow, packages the compiled bundle, preserves all 20 interaction tests, and keeps unsafe legacy operations visibly blocked.
 
 ## Blocked Or Not Proven
 
@@ -111,7 +112,6 @@ PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-ma
 - Process cancellation signaling and stop proof.
 - External-process execution logging.
 - Selected-file handoff.
-- Drag-and-drop or clipboard-paste intake.
 - Archive upload, content-type verification, and malware scanning.
 - Install, update, uninstall, or repair execution.
 - Backup manifest/archive creation, archive reading, and restore writes.
@@ -124,4 +124,4 @@ PASS-022 - Windows installer foundation, upgrade and removal gates, and clean-ma
 
 ## Next Pass
 
-PASS-023 - MSIX manifest, development package build, and isolated install execution foundation.
+PASS-024 - Promoted workbench interaction parity, safe previews, and proof-gated desktop adapters.

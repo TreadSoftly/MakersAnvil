@@ -8,7 +8,10 @@
     "url": "https://github.com/TreadSoftly/MakersAnvil.git"
   },
   "scripts": {
-    "dev": "python scripts/run_dev.py",
+    "dev": "npm --prefix frontend run build && python scripts/run_dev.py",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:test": "npm --prefix frontend run test",
     "desktop": "python scripts/run_desktop.py",
     "desktop:smoke": "python scripts/run_desktop.py --smoke",
     "learn": "python scripts/build_learning_guide.py",

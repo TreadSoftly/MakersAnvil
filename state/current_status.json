@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-022",
-    "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
+    "id": "PASS-023",
+    "title": "previous working application promotion and portable API adaptation",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_022_REPORT.md"
+    "reportPath": "docs/passes/PASS_023_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 72.5,
-    "windowsLocal": 80.0,
+    "realApp": 80.0,
+    "windowsLocal": 84.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 30.0,
@@ -139,6 +139,11 @@
     ,"Removal preserves user data by default, requires future explicit purge consent, and keeps purge and uninstall execution disabled."
     ,"Six clean-machine scenarios cover fresh install, launch, upgrade, repair, removal, and reinstall with zero runs and zero fabricated evidence."
     ,"The clean-machine CLI and three read-only APIs validate and expose the harness without invoking packages, processes, registry, certificates, network, publication, or deletion."
+    ,"The accepted previous working React application is now the authoritative product frontend rather than a separate reference-only visual baseline."
+    ,"The promoted rail, search, tool carousel, source board, Work Flow, Plans, Dev, proof inspector, dialogs, responsive layout, and restrained animation compile into the portable frontend bundle."
+    ,"A typed adapter maps current path-redacted backend records into the promoted workbench while legacy private-path, process-launch, output-open, and broad route endpoints remain absent."
+    ,"Picker, drag-and-drop, and clipboard file gestures converge on the same one-file short-lived authorization and exact-byte app-owned quarantine copy."
+    ,"Twenty retained React interaction tests pass against the current safety boundary, and the Python runtime packages only the compiled React dist tree."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -153,8 +158,6 @@
     "process cancellation signaling and stop proof",
     "external-process execution logging",
     "selected-file handoff",
-    "drag-and-drop intake",
-    "clipboard-paste intake",
     "archive upload",
     "software install/update/uninstall/repair execution",
     "backup manifest and archive creation",
@@ -173,8 +176,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-023",
-    "title": "MSIX manifest, development package build, and isolated install execution foundation",
+    "id": "PASS-024",
+    "title": "promoted workbench interaction parity, safe previews, and proof-gated desktop adapters",
     "claimState": "planned"
   }
 }

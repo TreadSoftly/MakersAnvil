@@ -46,7 +46,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-022-windows-installer-foundation"
+    api_build = "makers-anvil-real-pass-023-promoted-workbench"
 
     def __init__(
         self,

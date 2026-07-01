@@ -11,7 +11,7 @@
     "platform": {"const": "windows"},
     "format": {"const": "one-file-executable"},
     "entrypoint": {"const": "scripts/run_desktop.py"},
-    "frontend": {"const": "frontend/public"},
+    "frontend": {"const": "frontend/dist"},
     "bundledReadOnlyData": {"const": ["config", "schemas", "state"]},
     "expectedArtifact": {"const": "artifacts/windows/MakersAnvil.exe"},
     "installerFoundation": {
