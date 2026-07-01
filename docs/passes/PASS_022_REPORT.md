@@ -53,7 +53,8 @@
 - Fresh source desktop smoke exited 0 with PASS-022, `72.5%`, unchanged bounded mutation scopes, and route execution false.
 - Fresh Windows one-file build completed at `artifacts/windows/MakersAnvil.exe`; packaged `--smoke` exited 0 with bundled PASS-022 contracts.
 - Final local artifact identity: 14,404,632-byte `artifacts/windows/MakersAnvil.exe` with SHA-256 `62da24dbd2298fea5d241174814d7db58b5e18e41ff63e7e96b25461ae1fc0c5`.
-- Commit, draft PR, and hosted CI evidence are recorded after publication.
+- Implementation commit `ac97f1a7eeeddf01b5a9d622a72357d4beb85446` is published on `codex/pass-001-clean-foundation` through draft PR #1.
+- GitHub Actions run `28525413654` passed Windows, macOS, and Ubuntu verifier, harness, and test jobs plus the Windows executable build, smoke, and artifact upload job.
 
 ## Next Pass
 
