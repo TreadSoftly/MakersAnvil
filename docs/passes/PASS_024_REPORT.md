@@ -44,7 +44,7 @@ Restore the previous working application's selected-image preview experience wit
 - Project verifier: all API, required-file, JSON, status, portability, reference, forbidden-text, and explanation groups passed.
 - Native desktop smoke: passed with PASS-024, `82.5%`, current preview-capable API build, guarded mutation scopes, and full route execution false.
 - Fresh Windows one-file build: succeeded; packaged `MakersAnvil.exe --smoke` passed with bundled PASS-024 source, policy, schema, and React resources.
-- Cross-platform GitHub CI: pending final publication.
+- GitHub Actions run `28543861272`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build all passed.
 - Browser screenshot proof: not claimed because the in-app browser was unavailable.
 
 ## Next Pass
