@@ -27,6 +27,7 @@ import {
   FileText,
   FolderOpen,
   Home,
+  History,
   ImageIcon,
   Layers3,
   Loader2,
@@ -38,6 +39,7 @@ import {
   Search,
   Settings,
   SlidersHorizontal,
+  Square,
   Upload,
   Wind,
   Wrench,
@@ -45,6 +47,7 @@ import {
 } from "lucide-react";
 import { type ChangeEvent, type DragEvent, type ReactNode, type RefObject, useEffect, useMemo, useRef, useState } from "react";
 import {
+  cancelExecution,
   getRecentEvents,
   getState,
   logUserAction,
@@ -62,6 +65,7 @@ import type {
   AppState,
   CapabilityLane,
   ContainedArtifact,
+  ExecutionHistoryEntry,
   IntakeFile,
   IntakeState,
   LatestJob,
@@ -92,6 +96,11 @@ interface SearchResult {
   target: SearchTarget;
 }
 
+interface ActiveExecution {
+  id: string;
+  sourceName: string;
+}
+
 /** Coordinate workbench state, explicit user actions, and all visible application regions. */
 export function App() {
   const [state, setState] = useState<AppState | null>(null);
@@ -111,6 +120,8 @@ export function App() {
   const [railExpanded, setRailExpanded] = useState(false);
   const [selectedToolName, setSelectedToolName] = useState("");
   const [viewedArtifact, setViewedArtifact] = useState<ContainedArtifact | null>(null);
+  const [activeExecution, setActiveExecution] = useState<ActiveExecution | null>(null);
+  const [cancellingExecutionId, setCancellingExecutionId] = useState("");
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const appLoadedLoggedRef = useRef(false);
 
@@ -183,10 +194,16 @@ export function App() {
     setError("");
     recordAction("route_run_started", { target }, "info", "route");
     try {
-      const result = await runRoute(target);
+      const result = await runRoute(target, (execution) => {
+        setActiveExecution(execution);
+        refresh().catch(() => undefined);
+      });
       setLog((current) => [`${target}: exit ${result.exitCode}`, result.output, ...current].filter(Boolean));
       const refreshed = await refresh();
-      if (!result.ok) {
+      if (result.lifecycleState === "cancelled") {
+        setNotice("The STL preflight was cancelled cooperatively. No process signal was sent and no proof output was created.");
+        recordAction("route_run_cancelled", { target, executionId: result.executionId }, "blocked", "route");
+      } else if (!result.ok) {
         setError(`Job failed with exit code ${result.exitCode}. Open Dev for captured output.`);
         recordAction("route_run_completed", { target, exitCode: result.exitCode }, "fail", "route");
       } else {
@@ -214,16 +231,35 @@ export function App() {
       setError(err instanceof Error ? err.message : String(err));
       recordAction("route_run_error", { target, error: err instanceof Error ? err.message : String(err) }, "fail", "route");
     } finally {
+      setActiveExecution(null);
       setBusy(false);
     }
   }
 
-  async function handleOpen(kind: string) {
+  async function handleCancelExecution(executionId: string) {
+    setCancellingExecutionId(executionId);
+    setError("");
+    recordAction("execution_cancel_requested", { executionId }, "info", "route");
+    try {
+      const result = await cancelExecution(executionId);
+      if (result.processSignalSent) throw new Error("Cancellation safety failed because a process signal was reported.");
+      setNotice(result.lifecycleState === "cancelled" ? "The STL preflight was cancelled before it started." : "Cooperative cancellation requested. The preflight will stop after its current bounded read chunk.");
+      await refresh();
+      recordAction("execution_cancel_recorded", { executionId, cancellationState: result.cancellationState }, "ok", "route");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+      recordAction("execution_cancel_error", { executionId, error: err instanceof Error ? err.message : String(err) }, "fail", "route");
+    } finally {
+      setCancellingExecutionId("");
+    }
+  }
+
+  async function handleOpen(kind: string, executionId = "") {
     setBusy(true);
     setError("");
     recordAction("output_open_requested", { kind }, "info", "output");
     try {
-      const result = await openOutput(kind);
+      const result = await openOutput(kind, executionId);
       setViewedArtifact(result);
       setNotice(`Viewing verified ${result.title.toLowerCase()} inside Makers Anvil.`);
       setLog((current) => [`viewed ${kind}: ${result.mode} ${result.logicalPath}`, ...current]);
@@ -691,7 +727,16 @@ export function App() {
               selectedFileName={selectedFile?.name || ""}
               onSelect={handleSelectFile}
             />
-            <LatestOutputSummary job={state.latestJob} routes={state.routes} intake={state.intake} busy={busy} onOpen={handleOpen} />
+            <div className="output-column">
+              <LatestOutputSummary job={state.latestJob} routes={state.routes} intake={state.intake} busy={busy} onOpen={handleOpen} />
+              <ExecutionHistory
+                entries={state.executionHistory}
+                activeExecution={activeExecution}
+                cancellingExecutionId={cancellingExecutionId}
+                onCancel={handleCancelExecution}
+                onView={handleOpen}
+              />
+            </div>
             <ModeTabs tabs={tabs} active={activeMode} onChange={handleModeChange} />
           </section>
           <ContextInspector
@@ -1967,6 +2012,80 @@ function ArtifactViewer({ artifact, onClose }: { artifact: ContainedArtifact; on
   );
 }
 
+/**
+ * Purpose: Render path-redacted execution history with proof viewing and cooperative cancellation commands.
+ * Inputs: Adapted history, optional just-authorized run, cancellation state, and bounded command callbacks.
+ * Outputs: Up to eight responsive lifecycle rows with status, logical location, evidence, and allowed actions.
+ * How it works: Prepends active identity when refresh has not observed it, then renders state-dependent controls.
+ * Side effects: Button clicks delegate to caller callbacks; rendering itself changes no application data.
+ * Failure behavior: No rows returns no panel; pending cancellation disables its button against replay.
+ * Safety: The component receives no physical paths and cannot signal processes, launch tools, or open host files.
+ * Example: A completed run shows Report/Proof while a running run shows one Cancel preflight command.
+ * Related proof: App.test.tsx history and cancellation test plus responsive stylesheet rules.
+ */
+function ExecutionHistory({
+  entries,
+  activeExecution,
+  cancellingExecutionId,
+  onCancel,
+  onView,
+}: {
+  entries: ExecutionHistoryEntry[];
+  activeExecution: ActiveExecution | null;
+  cancellingExecutionId: string;
+  onCancel: (executionId: string) => void;
+  onView: (kind: string, executionId?: string) => void;
+}) {
+  const rows = entries.slice(0, 8);
+  if (activeExecution && !rows.some((entry) => entry.id === activeExecution.id)) {
+    rows.unshift({
+      id: activeExecution.id, sourceName: activeExecution.sourceName, operationLabel: "Built-in STL preflight",
+      lifecycleState: "running", claimState: "staged", createdUtc: "", updatedUtc: "", completedUtc: null,
+      cancellationState: "not-requested", canCancel: true, hasProof: false, proofOutcome: "not-available",
+      auditEventCount: 0, logicalRoot: `makers-anvil-data://user/executions/${activeExecution.id}`,
+    });
+  }
+  if (!rows.length) return null;
+  return (
+    <section className="execution-history" aria-label="Contained execution history">
+      <div className="section-heading tight">
+        <span className="execution-history-title"><History size={18} aria-hidden="true" /><h2>Preflight history</h2></span>
+        <small>{rows.length} recent run{rows.length === 1 ? "" : "s"}</small>
+      </div>
+      <div className="execution-history-list">
+        {rows.map((entry) => (
+          <article className={`execution-history-row ${entry.lifecycleState}`} key={entry.id}>
+            <span className="execution-history-copy">
+              <strong>{entry.sourceName}</strong>
+              <small>{entry.operationLabel} / {formatExecutionTime(entry.completedUtc || entry.updatedUtc || entry.createdUtc)}</small>
+              <code>{entry.logicalRoot}</code>
+            </span>
+            <span className="execution-history-state">
+              <StatusPill status={friendlyExecutionState(entry.lifecycleState)} />
+              <small>{entry.cancellationState === "not-requested" ? `${entry.auditEventCount} audit events` : `cancel ${entry.cancellationState}`}</small>
+            </span>
+            <span className="execution-history-actions">
+              {entry.hasProof && (
+                <>
+                  <button className="secondary-button compact" type="button" onClick={() => onView("Report", entry.id)}><FileText size={14} aria-hidden="true" />Report</button>
+                  <button className="secondary-button compact" type="button" onClick={() => onView("Proof", entry.id)}><Eye size={14} aria-hidden="true" />Proof</button>
+                </>
+              )}
+              {entry.canCancel && (
+                <button className="secondary-button compact danger" type="button" onClick={() => onCancel(entry.id)} disabled={cancellingExecutionId === entry.id}>
+                  {cancellingExecutionId === entry.id ? <Loader2 className="spin" size={14} aria-hidden="true" /> : <Square size={13} aria-hidden="true" />}
+                  Cancel preflight
+                </button>
+              )}
+            </span>
+          </article>
+        ))}
+      </div>
+      <p className="execution-history-boundary">Cancellation is cooperative and sends no operating-system process signal.</p>
+    </section>
+  );
+}
+
 function JobProgressStrip({
   files,
   plan,
@@ -2577,7 +2696,7 @@ function RunPreview({
     <section className="run-preview-panel" aria-label="Work plan preview">
       <div>
         <strong>Work plan preview: {route.label}</strong>
-        <p>{routeBeginnerInfo(route.target).creates} Originals stay unchanged. Output goes to a dated job folder.</p>
+        <p>{routeBeginnerInfo(route.target).creates} Originals stay unchanged. Evidence stays in app-owned execution storage.</p>
       </div>
       <dl>
         <div>
@@ -2691,6 +2810,42 @@ function formatEventTime(timestampUtc: string) {
     return timestampUtc;
   }
   return parsed.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+/**
+ * Purpose: Convert execution UTC text into a compact local timestamp without inventing missing time.
+ * Inputs: ISO-like UTC text or an empty value from an active synthetic row.
+ * Outputs: Local month/day/time text or an explicit pending/unavailable label.
+ * How it works: Parses with Date and formats only finite timestamps.
+ * Side effects: None beyond locale-aware string formatting.
+ * Failure behavior: Empty and invalid values return controlled text rather than throwing.
+ * Safety: Formatting cannot expose a filesystem path or mutate execution state.
+ * Example: An active callback row with no timestamp displays ``time pending``.
+ * Related proof: App.test.tsx execution history rendering.
+ */
+function formatExecutionTime(timestampUtc: string) {
+  if (!timestampUtc) return "time pending";
+  const parsed = new Date(timestampUtc);
+  if (Number.isNaN(parsed.getTime())) return "time unavailable";
+  return parsed.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+/**
+ * Purpose: Translate closed backend lifecycle values into concise visible labels.
+ * Inputs: One typed execution lifecycle value.
+ * Outputs: Human-readable status preserving the backend meaning.
+ * How it works: Looks up every member of the closed TypeScript union.
+ * Side effects: None.
+ * Failure behavior: TypeScript compilation fails if callers supply an unsupported state.
+ * Safety: Labels never convert staged work into a completed or proven claim.
+ * Example: ``cancelled`` renders as ``Cancelled``.
+ * Related proof: App.test.tsx running-history assertion.
+ */
+function friendlyExecutionState(state: ExecutionHistoryEntry["lifecycleState"]) {
+  const labels: Record<ExecutionHistoryEntry["lifecycleState"], string> = {
+    authorized: "Authorized", running: "Running", completed: "Completed", cancelled: "Cancelled", failed: "Failed",
+  };
+  return labels[state];
 }
 
 function formatEventDetail(detail: Record<string, unknown>) {

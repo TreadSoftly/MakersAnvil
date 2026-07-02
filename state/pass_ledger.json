@@ -357,6 +357,20 @@
         "unready, unknown, missing, symlinked, malformed, oversized, altered, and redirected artifacts fail closed",
         "service, API, adapter, React, schema, native smoke, package, purity, explainability, and cross-platform CI cover the pass"
       ]
+    },
+    {
+      "id": "PASS-026",
+      "title": "contained execution history and cooperative cancellation controls",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_026_REPORT.md",
+      "proof": [
+        "all valid contained executions map to newest-first path-redacted history rows with lifecycle, cancellation, audit, and proof truth",
+        "history report and proof commands target the selected generated execution rather than only the latest run",
+        "the generated execution id reaches the workbench before Run completes so a threaded request can be cancelled cooperatively",
+        "cancel rechecks live nonterminal catalog state, action availability, generated id syntax, and same-origin process token before a bodyless POST",
+        "requested cancellation disables replay and remains explicitly distinct from an operating-system process signal or process-stop claim",
+        "adapter and React tests plus existing service/API cancellation tests cover mapping, identity timing, commands, rejection, and false-signal behavior"
+      ]
     }
   ]
 }

@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-025",
-    "title": "verified contained proof and report viewer",
+    "id": "PASS-026",
+    "title": "contained execution history and cooperative cancellation controls",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_025_REPORT.md"
+    "reportPath": "docs/passes/PASS_026_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 85.0,
-    "windowsLocal": 88.0,
+    "realApp": 87.5,
+    "windowsLocal": 90.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 30.0,
@@ -156,6 +156,11 @@
     ,"Read-only report/proof GET routes accept only generated execution ids and the two closed artifact kinds, derive fixed private filenames, bound reads to 256 KiB, and expose logical paths only."
     ,"Every artifact read reloads the strict terminal record, validates complete proof/report shape, rechecks proof bindings and SHA-256, and rejects missing, unready, symlinked, malformed, oversized, altered, or redirected content."
     ,"The workbench displays verified JSON in an accessible responsive in-app dialog with integrity, size, and read-only facts while outputOpened, externalProcessStarted, and externalToolLaunched remain false."
+    ,"The promoted workbench now maps every valid contained execution into path-redacted newest-first history with source label, operation, lifecycle, cancellation, audit count, logical location, and proof availability."
+    ,"Report and proof actions can target any proof-bearing history record rather than silently reading only the newest run."
+    ,"Authorization exposes generated execution identity before the threaded Run request completes, making existing cooperative cancellation usable during work."
+    ,"Cancellation rechecks current catalog state and action availability, requires the same process-local request token, sends a bodyless fixed-endpoint request, disables replay after a request, and rejects invalid or terminal ids."
+    ,"Cancelled runs are reported distinctly from failed preflight proof and continue to record processSignalSent false."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -167,7 +172,7 @@
     "runnable tool command construction",
     "execution request persistence",
     "execution authorization beyond contained STL preflight",
-    "process cancellation signaling and stop proof",
+    "operating-system cancellation signaling and process-stop proof",
     "external-process execution logging",
     "selected-file handoff",
     "archive upload",
@@ -188,8 +193,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-026",
-    "title": "contained execution history and cooperative cancellation controls",
+    "id": "PASS-027",
+    "title": "allowlisted tool version proof and launch-confirmation foundation",
     "claimState": "planned"
   }
 }

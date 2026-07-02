@@ -2,7 +2,7 @@
 
 Makers Anvil is a local-first control panel for DIY makers. It helps organize source files, tool readiness, route previews, output proof, and setup/release safety without pretending unproven actions are ready.
 
-Current status: PASS-025 maps completed contained STL preflights into verified report and proof actions in the promoted React workbench. Each bounded JSON read rechecks terminal state, strict shape, fixed app-owned storage, size, and SHA-256 before rendering inside Makers Anvil; arbitrary OS file opening, launch, handoff, archive, and broad route actions remain blocked.
+Current status: PASS-026 adds path-redacted contained preflight history, per-run report/proof viewing, and guarded cooperative cancellation to the promoted React workbench. Cancellation rechecks live state and the local request token and never sends an operating-system signal; arbitrary OS file opening, tool launch, handoff, archive, and broad route actions remain blocked.
 
 ## Run Locally
 

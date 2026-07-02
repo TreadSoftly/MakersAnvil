@@ -181,6 +181,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_023_REPORT.md",
     "docs/passes/PASS_024_REPORT.md",
     "docs/passes/PASS_025_REPORT.md",
+    "docs/passes/PASS_026_REPORT.md",
     "schemas/learning-coverage.schema.json",
     "schemas/previous-app-migration.schema.json",
     "schemas/windows-package-plan.schema.json",
@@ -363,6 +364,8 @@ def check_api() -> list[str]:
         errors.append("GET /api/health does not expose verified authorized raster previews")
     if health.body.get("containedArtifactViewerEnabled") is not True:
         errors.append("GET /api/health does not expose the verified contained artifact viewer")
+    if health.body.get("containedExecutionHistoryEnabled") is not True or health.body.get("cooperativeCancellationUiEnabled") is not True:
+        errors.append("GET /api/health does not expose contained execution history and cancellation UI")
     if health.body.get("lifecycleDryRunEnabled") is not True:
         errors.append("GET /api/health does not expose read-only lifecycle planning")
     if health.body.get("windowsInstallerFoundationEnabled") is not True or health.body.get("cleanMachineExecutionEnabled") is not False:
@@ -378,14 +381,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-025":
-        errors.append("GET /api/state does not report PASS-025")
+    if state.body.get("currentPass", {}).get("id") != "PASS-026":
+        errors.append("GET /api/state does not report PASS-026")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-025":
-        errors.append("GET /api/workspace/status does not report PASS-025")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-025":
-        errors.append("GET /api/passes/ledger does not report PASS-025 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-026":
+        errors.append("GET /api/workspace/status does not report PASS-026")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-026":
+        errors.append("GET /api/passes/ledger does not report PASS-026 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -652,14 +655,14 @@ def check_status_records() -> list[str]:
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-025":
-        errors.append("current status does not report PASS-025")
-    if status.get("trackPercentages", {}).get("realApp") != 85.0:
-        errors.append("real app completion is not 85.0 for PASS-025")
+    if status.get("currentPass", {}).get("id") != "PASS-026":
+        errors.append("current status does not report PASS-026")
+    if status.get("trackPercentages", {}).get("realApp") != 87.5:
+        errors.append("real app completion is not 87.5 for PASS-026")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-025":
-        errors.append("pass ledger latest pass is not PASS-025")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-026":
+        errors.append("pass ledger latest pass is not PASS-026")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):

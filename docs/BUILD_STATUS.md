@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-025 - Verified contained proof and report viewer.
+PASS-026 - Contained execution history and cooperative cancellation controls.
 
 ## Track Percentages
 
-- Real app completion: `85.0000%`
-- Windows local app: `88.0000%`
+- Real app completion: `87.5000%`
+- Windows local app: `90.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `30.0000%`
@@ -99,6 +99,7 @@ PASS-025 - Verified contained proof and report viewer.
 - PASS-023 makes the previous working React application the authoritative frontend, adapts current path-redacted state and guarded mutations into its accepted workflow, packages the compiled bundle, preserves all 20 interaction tests, and keeps unsafe legacy operations visibly blocked.
 - PASS-024 restores selected-image display through a generated same-origin URL only after authorized-record, containment, size, SHA-256, extension, and raster-signature checks. Active content, paths, altered bytes, and non-images fail closed.
 - PASS-025 maps terminal contained preflights into report/proof actions, revalidates the exact record, shape, fixed artifact identity, size, and SHA-256 on every read, and renders the JSON inside an accessible workbench dialog without an OS open, private path, process, or tool effect.
+- PASS-026 maps the complete valid preflight catalog into compact path-redacted history, targets proof reads by generated execution id, exposes active identity before Run completes, and adds token-guarded cooperative cancellation without process signaling or process-stop claims.
 
 ## Blocked Or Not Proven
 
@@ -126,4 +127,4 @@ PASS-025 - Verified contained proof and report viewer.
 
 ## Next Pass
 
-PASS-025 - Contained proof and report viewer with proof-gated output interaction.
+PASS-027 - Allowlisted tool version proof and launch-confirmation foundation.

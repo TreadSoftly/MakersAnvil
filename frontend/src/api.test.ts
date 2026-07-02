@@ -2,7 +2,7 @@
  * Purpose: Prove current portable API records become safe promoted-workbench view models.
  * Used by: Vitest and CI beside the larger React interaction suite.
  * Inputs: Minimal path-redacted current API fixtures and mocked same-origin fetch responses.
- * Outputs: Assertions for authorized preview URLs, metadata-only fallbacks, and private-path absence.
+ * Outputs: Assertions for previews, execution history, early run identity, cancellation, proof viewing, and private-path absence.
  * Side effects: Replaces fetch only inside the isolated jsdom test process.
  * Safety: No real file, server, source path, token, route, tool, or process is used.
  * Failure behavior: Adapter shape drift or preview widening fails before a frontend build can ship.
@@ -10,7 +10,7 @@
  */
 
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { getState, openOutput } from "./api";
+import { cancelExecution, getState, openOutput, runRoute } from "./api";
 
 function currentStateFixture(withAuthorizedStorage = true) {
   return {
@@ -102,7 +102,8 @@ describe("portable API adapter", () => {
     const executionId = "execution-0123456789abcdef0123456789abcdef";
     current.containedExecutions = {
       summary: { proofCount: 1 },
-      executions: [{ record: { id: executionId, route: { id: "mesh-to-toolpath" }, lifecycle: { state: "completed" }, workspace: { logicalRoot: `makers-anvil-data://user/executions/${executionId}` }, proof: { report: { logicalPath: `makers-anvil-data://user/executions/${executionId}/outputs/stl-preflight-report.json` } } } }],
+      actions: { cancel: { enabledInApi: true } },
+      executions: [{ record: { id: executionId, claimState: "proven", createdUtc: "2026-07-01T20:00:00Z", updatedUtc: "2026-07-01T20:00:02Z", source: { displayName: "fixture.stl" }, operation: { label: "Built-in STL preflight" }, route: { id: "mesh-to-toolpath" }, lifecycle: { state: "completed", completedUtc: "2026-07-01T20:00:02Z" }, workspace: { logicalRoot: `makers-anvil-data://user/executions/${executionId}` }, proof: { outcome: "passed", report: { logicalPath: `makers-anvil-data://user/executions/${executionId}/outputs/stl-preflight-report.json` } } }, cancellation: { state: "not-requested" }, audit: { summary: { eventCount: 5 } } }],
     };
     const artifact = { schemaVersion: "makers-anvil.api.contained-artifact.v1", artifactKind: "report", title: "STL preflight report" };
     const fetchMock = vi.fn(async (url: string) => {
@@ -117,7 +118,45 @@ describe("portable API adapter", () => {
 
     expect(state.latestJob.availableOutputs.map((output) => output.key)).toEqual(["report", "proof"]);
     expect(state.latestJob.selectedRoute).toBe("mesh-review");
+    expect(state.executionHistory[0]).toMatchObject({ id: executionId, sourceName: "fixture.stl", lifecycleState: "completed", hasProof: true, canCancel: false, auditEventCount: 5 });
     expect(result.title).toBe("STL preflight report");
     expect(fetchMock).toHaveBeenCalledWith(`/api/executions/${executionId}/artifacts/report`, { cache: "no-store", credentials: "omit" });
+  });
+
+  test("sends a guarded bodyless cooperative cancellation request only for a running catalog record", async () => {
+    const executionId = "execution-fedcba9876543210fedcba9876543210";
+    const fetchMock = vi.fn(async (url: string, options?: RequestInit) => {
+      if (url === "/api/intake/session") return new Response(JSON.stringify({ requestToken: "cancel-token" }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/catalog") return new Response(JSON.stringify({ actions: { cancel: { enabledInApi: true } }, executions: [{ record: { id: executionId, lifecycle: { state: "running" } } }] }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.endsWith("/cancel")) return new Response(JSON.stringify({ record: { lifecycle: { state: "running" } }, cancellation: { state: "requested", processSignalSent: false } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ message: "Unexpected route" }), { status: 404, headers: { "Content-Type": "application/json" } });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await cancelExecution(executionId);
+
+    expect(result).toEqual({ lifecycleState: "running", cancellationState: "requested", processSignalSent: false });
+    expect(fetchMock).toHaveBeenCalledWith(`/api/executions/${executionId}/cancel`, {
+      method: "POST", headers: { "X-Makers-Anvil-Request-Token": "cancel-token" }, cache: "no-store", credentials: "omit",
+    });
+  });
+
+  test("exposes the generated execution id before the run request completes", async () => {
+    const executionId = "execution-00112233445566778899aabbccddeeff";
+    const intakeId = "intake-00112233445566778899aabbccddeeff";
+    const authorized = vi.fn();
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url === "/api/state") return new Response(JSON.stringify({ intakeCatalog: { records: [{ id: intakeId, source: { displayName: "fixture.stl", kind: "mesh", extension: ".stl" } }] } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/intake/session") return new Response(JSON.stringify({ requestToken: "run-token" }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/policy") return new Response(JSON.stringify({ scope: { routeId: "mesh-to-toolpath", operationId: "built-in-stl-preflight" }, endpoints: { authorize: "/api/executions/authorizations", runTemplate: "/api/executions/{executionId}/run" } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/authorizations") return new Response(JSON.stringify({ record: { id: executionId, source: { displayName: "fixture.stl" } } }), { status: 201, headers: { "Content-Type": "application/json" } });
+      if (url.endsWith("/run")) return new Response(JSON.stringify({ record: { lifecycle: { state: "cancelled" } } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ message: "Unexpected route" }), { status: 404, headers: { "Content-Type": "application/json" } });
+    }));
+
+    const result = await runRoute("mesh-review", authorized);
+
+    expect(authorized).toHaveBeenCalledWith({ id: executionId, sourceName: "fixture.stl" });
+    expect(result).toMatchObject({ executionId, lifecycleState: "cancelled", exitCode: 2, ok: false });
   });
 });

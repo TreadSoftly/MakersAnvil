@@ -13,6 +13,7 @@ import type {
   AppState,
   CapabilityLane,
   ContainedArtifact,
+  ExecutionHistoryEntry,
   IntakeFile,
   RecentEventsResponse,
   RouteCard,
@@ -252,6 +253,45 @@ function adaptLatestJob(current: JsonRecord): AppState["latestJob"] {
   return { exists: true, selectedRoute: routeTarget(String(record.route?.id || "")), outputs, availableOutputs: outputs, missingOutputs: [] };
 }
 
+/**
+ * Purpose: Convert strict path-redacted execution catalog items into compact workbench history rows.
+ * Inputs: Current composed API state containing validated execution, cancellation, audit, and action records.
+ * Outputs: Ordered presentation records with closed lifecycle values and no physical paths.
+ * How it works: Rejects malformed ids/states, normalizes bounded fields, and derives cancellation/proof availability.
+ * Side effects: None; this function transforms an in-memory response only.
+ * Failure behavior: Invalid catalog items are omitted instead of becoming actionable UI rows.
+ * Safety: Cancel is offered only for authorized/running work with no existing request and an enabled backend action.
+ * Example: A completed proof record becomes one non-cancellable row with report/proof actions.
+ * Related proof: api.test.ts history mapping and App.test.tsx cancellation interaction.
+ */
+function adaptExecutionHistory(current: JsonRecord): ExecutionHistoryEntry[] {
+  const executions = Array.isArray(current.containedExecutions?.executions) ? current.containedExecutions.executions : [];
+  const cancelEnabled = current.containedExecutions?.actions?.cancel?.enabledInApi === true;
+  const allowedStates = new Set(["authorized", "running", "completed", "cancelled", "failed"]);
+  return executions.flatMap((item: JsonRecord) => {
+    const record = item.record || {};
+    const lifecycleState = String(record.lifecycle?.state || "");
+    if (!allowedStates.has(lifecycleState) || !/^execution-[a-f0-9]{32}$/.test(String(record.id || ""))) return [];
+    const cancellationState = ["not-requested", "requested", "observed"].includes(String(item.cancellation?.state))
+      ? String(item.cancellation.state) as ExecutionHistoryEntry["cancellationState"]
+      : "not-requested";
+    const proofOutcome = ["passed", "failed"].includes(String(record.proof?.outcome))
+      ? String(record.proof.outcome) as ExecutionHistoryEntry["proofOutcome"]
+      : "not-available";
+    return [{
+      id: String(record.id), sourceName: String(record.source?.displayName || "Authorized STL"),
+      operationLabel: String(record.operation?.label || "Built-in STL preflight"),
+      lifecycleState: lifecycleState as ExecutionHistoryEntry["lifecycleState"], claimState: String(record.claimState || "not proven"),
+      createdUtc: String(record.createdUtc || ""), updatedUtc: String(record.updatedUtc || ""),
+      completedUtc: typeof record.lifecycle?.completedUtc === "string" ? record.lifecycle.completedUtc : null,
+      cancellationState, canCancel: cancelEnabled && ["authorized", "running"].includes(lifecycleState) && cancellationState === "not-requested",
+      hasProof: Boolean(record.proof), proofOutcome,
+      auditEventCount: Number(item.audit?.summary?.eventCount || 0),
+      logicalRoot: String(record.workspace?.logicalRoot || `makers-anvil-data://user/executions/${record.id}`),
+    }];
+  });
+}
+
 /** Compose the complete previous-app view model from current portable backend truth. */
 function adaptState(current: JsonRecord): AppState {
   const files = adaptFiles(current);
@@ -301,6 +341,7 @@ function adaptState(current: JsonRecord): AppState {
     tools,
     toolHandoffs: adaptHandoffs(current, tools),
     latestJob: adaptLatestJob(current),
+    executionHistory: adaptExecutionHistory(current),
     capabilityMatrix: adaptCapability(current),
     claims: {
       allowed: ["authorized app-owned intake", "read-only work plans", "contained STL structural preflight"],
@@ -341,8 +382,21 @@ export async function logUserAction(_event: { action: string; surface: string; s
   return { ok: false };
 }
 
-/** Run only the current authorized built-in STL structural preflight. */
-export async function runRoute(target: RouteTarget): Promise<{ ok: boolean; exitCode: number; output: string }> {
+/**
+ * Purpose: Authorize and run only the current built-in STL structural preflight.
+ * Inputs: Mesh-review target plus an optional callback receiving generated execution identity.
+ * Outputs: Terminal lifecycle, exit semantics, path-redacted message, and execution id.
+ * How it works: Reads current source/session/policy, posts exact consent, emits identity, then posts Run.
+ * Side effects: Creates and runs one app-owned contained preflight through guarded same-origin APIs.
+ * Failure behavior: Missing STL, token, identity, policy, or API success throws a visible bounded error.
+ * Safety: The callback exposes no physical path and the operation starts no external process or tool.
+ * Example: Cancellation returns lifecycle ``cancelled`` with exit code two rather than fake failure proof.
+ * Related proof: api.test.ts early-identity test and contained execution backend tests.
+ */
+export async function runRoute(
+  target: RouteTarget,
+  onAuthorized?: (execution: { id: string; sourceName: string }) => void,
+): Promise<{ ok: boolean; exitCode: number; output: string; executionId: string; lifecycleState: string }> {
   if (target !== "mesh-review") throw new Error("This work plan is preview-only. Its contained execution adapter is not proven yet.");
   const [state, session, policy] = await Promise.all([
     jsonFetch<JsonRecord>("/api/state"), jsonFetch<JsonRecord>("/api/intake/session"), jsonFetch<JsonRecord>("/api/executions/policy"),
@@ -356,14 +410,48 @@ export async function runRoute(target: RouteTarget): Promise<{ ok: boolean; exit
   });
   const executionId = String(authorization.record?.id || "");
   if (!executionId) throw new Error("The STL preflight authorization did not create an execution record.");
+  onAuthorized?.({ id: executionId, sourceName: String(authorization.record?.source?.displayName || "Authorized STL") });
   const result = await jsonFetch<JsonRecord>(String(policy.endpoints.runTemplate).replace("{executionId}", encodeURIComponent(executionId)), {
     method: "POST", headers: { "X-Makers-Anvil-Request-Token": String(session.requestToken || "") },
   });
-  return { ok: result.record?.lifecycle?.state === "completed", exitCode: result.record?.lifecycle?.state === "completed" ? 0 : 1, output: "Contained STL structural preflight completed with path-redacted proof." };
+  const lifecycleState = String(result.record?.lifecycle?.state || "failed");
+  return {
+    ok: lifecycleState === "completed", exitCode: lifecycleState === "completed" ? 0 : lifecycleState === "cancelled" ? 2 : 1,
+    output: lifecycleState === "cancelled" ? "Contained STL structural preflight cancelled cooperatively." : "Contained STL structural preflight completed with path-redacted proof.",
+    executionId, lifecycleState,
+  };
+}
+
+/**
+ * Purpose: Request cooperative cancellation for one generated nonterminal execution id.
+ * Inputs: Anchored generated execution id selected from current path-redacted history.
+ * Outputs: Current lifecycle, cancellation state, and explicit process-signal truth.
+ * How it works: Rechecks the live catalog/action, obtains the process token, then posts a bodyless request.
+ * Side effects: Replaces app-owned cancellation state; authorized work may finalize immediately as cancelled.
+ * Failure behavior: Invalid, missing, terminal, or disabled candidates throw before a mutation request.
+ * Safety: No signal, process handle, command, path, or external tool data is accepted or constructed.
+ * Example: A running record returns ``requested`` while its read loop observes the request cooperatively.
+ * Related proof: api.test.ts guarded POST test and test_contained_execution.py cancellation cases.
+ */
+export async function cancelExecution(executionId: string): Promise<{ lifecycleState: string; cancellationState: string; processSignalSent: boolean }> {
+  if (!/^execution-[a-f0-9]{32}$/.test(executionId)) throw new Error("The contained execution id is invalid.");
+  const [session, catalog] = await Promise.all([jsonFetch<JsonRecord>("/api/intake/session"), jsonFetch<JsonRecord>("/api/executions/catalog")]);
+  const candidate = (catalog.executions || []).find((item: JsonRecord) => item.record?.id === executionId);
+  if (catalog.actions?.cancel?.enabledInApi !== true || !candidate || !["authorized", "running"].includes(candidate.record?.lifecycle?.state)) {
+    throw new Error("This contained execution is no longer cancellable.");
+  }
+  const result = await jsonFetch<JsonRecord>(`/api/executions/${encodeURIComponent(executionId)}/cancel`, {
+    method: "POST", headers: { "X-Makers-Anvil-Request-Token": String(session.requestToken || "") },
+  });
+  return {
+    lifecycleState: String(result.record?.lifecycle?.state || "unknown"),
+    cancellationState: String(result.cancellation?.state || "unknown"),
+    processSignalSent: result.cancellation?.processSignalSent === true,
+  };
 }
 
 /** Fetch one closed, verified JSON artifact for display inside the workbench. */
-export async function openOutput(kind: string): Promise<ContainedArtifact> {
+export async function openOutput(kind: string, requestedExecutionId = ""): Promise<ContainedArtifact> {
   const artifactKind = kind.toLowerCase();
   if (!(["report", "proof"] as string[]).includes(artifactKind)) {
     throw new Error("Output opening is blocked; only the contained execution report and proof can be viewed in the app.");
@@ -375,7 +463,8 @@ export async function openOutput(kind: string): Promise<ContainedArtifact> {
   }
   const latest = (catalog.executions || []).find((item: JsonRecord) => {
     const lifecycle = item.record?.lifecycle?.state;
-    return ["completed", "failed"].includes(lifecycle) && item.record?.proof;
+    const requested = requestedExecutionId ? item.record?.id === requestedExecutionId : true;
+    return requested && ["completed", "failed"].includes(lifecycle) && item.record?.proof;
   });
   const executionId = String(latest?.record?.id || "");
   if (!executionId) throw new Error("No verified execution artifact is available yet.");

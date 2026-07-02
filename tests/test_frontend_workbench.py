@@ -88,6 +88,35 @@ def test_legacy_machine_specific_actions_remain_visibly_blocked() -> None:
     assert "private path not exposed" in api
 
 
+def test_execution_history_and_cooperative_cancel_stay_path_redacted_and_signal_free() -> None:
+    """Purpose: Prove the promoted workbench exposes bounded history and cooperative cancel only.
+
+    Inputs: Current React application, TypeScript adapter, and presentation type source.
+    Outputs: Assertions over visible history, generated-id checks, guarded POST, and false-signal wording.
+    How it works: Reads first-party source and checks stable contract tokens without executing the UI.
+    Side effects: Reads three tracked text files only.
+    Failure behavior: Missing controls, token guards, id anchoring, or safety language fails CI.
+    Safety: The test cannot signal a process, mutate runtime state, or expose a physical path.
+    Example: Cancel requires ``X-Makers-Anvil-Request-Token`` and a generated execution id.
+    Related proof: Frontend interaction/adapter tests and contained execution cancellation service tests.
+    """
+
+    app = APP_PATH.read_text(encoding="utf-8")
+    api = API_PATH.read_text(encoding="utf-8")
+    types = (ROOT / "frontend" / "src" / "types.ts").read_text(encoding="utf-8")
+
+    assert "Contained execution history" in app
+    assert "Cancel preflight" in app
+    assert "sends no operating-system process signal" in app
+    assert "cancelExecution(executionId" in api
+    assert 'method: "POST"' in api
+    assert '"X-Makers-Anvil-Request-Token"' in api
+    assert "^execution-[a-f0-9]{32}$" in api
+    assert "ExecutionHistoryEntry" in types
+    history_contract = types.split("export interface ExecutionHistoryEntry", 1)[1].split("}", 1)[0]
+    assert "physicalPath" not in history_contract and "absolutePath" not in history_contract
+
+
 def test_styles_retain_motion_responsive_layout_and_reduced_motion() -> None:
     """Purpose: Preserve the accepted visual character while keeping desktop/mobile geometry usable.
 

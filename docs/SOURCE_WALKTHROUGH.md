@@ -70,8 +70,8 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 | --- | --- | --- |
 | `frontend/index.html` | Minimal trusted React mount document and local product identity metadata. | One root -> module entry -> local favicon/manifest. |
 | `frontend/src/main.tsx` | Creates the one StrictMode React tree. | Root lookup -> App mount -> shared styles. |
-| `frontend/src/App.tsx` | Promoted rail, command search, source board, tool carousel, workflows, plans, proof, help, and settings. | State/actions -> workbench regions -> component helpers -> presentation helpers. |
-| `frontend/src/api.ts` | Current-state adaptation, guarded intake, contained preflight, activity reads, and explicit blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
+| `frontend/src/App.tsx` | Promoted rail, source board, tools, workflows, execution history/cancel, proof, help, and settings. | State/actions -> workbench regions -> component helpers -> presentation helpers. |
+| `frontend/src/api.ts` | Current-state/history adaptation, guarded intake/preflight/cancel, selected artifact reads, activity, and blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
 | `frontend/src/api.test.ts` | Current-record to view-model preview URL and privacy proof. | Authorized image fixture -> generated URL -> metadata-only fallback. |
 | `frontend/src/components/ContextHelp.tsx` | Accessible viewport-contained help dialog with Escape close and focus restoration. | Position -> listeners -> dialog portal. |
 | `frontend/src/components/ModeTabs.tsx` | Keyboard-operable Work Flow, Plans, and Dev selection. | ARIA tabs -> arrow/Home/End movement -> tab panels. |

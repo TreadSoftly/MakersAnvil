@@ -3,8 +3,8 @@
   "claimState": "proven",
   "guidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
   "sourceCount": 167,
-  "totalLineCount": 37301,
-  "explainedLineCount": 37301,
+  "totalLineCount": 37854,
+  "explainedLineCount": 37854,
   "files": [
     {
       "path": ".github/workflows/ci.yml",
@@ -57,9 +57,9 @@
     },
     {
       "path": "backend/src/makers_anvil_backend/desktop.py",
-      "sha256": "01d547bf3cd4a4856fdd5b0673b12346d8e68d05bc6a7d8c15b0852c9dee893b",
-      "lineCount": 241,
-      "explainedLineCount": 241,
+      "sha256": "cc28b128e76cea696727d2a98e185fa0056f66f1dd1ceaa5bd0d0e46a176652d",
+      "lineCount": 243,
+      "explainedLineCount": 243,
       "guideAnchor": "source-008"
     },
     {
@@ -106,9 +106,9 @@
     },
     {
       "path": "backend/src/makers_anvil_backend/services/app_state.py",
-      "sha256": "9d5eadd43062c63029305ef1d6b622d10b6cd3f4bca1b3374649b6069df90554",
-      "lineCount": 973,
-      "explainedLineCount": 973,
+      "sha256": "c5a8a7e2ecea95b6a85403957760411f71bb7a7b1ce46a61ac5de61ea41c703c",
+      "lineCount": 975,
+      "explainedLineCount": 975,
       "guideAnchor": "source-015"
     },
     {
@@ -393,30 +393,30 @@
     },
     {
       "path": "frontend/src/App.test.tsx",
-      "sha256": "785b9573a5e0b64b1f25ed608714e205fb6a350748965245e26819ddb344b030",
-      "lineCount": 815,
-      "explainedLineCount": 815,
+      "sha256": "dc1a58e01f5c28ce833b2017d0adf20e3af05130f3471292af511dbfad392a1e",
+      "lineCount": 846,
+      "explainedLineCount": 846,
       "guideAnchor": "source-056"
     },
     {
       "path": "frontend/src/App.tsx",
-      "sha256": "ab3057a63670739b7e20adc1ef8e1ca5c7b329a72840fa74555779053a7885d9",
-      "lineCount": 3252,
-      "explainedLineCount": 3252,
+      "sha256": "24f76a3d2be03b1bb7cfee8a0c901c6a54cd20efb952ba085f65f8467cb29c4b",
+      "lineCount": 3407,
+      "explainedLineCount": 3407,
       "guideAnchor": "source-057"
     },
     {
       "path": "frontend/src/api.test.ts",
-      "sha256": "26022cc62393a886c9b52703abdea983b1fea596bb9f338c61e5a86a0e772d3d",
-      "lineCount": 123,
-      "explainedLineCount": 123,
+      "sha256": "dfaecbded1529954a4edb0ae2d435a57f2186085dd873ace4059b03ca8b37650",
+      "lineCount": 162,
+      "explainedLineCount": 162,
       "guideAnchor": "source-058"
     },
     {
       "path": "frontend/src/api.ts",
-      "sha256": "02c89576f4d4af04b95d65e103ebdeaad4722bfc1300a4accc4b157bbb148c36",
-      "lineCount": 427,
-      "explainedLineCount": 427,
+      "sha256": "315f62678f8d739f5bd6332a909903f380635ec59faec724beb1d684af610185",
+      "lineCount": 516,
+      "explainedLineCount": 516,
       "guideAnchor": "source-059"
     },
     {
@@ -449,9 +449,9 @@
     },
     {
       "path": "frontend/src/styles.css",
-      "sha256": "e89447ced7072a6b7c60d420ea9487ee756cd88a84f89dfc26cbed7f1613090d",
-      "lineCount": 5479,
-      "explainedLineCount": 5479,
+      "sha256": "4bbe969bcd837b6cf2c919f0ce6b8b256267393a7d0dd43a95bde2f394b8793b",
+      "lineCount": 5615,
+      "explainedLineCount": 5615,
       "guideAnchor": "source-064"
     },
     {
@@ -463,9 +463,9 @@
     },
     {
       "path": "frontend/src/types.ts",
-      "sha256": "f19beb602d54cfadb8fe379af152c9416de3d4e5f3aaf2b36f7da4901071d43d",
-      "lineCount": 278,
-      "explainedLineCount": 278,
+      "sha256": "6362ac1603d71302ac77c4041670b495c46c28924d02baba5ff60e22cefabaa1",
+      "lineCount": 298,
+      "explainedLineCount": 298,
       "guideAnchor": "source-066"
     },
     {
@@ -554,9 +554,9 @@
     },
     {
       "path": "schemas/contained-execution-catalog.schema.json",
-      "sha256": "37f33359e31c50b860ba463362156f3861f4d7442d1bbc4c28ccee3edf02307b",
-      "lineCount": 19,
-      "explainedLineCount": 19,
+      "sha256": "3d66898e60dd8c16c7033de3f3eebe538a361756d870764bb9c50d422a944af3",
+      "lineCount": 44,
+      "explainedLineCount": 44,
       "guideAnchor": "source-079"
     },
     {
@@ -939,44 +939,44 @@
     },
     {
       "path": "scripts/verify_project.py",
-      "sha256": "24f98ad233ec1f7ccc893b82bf1d66e546635164fc3d709206b3f883de427d9d",
-      "lineCount": 921,
-      "explainedLineCount": 921,
+      "sha256": "0612f9145e5ed1a9cc1daef2b5424bc589c614008d23777b5a9825234007b5b6",
+      "lineCount": 924,
+      "explainedLineCount": 924,
       "guideAnchor": "source-134"
     },
     {
       "path": "state/current_status.json",
-      "sha256": "d811dabeb8183b664c74fd813bf7bf7b1e18f4795dba93d52766eeee298122d3",
-      "lineCount": 195,
-      "explainedLineCount": 195,
+      "sha256": "5d6788ada1fd08fbcebda81a62bffc4802770e49890da81b6eb45016938441c9",
+      "lineCount": 200,
+      "explainedLineCount": 200,
       "guideAnchor": "source-135"
     },
     {
       "path": "state/pass_ledger.json",
-      "sha256": "1e5fbe55ffb9f12092891bd641208ba10abcffa81136a4fbf6b6951b21d151ea",
-      "lineCount": 362,
-      "explainedLineCount": 362,
+      "sha256": "b0cca26fd1e703b61a27b1c386805bfa2b66b7b65154e705a3c9e39ca029b493",
+      "lineCount": 376,
+      "explainedLineCount": 376,
       "guideAnchor": "source-136"
     },
     {
       "path": "state/previous_app_migration.json",
-      "sha256": "c1ace890ba3158f5fc038fe57e2751f861cd0b7633801be4a7f18e21c03b049a",
+      "sha256": "0995f6d8d55153b947be50c2da87dffb5a45cc6914d45b1877182acf826034e3",
       "lineCount": 52,
       "explainedLineCount": 52,
       "guideAnchor": "source-137"
     },
     {
       "path": "state/source_manifest.json",
-      "sha256": "31614818292863a780b124f5733949c85c2a6f0806df0acb6fb5a436537a21f0",
-      "lineCount": 237,
-      "explainedLineCount": 237,
+      "sha256": "9a7bef7a515a4fbdf912edb69de6e1f75930f05c47b7cf6cb69ac407c8200219",
+      "lineCount": 238,
+      "explainedLineCount": 238,
       "guideAnchor": "source-138"
     },
     {
       "path": "tests/test_api.py",
-      "sha256": "8ac14f93cc51bc03d3bda4e658a4fae738cd2cb0d8ebbacf0b9d18ee8bfbc6cb",
-      "lineCount": 518,
-      "explainedLineCount": 518,
+      "sha256": "f6281d5dbd5667663caa04ccc4a50dbaaf64e3f07d9ce17e911c3528a2db7fb9",
+      "lineCount": 520,
+      "explainedLineCount": 520,
       "guideAnchor": "source-139"
     },
     {
@@ -1002,7 +1002,7 @@
     },
     {
       "path": "tests/test_desktop.py",
-      "sha256": "df7a571bf98c53ca33228666ada74172fe01fcf10ba53eb1396c0e33a5bd3f48",
+      "sha256": "521c660fb70c2a2ef05cd2a97c8b1c7137e39a44f194233eb869635f2a5e552c",
       "lineCount": 178,
       "explainedLineCount": 178,
       "guideAnchor": "source-143"
@@ -1030,9 +1030,9 @@
     },
     {
       "path": "tests/test_frontend_workbench.py",
-      "sha256": "9658cf33d41b81659e70bc09c61dc34a27dbbe308af8cabc8c2ea75a6c407c5d",
-      "lineCount": 133,
-      "explainedLineCount": 133,
+      "sha256": "d17f0b20cf9471e8b397b11682dd20502623ea41ebe8c34e101e80409b7fffbc",
+      "lineCount": 162,
+      "explainedLineCount": 162,
       "guideAnchor": "source-147"
     },
     {
@@ -1093,7 +1093,7 @@
     },
     {
       "path": "tests/test_project_purity.py",
-      "sha256": "c9e8079d3e3d26077199579c107811e16daec4f7837956cd8aac8d8183b96f18",
+      "sha256": "10cb6f6fb02fc759c49e0c40a5fc41bd47837b286b3012c86138334cc2ad9616",
       "lineCount": 475,
       "explainedLineCount": 475,
       "guideAnchor": "source-156"

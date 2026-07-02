@@ -1386,6 +1386,23 @@ kbd {
   grid-area: output;
 }
 
+/* Output proof and execution history share one bounded grid lane without nesting panels. */
+.output-column {
+  grid-area: output;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+
+.output-column > .latest-output-summary {
+  grid-area: auto;
+  overflow: visible;
+}
+
 .activity-timeline {
   grid-area: activity;
 }
@@ -5093,6 +5110,7 @@ pre {
   .main-column > .goal-actions,
   .main-column > .route-strip,
   .main-column > .latest-output-summary,
+  .main-column > .output-column,
   .main-column > .activity-timeline,
   .main-column > .mode-panel {
     grid-column: 1;
@@ -5107,6 +5125,7 @@ pre {
   .goal-actions,
   .route-strip,
   .latest-output-summary,
+  .output-column,
   .activity-timeline,
   .mode-panel,
   .context-inspector {
@@ -5374,6 +5393,113 @@ pre {
   overflow-wrap: anywhere;
 }
 
+/* History rows expose lifecycle evidence and only the two reviewed execution commands. */
+.execution-history {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgb(56 199 216 / 7%), transparent 48%), var(--surface);
+}
+
+.execution-history-title,
+.execution-history-state,
+.execution-history-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.execution-history-title h2 {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.execution-history > .section-heading > small,
+.execution-history-boundary {
+  color: var(--quiet);
+  font-size: 0.72rem;
+}
+
+.execution-history-list {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.execution-history-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--quiet);
+  border-radius: 6px;
+  background: var(--surface-deep);
+}
+
+.execution-history-row.running,
+.execution-history-row.authorized {
+  border-left-color: var(--cyan);
+}
+
+.execution-history-row.completed {
+  border-left-color: var(--green);
+}
+
+.execution-history-row.cancelled,
+.execution-history-row.failed {
+  border-left-color: var(--yellow);
+}
+
+.execution-history-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.execution-history-copy strong,
+.execution-history-copy small,
+.execution-history-copy code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.execution-history-copy small,
+.execution-history-state small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.execution-history-copy code {
+  color: var(--cyan);
+  font-size: 0.68rem;
+}
+
+.execution-history-state {
+  justify-content: flex-end;
+}
+
+.execution-history-actions {
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+}
+
+.secondary-button.danger {
+  color: #ffb8b8;
+  border-color: rgb(255 91 98 / 38%);
+}
+
+.execution-history-boundary {
+  margin: 0;
+  line-height: 1.35;
+}
+
 @media (max-width: 640px) {
   .artifact-viewer-backdrop {
     padding: 10px;
@@ -5386,6 +5512,16 @@ pre {
 
   .artifact-viewer-facts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .execution-history-row {
+    grid-template-columns: 1fr;
+  }
+
+  .execution-history-state,
+  .execution-history-actions {
+    grid-column: 1;
+    justify-content: flex-start;
   }
 }
 

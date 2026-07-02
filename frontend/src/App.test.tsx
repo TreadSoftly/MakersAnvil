@@ -2,7 +2,7 @@
  * Purpose: Preserve the previous app's accepted workbench behavior while proving current portable safety boundaries.
  * Used by: Vitest locally and the repository CI frontend verification job.
  * Inputs: Deterministic AppState fixtures, browser events, and same-origin API response mocks.
- * Outputs: Twenty-one interaction assertions covering layout, navigation, intake, tools, plans, proof, and failures.
+ * Outputs: Twenty-two interaction assertions covering layout, navigation, intake, tools, plans, proof, history, cancellation, and failures.
  * Side effects: Uses jsdom and mocked fetch only; no real user file, process, server, or path is touched.
  * Safety: Unsafe legacy tool/output/path calls are expected to stay visibly blocked.
  * Failure behavior: Any missing workflow, changed accessible label, or weakened guard fails the suite.
@@ -215,6 +215,7 @@ function fixture(overrides: Partial<AppState> = {}): AppState {
       ],
       missingOutputs: [{ key: "inventory", label: "Scene inventory", openKind: "Inventory", exists: false, pathDisplay: "missing.json" }],
     },
+    executionHistory: [],
     capabilityMatrix: {
       summary: {
         totalFiles: 1,
@@ -557,6 +558,36 @@ describe("Makers Anvil control panel", () => {
     expect(within(dialog).getByLabelText("STL preflight report JSON")).toHaveTextContent('"triangleCount": 1');
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog", { name: "STL preflight report" })).not.toBeInTheDocument();
+  });
+
+  test("renders execution history and requests cooperative cancellation without a process signal", async () => {
+    const user = userEvent.setup();
+    const executionId = "execution-fedcba9876543210fedcba9876543210";
+    const running = {
+      id: executionId, sourceName: "large-fixture.stl", operationLabel: "Built-in STL preflight",
+      lifecycleState: "running" as const, claimState: "staged", createdUtc: "2026-07-01T20:00:00Z", updatedUtc: "2026-07-01T20:00:01Z",
+      completedUtc: null, cancellationState: "not-requested" as const, canCancel: true, hasProof: false,
+      proofOutcome: "not-available" as const, auditEventCount: 3, logicalRoot: `makers-anvil-data://user/executions/${executionId}`,
+    };
+    const state = fixture({ executionHistory: [running] });
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url === "/api/state") return new Response(JSON.stringify(state), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/activity/recent") return new Response(JSON.stringify({ events: [], logicalRoot: "makers-anvil-data://user/logs/activity", summary: { eventCount: 0 } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/intake/session") return new Response(JSON.stringify({ requestToken: "cancel-token" }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/catalog") return new Response(JSON.stringify({ actions: { cancel: { enabledInApi: true } }, executions: [{ record: { id: executionId, lifecycle: { state: "running" } } }] }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.endsWith("/cancel")) return new Response(JSON.stringify({ record: { lifecycle: { state: "running" } }, cancellation: { state: "requested", processSignalSent: false } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { "Content-Type": "application/json" } });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+
+    const history = await screen.findByRole("region", { name: "Contained execution history" });
+    expect(within(history).getByText("large-fixture.stl")).toBeInTheDocument();
+    expect(within(history).getByText("Running")).toBeInTheDocument();
+    await user.click(within(history).getByRole("button", { name: /Cancel preflight/i }));
+    expect(await screen.findByText(/Cooperative cancellation requested/i)).toBeInTheDocument();
+    expect(fetchMock).toHaveBeenCalledWith(`/api/executions/${executionId}/cancel`, expect.objectContaining({ method: "POST" }));
+    expect(document.body.textContent).not.toContain("process signal sent");
   });
 
   test("opens the active intake folder from the secondary drop action", async () => {

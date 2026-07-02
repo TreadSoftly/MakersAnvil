@@ -11,9 +11,34 @@
     "mode": {"const": "built-in-cooperative-single-operation"},
     "scope": {"type": "object"},
     "executionsPath": {"const": "makers-anvil-data://user/executions"},
-    "summary": {"type": "object"},
+    "summary": {
+      "type": "object",
+      "required": ["executionCount", "invalidExecutionCount", "authorizedCount", "runningCount", "completedCount", "cancelledCount", "failedCount", "proofCount"],
+      "additionalProperties": false,
+      "properties": {
+        "executionCount": {"type": "integer", "minimum": 0},
+        "invalidExecutionCount": {"type": "integer", "minimum": 0},
+        "authorizedCount": {"type": "integer", "minimum": 0},
+        "runningCount": {"type": "integer", "minimum": 0},
+        "completedCount": {"type": "integer", "minimum": 0},
+        "cancelledCount": {"type": "integer", "minimum": 0},
+        "failedCount": {"type": "integer", "minimum": 0},
+        "proofCount": {"type": "integer", "minimum": 0}
+      }
+    },
     "executions": {"type": "array", "items": {"type": "object", "required": ["record", "cancellation", "audit"], "additionalProperties": false, "properties": {"record": {"$ref": "contained-execution-record.schema.json"}, "cancellation": {"$ref": "execution-cancellation.schema.json"}, "audit": {"$ref": "execution-audit-history.schema.json"}}}},
     "safety": {"type": "object", "additionalProperties": {"const": false}},
-    "actions": {"type": "object"}
+    "actions": {
+      "type": "object",
+      "required": ["authorize", "run", "cancel", "viewArtifact", "openOutput"],
+      "additionalProperties": false,
+      "properties": {
+        "authorize": {"const": {"enabledInApi": true, "endpoint": "/api/executions/authorizations"}},
+        "run": {"const": {"enabledInApi": true, "endpointTemplate": "/api/executions/{executionId}/run"}},
+        "cancel": {"const": {"enabledInApi": true, "endpointTemplate": "/api/executions/{executionId}/cancel"}},
+        "viewArtifact": {"const": {"enabledInApi": true, "endpointTemplate": "/api/executions/{executionId}/artifacts/{artifactKind}", "allowedKinds": ["report", "proof"]}},
+        "openOutput": {"const": {"enabledInApi": false}}
+      }
+    }
   }
 }

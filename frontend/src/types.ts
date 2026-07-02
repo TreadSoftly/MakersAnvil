@@ -195,6 +195,25 @@ export interface ContainedArtifact {
   safety: { readOnly: boolean; physicalPathExposed: boolean; outputOpened: boolean; externalProcessStarted: boolean; externalToolLaunched: boolean };
 }
 
+export type ExecutionLifecycleState = "authorized" | "running" | "completed" | "cancelled" | "failed";
+
+export interface ExecutionHistoryEntry {
+  id: string;
+  sourceName: string;
+  operationLabel: string;
+  lifecycleState: ExecutionLifecycleState;
+  claimState: string;
+  createdUtc: string;
+  updatedUtc: string;
+  completedUtc: string | null;
+  cancellationState: "not-requested" | "requested" | "observed";
+  canCancel: boolean;
+  hasProof: boolean;
+  proofOutcome: "passed" | "failed" | "not-available";
+  auditEventCount: number;
+  logicalRoot: string;
+}
+
 export interface CapabilityToolRef {
   name: string;
   status: string;
@@ -265,6 +284,7 @@ export interface AppState {
   tools: ToolHealth[];
   toolHandoffs: ToolHandoff[];
   latestJob: LatestJob;
+  executionHistory: ExecutionHistoryEntry[];
   capabilityMatrix: CapabilityMatrix;
   claims: {
     allowed: string[];

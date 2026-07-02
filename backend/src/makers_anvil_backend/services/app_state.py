@@ -47,7 +47,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-025-contained-artifact-viewer"
+    api_build = "makers-anvil-real-pass-026-execution-history-cancellation"
 
     def __init__(
         self,
@@ -156,6 +156,8 @@ class AppStateService:
             "builtInStlPreflightEnabled": True,
             "authorizedRasterPreviewEnabled": True,
             "containedArtifactViewerEnabled": True,
+            "containedExecutionHistoryEnabled": True,
+            "cooperativeCancellationUiEnabled": True,
             "lifecycleDryRunEnabled": True,
             "windowsInstallerFoundationEnabled": True,
             "cleanMachineExecutionEnabled": False,
