@@ -192,13 +192,14 @@ def run_package_smoke() -> int:
             health_response.status == 200
             and state_response.status == 200
             and payload.get("apiBuild", "").startswith("makers-anvil-real-pass-")
-            and state.get("currentPass", {}).get("id") == "PASS-024"
-            and state.get("completion", {}).get("realApp") == 82.5
+            and state.get("currentPass", {}).get("id") == "PASS-025"
+            and state.get("completion", {}).get("realApp") == 85.0
             and payload.get("lifecycleDryRunEnabled") is True
             and payload.get("windowsInstallerFoundationEnabled") is True
             and payload.get("cleanMachineExecutionEnabled") is False
             and payload.get("enabledMutationScopes") == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
             and payload.get("builtInStlPreflightEnabled") is True
+            and payload.get("containedArtifactViewerEnabled") is True
             and payload.get("routeExecutionEnabled") is False
         )
         result = {

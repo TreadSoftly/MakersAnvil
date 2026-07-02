@@ -10,7 +10,7 @@
  */
 
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { getState } from "./api";
+import { getState, openOutput } from "./api";
 
 function currentStateFixture(withAuthorizedStorage = true) {
   return {
@@ -95,5 +95,29 @@ describe("portable API adapter", () => {
 
     expect(state.intake.files[0].previewUrl).toBeUndefined();
     expect(state.intake.files[0].pathDisplay).toBe("makers-anvil-data://user/intake");
+  });
+
+  test("maps proof-bearing execution outputs and fetches a closed report endpoint", async () => {
+    const current: Record<string, any> = currentStateFixture(true);
+    const executionId = "execution-0123456789abcdef0123456789abcdef";
+    current.containedExecutions = {
+      summary: { proofCount: 1 },
+      executions: [{ record: { id: executionId, route: { id: "mesh-to-toolpath" }, lifecycle: { state: "completed" }, workspace: { logicalRoot: `makers-anvil-data://user/executions/${executionId}` }, proof: { report: { logicalPath: `makers-anvil-data://user/executions/${executionId}/outputs/stl-preflight-report.json` } } } }],
+    };
+    const artifact = { schemaVersion: "makers-anvil.api.contained-artifact.v1", artifactKind: "report", title: "STL preflight report" };
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url === "/api/state") return new Response(JSON.stringify(current), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/catalog") return new Response(JSON.stringify({ executions: current.containedExecutions.executions, actions: { viewArtifact: { enabledInApi: true, allowedKinds: ["report", "proof"] } } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(artifact), { status: 200, headers: { "Content-Type": "application/json" } });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const state = await getState();
+    const result = await openOutput("Report");
+
+    expect(state.latestJob.availableOutputs.map((output) => output.key)).toEqual(["report", "proof"]);
+    expect(state.latestJob.selectedRoute).toBe("mesh-review");
+    expect(result.title).toBe("STL preflight report");
+    expect(fetchMock).toHaveBeenCalledWith(`/api/executions/${executionId}/artifacts/report`, { cache: "no-store", credentials: "omit" });
   });
 });

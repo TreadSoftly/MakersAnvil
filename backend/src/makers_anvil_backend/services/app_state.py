@@ -47,7 +47,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-024-verified-image-previews"
+    api_build = "makers-anvil-real-pass-025-contained-artifact-viewer"
 
     def __init__(
         self,
@@ -155,6 +155,7 @@ class AppStateService:
             "enabledMutationScopes": ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"],
             "builtInStlPreflightEnabled": True,
             "authorizedRasterPreviewEnabled": True,
+            "containedArtifactViewerEnabled": True,
             "lifecycleDryRunEnabled": True,
             "windowsInstallerFoundationEnabled": True,
             "cleanMachineExecutionEnabled": False,
@@ -624,6 +625,21 @@ class AppStateService:
         """
 
         return self._contained_execution.catalog()
+
+    def contained_execution_artifact(self, execution_id: str, artifact_kind: str) -> dict[str, Any]:
+        """Purpose: Return a verified contained-execution report or proof for in-app reading.
+
+        Inputs: Generated execution id and closed report/proof kind from the dynamic GET route.
+        Outputs: Bounded path-redacted JSON artifact response.
+        How it works: Delegates fixed-path resolution and integrity checks to contained execution.
+        Side effects: Reads app-owned execution evidence only.
+        Failure behavior: Typed execution errors propagate to the API's stable JSON error mapping.
+        Safety: This method cannot open files externally, launch tools, or reveal physical paths.
+        Example: The workbench requests the newest execution's ``report`` artifact.
+        Related proof: Contained execution service, API, and React viewer tests.
+        """
+
+        return self._contained_execution.artifact(execution_id, artifact_kind)
 
     def authorize_contained_execution(self, payload: dict[str, Any], context: IntakeRequestContext) -> dict[str, Any]:
         """Purpose: Record explicit consent for one authorized STL preflight.

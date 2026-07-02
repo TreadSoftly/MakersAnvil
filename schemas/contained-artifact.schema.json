@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/contained-artifact.schema.json",
+  "title": "Makers Anvil verified contained artifact response",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "executionId", "artifactKind", "title", "logicalPath", "content", "integrity", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.contained-artifact.v1"},
+    "claimState": {"enum": ["proven", "failed"]},
+    "mode": {"const": "verified-in-app-json"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "artifactKind": {"enum": ["report", "proof"]},
+    "title": {"enum": ["STL preflight report", "Execution proof"]},
+    "logicalPath": {"type": "string", "pattern": "^makers-anvil-data://user/executions/execution-[a-f0-9]{32}/outputs/"},
+    "content": {"type": "object"},
+    "integrity": {
+      "type": "object",
+      "required": ["recordMatched", "sha256", "digestMatched", "sizeBytes"],
+      "additionalProperties": false,
+      "properties": {
+        "recordMatched": {"const": true},
+        "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "digestMatched": {"const": true},
+        "sizeBytes": {"type": "integer", "minimum": 1, "maximum": 262144}
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["readOnly", "physicalPathExposed", "outputOpened", "externalProcessStarted", "externalToolLaunched"],
+      "additionalProperties": false,
+      "properties": {
+        "readOnly": {"const": true},
+        "physicalPathExposed": {"const": false},
+        "outputOpened": {"const": false},
+        "externalProcessStarted": {"const": false},
+        "externalToolLaunched": {"const": false}
+      }
+    }
+  }
+}

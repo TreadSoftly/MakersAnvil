@@ -165,6 +165,15 @@ class MakersAnvilApi:
                 },
             )
 
+        execution_prefix = "/api/executions/"
+        execution_parts = path[len(execution_prefix) :].split("/") if path.startswith(execution_prefix) else []
+        if len(execution_parts) == 3 and execution_parts[1] == "artifacts":
+            try:
+                artifact = self._state_service.contained_execution_artifact(execution_parts[0], execution_parts[2])
+            except ContainedExecutionError as exc:
+                return self._api_error(exc.status, exc.code, str(exc))
+            return ApiResponse(200, artifact)
+
         handler = self._routes.get(path)
         if handler is None:
             return ApiResponse(

@@ -165,11 +165,11 @@ def test_durable_status_records_are_current_and_relative() -> None:
     current = json.loads((ROOT / "state" / "current_status.json").read_text(encoding="utf-8"))
     ledger = json.loads((ROOT / "state" / "pass_ledger.json").read_text(encoding="utf-8"))
 
-    assert current["currentPass"]["id"] == "PASS-024"
-    assert current["trackPercentages"]["realApp"] == 82.5
+    assert current["currentPass"]["id"] == "PASS-025"
+    assert current["trackPercentages"]["realApp"] == 85.0
     assert current["product"]["sourceRoot"] == "."
     assert current["referencePolicy"]["runtimeDependency"] is False
-    assert ledger["passes"][-1]["id"] == "PASS-024"
+    assert ledger["passes"][-1]["id"] == "PASS-025"
 
 
 def test_default_settings_enable_only_authorized_intake_and_stay_relative() -> None:

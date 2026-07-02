@@ -61,6 +61,7 @@ import { StatusPill } from "./components/StatusPill";
 import type {
   AppState,
   CapabilityLane,
+  ContainedArtifact,
   IntakeFile,
   IntakeState,
   LatestJob,
@@ -109,6 +110,7 @@ export function App() {
   const [railPanelSection, setRailPanelSection] = useState<RailSection | "">("");
   const [railExpanded, setRailExpanded] = useState(false);
   const [selectedToolName, setSelectedToolName] = useState("");
+  const [viewedArtifact, setViewedArtifact] = useState<ContainedArtifact | null>(null);
   const filePickerRef = useRef<HTMLInputElement | null>(null);
   const appLoadedLoggedRef = useRef(false);
 
@@ -143,6 +145,15 @@ export function App() {
     const timeout = window.setTimeout(() => setNotice(""), 6500);
     return () => window.clearTimeout(timeout);
   }, [notice]);
+
+  useEffect(() => {
+    if (!viewedArtifact) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setViewedArtifact(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [viewedArtifact]);
 
   async function refreshEvents() {
     const response = await getRecentEvents(25);
@@ -213,11 +224,12 @@ export function App() {
     recordAction("output_open_requested", { kind }, "info", "output");
     try {
       const result = await openOutput(kind);
-      setNotice(outputOpenNotice(kind, result.pathDisplay));
-      setLog((current) => [`opened ${kind}: ${result.openMode} ${result.pathDisplay}`, ...current]);
+      setViewedArtifact(result);
+      setNotice(`Viewing verified ${result.title.toLowerCase()} inside Makers Anvil.`);
+      setLog((current) => [`viewed ${kind}: ${result.mode} ${result.logicalPath}`, ...current]);
       recordAction(
         "output_open_completed",
-        { kind, openMode: result.openMode, pathDisplay: result.pathDisplay },
+        { kind, openMode: result.mode, pathDisplay: result.logicalPath },
         "ok",
         "output",
       );
@@ -618,6 +630,7 @@ export function App() {
             {notice}
           </div>
         )}
+        {viewedArtifact && <ArtifactViewer artifact={viewedArtifact} onClose={() => setViewedArtifact(null)} />}
         {previewTarget && previewRoute && (
           <RunPreview
             route={previewRoute}
@@ -1899,7 +1912,7 @@ function LatestOutputSummary({
         </span>
         <span>
           <strong>Where it is</strong>
-          <small>{folderOutput ? displayPathTail(folderOutput.pathDisplay) : "Latest job folder"}</small>
+          <small>{folderOutput ? displayPathTail(folderOutput.pathDisplay) : "App-owned execution"}</small>
         </span>
       </div>
       <JobProgressStrip
@@ -1913,7 +1926,7 @@ function LatestOutputSummary({
       <div className="latest-output-actions" aria-label="Latest job output actions">
         {quickOutputs.map((output) => (
           <button className="secondary-button compact" key={output.key} type="button" onClick={() => onOpen(output.openKind)} disabled={busy}>
-            <ExternalLink size={15} aria-hidden="true" />
+            <Eye size={15} aria-hidden="true" />
             <span>
               <strong>{friendlyOutputAction(output)}</strong>
               <small>{outputActionHint(output)}</small>
@@ -1922,6 +1935,35 @@ function LatestOutputSummary({
         ))}
       </div>
     </section>
+  );
+}
+
+/** Present one integrity-checked JSON artifact without delegating to the operating system. */
+function ArtifactViewer({ artifact, onClose }: { artifact: ContainedArtifact; onClose: () => void }) {
+  return (
+    <div className="artifact-viewer-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="artifact-viewer" role="dialog" aria-modal="true" aria-labelledby="artifact-viewer-title">
+        <header>
+          <span className="artifact-viewer-heading">
+            <FileText size={22} aria-hidden="true" />
+            <span>
+              <strong id="artifact-viewer-title">{artifact.title}</strong>
+              <small>{artifact.logicalPath}</small>
+            </span>
+          </span>
+          <button className="icon-button" type="button" aria-label="Close artifact viewer" onClick={onClose} autoFocus>
+            <X size={18} aria-hidden="true" />
+          </button>
+        </header>
+        <dl className="artifact-viewer-facts">
+          <div><dt>Result</dt><dd>{artifact.claimState}</dd></div>
+          <div><dt>Integrity</dt><dd>{artifact.integrity.digestMatched && artifact.integrity.recordMatched ? "verified" : "failed"}</dd></div>
+          <div><dt>Size</dt><dd>{artifact.integrity.sizeBytes.toLocaleString()} bytes</dd></div>
+          <div><dt>Mode</dt><dd>in-app read only</dd></div>
+        </dl>
+        <pre aria-label={`${artifact.title} JSON`}>{JSON.stringify(artifact.content, null, 2)}</pre>
+      </section>
+    </div>
   );
 }
 
@@ -2943,7 +2985,7 @@ function carouselToolsForRoute(tools: ToolHealth[], selectedRoute: string) {
 }
 
 function prioritizeOutputs(outputs: LatestJob["availableOutputs"]) {
-  const order = ["folder", "preview", "blend", "review", "comparison", "manifest", "toolLog", "inventory", "designTask"];
+  const order = ["report", "proof", "folder", "preview", "blend", "review", "comparison", "manifest", "toolLog", "inventory", "designTask"];
   return [...outputs].sort((left, right) => {
     const leftIndex = order.indexOf(left.key);
     const rightIndex = order.indexOf(right.key);
@@ -2952,7 +2994,7 @@ function prioritizeOutputs(outputs: LatestJob["availableOutputs"]) {
 }
 
 function primaryJobOutput(job: LatestJob) {
-  return prioritizeOutputs(job.availableOutputs).find((output) => ["preview", "blend", "comparison", "review", "folder"].includes(output.key));
+  return prioritizeOutputs(job.availableOutputs).find((output) => ["report", "preview", "blend", "comparison", "review", "folder"].includes(output.key));
 }
 
 function latestJobPlanLabel(job: LatestJob, routes: RouteCard[], fallbackTarget = "") {
@@ -2969,7 +3011,7 @@ function jobBoundaryCopy(selectedRoute: string) {
     "blender-reference":
       "For a Blender reference job, the output preview is a reference board made from the input image and the Blender file is an image-plane work scene with camera/guides. It is not CAD, measurement proof, or manufacturing-ready output.",
     "mesh-review":
-      "For a mesh review job, outputs are a draft review package for inspection. They do not prove repair, print readiness, tolerances, or manufacturing correctness.",
+      "For a mesh review job, the report proves only bounded STL structure, size, and digest checks. It does not prove repair, slicing, print readiness, tolerances, or manufacturing correctness.",
     "cad-review":
       "For a CAD review job, outputs preserve and package CAD inputs for review. They do not prove source-of-truth CAD, dimensions, materials, tolerances, or build readiness.",
     "cad-derivative":
@@ -2978,23 +3020,10 @@ function jobBoundaryCopy(selectedRoute: string) {
   return labels[selectedRoute] || "This output is a review/proof bundle for the selected work plan. It does not prove CAD, print, simulation, manufacturing, build, flight, or physical readiness.";
 }
 
-function outputOpenNotice(kind: string, pathDisplay: string) {
-  const messages: Record<string, string> = {
-    Folder: "Opened latest job folder.",
-    Review: "Opened review note.",
-    Preview: "Opened generated preview image.",
-    Blend: "Opened Blender work scene. This is reference/review output, not CAD proof.",
-    Inventory: "Opened scene inventory.",
-    DesignTask: "Opened design task brief.",
-    Manifest: "Opened derivative manifest.",
-    ToolLog: "Opened tool log.",
-    Comparison: "Opened comparison report. It is review evidence, not CAD truth.",
-  };
-  return `${messages[kind] || "Opened output."} ${pathDisplay}`;
-}
-
 function friendlyOutputAction(output: LatestJob["availableOutputs"][number]) {
   const labels: Record<string, string> = {
+    report: "View preflight report",
+    proof: "View execution proof",
     folder: "Open job folder",
     preview: "View preview image",
     blend: "Open Blender scene",
@@ -3010,6 +3039,8 @@ function friendlyOutputAction(output: LatestJob["availableOutputs"][number]) {
 
 function outputActionHint(output: LatestJob["availableOutputs"][number]) {
   const hints: Record<string, string> = {
+    report: "Verified structural checks.",
+    proof: "Hashes and route boundaries.",
     folder: "All files from this run.",
     preview: "Generated reference board.",
     blend: "Image-plane work scene.",

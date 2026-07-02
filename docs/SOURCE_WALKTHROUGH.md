@@ -57,7 +57,7 @@ For image display, follow `api.adaptFiles()` -> generated `/api/intake/previews/
 | `backend/src/makers_anvil_backend/services/execution_request.py` | Previews intent, unaccepted consent, and required audit lifecycle. | `tests/test_execution_request.py` |
 | `backend/src/makers_anvil_backend/services/job_records.py` | Constructs strict path-redacted job/cancellation records. | `tests/test_job_workspace.py` |
 | `backend/src/makers_anvil_backend/services/job_workspace.py` | Creates contained empty job structure and cancellation intent only. | `tests/test_job_workspace.py` |
-| `backend/src/makers_anvil_backend/services/contained_execution.py` | Runs one authorized built-in STL structural preflight with cooperative cancellation and real proof artifacts. | `tests/test_contained_execution.py` |
+| `backend/src/makers_anvil_backend/services/contained_execution.py` | Runs one authorized built-in STL structural preflight, then validates and serves its fixed report/proof JSON for bounded in-app reading. | `tests/test_contained_execution.py` |
 | `backend/src/makers_anvil_backend/services/execution_audit.py` | Creates strict immutable lifecycle events for contained preflight. | `tests/test_contained_execution.py` and audit schemas |
 | `backend/src/makers_anvil_backend/services/lifecycle_dry_run.py` | Counts bounded app-owned metadata and composes five preservation-first non-executable lifecycle plans. | `tests/test_lifecycle_dry_run.py` and lifecycle schemas |
 | `backend/src/makers_anvil_backend/services/windows_installer.py` | Validates MSIX foundation policy, nine release gates, and six unexecuted clean-machine scenarios. | `tests/test_windows_installer.py` and installer schemas |

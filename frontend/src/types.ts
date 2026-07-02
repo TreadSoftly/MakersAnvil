@@ -182,6 +182,19 @@ export interface LatestJob {
   missingOutputs: LatestOutput[];
 }
 
+export interface ContainedArtifact {
+  schemaVersion: string;
+  claimState: string;
+  mode: "verified-in-app-json";
+  executionId: string;
+  artifactKind: "report" | "proof";
+  title: string;
+  logicalPath: string;
+  content: Record<string, unknown>;
+  integrity: { recordMatched: boolean; sha256: string; digestMatched: boolean; sizeBytes: number };
+  safety: { readOnly: boolean; physicalPathExposed: boolean; outputOpened: boolean; externalProcessStarted: boolean; externalToolLaunched: boolean };
+}
+
 export interface CapabilityToolRef {
   name: string;
   status: string;

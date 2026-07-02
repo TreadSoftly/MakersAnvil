@@ -21,14 +21,9 @@
         "maxConcurrentExecutions": {"const": 1}
       }
     },
-    "storage": {"type": "object", "minProperties": 7, "additionalProperties": {"type": "string"}},
-    "limits": {
-      "type": "object",
-      "required": ["maxSourceBytes", "readChunkBytes"],
-      "additionalProperties": false,
-      "properties": {"maxSourceBytes": {"type": "integer", "minimum": 1}, "readChunkBytes": {"type": "integer", "minimum": 1}}
-    },
-    "actions": {"type": "object", "additionalProperties": {"const": true}},
-    "safety": {"type": "object", "additionalProperties": {"const": false}}
+    "storage": {"const": {"executionsDirectory": "executions", "recordFileName": "execution.json", "cancellationFileName": "cancellation.json", "executionLogFileName": "execution.log", "reportFileName": "stl-preflight-report.json", "proofFileName": "execution-proof.json", "auditDirectory": "logs/audit"}},
+    "limits": {"const": {"maxSourceBytes": 536870912, "readChunkBytes": 1048576, "maxArtifactBytes": 262144}},
+    "actions": {"const": {"authorizationEnabled": true, "executionEnabled": true, "cooperativeCancellationEnabled": true, "apiMutationEnabled": true, "browserMutationEnabled": true, "verifiedArtifactReadEnabled": true}},
+    "safety": {"const": {"originalSourcePathStored": false, "originalSourceModified": false, "archiveExtractionEnabled": false, "externalCommandConstructed": false, "externalProcessStarted": false, "externalToolLaunched": false, "softwareChangeEnabled": false, "outputOpenEnabled": false}}
   }
 }

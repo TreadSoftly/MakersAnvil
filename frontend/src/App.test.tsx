@@ -2,7 +2,7 @@
  * Purpose: Preserve the previous app's accepted workbench behavior while proving current portable safety boundaries.
  * Used by: Vitest locally and the repository CI frontend verification job.
  * Inputs: Deterministic AppState fixtures, browser events, and same-origin API response mocks.
- * Outputs: Twenty interaction assertions covering layout, navigation, intake, tools, plans, proof, and failures.
+ * Outputs: Twenty-one interaction assertions covering layout, navigation, intake, tools, plans, proof, and failures.
  * Side effects: Uses jsdom and mocked fetch only; no real user file, process, server, or path is touched.
  * Safety: Unsafe legacy tool/output/path calls are expected to stay visibly blocked.
  * Failure behavior: Any missing workflow, changed accessible label, or weakened guard fails the suite.
@@ -527,7 +527,36 @@ describe("Makers Anvil control panel", () => {
     render(<App />);
     const search = await screen.findByRole("searchbox", { name: /Search plans, tools, files/i });
     await user.type(search, "preview{enter}");
-    expect(await screen.findByText(/Output opening is blocked until a current proof-gated desktop adapter is implemented/i)).toBeInTheDocument();
+    expect(await screen.findByText(/only the contained execution report and proof can be viewed in the app/i)).toBeInTheDocument();
+  });
+
+  test("views verified contained report JSON inside the workbench", async () => {
+    const user = userEvent.setup();
+    const reportJob: AppState["latestJob"] = {
+      exists: true,
+      selectedRoute: "mesh-review",
+      outputs: [],
+      availableOutputs: [
+        { key: "report", label: "STL preflight report", openKind: "Report", exists: true, pathDisplay: "makers-anvil-data://user/executions/execution-test/outputs/stl-preflight-report.json" },
+        { key: "proof", label: "Execution proof", openKind: "Proof", exists: true, pathDisplay: "makers-anvil-data://user/executions/execution-test/outputs/execution-proof.json" },
+      ],
+      missingOutputs: [],
+    };
+    const state = fixture({ latestJob: reportJob });
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      if (url === "/api/state") return new Response(JSON.stringify(state), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/activity/recent") return new Response(JSON.stringify({ events: [], logicalRoot: "makers-anvil-data://user/logs/activity", summary: { eventCount: 0 } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url === "/api/executions/catalog") return new Response(JSON.stringify({ executions: [{ record: { id: "execution-0123456789abcdef0123456789abcdef", lifecycle: { state: "completed" }, proof: { outcome: "passed" } } }], actions: { viewArtifact: { enabledInApi: true, allowedKinds: ["report", "proof"] } } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      if (url.endsWith("/artifacts/report")) return new Response(JSON.stringify({ schemaVersion: "makers-anvil.api.contained-artifact.v1", claimState: "proven", mode: "verified-in-app-json", executionId: "execution-0123456789abcdef0123456789abcdef", artifactKind: "report", title: "STL preflight report", logicalPath: reportJob.availableOutputs[0].pathDisplay, content: { triangleCount: 1, result: { passed: true, fullRouteCompleted: false } }, integrity: { recordMatched: true, sha256: "a".repeat(64), digestMatched: true, sizeBytes: 512 }, safety: { readOnly: true, physicalPathExposed: false, outputOpened: false, externalProcessStarted: false, externalToolLaunched: false } }), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ message: "Unexpected test route" }), { status: 404, headers: { "Content-Type": "application/json" } });
+    }));
+    render(<App />);
+    await user.click(await screen.findByRole("button", { name: /View preflight report/i }));
+    const dialog = await screen.findByRole("dialog", { name: "STL preflight report" });
+    expect(within(dialog).getByText("verified")).toBeInTheDocument();
+    expect(within(dialog).getByLabelText("STL preflight report JSON")).toHaveTextContent('"triangleCount": 1');
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog", { name: "STL preflight report" })).not.toBeInTheDocument();
   });
 
   test("opens the active intake folder from the secondary drop action", async () => {

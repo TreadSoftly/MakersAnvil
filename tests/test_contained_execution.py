@@ -22,7 +22,9 @@ from typing import Callable
 
 import pytest
 
+from makers_anvil_backend.api.app import MakersAnvilApi
 from makers_anvil_backend.services.authorized_intake import AuthorizedIntakeService
+from makers_anvil_backend.services.app_state import AppStateService
 from makers_anvil_backend.services.contained_execution import ContainedExecutionError, ContainedExecutionService
 from makers_anvil_backend.services.execution_audit import ExecutionAuditService
 from makers_anvil_backend.services.intake_catalog import IntakeCatalogService
@@ -236,6 +238,74 @@ def test_authorize_and_run_create_real_hashed_partial_route_proof(tmp_path: Path
     ]
     assert str(data_root) not in json.dumps(completed)
     assert all(value is False for value in record["safety"].values())
+
+
+def test_verified_artifacts_are_readable_in_app_without_output_opening(tmp_path: Path) -> None:
+    """Purpose: Prove report and proof JSON can be viewed only through fixed verified reads.
+
+    Inputs: One completed isolated STL preflight and both allowed artifact kinds.
+    Outputs: Bounded content, logical references, integrity facts, and false external effects.
+    How it works: Completes production execution, reads each artifact, and exercises the dynamic API route.
+    Side effects: Writes and reads pytest-owned execution evidence only.
+    Failure behavior: Missing validation, path leakage, or output-open claims fail assertions.
+    Safety: No operating-system file open, process, tool, or user path is involved.
+    Example: The report endpoint returns triangle count one and digestMatched true.
+    Related proof: Contained artifact service, API route, and React viewer tests.
+    """
+
+    service, intake, data_root = build_service(tmp_path)
+    execution = service.authorize(authorization_payload(intake["id"]), request_context())["record"]
+    service.run(execution["id"], request_context())
+
+    report = service.artifact(execution["id"], "report")
+    proof = service.artifact(execution["id"], "proof")
+    app_state = AppStateService(
+        workspace_config=service.workspace_config,
+        intake_catalog=service.intake_catalog,
+        contained_execution=service,
+    )
+    response = MakersAnvilApi(app_state).handle("GET", f"/api/executions/{execution['id']}/artifacts/report")
+
+    assert report["content"]["triangleCount"] == 1
+    assert report["integrity"]["digestMatched"] is True
+    assert proof["content"]["report"]["sha256"] == report["integrity"]["sha256"]
+    assert report["logicalPath"].startswith("makers-anvil-data://user/executions/")
+    assert all(report["safety"][key] is False for key in ("physicalPathExposed", "outputOpened", "externalProcessStarted", "externalToolLaunched"))
+    assert response.status == 200 and response.body == report
+    assert str(data_root) not in json.dumps(response.body)
+
+
+def test_artifact_viewer_rejects_unready_unknown_tampered_and_oversized_content(tmp_path: Path) -> None:
+    """Purpose: Prove every artifact selection and integrity boundary fails closed.
+
+    Inputs: Authorized then completed execution with focused unknown, altered, and oversized reads.
+    Outputs: Stable 404, 409, 413, and 422 typed failures.
+    How it works: Exercises state gating before completion, then mutates only isolated artifact bytes.
+    Side effects: Alters pytest-owned report content after valid proof creation.
+    Failure behavior: Any accepted unbound content fails the test.
+    Safety: Browser-controlled strings never become paths and no external effect is attempted.
+    Example: ``../../execution`` receives artifact-not-found before filesystem selection.
+    Related proof: Fixed-kind implementation and API error mapping.
+    """
+
+    service, intake, data_root = build_service(tmp_path)
+    execution = service.authorize(authorization_payload(intake["id"]), request_context())["record"]
+    with pytest.raises(ContainedExecutionError) as unready:
+        service.artifact(execution["id"], "report")
+    assert unready.value.status == 409
+    with pytest.raises(ContainedExecutionError) as unknown:
+        service.artifact(execution["id"], "../../execution")
+    assert unknown.value.status == 404
+    service.run(execution["id"], request_context())
+    report_path = data_root / "executions" / execution["id"] / "outputs" / "stl-preflight-report.json"
+    report_path.write_text('{"executionId":"changed"}', encoding="utf-8")
+    with pytest.raises(ContainedExecutionError) as altered:
+        service.artifact(execution["id"], "report")
+    assert altered.value.status == 422
+    report_path.write_bytes(b"x" * 262145)
+    with pytest.raises(ContainedExecutionError) as oversized:
+        service.artifact(execution["id"], "report")
+    assert oversized.value.status == 413
 
 
 def test_invalid_stl_finishes_failed_with_honest_proof_not_fake_toolpath(tmp_path: Path) -> None:

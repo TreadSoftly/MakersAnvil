@@ -12,6 +12,7 @@ Related proof: ``tests/test_contained_execution.py`` and contained-execution sch
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -164,12 +165,12 @@ class ContainedExecutionService:
         }
         if policy["storage"] != expected_storage:
             raise ContainedExecutionError(500, "execution_policy_invalid", "Contained execution storage policy is invalid.")
-        if policy["limits"] != {"maxSourceBytes": 536870912, "readChunkBytes": 1048576}:
+        if policy["limits"] != {"maxSourceBytes": 536870912, "readChunkBytes": 1048576, "maxArtifactBytes": 262144}:
             raise ContainedExecutionError(500, "execution_policy_invalid", "Contained execution limits are invalid.")
         expected_actions = {
             "authorizationEnabled": True, "executionEnabled": True,
             "cooperativeCancellationEnabled": True, "apiMutationEnabled": True,
-            "browserMutationEnabled": True,
+            "browserMutationEnabled": True, "verifiedArtifactReadEnabled": True,
         }
         if policy["actions"] != expected_actions:
             raise ContainedExecutionError(500, "execution_policy_invalid", "Contained execution actions are invalid.")
@@ -199,6 +200,7 @@ class ContainedExecutionService:
                 "authorize": "/api/executions/authorizations",
                 "runTemplate": "/api/executions/{executionId}/run",
                 "cancelTemplate": "/api/executions/{executionId}/cancel",
+                "artifactTemplate": "/api/executions/{executionId}/artifacts/{artifactKind}",
             },
             "boundaries": [
                 "This executes only Makers Anvil's built-in STL preflight stage.",
@@ -266,8 +268,75 @@ class ContainedExecutionService:
                 "authorize": {"enabledInApi": True, "endpoint": "/api/executions/authorizations"},
                 "run": {"enabledInApi": True, "endpointTemplate": "/api/executions/{executionId}/run"},
                 "cancel": {"enabledInApi": True, "endpointTemplate": "/api/executions/{executionId}/cancel"},
+                "viewArtifact": {"enabledInApi": True, "endpointTemplate": "/api/executions/{executionId}/artifacts/{artifactKind}", "allowedKinds": ["report", "proof"]},
                 "openOutput": {"enabledInApi": False},
             },
+        }
+
+    def artifact(self, execution_id: str, artifact_kind: str) -> dict[str, Any]:
+        """Purpose: Return one verified proof artifact as bounded in-app JSON.
+
+        Inputs: Generated execution id and the closed artifact kind ``report`` or ``proof``.
+        Outputs: Path-redacted JSON content plus explicit integrity and safety evidence.
+        How it works: Loads the strict terminal record, derives a fixed path, bounds and parses bytes, then rechecks proof binding.
+        Side effects: Reads one execution marker and one app-owned JSON artifact only.
+        Failure behavior: Unknown kinds, non-terminal work, symlinks, drift, oversize, or malformed JSON fail closed.
+        Safety: Browser input cannot select a filename; no physical path, process, tool, or output-open effect exists.
+        Example: ``artifact(execution_id, 'report')`` returns the hash-matched STL preflight report.
+        Related proof: ``tests/test_contained_execution.py`` and dynamic API route tests.
+        """
+
+        policy = self.policy()
+        if artifact_kind not in {"report", "proof"}:
+            raise ContainedExecutionError(404, "execution_artifact_not_found", "That execution artifact is not available.")
+        record = self._load_record(execution_id, policy)
+        if record["lifecycle"]["state"] not in {"completed", "failed"} or not isinstance(record["proof"], dict):
+            raise ContainedExecutionError(409, "execution_artifact_not_ready", "Verified execution artifacts are not ready yet.")
+        file_name = policy["storage"]["reportFileName" if artifact_kind == "report" else "proofFileName"]
+        artifact_path = self._execution_root(execution_id, policy) / "outputs" / file_name
+        if artifact_path.parent.is_symlink() or artifact_path.is_symlink() or not artifact_path.is_file():
+            raise ContainedExecutionError(404, "execution_artifact_not_found", "The verified execution artifact is unavailable.")
+        try:
+            size = artifact_path.stat().st_size
+            if size <= 0 or size > policy["limits"]["maxArtifactBytes"]:
+                raise ContainedExecutionError(413, "execution_artifact_too_large", "The execution artifact exceeds the in-app viewing limit.")
+            content_bytes = artifact_path.read_bytes()
+            if len(content_bytes) != size or len(content_bytes) > policy["limits"]["maxArtifactBytes"]:
+                raise ContainedExecutionError(422, "execution_artifact_changed", "The execution artifact changed during verification.")
+            content = json.loads(content_bytes.decode("utf-8"))
+        except ContainedExecutionError:
+            raise
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise ContainedExecutionError(422, "execution_artifact_invalid", "The execution artifact is invalid.") from exc
+        if not isinstance(content, dict) or content.get("executionId") != execution_id:
+            raise ContainedExecutionError(422, "execution_artifact_invalid", "The execution artifact identity is invalid.")
+        digest = hashlib.sha256(content_bytes).hexdigest()
+        if artifact_kind == "report":
+            expected = record["proof"]["report"]
+            try:
+                self._validate_report(content, record)
+            except ValueError as exc:
+                raise ContainedExecutionError(422, "execution_artifact_invalid", "The execution report shape is invalid.") from exc
+            if not hmac.compare_digest(digest, expected["sha256"]):
+                raise ContainedExecutionError(422, "execution_artifact_integrity_failed", "The report no longer matches its execution proof.")
+            logical_path = expected["logicalPath"]
+            digest_matched = True
+        else:
+            if content != record["proof"] or content.get("schemaVersion") != "makers-anvil.runtime.execution-proof.v1":
+                raise ContainedExecutionError(422, "execution_artifact_integrity_failed", "The proof file no longer matches the execution record.")
+            logical_path = f"{record['workspace']['logicalRoot']}/outputs/{file_name}"
+            digest_matched = True
+        return {
+            "schemaVersion": "makers-anvil.api.contained-artifact.v1",
+            "claimState": record["claimState"],
+            "mode": "verified-in-app-json",
+            "executionId": execution_id,
+            "artifactKind": artifact_kind,
+            "title": "STL preflight report" if artifact_kind == "report" else "Execution proof",
+            "logicalPath": logical_path,
+            "content": content,
+            "integrity": {"recordMatched": True, "sha256": digest, "digestMatched": digest_matched, "sizeBytes": len(content_bytes)},
+            "safety": {"readOnly": True, "physicalPathExposed": False, "outputOpened": False, "externalProcessStarted": False, "externalToolLaunched": False},
         }
 
     def authorize(self, payload: dict[str, Any], context: LocalRequestContext) -> dict[str, Any]:
@@ -696,6 +765,80 @@ class ContainedExecutionService:
             raise ValueError("completed execution requires passing proof")
         if state == "failed" and proof is not None and proof.get("outcome") != "failed":
             raise ValueError("failed execution proof outcome is invalid")
+        if isinstance(proof, dict):
+            ContainedExecutionService._validate_proof(proof, record, policy)
+
+    @staticmethod
+    def _validate_proof(proof: dict[str, Any], record: dict[str, Any], policy: dict[str, Any]) -> None:
+        """Purpose: Bind terminal proof fields to one execution and its fixed artifacts.
+
+        Inputs: Candidate proof, owning execution record, and validated storage policy.
+        Outputs: ``None`` only when identity, claims, hashes, paths, and false boundaries match.
+        How it works: Enforces exact fields plus generated logical references and digest syntax.
+        Side effects: None.
+        Failure behavior: Any extra, missing, widened, or mismatched field raises ``ValueError``.
+        Safety: A changed record cannot redirect the viewer or claim route/tool/output completion.
+        Example: Report reference must end in the committed report filename below this execution.
+        Related proof: Artifact tamper, catalog corruption, and runtime schema tests.
+        """
+
+        fields = {
+            "schemaVersion", "executionId", "claimState", "outcome", "generatedUtc",
+            "sourceDigestMatched", "detectedFormat", "report", "executionLog",
+            "fullRouteCompleted", "toolpathGenerated", "outputOpened",
+        }
+        execution_id = record["id"]
+        logical_root = record["workspace"]["logicalRoot"]
+        expected_outcome = "passed" if record["lifecycle"]["state"] == "completed" else "failed"
+        if set(proof) != fields or proof.get("schemaVersion") != "makers-anvil.runtime.execution-proof.v1" or proof.get("executionId") != execution_id:
+            raise ValueError("execution proof identity is invalid")
+        if proof.get("claimState") != record["claimState"] or proof.get("outcome") != expected_outcome or not isinstance(proof.get("generatedUtc"), str):
+            raise ValueError("execution proof claim is invalid")
+        if not isinstance(proof.get("sourceDigestMatched"), bool) or proof.get("detectedFormat") not in {"binary-stl", "ascii-stl", "unknown"}:
+            raise ValueError("execution proof inspection result is invalid")
+        expected_paths = {
+            "report": f"{logical_root}/outputs/{policy['storage']['reportFileName']}",
+            "executionLog": f"{logical_root}/logs/{policy['storage']['executionLogFileName']}",
+        }
+        for artifact_name, logical_path in expected_paths.items():
+            artifact = proof.get(artifact_name)
+            if not isinstance(artifact, dict) or set(artifact) != {"logicalPath", "sha256"} or artifact.get("logicalPath") != logical_path or not re.fullmatch(r"[a-f0-9]{64}", str(artifact.get("sha256", ""))):
+                raise ValueError("execution proof artifact binding is invalid")
+        if any(proof.get(field) is not False for field in ("fullRouteCompleted", "toolpathGenerated", "outputOpened")):
+            raise ValueError("execution proof boundary is invalid")
+
+    @staticmethod
+    def _validate_report(report: dict[str, Any], record: dict[str, Any]) -> None:
+        """Purpose: Validate the complete STL report before returning its JSON content.
+
+        Inputs: Decoded report and strict owning execution record.
+        Outputs: ``None`` only for the generated closed structural-report contract.
+        How it works: Checks exact top-level/nested fields, source identity, checks, and false route claims.
+        Side effects: None.
+        Failure behavior: Missing, extra, mistyped, or inconsistent report data raises ``ValueError``.
+        Safety: Viewer content cannot inject paths, commands, HTML, or completed manufacturing claims.
+        Example: Passing binary STL reports a nonnegative triangle count and no toolpath generation.
+        Related proof: Viewer corruption tests and ``stl-preflight-report.schema.json``.
+        """
+
+        fields = {"schemaVersion", "executionId", "claimState", "completedUtc", "source", "detectedFormat", "triangleCount", "checks", "result"}
+        if set(report) != fields or report.get("schemaVersion") != "makers-anvil.runtime.stl-preflight-report.v1" or report.get("executionId") != record["id"]:
+            raise ValueError("STL report identity is invalid")
+        if report.get("claimState") != record["claimState"] or not isinstance(report.get("completedUtc"), str):
+            raise ValueError("STL report claim is invalid")
+        source = report.get("source")
+        if not isinstance(source, dict) or set(source) != {"intakeId", "sizeBytes", "sha256"} or source.get("intakeId") != record["source"]["intakeId"] or source.get("sizeBytes") != record["source"]["sizeBytes"] or source.get("sha256") != record["source"]["sha256"]:
+            raise ValueError("STL report source binding is invalid")
+        if report.get("detectedFormat") not in {"binary-stl", "ascii-stl", "unknown"} or not isinstance(report.get("triangleCount"), int) or isinstance(report.get("triangleCount"), bool) or report["triangleCount"] < 0:
+            raise ValueError("STL report format result is invalid")
+        checks = report.get("checks")
+        check_fields = {"extensionAllowed", "sizeMatched", "digestMatched", "formatRecognized", "structureConsistent"}
+        if not isinstance(checks, dict) or set(checks) != check_fields or any(not isinstance(value, bool) for value in checks.values()):
+            raise ValueError("STL report checks are invalid")
+        result = report.get("result")
+        expected_passed = record["lifecycle"]["state"] == "completed"
+        if result != {"passed": expected_passed, "fullRouteCompleted": False, "toolpathGenerated": False}:
+            raise ValueError("STL report result boundary is invalid")
 
     @staticmethod
     def _initial_cancellation(execution_id: str) -> dict[str, Any]:

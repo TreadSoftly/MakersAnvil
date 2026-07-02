@@ -33,6 +33,7 @@ def test_health_exposes_only_bounded_local_mutations() -> None:
     assert response.body["enabledMutationScopes"] == ["authorized-file-intake", "contained-stl-preflight", "workbench-preferences"]
     assert response.body["builtInStlPreflightEnabled"] is True
     assert response.body["authorizedRasterPreviewEnabled"] is True
+    assert response.body["containedArtifactViewerEnabled"] is True
     assert response.body["windowsInstallerFoundationEnabled"] is True
     assert response.body["cleanMachineExecutionEnabled"] is False
     assert response.body["routeExecutionEnabled"] is False
@@ -55,8 +56,8 @@ def test_state_limits_actions_to_intake_and_preferences() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 82.5
-    assert response.body["currentPass"]["id"] == "PASS-024"
+    assert response.body["completion"]["realApp"] == 85.0
+    assert response.body["currentPass"]["id"] == "PASS-025"
     assert response.body["completion"]["packagedRelease"] == 30.0
     assert response.body["completion"]["cleanMachineProof"] == 5.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
@@ -88,6 +89,7 @@ def test_contained_execution_reads_expose_one_partial_operation_only() -> None:
     assert all(value is False for value in policy.body["safety"].values())
     assert catalog.status == 200
     assert catalog.body["actions"]["run"]["enabledInApi"] is True
+    assert catalog.body["actions"]["viewArtifact"]["allowedKinds"] == ["report", "proof"]
     assert catalog.body["actions"]["openOutput"]["enabledInApi"] is False
     assert state.body["containedExecutions"] == catalog.body
     assert state.body["containedExecutions"]["executionsPath"] == "makers-anvil-data://user/executions"
@@ -246,11 +248,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-024"
+    assert workspace.body["currentPass"]["id"] == "PASS-025"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-024"
+    assert ledger.body["passes"][-1]["id"] == "PASS-025"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:

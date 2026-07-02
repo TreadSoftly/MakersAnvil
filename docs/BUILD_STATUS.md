@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-024 - Verified app-owned raster previews in the promoted workbench.
+PASS-025 - Verified contained proof and report viewer.
 
 ## Track Percentages
 
-- Real app completion: `82.5000%`
-- Windows local app: `86.0000%`
+- Real app completion: `85.0000%`
+- Windows local app: `88.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `30.0000%`
@@ -98,12 +98,13 @@ PASS-024 - Verified app-owned raster previews in the promoted workbench.
 - PASS-022 selects MSIX as the Windows installer target, adds strict package/identity/runtime/signing/preservation policy, evaluates nine release gates, and defines six clean-machine scenarios. Only three foundation gates pass; no package build, signature, install, upgrade, removal, or machine scenario is claimed.
 - PASS-023 makes the previous working React application the authoritative frontend, adapts current path-redacted state and guarded mutations into its accepted workflow, packages the compiled bundle, preserves all 20 interaction tests, and keeps unsafe legacy operations visibly blocked.
 - PASS-024 restores selected-image display through a generated same-origin URL only after authorized-record, containment, size, SHA-256, extension, and raster-signature checks. Active content, paths, altered bytes, and non-images fail closed.
+- PASS-025 maps terminal contained preflights into report/proof actions, revalidates the exact record, shape, fixed artifact identity, size, and SHA-256 on every read, and renders the JSON inside an accessible workbench dialog without an OS open, private path, process, or tool effect.
 
 ## Blocked Or Not Proven
 
 - Full route execution beyond the built-in STL preflight.
 - Toolpath and G-code output creation.
-- Output open actions.
+- Arbitrary operating-system output open actions.
 - Proof capture beyond the contained STL preflight.
 - External tool launch.
 - Tool version proof.

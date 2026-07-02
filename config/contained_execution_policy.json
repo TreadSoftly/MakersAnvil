@@ -20,14 +20,16 @@
   },
   "limits": {
     "maxSourceBytes": 536870912,
-    "readChunkBytes": 1048576
+    "readChunkBytes": 1048576,
+    "maxArtifactBytes": 262144
   },
   "actions": {
     "authorizationEnabled": true,
     "executionEnabled": true,
     "cooperativeCancellationEnabled": true,
     "apiMutationEnabled": true,
-    "browserMutationEnabled": true
+    "browserMutationEnabled": true,
+    "verifiedArtifactReadEnabled": true
   },
   "safety": {
     "originalSourcePathStored": false,

@@ -343,6 +343,20 @@
         "the current live app-owned PNG passed the endpoint with 222982 verified bytes and image/png transport",
         "service, API, loopback HTTP, frontend adapter, React, native, package, portability, purity, and cross-platform CI proof cover the pass"
       ]
+    },
+    {
+      "id": "PASS-025",
+      "title": "verified contained proof and report viewer",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_025_REPORT.md",
+      "proof": [
+        "completed and failed preflights map to report and proof actions in the promoted latest-job surface",
+        "dynamic reads accept only generated execution ids plus closed report or proof kinds and derive fixed private filenames",
+        "terminal records, complete proof/report shape, logical references, size, and SHA-256 bindings are revalidated on every read",
+        "verified JSON renders in a responsive accessible in-app dialog with no physical path, OS open, process, or tool effect",
+        "unready, unknown, missing, symlinked, malformed, oversized, altered, and redirected artifacts fail closed",
+        "service, API, adapter, React, schema, native smoke, package, purity, explainability, and cross-platform CI cover the pass"
+      ]
     }
   ]
 }

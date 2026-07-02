@@ -12,6 +12,7 @@
 import type {
   AppState,
   CapabilityLane,
+  ContainedArtifact,
   IntakeFile,
   RecentEventsResponse,
   RouteCard,
@@ -234,6 +235,23 @@ function adaptCapability(current: JsonRecord): AppState["capabilityMatrix"] {
   };
 }
 
+/** Map the newest proof-bearing contained execution into bounded in-app artifacts. */
+function adaptLatestJob(current: JsonRecord): AppState["latestJob"] {
+  const executions = Array.isArray(current.containedExecutions?.executions) ? current.containedExecutions.executions : [];
+  const latest = executions.find((item: JsonRecord) => {
+    const lifecycle = item.record?.lifecycle?.state;
+    return ["completed", "failed"].includes(lifecycle) && item.record?.proof;
+  });
+  if (!latest) return { exists: false, selectedRoute: "none", outputs: [], availableOutputs: [], missingOutputs: [] };
+  const record = latest.record;
+  const logicalRoot = String(record.workspace?.logicalRoot || `makers-anvil-data://user/executions/${record.id}`);
+  const outputs = [
+    { key: "report", label: "STL preflight report", openKind: "Report", exists: true, pathDisplay: String(record.proof.report?.logicalPath || `${logicalRoot}/outputs/stl-preflight-report.json`) },
+    { key: "proof", label: "Execution proof", openKind: "Proof", exists: true, pathDisplay: `${logicalRoot}/outputs/execution-proof.json` },
+  ];
+  return { exists: true, selectedRoute: routeTarget(String(record.route?.id || "")), outputs, availableOutputs: outputs, missingOutputs: [] };
+}
+
 /** Compose the complete previous-app view model from current portable backend truth. */
 function adaptState(current: JsonRecord): AppState {
   const files = adaptFiles(current);
@@ -282,7 +300,7 @@ function adaptState(current: JsonRecord): AppState {
     routes: adaptRoutes(current, selected, files),
     tools,
     toolHandoffs: adaptHandoffs(current, tools),
-    latestJob: { exists: false, selectedRoute: "none", outputs: [], availableOutputs: [], missingOutputs: [] },
+    latestJob: adaptLatestJob(current),
     capabilityMatrix: adaptCapability(current),
     claims: {
       allowed: ["authorized app-owned intake", "read-only work plans", "contained STL structural preflight"],
@@ -344,9 +362,25 @@ export async function runRoute(target: RouteTarget): Promise<{ ok: boolean; exit
   return { ok: result.record?.lifecycle?.state === "completed", exitCode: result.record?.lifecycle?.state === "completed" ? 0 : 1, output: "Contained STL structural preflight completed with path-redacted proof." };
 }
 
-/** Explain that output opening is still blocked instead of calling the legacy path endpoint. */
-export async function openOutput(_kind: string): Promise<{ ok: boolean; opened: string; openMode: string; message: string; pathDisplay: string }> {
-  throw new Error("Output opening is blocked until a current proof-gated desktop adapter is implemented.");
+/** Fetch one closed, verified JSON artifact for display inside the workbench. */
+export async function openOutput(kind: string): Promise<ContainedArtifact> {
+  const artifactKind = kind.toLowerCase();
+  if (!(["report", "proof"] as string[]).includes(artifactKind)) {
+    throw new Error("Output opening is blocked; only the contained execution report and proof can be viewed in the app.");
+  }
+  const catalog = await jsonFetch<JsonRecord>("/api/executions/catalog");
+  const viewer = catalog.actions?.viewArtifact;
+  if (viewer?.enabledInApi !== true || !Array.isArray(viewer.allowedKinds) || !viewer.allowedKinds.includes(artifactKind)) {
+    throw new Error("Verified in-app artifact viewing is not enabled by the current backend.");
+  }
+  const latest = (catalog.executions || []).find((item: JsonRecord) => {
+    const lifecycle = item.record?.lifecycle?.state;
+    return ["completed", "failed"].includes(lifecycle) && item.record?.proof;
+  });
+  const executionId = String(latest?.record?.id || "");
+  if (!executionId) throw new Error("No verified execution artifact is available yet.");
+  const endpoint = `/api/executions/${encodeURIComponent(executionId)}/artifacts/${encodeURIComponent(artifactKind)}`;
+  return jsonFetch<ContainedArtifact>(endpoint);
 }
 
 /** Explain the app-owned intake boundary without exposing or opening a private path. */

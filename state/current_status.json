@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-024",
-    "title": "verified app-owned raster previews in the promoted workbench",
+    "id": "PASS-025",
+    "title": "verified contained proof and report viewer",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_024_REPORT.md"
+    "reportPath": "docs/passes/PASS_025_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 82.5,
-    "windowsLocal": 86.0,
+    "realApp": 85.0,
+    "windowsLocal": 88.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 30.0,
@@ -43,6 +43,7 @@
     "containedExecutionPolicyPath": "config/contained_execution_policy.json",
     "containedExecutionRecordSchemaPath": "schemas/contained-execution-record.schema.json",
     "executionProofSchemaPath": "schemas/execution-proof.schema.json",
+    "containedArtifactSchemaPath": "schemas/contained-artifact.schema.json",
     "lifecycleDryRunPolicyPath": "config/lifecycle_dry_run_policy.json",
     "lifecycleDryRunCatalogSchemaPath": "schemas/lifecycle-dry-run-catalog.schema.json"
     ,"windowsInstallerPolicyPath": "config/windows_installer_policy.json"
@@ -151,11 +152,15 @@
     ,"Preview responses use generated names plus no-store, no-sniff, same-origin headers and expose no original source name or physical path."
     ,"Metadata-only records, SVG or active content, archives, non-images, oversized files, missing records, symlinks, altered bytes, and signature mismatches remain blocked."
     ,"The live app-owned PNG on this machine passed the complete preview gate as 222,982 verified bytes; automated service, API, HTTP, adapter, and React tests cover the behavior."
+    ,"Completed or failed contained STL preflights now map into a latest-job report and proof pair in the promoted workbench."
+    ,"Read-only report/proof GET routes accept only generated execution ids and the two closed artifact kinds, derive fixed private filenames, bound reads to 256 KiB, and expose logical paths only."
+    ,"Every artifact read reloads the strict terminal record, validates complete proof/report shape, rechecks proof bindings and SHA-256, and rejects missing, unready, symlinked, malformed, oversized, altered, or redirected content."
+    ,"The workbench displays verified JSON in an accessible responsive in-app dialog with integrity, size, and read-only facts while outputOpened, externalProcessStarted, and externalToolLaunched remain false."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
     "toolpath and G-code output creation",
-    "output open action",
+    "arbitrary operating-system output open action",
     "proof capture beyond contained STL preflight",
     "external tool launch",
     "tool version proof",
@@ -183,8 +188,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-025",
-    "title": "contained proof and report viewer with proof-gated output interaction",
+    "id": "PASS-026",
+    "title": "contained execution history and cooperative cancellation controls",
     "claimState": "planned"
   }
 }
