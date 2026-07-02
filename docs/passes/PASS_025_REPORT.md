@@ -45,7 +45,7 @@ Make the contained STL preflight's real report and proof readable in Makers Anvi
 - Fresh Windows one-file build: succeeded; packaged `MakersAnvil.exe --smoke` passed with bundled PASS-025 frontend, policy, schema, and state resources.
 - Windows executable proof: 14,497,441 bytes with SHA-256 `858e9b5c4c236f8822b06c5c929d94603e0094587e1dcf0942544c79b184af42`.
 - Browser screenshot proof: not claimed because the in-app browser was unavailable.
-- Hosted GitHub Actions proof is recorded after the pass commit runs on Windows, Ubuntu, macOS, and the Windows executable job.
+- GitHub Actions run `28559729294`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build/smoke/upload all passed.
 
 ## Next Pass
 
