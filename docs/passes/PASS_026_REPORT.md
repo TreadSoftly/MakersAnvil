@@ -62,7 +62,7 @@ Make contained STL preflight lifecycle visible and controllable from the real Ma
 - Browser screenshot and live viewport proof: not claimed because the in-app browser was unavailable; jsdom interaction and responsive source gates passed.
 - Fresh Windows one-file build: succeeded; packaged `MakersAnvil.exe --smoke` passed with bundled PASS-026 frontend, schema, and state resources.
 - Windows executable proof: 14,499,782 bytes with SHA-256 `4c8696c66506f2c6e0c57eed3f0884d74dbbc47850f1510966369f9033afadfc`.
-- Hosted CI proof is recorded after the pass commit completes on Windows, Ubuntu, macOS, and the Windows executable job.
+- GitHub Actions run `28561477840`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build/smoke/upload all passed.
 
 ## Safety Proof
 
