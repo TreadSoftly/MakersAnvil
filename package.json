@@ -1,0 +1,29 @@
+{
+  "name": "makers-anvil",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local-first control panel for DIY maker workflows.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TreadSoftly/MakersAnvil.git"
+  },
+  "scripts": {
+    "dev": "npm --prefix frontend run build && python scripts/run_dev.py",
+    "frontend:dev": "npm --prefix frontend run dev",
+    "frontend:build": "npm --prefix frontend run build",
+    "frontend:test": "npm --prefix frontend run test",
+    "desktop": "python scripts/run_desktop.py",
+    "desktop:smoke": "python scripts/run_desktop.py --smoke",
+    "learn": "python scripts/build_learning_guide.py",
+    "learn:check": "python scripts/build_learning_guide.py --check",
+    "package:windows": "python scripts/build_windows_exe.py",
+    "package:windows:check": "python scripts/build_windows_exe.py --check",
+    "installer:windows:check": "python scripts/check_clean_machine.py",
+    "test": "python -m pytest -q",
+    "verify": "python scripts/verify_project.py"
+  },
+  "engines": {
+    "node": ">=22",
+    "python": ">=3.11"
+  }
+}

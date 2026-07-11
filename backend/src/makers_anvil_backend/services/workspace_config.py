@@ -1,0 +1,253 @@
+"""Purpose: Validate settings and initialize the app-owned runtime layout.
+
+Used by: Workspace APIs, initialization scripts, and dependent services.
+Inputs: Default settings plus a private runtime root from ``RuntimePathsService``.
+Outputs: Redacted config/layout records and optionally created safe directories.
+Side effects: Initialization creates only allowlisted directories under the root.
+Safety: Traversal/source coupling fail; only bounded authorized intake is enabled.
+Failure behavior: Invalid settings or containment violations raise ``ValueError``.
+Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+
+from makers_anvil_backend.services.runtime_paths import LOGICAL_DATA_ROOT, RuntimePathsService
+
+
+from makers_anvil_backend.runtime_resources import application_root
+
+
+ROOT = application_root()
+
+
+class WorkspaceConfigError(ValueError):
+    """Purpose: Raised when local workspace settings are invalid or uncontained.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``WorkspaceConfigError`` exposing the state and operations defined below.
+    How it works: It executes the focused statements in source order.
+    Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+    Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+    Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+    Example: Construct with ``instance = WorkspaceConfigError(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+    """
+
+
+class WorkspaceConfigService:
+    """Purpose: Read and initialize a user-data workspace independent from source location.
+
+    Inputs: Constructor values documented by ``__init__``; class methods receive the resulting instance.
+    Outputs: An instance of ``WorkspaceConfigService`` exposing the state and operations defined below.
+    How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+    Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+    Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+    Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+    Example: Construct with ``instance = WorkspaceConfigService(...)`` using values described by ``__init__``.
+    Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+    """
+
+    def __init__(self, root: Path | None = None, runtime_paths: RuntimePathsService | None = None) -> None:
+        """Purpose: Bind source-independent runtime paths to committed workspace defaults.
+
+        Inputs: Caller-supplied ``root``, ``runtime_paths`` values from the signature.
+        Outputs: The initialized instance state; Python constructors return ``None``.
+        How it works: It executes the focused statements in source order.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Create the owning class with values matching this constructor signature.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        self.root = (root or ROOT).resolve()
+        self.runtime_paths = runtime_paths or RuntimePathsService(source_root=self.root)
+        self.settings_path = self.root / "config" / "default_settings.json"
+
+    def settings(self) -> dict[str, Any]:
+        """Purpose: Load defaults and reject any policy that reconnects data to source.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.settings(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        settings = json.loads(self.settings_path.read_text(encoding="utf-8"))
+        runtime_data = settings.get("runtimeData", {})
+        # Exact equality is intentional: adding a permissive field must not
+        # weaken source independence or path-redaction without a new schema.
+        expected = {
+            "mode": "platform-user-data",
+            "logicalRoot": LOGICAL_DATA_ROOT,
+            "environmentOverride": "MAKERS_ANVIL_DATA_DIR",
+            "sourceRootDependency": False,
+            "absolutePathExposed": False,
+        }
+        if runtime_data != expected:
+            raise WorkspaceConfigError("runtime data settings must use the portable user-data policy")
+        return settings
+
+    def config(self) -> dict[str, Any]:
+        """Purpose: Return public workspace policy, safety flags, and portable directory metadata.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.config(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        settings = self.settings()
+        return {
+            "schemaVersion": "makers-anvil.api.workspace-config.v1",
+            "claimState": settings["claimState"],
+            "settingsPath": "config/default_settings.json",
+            "runtimeLocation": self.runtime_paths.public_info(),
+            "safety": settings["safety"],
+            "directories": self.layout()["directories"],
+            "boundaries": [
+                "Source files and runtime data have independent locations.",
+                "Runtime data uses the operating system user-data directory or an explicit absolute override.",
+                "Resolved personal filesystem paths are not exposed through API records.",
+                "One reviewed file may be copied into app-owned intake only after explicit authorization.",
+                "Lifecycle backup, restore, update, uninstall, and repair are preview-only and preserve user data.",
+                "Source paths, moving, deletion, route execution, tool launch, archive intake/extraction, and folder import remain blocked.",
+            ],
+        }
+
+    def layout(self) -> dict[str, Any]:
+        """Purpose: Report which app-owned directories exist without exposing their absolute root.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It checks conditions, then iterates over bounded records, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.layout(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        settings = self.settings()
+        runtime_root = self.runtime_paths.location().root
+        directories = []
+        for entry in settings["directories"]:
+            safe_relative = self._safe_relative_path(entry["relativePath"])
+            target = self.runtime_paths.data_path(safe_relative)
+            directories.append(
+                {
+                    "id": entry["id"],
+                    "purpose": entry["purpose"],
+                    "relativePath": safe_relative.as_posix(),
+                    "exists": target.exists(),
+                    "claimState": "detected" if target.exists() else "planned",
+                }
+            )
+        return {
+            "schemaVersion": "makers-anvil.api.workspace-layout.v1",
+            "claimState": "staged",
+            "runtimeLocation": self.runtime_paths.public_info(),
+            "runtimeDataExists": runtime_root.exists(),
+            "directories": directories,
+            "creationAction": {
+                "id": "local-workspace-init-script",
+                "claimState": "staged",
+                "enabledInApi": False,
+                "script": "python scripts/init_workspace.py",
+            },
+        }
+
+    def initialize(self) -> dict[str, Any]:
+        """Purpose: Create only configured app-owned directories and a path-redacted manifest.
+
+        Inputs: No caller-supplied values beyond an implicit instance/class when present.
+        Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
+        How it works: It iterates over bounded records, then returns the resulting contract value.
+        Side effects: Performs only the bounded filesystem/process effect stated in the purpose and guarded by the surrounding validation.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.initialize(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        settings = self.settings()
+        runtime_root = self.runtime_paths.location().root
+        runtime_root.mkdir(parents=True, exist_ok=True)
+        created: list[str] = []
+        for entry in settings["directories"]:
+            safe_relative = self._safe_relative_path(entry["relativePath"])
+            target = self.runtime_paths.data_path(safe_relative)
+            target.mkdir(parents=True, exist_ok=True)
+            created.append(safe_relative.as_posix())
+        manifest = {
+            "schemaVersion": "makers-anvil.runtime-workspace-manifest.v2",
+            "claimState": "staged",
+            "runtimeLocation": self.runtime_paths.public_info(),
+            "directories": created,
+            "blockedActions": [
+                name for name, enabled in settings["safety"].items() if enabled is False
+            ],
+        }
+        (runtime_root / "workspace_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+        return manifest
+
+    def runtime_path(self, relative_path: str | Path) -> Path:
+        """Purpose: Return a contained path inside the resolved app-owned user-data root.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.runtime_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        return self.runtime_paths.data_path(self._safe_relative_path(str(relative_path)))
+
+    def logical_runtime_path(self, relative_path: str | Path) -> str:
+        """Purpose: Return a stable non-filesystem identifier safe for API display.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``str``, or raises before returning when validation fails.
+        How it works: It returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance.logical_runtime_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        return self.runtime_paths.logical_path(self._safe_relative_path(str(relative_path)))
+
+    @staticmethod
+    def _safe_relative_path(relative_path: str) -> Path:
+        """Purpose: Reject absolute, empty, or traversing workspace directory declarations.
+
+        Inputs: Caller-supplied ``relative_path`` values from the signature.
+        Outputs: Returns ``Path``, or raises before returning when validation fails.
+        How it works: It checks conditions, then returns the resulting contract value.
+        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        Failure behavior: Raises the explicit errors shown in the body when inputs or invariants are invalid; callers must not treat failure as success.
+        Safety: Traversal, source-root coupling, and globally enabled actions are rejected.
+        Example: Call ``result = instance._safe_relative_path(...)`` with values satisfying the documented inputs.
+        Related proof: ``tests/test_workspace_config.py`` and local-settings schema.
+        """
+
+        candidate = Path(relative_path)
+        if candidate.is_absolute() or ".." in candidate.parts or not candidate.parts:
+            raise WorkspaceConfigError("workspace directory path must be relative and contained")
+        return candidate

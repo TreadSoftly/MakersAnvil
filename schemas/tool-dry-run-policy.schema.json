@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-dry-run-policy.schema.json",
+  "title": "Makers Anvil semantic tool dry-run policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "routes", "requiredBlockers", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["commandConstructed", "processExecuted", "sourcePathResolved", "outputPathResolved", "selectedFileHandedOff", "toolLaunched", "filesystemWritten"],
+      "additionalProperties": false,
+      "properties": {
+        "commandConstructed": {"const": false},
+        "processExecuted": {"const": false},
+        "sourcePathResolved": {"const": false},
+        "outputPathResolved": {"const": false},
+        "selectedFileHandedOff": {"const": false},
+        "toolLaunched": {"const": false},
+        "filesystemWritten": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.tool-dry-run-policy.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "semantic-invocation-read-only"},
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["routeId", "operationId", "operationLabel", "preferredToolIds"],
+        "additionalProperties": false,
+        "properties": {
+          "routeId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "operationId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "operationLabel": {"type": "string", "minLength": 1},
+          "preferredToolIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}
+          }
+        }
+      }
+    },
+    "requiredBlockers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

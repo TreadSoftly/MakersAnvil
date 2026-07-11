@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/current-status.schema.json",
+  "title": "Makers Anvil current status",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "claimState",
+    "product",
+    "currentPass",
+    "trackPercentages",
+    "sourceTruth",
+    "referencePolicy",
+    "proven",
+    "blockedOrNotProven",
+    "nextPass"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.status.current.v1" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "product": {
+      "type": "object",
+      "required": ["name", "repository", "sourceRoot"],
+      "properties": {
+        "name": { "const": "Makers Anvil" },
+        "repository": { "type": "string" },
+        "sourceRoot": { "const": "." }
+      }
+    },
+    "currentPass": {
+      "type": "object",
+      "required": ["id", "title", "claimState", "reportPath"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "claimState": { "$ref": "claim-state.schema.json" },
+        "reportPath": { "type": "string" }
+      }
+    },
+    "trackPercentages": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 100 }
+    },
+    "sourceTruth": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "referencePolicy": {
+      "type": "object",
+      "required": ["folder", "runtimeDependency", "gitTracked", "purpose"],
+      "properties": {
+        "folder": { "type": "string" },
+        "runtimeDependency": { "const": false },
+        "gitTracked": { "const": false },
+        "purpose": { "const": "reference-only" }
+      }
+    },
+    "proven": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "blockedOrNotProven": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "nextPass": {
+      "type": "object",
+      "required": ["id", "title", "claimState"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "claimState": { "$ref": "claim-state.schema.json" }
+      }
+    }
+  }
+}

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Makers Anvil</title>
+  <desc id="desc">Dark app icon with an anvil and green cyan sparks.</desc>
+  <defs>
+    <linearGradient id="bg" x1="72" y1="28" x2="456" y2="492" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0f171d"/>
+      <stop offset="0.58" stop-color="#071014"/>
+      <stop offset="1" stop-color="#030506"/>
+    </linearGradient>
+    <linearGradient id="anvil" x1="112" y1="178" x2="398" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#e7edf4"/>
+      <stop offset="0.38" stop-color="#9aa8b6"/>
+      <stop offset="0.72" stop-color="#52616f"/>
+      <stop offset="1" stop-color="#222b33"/>
+    </linearGradient>
+    <linearGradient id="face" x1="118" y1="214" x2="356" y2="318" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fbfff8"/>
+      <stop offset="0.42" stop-color="#c7d2dd"/>
+      <stop offset="1" stop-color="#748390"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="20" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="sparkGlow" x="-120%" y="-120%" width="340%" height="340%">
+      <feGaussianBlur stdDeviation="3.2" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="88" fill="url(#bg)"/>
+  <path d="M84 404c64-44 282-51 350-7" fill="none" stroke="#0f1d22" stroke-width="48" stroke-linecap="round" opacity="0.84"/>
+  <g filter="url(#sparkGlow)" stroke-linecap="round">
+    <path d="M248 92V51" stroke="#4ee16b" stroke-width="13"/>
+    <path d="M194 115l-27-32" stroke="#38d5e5" stroke-width="11"/>
+    <path d="M310 118l32-30" stroke="#d9dd44" stroke-width="11"/>
+    <path d="M224 142l-44-8" stroke="#4ee16b" stroke-width="9"/>
+    <path d="M292 145l43-12" stroke="#38d5e5" stroke-width="9"/>
+    <circle cx="151" cy="155" r="10" fill="#4ee16b"/>
+    <circle cx="363" cy="151" r="9" fill="#d9dd44"/>
+    <circle cx="258" cy="36" r="8" fill="#38d5e5"/>
+  </g>
+  <g filter="url(#softShadow)">
+    <path d="M91 246h231c36 0 70-18 92-48l15-20h-88c-19 0-35 9-46 24l-17 22H91c-10 0-18 8-18 18v4z" fill="url(#face)"/>
+    <path d="M103 246h187c19 0 35 16 35 35v16c0 19-16 35-35 35H122c-28 0-50-23-50-50v-5c0-17 14-31 31-31z" fill="url(#anvil)"/>
+    <path d="M173 332h133l26 63H147l26-63z" fill="#43515d"/>
+    <path d="M118 395h246c15 0 28 12 28 27v14H86v-14c0-15 14-27 32-27z" fill="#73818d"/>
+    <path d="M150 252h147c13 0 24 10 24 23v13H120v-6c0-17 13-30 30-30z" fill="#eef5fb" opacity="0.24"/>
+    <path d="M338 189h91l-16 21c-18 24-46 38-76 38h-58l20-28c9-19 22-31 39-31z" fill="#d3dbe3" opacity="0.28"/>
+    <path d="M102 246h220c36 0 70-18 92-48" fill="none" stroke="#f4fff4" stroke-width="10" stroke-linecap="round" opacity="0.2"/>
+    <path d="M147 395h185" stroke="#1b252c" stroke-width="13" stroke-linecap="round" opacity="0.66"/>
+  </g>
+  <path d="M84 433h344" stroke="#4ee16b" stroke-width="8" stroke-linecap="round" opacity="0.82"/>
+</svg>

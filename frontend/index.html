@@ -1,0 +1,25 @@
+<!doctype html>
+<!--
+Purpose: Provide the minimal trusted document shell for the Makers Anvil React workbench.
+Used by: Vite development/build, the local Python server, and the native desktop window.
+Inputs: Compiled main.tsx plus local favicon and web-manifest assets.
+Outputs: One root mount target with responsive metadata and Makers Anvil identity.
+Side effects: Loads one same-origin module entry; the document performs no direct mutation.
+Safety: No inline script, remote dependency, private path, form, or privileged bridge is present.
+Failure behavior: Missing compiled assets fail visibly instead of falling back to an old UI.
+Related proof: npm build, runtime-resource tests, and desktop/browser smoke checks.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#050607" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Makers Anvil</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-request-policy.schema.json",
+  "title": "Makers Anvil read-only execution request policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "audit", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.execution-request-policy.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "read-only-request-preview"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "requestPersistenceEnabled", "authorizationEnabled", "auditWriteEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"const": "mesh-to-toolpath"},
+        "requestPersistenceEnabled": {"const": false},
+        "authorizationEnabled": {"const": false},
+        "auditWriteEnabled": {"const": false}
+      }
+    },
+    "audit": {
+      "type": "object",
+      "required": ["appendOnly", "eventWritesEnabled", "requiredEventTypes"],
+      "additionalProperties": false,
+      "properties": {
+        "appendOnly": {"const": true},
+        "eventWritesEnabled": {"const": false},
+        "requiredEventTypes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["request-created", "authorization-recorded", "execution-started", "execution-cancelled", "execution-completed", "proof-recorded"]},
+          "minItems": 6,
+          "maxItems": 6
+        }
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  },
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["requestPersisted", "authorizationAccepted", "auditEventWritten", "sourcePathResolved", "outputPathResolved", "commandConstructed", "processStarted", "toolLaunched", "filesystemWritten", "proofCaptured"],
+      "additionalProperties": false,
+      "properties": {
+        "requestPersisted": {"const": false},
+        "authorizationAccepted": {"const": false},
+        "auditEventWritten": {"const": false},
+        "sourcePathResolved": {"const": false},
+        "outputPathResolved": {"const": false},
+        "commandConstructed": {"const": false},
+        "processStarted": {"const": false},
+        "toolLaunched": {"const": false},
+        "filesystemWritten": {"const": false},
+        "proofCaptured": {"const": false}
+      }
+    }
+  }
+}

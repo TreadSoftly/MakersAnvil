@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/clean-machine-harness.schema.json",
+  "title": "Makers Anvil clean-machine proof harness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "mode", "summary", "environment", "scenarios", "actions", "safety"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.clean-machine-harness.v1"},
+    "claimState": {"const": "planned"},
+    "mode": {"const": "declarative-no-execution-harness"},
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["scenarioCount", "executedCount", "passedCount", "failedCount", "cleanMachineProven"],
+      "properties": {
+        "scenarioCount": {"const": 6}, "executedCount": {"const": 0}, "passedCount": {"const": 0},
+        "failedCount": {"const": 0}, "cleanMachineProven": {"const": false}
+      }
+    },
+    "environment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operatingSystem", "architecture", "sourceCheckoutPresent", "developerToolsRequired", "administratorRequired", "networkRequired"],
+      "properties": {
+        "operatingSystem": {"const": "windows"}, "architecture": {"const": "x64"},
+        "sourceCheckoutPresent": {"const": false}, "developerToolsRequired": {"const": false},
+        "administratorRequired": {"const": false}, "networkRequired": {"const": false}
+      }
+    },
+    "scenarios": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "label", "purpose", "assertions", "executionState", "evidence"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1}, "label": {"type": "string", "minLength": 1},
+          "purpose": {"type": "string", "minLength": 1},
+          "assertions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "executionState": {"const": "not-run"}, "evidence": {"type": "array", "maxItems": 0}
+        }
+      }
+    },
+    "actions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["inspectEnabled", "executeEnabled", "recordEvidenceEnabled"],
+      "properties": {"inspectEnabled": {"const": true}, "executeEnabled": {"const": false}, "recordEvidenceEnabled": {"const": false}}
+    },
+    "safety": {
+      "type": "object", "additionalProperties": false,
+      "required": ["installerExecutionEnabled", "softwareMutationEnabled", "registryMutationEnabled", "certificateStoreMutationEnabled", "externalProcessEnabled", "userDataDeletionEnabled"],
+      "properties": {
+        "installerExecutionEnabled": {"const": false}, "softwareMutationEnabled": {"const": false},
+        "registryMutationEnabled": {"const": false}, "certificateStoreMutationEnabled": {"const": false},
+        "externalProcessEnabled": {"const": false}, "userDataDeletionEnabled": {"const": false}
+      }
+    }
+  }
+}

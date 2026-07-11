@@ -1,0 +1,46 @@
+# File And Folder Map
+
+The machine-checkable explanation for every tracked file is `state/source_manifest.json`. This document explains how the folders fit together so a reader knows where to look first. For a numbered explanation of every physical implementation and structured-contract line, use `docs/LINE_BY_LINE_CODE_GUIDE.md` and verify its exact hashes in `state/learning_coverage.json`.
+
+## Root
+
+- `README.md` is the user/developer overview and command reference.
+- `package.json` and `pyproject.toml` declare JavaScript/Python project metadata and test commands.
+- `.gitignore` keeps generated, local, and reference-only material outside product history.
+- `LICENSE` defines reuse terms.
+
+## `.github/`
+
+Contains repository automation. The CI workflow runs the verifier and tests on Windows, Ubuntu, and macOS.
+
+## `backend/`
+
+Contains the Python application package. `server.py` owns loopback HTTP serving, `api/` owns route mapping, `domain/` owns shared vocabulary, and `services/` owns focused business and filesystem rules. Tool readiness is split across private metadata reading (`tool_version.py`), path-redacted detection (`tool_detection.py`), and command-free launch review (`tool_launch.py`).
+
+## `frontend/`
+
+Contains the promoted React/TypeScript workbench and reviewed local assets. Vite compiles `src/` and `public/` into ignored `dist/`, which is the one browser, native-window, and Windows-package resource tree. The API adapter permits guarded intake, contained preflight, verified raster reads, and path-free tool launch review while legacy machine-specific actions remain blocked.
+
+## `config/`
+
+Contains safe committed defaults. These files describe policy; resolved personal paths and runtime records do not belong here.
+
+## `schemas/`
+
+Contains JSON Schema contracts for API, state, settings, intake, planning, tool version/launch review, contained execution, lifecycle dry runs, Windows installer readiness, clean-machine scenarios, runtime location, and source-manifest records.
+
+## `state/`
+
+Contains durable machine-readable truth: current progress, pass history, and the explanation/ownership record for every tracked file.
+
+## `scripts/`
+
+Contains explicit developer and local-user entrypoints. Scripts resolve the repository from their own file location and must work from unrelated current working directories.
+
+## `tests/`
+
+Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, metadata-only tool versions, command-free launch review, contained preflight, lifecycle no-write planning, installer/clean-machine no-execution gates, runtime containment, portability, source purity, documentation governance, and verifier integrity.
+
+## `docs/`
+
+Contains durable human-readable truth. `START_HERE.md` is the entrypoint, `SOURCE_WALKTHROUGH.md` traces actual files, `PREVIOUS_APP_REFERENCE_STUDY.md` preserves the accepted workbench direction, `IMPLEMENTATION_GUIDE.md` explains extension flows, `CONTINUE_PROTOCOL.md` defines the pass loop, and `passes/` preserves bounded pass evidence.

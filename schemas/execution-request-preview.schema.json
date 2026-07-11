@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-request-preview.schema.json",
+  "title": "Makers Anvil execution request and audit preview",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "summary", "previews", "safety", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.execution-request-preview.v1"},
+    "claimState": {"enum": ["blocked", "failed"]},
+    "mode": {"const": "read-only-request-preview"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "requestPersistenceEnabled", "authorizationEnabled", "auditWriteEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"const": "mesh-to-toolpath"},
+        "requestPersistenceEnabled": {"const": false},
+        "authorizationEnabled": {"const": false},
+        "auditWriteEnabled": {"const": false}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["dryRunPlanCount", "gateEvaluationCount", "previewCount", "unmatchedPlanCount", "persistedRequestCount", "acceptedAuthorizationCount", "writtenAuditEventCount", "executionReadyCount"],
+      "additionalProperties": false,
+      "properties": {
+        "dryRunPlanCount": {"type": "integer", "minimum": 0},
+        "gateEvaluationCount": {"type": "integer", "minimum": 0},
+        "previewCount": {"type": "integer", "minimum": 0},
+        "unmatchedPlanCount": {"type": "integer", "minimum": 0},
+        "persistedRequestCount": {"const": 0},
+        "acceptedAuthorizationCount": {"const": 0},
+        "writtenAuditEventCount": {"const": 0},
+        "executionReadyCount": {"const": 0}
+      }
+    },
+    "previews": {"type": "array", "items": {"$ref": "#/$defs/preview"}},
+    "safety": {"$ref": "execution-request-policy.schema.json#/$defs/safety"},
+    "actions": {
+      "type": "object",
+      "required": ["createRequest", "recordAuthorization", "execute"],
+      "additionalProperties": false,
+      "properties": {
+        "createRequest": {"$ref": "#/$defs/blockedAction"},
+        "recordAuthorization": {"$ref": "#/$defs/blockedAction"},
+        "execute": {"$ref": "#/$defs/blockedAction"}
+      }
+    }
+  },
+  "$defs": {
+    "preview": {
+      "type": "object",
+      "required": ["id", "claimState", "dryRunPlanId", "gateEvaluationId", "route", "operation", "intent", "authorization", "audit", "readiness"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "claimState": {"const": "blocked"},
+        "dryRunPlanId": {"type": "string"},
+        "gateEvaluationId": {"type": "string"},
+        "route": {"$ref": "#/$defs/idLabel"},
+        "operation": {"$ref": "#/$defs/idLabel"},
+        "intent": {"$ref": "#/$defs/intent"},
+        "authorization": {"$ref": "#/$defs/authorization"},
+        "audit": {"$ref": "#/$defs/audit"},
+        "readiness": {"$ref": "#/$defs/readiness"}
+      }
+    },
+    "idLabel": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {"id": {"type": "string"}, "label": {"type": "string"}}
+    },
+    "intent": {
+      "type": "object",
+      "required": ["source", "output", "tool"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["intakeId", "logicalReference"],
+          "additionalProperties": false,
+          "properties": {"intakeId": {"type": "string"}, "logicalReference": {"type": "string"}}
+        },
+        "output": {
+          "type": "object",
+          "required": ["bundleId", "logicalDirectory"],
+          "additionalProperties": false,
+          "properties": {"bundleId": {"type": "string"}, "logicalDirectory": {"type": "string"}}
+        },
+        "tool": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["id", "label", "claimState"],
+              "additionalProperties": false,
+              "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "claimState": {"const": "detected"}}
+            }
+          ]
+        }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "required": ["required", "accepted", "actor", "acceptedAt"],
+      "additionalProperties": false,
+      "properties": {"required": {"const": true}, "accepted": {"const": false}, "actor": {"type": "null"}, "acceptedAt": {"type": "null"}}
+    },
+    "audit": {
+      "type": "object",
+      "required": ["appendOnly", "requiredEventTypes", "events", "recordCreated"],
+      "additionalProperties": false,
+      "properties": {
+        "appendOnly": {"const": true},
+        "requiredEventTypes": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "string"}},
+        "events": {"type": "array", "maxItems": 0},
+        "recordCreated": {"const": false}
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "required": ["previewAvailable", "requestPersistenceReady", "authorizationReady", "auditReady", "executionReady", "blockers"],
+      "additionalProperties": false,
+      "properties": {
+        "previewAvailable": {"const": true},
+        "requestPersistenceReady": {"const": false},
+        "authorizationReady": {"const": false},
+        "auditReady": {"const": false},
+        "executionReady": {"const": false},
+        "blockers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {"claimState": {"const": "blocked"}, "enabledInApi": {"const": false}}
+    }
+  }
+}

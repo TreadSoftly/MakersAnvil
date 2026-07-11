@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "makers-anvil.status.current.v1",
+  "claimState": "staged",
+  "product": {
+    "name": "Makers Anvil",
+    "repository": "https://github.com/TreadSoftly/MakersAnvil",
+    "sourceRoot": "."
+  },
+  "currentPass": {
+    "id": "PASS-027",
+    "title": "metadata tool version proof and launch confirmation review",
+    "claimState": "staged",
+    "reportPath": "docs/passes/PASS_027_REPORT.md"
+  },
+  "trackPercentages": {
+    "realApp": 89.5,
+    "windowsLocal": 92.0,
+    "macLinux": 0.0,
+    "webHosted": 0.0,
+    "packagedRelease": 30.0,
+    "cleanMachineProof": 5.0
+  },
+  "sourceTruth": {
+    "statusPath": "state/current_status.json",
+    "passLedgerPath": "state/pass_ledger.json",
+    "buildStatusPath": "docs/BUILD_STATUS.md",
+    "continueProtocolPath": "docs/CONTINUE_PROTOCOL.md",
+    "sourceWalkthroughPath": "docs/SOURCE_WALKTHROUGH.md",
+    "referenceStudyPath": "docs/PREVIOUS_APP_REFERENCE_STUDY.md",
+    "lineByLineGuidePath": "docs/LINE_BY_LINE_CODE_GUIDE.md",
+    "learningCoveragePath": "state/learning_coverage.json",
+    "desktopArchitecturePath": "docs/DESKTOP_ARCHITECTURE.md",
+    "previousAppMergerAuditPath": "docs/PREVIOUS_APP_MERGER_AUDIT.md",
+    "previousAppMigrationPath": "state/previous_app_migration.json",
+    "intakePolicyPath": "config/intake_policy.json",
+    "intakePreviewPolicyPath": "config/intake_preview_policy.json",
+    "intakeAuthorizationSchemaPath": "schemas/intake-authorization.schema.json",
+    "authorizedIntakeRecordSchemaPath": "schemas/authorized-intake-record.schema.json",
+    "intakePreviewPolicySchemaPath": "schemas/intake-preview-policy.schema.json",
+    "workbenchExperiencePolicyPath": "config/workbench_experience.json",
+    "capabilityMatrixSchemaPath": "schemas/capability-matrix.schema.json",
+    "activityHistorySchemaPath": "schemas/activity-history.schema.json",
+    "containedExecutionPolicyPath": "config/contained_execution_policy.json",
+    "containedExecutionRecordSchemaPath": "schemas/contained-execution-record.schema.json",
+    "executionProofSchemaPath": "schemas/execution-proof.schema.json",
+    "containedArtifactSchemaPath": "schemas/contained-artifact.schema.json",
+    "lifecycleDryRunPolicyPath": "config/lifecycle_dry_run_policy.json",
+    "lifecycleDryRunCatalogSchemaPath": "schemas/lifecycle-dry-run-catalog.schema.json"
+    ,"toolLaunchPolicyPath": "config/tool_launch_policy.json"
+    ,"toolLaunchPolicySchemaPath": "schemas/tool-launch-policy.schema.json"
+    ,"toolLaunchCatalogSchemaPath": "schemas/tool-launch-catalog.schema.json"
+    ,"windowsInstallerPolicyPath": "config/windows_installer_policy.json"
+    ,"cleanMachineScenariosPath": "config/clean_machine_scenarios.json"
+    ,"windowsInstallerReadinessSchemaPath": "schemas/windows-installer-readiness.schema.json"
+    ,"cleanMachineHarnessSchemaPath": "schemas/clean-machine-harness.schema.json"
+  },
+  "referencePolicy": {
+    "folder": "Refrences For Makers Anvil Application",
+    "runtimeDependency": false,
+    "gitTracked": false,
+    "purpose": "reference-only"
+  },
+  "proven": [
+    "Read-only local API exposes health, durable status, workspace, intake, route, output, tool, gate, and execution-request preview records.",
+    "Durable status files are committed product source and parse as JSON.",
+    "Browser dashboard renders current pass and source-truth paths from the API.",
+    "Default local settings define an app-owned runtime data directory without importing user files.",
+    "Metadata-only intake records omit source paths and contents and do not copy, move, delete, extract, execute, or launch source files.",
+    "Runtime data resolves through OS user-data conventions or an explicit absolute override and never depends on the source checkout path.",
+    "API and dashboard records expose logical location metadata instead of resolved personal filesystem paths.",
+    "Every tracked source file has a machine-readable purpose and maintenance record.",
+    "Every Python component, every top-level frontend function, and frontend/workflow file headers are protected by an explainability verifier.",
+    "A durable start guide, implementation guide, learning-resource map, pass-report template, architecture guide, file map, and code-explanation standard let a new human or model resume from repository truth.",
+    "Validated intake metadata maps deterministically to read-only route previews with planned steps and explicit blockers.",
+    "Route previews do not use source paths, read contents, open files, extract archives, execute routes, launch tools, or create outputs.",
+    "The dashboard renders route-preview status and candidates without treating preview state as execution readiness.",
+    "Route previews map to planned output bundles, expected artifacts, logical destinations, and required proof checklists.",
+    "Every output artifact remains planned and nonexistent, every proof item remains not proven, and create/open actions remain blocked.",
+    "Output planning exposes only logical app-owned locations and never creates directories, writes files, captures proof, or opens outputs.",
+    "Known maker tools are checked through PATH and narrowly scoped standard locations without executing processes or reading the registry.",
+    "Tool detection results expose tool identity, family, method, and executable name while withholding resolved installation paths.",
+    "Missing matches remain not proven, versions remain not proven, and launch/install/update/uninstall/repair actions remain blocked.",
+    "Route previews, output plans, and detected tool families compose into semantic tool dry-run plans.",
+    "Dry-run plans use logical source and destination references, select only family-compatible detected tools, and expose no resolved paths.",
+    "Dry-run planning constructs no command string, performs no file handoff, launches no process, writes nothing, and remains execution-blocked.",
+    "Execution gate policy allowlists only mesh-to-toolpath, reserves one future concurrency slot, and keeps execution disabled.",
+    "Gate evaluation distinguishes proven planning evidence from unproven authorization, containment, compatibility, cancellation, logging, and proof requirements.",
+    "No execution request is created, no authorization is accepted, no path or command is resolved, and no process or execution-side record is produced.",
+    "Read-only request previews compose deterministic logical intent from coherent dry-run plans and gate evaluations for mesh-to-toolpath only.",
+    "Request previews require explicit authorization but keep acceptance false, actor and timestamp absent, and request persistence disabled.",
+    "The complete append-only audit lifecycle is declared while its event list remains empty and audit writes remain disabled.",
+    "The dashboard renders request, authorization, audit, and execution-blocked truth without any action control.",
+    "An explicit local script can prepare one deterministic app-owned job workspace from a valid mesh-to-toolpath request preview.",
+    "Prepared jobs store only logical intent, create empty control, working, logs, and output directories, and accept no authorization.",
+    "A second explicit local script records cancellation intent idempotently without signaling or claiming that a process stopped.",
+    "Read-only job policy and catalog APIs expose path-redacted prepared and cancellation state while every HTTP mutation remains blocked.",
+    "Malformed, weakened, traversing, or symlinked job records fail closed and are never exposed as usable jobs.",
+    "The earlier working Makers Anvil prototype has a tracked design study that preserves accepted layout, workflow, wording, visual, and responsive lessons without becoming a runtime dependency.",
+    "Every comment-capable source file begins with visible structured context covering purpose, caller, inputs, outputs, side effects, safety, failure behavior, and related proof.",
+    "A file-by-file source walkthrough connects backend, frontend, scripts, structured contracts, tests, and durable truth for future humans and models.",
+    "The explainability checker rejects missing structured source context and undersized component documentation.",
+    "The first screen is a bounded preview-first maker workbench instead of a long equal-weight status stack.",
+    "Persistent rail navigation, quick-jump search, and stable Work Flow, Plans, and Dev tabs change browser views without mutating application state.",
+    "Source intake truth, selected-input metadata, tool inventory, work plans, job workspaces, expected output, and latest proof have dedicated synchronized work zones.",
+    "Desktop workbench layout fits 1366x768 and 1280x720 without page overflow; narrow screens reflow without horizontal overflow.",
+    "Browser upload and every operational command remain visibly blocked while read-only planning evidence stays available.",
+    "Every Python class, constructor, function, method, helper, and test carries all nine required teaching fields.",
+    "Every top-level JavaScript function and every CSS or semantic HTML block carries locally visible teaching documentation.",
+    "A generated line-numbered guide explains every physical implementation and structured-contract line, including comment-free JSON.",
+    "Exact source hashes and line totals make stale or incomplete learning coverage fail verification.",
+    "The previous working app is inventoried as migration evidence with explicit adopt, migrate, rebuild, and reject decisions instead of becoming a second runtime.",
+    "A local generated guide explains all 14,611 physical lines across 29 selected first-party previous-app files while excluding dependencies and generated data.",
+    "Native desktop mode owns one ephemeral loopback server and one secured pywebview window over the same current frontend and API.",
+    "Closing the native window deterministically shuts down its owned server; remote binds, downloads, file URLs, direct JavaScript bridging, devtools, and remote debugging remain disabled.",
+    "A deterministic Windows PyInstaller plan bundles the frontend and Python core into MakersAnvil.exe without a source-checkout path dependency.",
+    "The packaged executable has a headless smoke mode that proves bundled resources, API health, the bounded intake scope, and blocked route/tool truth.",
+    "A same-origin browser session receives an opaque process-local request token without exposing a selected source path.",
+    "One explicit authorization binds a reviewed file name, final allowlisted suffix, classified kind, byte length, and modification time for ten minutes.",
+    "The authorized transfer streams exactly one file into private app-owned quarantine storage in bounded chunks and records its SHA-256 digest.",
+    "Incomplete transfers roll back partial content and records; successful authorizations are one-time and cannot be replayed.",
+    "App-generated physical and logical names prevent a user-supplied file name from controlling the quarantine destination.",
+    "The source file is read by the browser only after explicit consent and is never moved, deleted, renamed, or exposed by path.",
+    "The API rejects cross-origin evidence, invalid tokens, archives, unsupported suffixes, folders, zero-byte files, oversized files, stale metadata, and wrong media types.",
+    "Only guarded intake and complete workbench-preference endpoints accept POST; every other state-changing API route remains blocked.",
+    "File intake does not hand content to a route or tool, extract archives, import folders, create outputs, or claim content-type or malware verification."
+    ,"Five capability lanes derive supported inputs, current previews, planned routes, detected tool families, and output plans from existing schema-backed truth while execution stays false."
+    ,"Contextual help uses one keyboard-accessible viewport-contained popover with reviewed purpose and safety boundaries for each major workbench surface."
+    ,"Compact or comfortable density, full or reduced motion, and contextual-help visibility persist atomically in portable app-owned user data through the shared local request guard."
+    ,"Completed intake and preference actions create immutable server-authored redacted activity files; browsers cannot submit arbitrary event text, paths, updates, or deletions."
+    ,"The previous app's capability, help, event-history, settings, and restrained motion ideas are migrated into focused modules without importing legacy dependencies, paths, source storage, or process behavior."
+    ,"One explicitly authorized app-owned STL can run a built-in streaming structural preflight with a single in-process concurrency slot."
+    ,"The preflight verifies exact byte size, SHA-256 digest, and binary or ASCII STL structure without constructing a command or starting a process or external tool."
+    ,"Cooperative cancellation is persisted and observed between bounded source reads without claiming an operating-system process signal."
+    ,"Successful or failed preflight completion writes a path-redacted report, execution log, hashed proof, terminal manifest, and append-only fixed-vocabulary audit events under portable app-owned storage."
+    ,"The guarded API and workbench expose explicit authorize, run, and cancel controls only for the built-in STL preflight while full mesh-to-toolpath execution remains false."
+    ,"Read-only lifecycle policy and catalog APIs expose backup, restore, update, uninstall, and repair plans without adding a mutation endpoint."
+    ,"Backup planning inventories only declared app-owned source directories through bounded entry and size metadata; file content, names, and private paths remain unread and unexposed."
+    ,"Temporary and backup directories are excluded from backup source inventory, preventing recursive backup planning and transient-data claims."
+    ,"Every lifecycle plan preserves existing app data, disallows user-data deletion, reports zero execution readiness, and exposes explicit evidence requirements and blockers."
+    ,"Lifecycle planning performs no archive creation/read/extraction, restore write, network access, package download, installer execution, software mutation, external process, or deletion."
+    ,"The workbench renders five lifecycle preview cards and aggregate app-data counts without adding lifecycle command controls."
+    ,"MSIX is selected as the Windows installer target through a strict package, identity, runtime, upgrade, removal, signing, action, and safety policy."
+    ,"Nine installer readiness gates distinguish three proven foundation choices from unproven identity, build, signing, upgrade, removal, and clean-machine evidence."
+    ,"Upgrade requires one locked identity and higher version while preserving user data; downgrade and upgrade execution remain disabled."
+    ,"Removal preserves user data by default, requires future explicit purge consent, and keeps purge and uninstall execution disabled."
+    ,"Six clean-machine scenarios cover fresh install, launch, upgrade, repair, removal, and reinstall with zero runs and zero fabricated evidence."
+    ,"The clean-machine CLI and three read-only APIs validate and expose the harness without invoking packages, processes, registry, certificates, network, publication, or deletion."
+    ,"The accepted previous working React application is now the authoritative product frontend rather than a separate reference-only visual baseline."
+    ,"The promoted rail, search, tool carousel, source board, Work Flow, Plans, Dev, proof inspector, dialogs, responsive layout, and restrained animation compile into the portable frontend bundle."
+    ,"A typed adapter maps current path-redacted backend records into the promoted workbench while legacy private-path, process-launch, output-open, and broad route endpoints remain absent."
+    ,"Picker, drag-and-drop, and clipboard file gestures converge on the same one-file short-lived authorization and exact-byte app-owned quarantine copy."
+    ,"Twenty retained React interaction tests pass against the current safety boundary, and the Python runtime packages only the compiled React dist tree."
+    ,"Authorized app-owned raster images now render in the promoted selected-media board through a same-origin read-only preview URL."
+    ,"Every preview request revalidates the strict authorized record, private storage containment, byte ceiling, exact length, SHA-256 digest, allowed raster extension, and matching binary signature."
+    ,"Preview responses use generated names plus no-store, no-sniff, same-origin headers and expose no original source name or physical path."
+    ,"Metadata-only records, SVG or active content, archives, non-images, oversized files, missing records, symlinks, altered bytes, and signature mismatches remain blocked."
+    ,"The live app-owned PNG on this machine passed the complete preview gate as 222,982 verified bytes; automated service, API, HTTP, adapter, and React tests cover the behavior."
+    ,"Completed or failed contained STL preflights now map into a latest-job report and proof pair in the promoted workbench."
+    ,"Read-only report/proof GET routes accept only generated execution ids and the two closed artifact kinds, derive fixed private filenames, bound reads to 256 KiB, and expose logical paths only."
+    ,"Every artifact read reloads the strict terminal record, validates complete proof/report shape, rechecks proof bindings and SHA-256, and rejects missing, unready, symlinked, malformed, oversized, altered, or redirected content."
+    ,"The workbench displays verified JSON in an accessible responsive in-app dialog with integrity, size, and read-only facts while outputOpened, externalProcessStarted, and externalToolLaunched remain false."
+    ,"The promoted workbench now maps every valid contained execution into path-redacted newest-first history with source label, operation, lifecycle, cancellation, audit count, logical location, and proof availability."
+    ,"Report and proof actions can target any proof-bearing history record rather than silently reading only the newest run."
+    ,"Authorization exposes generated execution identity before the threaded Run request completes, making existing cooperative cancellation usable during work."
+    ,"Cancellation rechecks current catalog state and action availability, requires the same process-local request token, sends a bodyless fixed-endpoint request, disables replay after a request, and rejects invalid or terminal ids."
+    ,"Cancelled runs are reported distinctly from failed preflight proof and continue to record processSignalSent false."
+    ,"Detected Windows executables can prove numeric file and product versions through read-only VERSIONINFO metadata without a version command, registry read, code load, or process start."
+    ,"Detected macOS app executables can prove bounded bundle versions through the containing Info.plist without using LaunchServices or starting the application."
+    ,"Tool version responses expose only closed metadata values and evidence methods while resolved executable paths remain private and commandExecuted stays false."
+    ,"A strict launch policy requires detected presence plus proven metadata version before one tool becomes confirmation-review ready."
+    ,"Launch review binds only tool id, executable name, metadata version, evidence method, and tool-only mode; selected files, arguments, commands, paths, accepted confirmation, persistence, and process launch remain absent."
+    ,"The promoted workbench renders an accessible viewport-contained launch-review dialog with only close controls and explicit blockers."
+    ,"The current Windows machine reports zero of six catalog tools detected, so no live installed-tool version or review-ready launch is claimed for this device."
+  ],
+  "blockedOrNotProven": [
+    "full route execution beyond built-in STL preflight",
+    "toolpath and G-code output creation",
+    "arbitrary operating-system output open action",
+    "proof capture beyond contained STL preflight",
+    "external tool launch",
+    "live installed-tool version evidence on this device (zero catalog tools detected during PASS-027)",
+    "Linux tool version metadata proof",
+    "executable publisher signature and trust proof",
+    "launch confirmation acceptance and persistence",
+    "runnable tool command construction",
+    "execution request persistence",
+    "execution authorization beyond contained STL preflight",
+    "operating-system cancellation signaling and process-stop proof",
+    "external-process execution logging",
+    "selected-file handoff",
+    "archive upload",
+    "software install/update/uninstall/repair execution",
+    "backup manifest and archive creation",
+    "backup archive reading and restore writes",
+    "release metadata network retrieval and package download",
+    "installer package build, registration checks, and installer execution",
+    "software lifecycle process execution",
+    "user-data deletion during uninstall",
+    "archive extraction",
+    "folder import",
+    "content-type verification",
+    "malware scanning",
+    "packaged release",
+    "executed clean-machine proof",
+    "macOS/Linux runtime proof",
+    "browser-hosted runtime proof"
+  ],
+  "nextPass": {
+    "id": "PASS-028",
+    "title": "short-lived tool-only launch authorization, executable identity gate, and allowlisted process adapter",
+    "claimState": "planned"
+  }
+}

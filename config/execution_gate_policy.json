@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "makers-anvil.config.execution-gate-policy.v1",
+  "claimState": "staged",
+  "mode": "read-only-gate-evaluation",
+  "scope": {
+    "routeId": "mesh-to-toolpath",
+    "maxConcurrentExecutions": 1,
+    "executionEnabled": false
+  },
+  "gates": [
+    {
+      "id": "route-allowlisted",
+      "label": "Route is the single allowlisted route",
+      "category": "scope",
+      "evidenceSource": "route-scope",
+      "required": true
+    },
+    {
+      "id": "dry-run-plan-available",
+      "label": "Semantic dry-run plan is available",
+      "category": "planning",
+      "evidenceSource": "dry-run-plan",
+      "required": true
+    },
+    {
+      "id": "detected-tool-candidate",
+      "label": "Compatible tool candidate is detected",
+      "category": "compatibility",
+      "evidenceSource": "tool-candidate",
+      "required": true
+    },
+    {
+      "id": "explicit-user-authorization",
+      "label": "Explicit user authorization is recorded",
+      "category": "authorization",
+      "evidenceSource": "user-authorization",
+      "required": true
+    },
+    {
+      "id": "source-handoff-contained",
+      "label": "Source handoff is contained and approved",
+      "category": "containment",
+      "evidenceSource": "source-containment",
+      "required": true
+    },
+    {
+      "id": "output-workspace-contained",
+      "label": "Output workspace is resolved and contained",
+      "category": "containment",
+      "evidenceSource": "output-containment",
+      "required": true
+    },
+    {
+      "id": "tool-version-compatible",
+      "label": "Tool version compatibility is proven",
+      "category": "compatibility",
+      "evidenceSource": "tool-version",
+      "required": true
+    },
+    {
+      "id": "cancellation-channel-available",
+      "label": "Cancellation channel is available",
+      "category": "control",
+      "evidenceSource": "cancellation-channel",
+      "required": true
+    },
+    {
+      "id": "execution-log-target-available",
+      "label": "Contained execution log target is available",
+      "category": "observability",
+      "evidenceSource": "execution-log",
+      "required": true
+    },
+    {
+      "id": "output-proof-contract-ready",
+      "label": "Output proof contract is ready",
+      "category": "proof",
+      "evidenceSource": "output-proof",
+      "required": true
+    }
+  ],
+  "safety": {
+    "executionRequestCreated": false,
+    "userAuthorizationAccepted": false,
+    "sourcePathResolved": false,
+    "outputPathResolved": false,
+    "commandConstructed": false,
+    "processStarted": false,
+    "toolLaunched": false,
+    "filesystemWritten": false,
+    "executionLogWritten": false,
+    "cancellationSignalSent": false,
+    "proofCaptured": false
+  }
+}

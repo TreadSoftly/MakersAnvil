@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-launch-policy.schema.json",
+  "title": "Makers Anvil tool launch review policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "confirmation", "actions", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["processExecuted", "toolLaunched", "commandConstructed", "argumentsConstructed", "selectedFileHandedOff", "absolutePathExposed", "filesystemWritten", "confirmationPersisted"],
+      "additionalProperties": false,
+      "properties": {
+        "processExecuted": {"const": false},
+        "toolLaunched": {"const": false},
+        "commandConstructed": {"const": false},
+        "argumentsConstructed": {"const": false},
+        "selectedFileHandedOff": {"const": false},
+        "absolutePathExposed": {"const": false},
+        "filesystemWritten": {"const": false},
+        "confirmationPersisted": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.tool-launch-policy.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "confirmation-preview-only"},
+    "scope": {
+      "type": "object",
+      "required": ["launchMode", "requireDetectedTool", "requireVersionProof", "selectedFileAllowed", "argumentsAllowed"],
+      "additionalProperties": false,
+      "properties": {
+        "launchMode": {"const": "tool-only"},
+        "requireDetectedTool": {"const": true},
+        "requireVersionProof": {"const": true},
+        "selectedFileAllowed": {"const": false},
+        "argumentsAllowed": {"const": false}
+      }
+    },
+    "confirmation": {
+      "type": "object",
+      "required": ["required", "accepted", "persisted", "endpointEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "required": {"const": true},
+        "accepted": {"const": false},
+        "persisted": {"const": false},
+        "endpointEnabled": {"const": false}
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": ["reviewEnabledInApi", "confirmEnabledInApi", "launchEnabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "reviewEnabledInApi": {"const": true},
+        "confirmEnabledInApi": {"const": false},
+        "launchEnabledInApi": {"const": false}
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

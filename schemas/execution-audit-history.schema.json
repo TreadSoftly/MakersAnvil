@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-audit-history.schema.json",
+  "title": "Makers Anvil execution audit history",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "executionId", "appendOnly", "logicalRoot", "summary", "events", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.execution-audit-history.v1"},
+    "claimState": {"const": "proven"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "appendOnly": {"const": true},
+    "logicalRoot": {"type": "string", "pattern": "^makers-anvil-data://user/executions/"},
+    "summary": {"type": "object", "required": ["eventCount"], "additionalProperties": false, "properties": {"eventCount": {"type": "integer", "minimum": 0}}},
+    "events": {"type": "array", "items": {"$ref": "execution-audit-event.schema.json"}},
+    "safety": {"type": "object", "additionalProperties": {"const": false}}
+  }
+}

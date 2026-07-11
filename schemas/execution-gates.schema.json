@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-gates.schema.json",
+  "title": "Makers Anvil read-only execution gate evaluation",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "summary", "evaluations", "safety", "executionAction"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.execution-gates.v1"},
+    "claimState": {"enum": ["blocked", "failed"]},
+    "mode": {"const": "read-only-gate-evaluation"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "singleRoute", "maxConcurrentExecutions", "executionEnabled", "claimState"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"type": "string"},
+        "singleRoute": {"const": true},
+        "maxConcurrentExecutions": {"const": 1},
+        "executionEnabled": {"const": false},
+        "claimState": {"const": "staged"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["dryRunPlanCount", "evaluatedPlanCount", "outOfScopePlanCount", "requiredGateCount", "satisfiedGateCount", "blockedPlanCount"],
+      "additionalProperties": false,
+      "properties": {
+        "dryRunPlanCount": {"type": "integer", "minimum": 0},
+        "evaluatedPlanCount": {"type": "integer", "minimum": 0},
+        "outOfScopePlanCount": {"type": "integer", "minimum": 0},
+        "requiredGateCount": {"type": "integer", "minimum": 0},
+        "satisfiedGateCount": {"type": "integer", "minimum": 0},
+        "blockedPlanCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "evaluations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claimState", "dryRunPlanId", "route", "tool", "gates", "readiness"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "claimState": {"const": "blocked"},
+          "dryRunPlanId": {"type": "string"},
+          "route": {"$ref": "#/$defs/route"},
+          "tool": {"anyOf": [{"$ref": "#/$defs/tool"}, {"type": "null"}]},
+          "gates": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/gate"}},
+          "readiness": {"$ref": "#/$defs/readiness"}
+        }
+      }
+    },
+    "safety": {"$ref": "execution-gate-policy.schema.json#/$defs/safety"},
+    "executionAction": {"$ref": "#/$defs/blockedAction"}
+  },
+  "$defs": {
+    "route": {
+      "type": "object",
+      "required": ["id", "label", "claimState"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "claimState": {"const": "staged"}
+      }
+    },
+    "tool": {
+      "type": "object",
+      "required": ["id", "label", "claimState"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "claimState": {"const": "detected"}
+      }
+    },
+    "gate": {
+      "type": "object",
+      "required": ["id", "label", "category", "evidenceSource", "required", "satisfied", "claimState", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "label": {"type": "string"},
+        "category": {"type": "string"},
+        "evidenceSource": {"type": "string"},
+        "required": {"const": true},
+        "satisfied": {"type": "boolean"},
+        "claimState": {"enum": ["proven", "detected", "not proven"]},
+        "evidence": {"type": "string"}
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "required": ["gateContractAvailable", "authorizationReady", "containmentReady", "compatibilityReady", "cancellationReady", "loggingReady", "proofReady", "executionReady", "blockers"],
+      "additionalProperties": false,
+      "properties": {
+        "gateContractAvailable": {"const": true},
+        "authorizationReady": {"const": false},
+        "containmentReady": {"const": false},
+        "compatibilityReady": {"const": false},
+        "cancellationReady": {"const": false},
+        "loggingReady": {"const": false},
+        "proofReady": {"const": false},
+        "executionReady": {"const": false},
+        "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+      }
+    },
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  }
+}

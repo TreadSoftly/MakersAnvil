@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "makers-anvil.config.tool-dry-run-policy.v1",
+  "claimState": "staged",
+  "mode": "semantic-invocation-read-only",
+  "routes": [
+    {
+      "routeId": "mesh-to-toolpath",
+      "operationId": "prepare-toolpath",
+      "operationLabel": "Prepare mesh for toolpath generation",
+      "preferredToolIds": ["ultimaker-cura", "prusaslicer", "orcaslicer"]
+    },
+    {
+      "routeId": "cad-to-mesh",
+      "operationId": "export-manufacturing-mesh",
+      "operationLabel": "Export a manufacturing mesh from CAD",
+      "preferredToolIds": ["freecad", "blender"]
+    },
+    {
+      "routeId": "image-reference-review",
+      "operationId": "prepare-reference-derivative",
+      "operationLabel": "Prepare an image reference derivative",
+      "preferredToolIds": ["gimp"]
+    },
+    {
+      "routeId": "toolpath-review",
+      "operationId": "review-machine-toolpath",
+      "operationLabel": "Review a machine toolpath",
+      "preferredToolIds": ["ultimaker-cura", "prusaslicer", "orcaslicer"]
+    },
+    {
+      "routeId": "document-reference-review",
+      "operationId": "review-document-reference",
+      "operationLabel": "Review a document reference",
+      "preferredToolIds": []
+    },
+    {
+      "routeId": "archive-metadata-review",
+      "operationId": "review-archive-metadata",
+      "operationLabel": "Review archive metadata without extraction",
+      "preferredToolIds": []
+    }
+  ],
+  "requiredBlockers": [
+    "tool version compatibility not proven",
+    "selected-file handoff blocked",
+    "tool launch blocked",
+    "route execution blocked",
+    "output creation blocked"
+  ],
+  "safety": {
+    "commandConstructed": false,
+    "processExecuted": false,
+    "sourcePathResolved": false,
+    "outputPathResolved": false,
+    "selectedFileHandedOff": false,
+    "toolLaunched": false,
+    "filesystemWritten": false
+  }
+}

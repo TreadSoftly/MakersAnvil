@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/contained-execution-policy.schema.json",
+  "title": "Makers Anvil contained execution policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "storage", "limits", "actions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.contained-execution.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "built-in-cooperative-single-operation"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "operationId", "allowedKind", "allowedExtensions", "maxConcurrentExecutions"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"const": "mesh-to-toolpath"},
+        "operationId": {"const": "built-in-stl-preflight"},
+        "allowedKind": {"const": "mesh"},
+        "allowedExtensions": {"const": [".stl"]},
+        "maxConcurrentExecutions": {"const": 1}
+      }
+    },
+    "storage": {"const": {"executionsDirectory": "executions", "recordFileName": "execution.json", "cancellationFileName": "cancellation.json", "executionLogFileName": "execution.log", "reportFileName": "stl-preflight-report.json", "proofFileName": "execution-proof.json", "auditDirectory": "logs/audit"}},
+    "limits": {"const": {"maxSourceBytes": 536870912, "readChunkBytes": 1048576, "maxArtifactBytes": 262144}},
+    "actions": {"const": {"authorizationEnabled": true, "executionEnabled": true, "cooperativeCancellationEnabled": true, "apiMutationEnabled": true, "browserMutationEnabled": true, "verifiedArtifactReadEnabled": true}},
+    "safety": {"const": {"originalSourcePathStored": false, "originalSourceModified": false, "archiveExtractionEnabled": false, "externalCommandConstructed": false, "externalProcessStarted": false, "externalToolLaunched": false, "softwareChangeEnabled": false, "outputOpenEnabled": false}}
+  }
+}

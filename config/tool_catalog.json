@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "makers-anvil.config.tool-catalog.v1",
+  "claimState": "staged",
+  "mode": "read-only-presence",
+  "providers": [
+    {"id": "windows-program-files", "platform": "windows", "rootKind": "environment", "environmentVariable": "ProgramFiles"},
+    {"id": "windows-program-files-x86", "platform": "windows", "rootKind": "environment", "environmentVariable": "ProgramFiles(x86)"},
+    {"id": "windows-local-app-data", "platform": "windows", "rootKind": "environment", "environmentVariable": "LOCALAPPDATA"},
+    {"id": "macos-applications", "platform": "macos", "rootKind": "fixed", "fixedRoot": "/Applications"},
+    {"id": "linux-opt", "platform": "linux", "rootKind": "fixed", "fixedRoot": "/opt"}
+  ],
+  "tools": [
+    {
+      "id": "blender",
+      "label": "Blender",
+      "publisher": "Blender Foundation",
+      "families": ["cad-modeler"],
+      "pathCommands": {"windows": ["blender.exe"], "macos": ["blender"], "linux": ["blender"]},
+      "candidates": [
+        {"id": "blender-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "Blender Foundation/Blender */blender.exe"},
+        {"id": "blender-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "Blender.app/Contents/MacOS/Blender"},
+        {"id": "blender-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "blender*/blender"}
+      ]
+    },
+    {
+      "id": "freecad",
+      "label": "FreeCAD",
+      "publisher": "FreeCAD Project Association",
+      "families": ["cad-modeler"],
+      "pathCommands": {"windows": ["FreeCAD.exe"], "macos": ["FreeCAD"], "linux": ["freecad", "FreeCAD"]},
+      "candidates": [
+        {"id": "freecad-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "FreeCAD */bin/FreeCAD.exe"},
+        {"id": "freecad-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "FreeCAD.app/Contents/MacOS/FreeCAD"},
+        {"id": "freecad-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "freecad*/bin/FreeCAD"}
+      ]
+    },
+    {
+      "id": "ultimaker-cura",
+      "label": "UltiMaker Cura",
+      "publisher": "UltiMaker",
+      "families": ["slicer", "toolpath-viewer"],
+      "pathCommands": {"windows": ["UltiMaker-Cura.exe", "Cura.exe"], "macos": ["UltiMaker-Cura"], "linux": ["ultimaker-cura", "cura"]},
+      "candidates": [
+        {"id": "cura-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "UltiMaker Cura */UltiMaker-Cura.exe"},
+        {"id": "cura-windows-legacy", "platform": "windows", "provider": "windows-program-files", "pattern": "Ultimaker Cura */Cura.exe"},
+        {"id": "cura-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "UltiMaker Cura.app/Contents/MacOS/UltiMaker-Cura"},
+        {"id": "cura-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "ultimaker-cura*/UltiMaker-Cura"}
+      ]
+    },
+    {
+      "id": "prusaslicer",
+      "label": "PrusaSlicer",
+      "publisher": "Prusa Research",
+      "families": ["slicer", "toolpath-viewer"],
+      "pathCommands": {"windows": ["prusa-slicer.exe"], "macos": ["prusa-slicer"], "linux": ["prusa-slicer"]},
+      "candidates": [
+        {"id": "prusaslicer-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "Prusa3D/PrusaSlicer/prusa-slicer.exe"},
+        {"id": "prusaslicer-windows-local", "platform": "windows", "provider": "windows-local-app-data", "pattern": "Programs/PrusaSlicer/prusa-slicer.exe"},
+        {"id": "prusaslicer-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "PrusaSlicer.app/Contents/MacOS/PrusaSlicer"},
+        {"id": "prusaslicer-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "prusa-slicer*/prusa-slicer"}
+      ]
+    },
+    {
+      "id": "orcaslicer",
+      "label": "OrcaSlicer",
+      "publisher": "SoftFever",
+      "families": ["slicer", "toolpath-viewer"],
+      "pathCommands": {"windows": ["orca-slicer.exe"], "macos": ["OrcaSlicer"], "linux": ["orca-slicer", "OrcaSlicer"]},
+      "candidates": [
+        {"id": "orcaslicer-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "OrcaSlicer/orca-slicer.exe"},
+        {"id": "orcaslicer-windows-local", "platform": "windows", "provider": "windows-local-app-data", "pattern": "Programs/OrcaSlicer/orca-slicer.exe"},
+        {"id": "orcaslicer-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "OrcaSlicer.app/Contents/MacOS/OrcaSlicer"},
+        {"id": "orcaslicer-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "orcaslicer*/OrcaSlicer"}
+      ]
+    },
+    {
+      "id": "gimp",
+      "label": "GIMP",
+      "publisher": "The GIMP Team",
+      "families": ["image-editor"],
+      "pathCommands": {"windows": ["gimp.exe", "gimp-3.0.exe", "gimp-2.10.exe"], "macos": ["gimp"], "linux": ["gimp"]},
+      "candidates": [
+        {"id": "gimp3-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "GIMP 3/bin/gimp-3.0.exe"},
+        {"id": "gimp2-windows-program-files", "platform": "windows", "provider": "windows-program-files", "pattern": "GIMP 2/bin/gimp-2.10.exe"},
+        {"id": "gimp-macos-app", "platform": "macos", "provider": "macos-applications", "pattern": "GIMP.app/Contents/MacOS/gimp"},
+        {"id": "gimp-linux-opt", "platform": "linux", "provider": "linux-opt", "pattern": "gimp*/bin/gimp"}
+      ]
+    }
+  ],
+  "safety": {
+    "processExecuted": false,
+    "versionCommandExecuted": false,
+    "registryRead": false,
+    "filesystemWritten": false,
+    "toolLaunched": false,
+    "softwareChanged": false
+  }
+}

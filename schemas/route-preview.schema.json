@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/route-preview.schema.json",
+  "title": "Makers Anvil route preview response",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "summary", "previews", "safety", "executionAction"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.route-preview.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "metadata-derived-read-only"},
+    "summary": {
+      "type": "object",
+      "required": ["sourceRecordCount", "previewCount", "unmatchedCount", "invalidRecordCount"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceRecordCount": {"type": "integer", "minimum": 0},
+        "previewCount": {"type": "integer", "minimum": 0},
+        "unmatchedCount": {"type": "integer", "minimum": 0},
+        "invalidRecordCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "previews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claimState", "source", "route", "steps", "readiness"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "claimState": {"const": "preview-only"},
+          "source": {
+            "type": "object",
+            "required": ["intakeId", "displayName", "kind", "extension"],
+            "additionalProperties": false,
+            "properties": {
+              "intakeId": {"type": "string"},
+              "displayName": {"type": "string"},
+              "kind": {"type": "string"},
+              "extension": {"type": "string"}
+            }
+          },
+          "route": {
+            "type": "object",
+            "required": ["id", "label", "summary", "toolFamily"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"type": "string"},
+              "label": {"type": "string"},
+              "summary": {"type": "string"},
+              "toolFamily": {"type": "string"}
+            }
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["order", "id", "label", "phase", "claimState", "actionEnabled"],
+              "additionalProperties": false,
+              "properties": {
+                "order": {"type": "integer", "minimum": 1},
+                "id": {"type": "string"},
+                "label": {"type": "string"},
+                "phase": {"type": "string"},
+                "claimState": {"const": "planned"},
+                "actionEnabled": {"const": false}
+              }
+            }
+          },
+          "readiness": {
+            "type": "object",
+            "required": ["previewAvailable", "executionReady", "blockers"],
+            "additionalProperties": false,
+            "properties": {
+              "previewAvailable": {"const": true},
+              "executionReady": {"const": false},
+              "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+            }
+          }
+        }
+      }
+    },
+    "safety": {"$ref": "route-catalog.schema.json#/$defs/safety"},
+    "executionAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "makers-anvil.config.intake-policy.v2",
+  "claimState": "staged",
+  "mode": "authorized-local-copy",
+  "recordsDirectory": "intake/records",
+  "filesDirectory": "intake/files",
+  "authorizationsDirectory": "intake/authorizations",
+  "maxFileBytes": 536870912,
+  "authorizationLifetimeSeconds": 600,
+  "uploadAllowedKinds": ["mesh", "cad", "image", "toolpath", "document"],
+  "fileKinds": [
+    {
+      "id": "mesh",
+      "extensions": [".3mf", ".obj", ".stl"]
+    },
+    {
+      "id": "cad",
+      "extensions": [".blend", ".fcstd", ".iges", ".igs", ".step", ".stp"]
+    },
+    {
+      "id": "image",
+      "extensions": [".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"]
+    },
+    {
+      "id": "toolpath",
+      "extensions": [".gcode"]
+    },
+    {
+      "id": "document",
+      "extensions": [".csv", ".json", ".md", ".pdf", ".txt"]
+    },
+    {
+      "id": "archive",
+      "extensions": [".7z", ".rar", ".tar", ".zip"]
+    }
+  ],
+  "capabilities": {
+    "apiMutationEnabled": true,
+    "browserFilePickerEnabled": true,
+    "explicitAuthorizationRequired": true,
+    "appOwnedCopyEnabled": true,
+    "dragDropEnabled": true,
+    "clipboardPasteEnabled": true
+  },
+  "safety": {
+    "sourcePathStored": false,
+    "sourceFileMoved": false,
+    "sourceFileDeleted": false,
+    "folderImportEnabled": false,
+    "archiveUploadEnabled": false,
+    "archiveExtractionEnabled": false,
+    "selectedFileHandoffEnabled": false,
+    "routeExecutionEnabled": false,
+    "toolLaunchEnabled": false,
+    "contentTypeVerified": false,
+    "malwareScanEnabled": false
+  }
+}

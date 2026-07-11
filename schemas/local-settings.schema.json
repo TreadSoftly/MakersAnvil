@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/local-settings.schema.json",
+  "title": "Makers Anvil local settings",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "runtimeData", "directories", "safety"],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.config.local-settings.v1" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "runtimeData": {
+      "type": "object",
+      "required": ["mode", "logicalRoot", "environmentOverride", "sourceRootDependency", "absolutePathExposed"],
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "const": "platform-user-data" },
+        "logicalRoot": { "const": "makers-anvil-data://user" },
+        "environmentOverride": { "const": "MAKERS_ANVIL_DATA_DIR" },
+        "sourceRootDependency": { "const": false },
+        "absolutePathExposed": { "const": false }
+      }
+    },
+    "directories": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "relativePath", "purpose"],
+        "properties": {
+          "id": { "type": "string" },
+          "relativePath": { "type": "string" },
+          "purpose": { "type": "string" }
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": [
+        "userUploadEnabled",
+        "routeExecutionEnabled",
+        "toolLaunchEnabled",
+        "archiveExtractionEnabled",
+        "folderImportEnabled",
+        "deleteUserDataEnabled",
+        "releasePackagingEnabled"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "userUploadEnabled": { "const": true },
+        "routeExecutionEnabled": { "const": false },
+        "toolLaunchEnabled": { "const": false },
+        "archiveExtractionEnabled": { "const": false },
+        "folderImportEnabled": { "const": false },
+        "deleteUserDataEnabled": { "const": false },
+        "releasePackagingEnabled": { "const": false }
+      }
+    }
+  }
+}

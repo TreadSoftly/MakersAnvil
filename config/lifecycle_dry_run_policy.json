@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "makers-anvil.config.lifecycle-dry-run.v1",
+  "claimState": "preview-only",
+  "mode": "read-only-lifecycle-planning",
+  "inventory": {
+    "sourceDirectoryIds": ["settings", "intake", "jobs", "executions", "outputs", "logs"],
+    "backupTargetDirectoryId": "backups",
+    "excludedDirectoryIds": ["tmp", "backups"],
+    "maxEntries": 10000
+  },
+  "operations": [
+    {
+      "id": "backup",
+      "label": "Back up app data",
+      "summary": "Plan a portable snapshot of app-owned settings, intake, jobs, executions, outputs, and logs.",
+      "steps": [
+        {"id": "inventory-source", "label": "Inventory app-owned source data"},
+        {"id": "plan-manifest", "label": "Plan a versioned backup manifest"},
+        {"id": "plan-archive", "label": "Plan archive creation under app-owned backup storage"},
+        {"id": "plan-verification", "label": "Plan digest and restore-readiness verification"}
+      ],
+      "requiredEvidence": ["complete bounded inventory", "backup manifest", "archive digest", "restore verification"],
+      "blockers": ["backup manifest writing disabled", "archive creation disabled", "backup digest capture disabled"],
+      "preservation": {"existingDataPreserved": true, "userDataDeletionAllowed": false}
+    },
+    {
+      "id": "restore",
+      "label": "Restore app data",
+      "summary": "Plan validation and atomic restoration from a future verified Makers Anvil backup.",
+      "steps": [
+        {"id": "select-backup", "label": "Select one Makers Anvil backup"},
+        {"id": "verify-manifest", "label": "Verify manifest, version, paths, and digests"},
+        {"id": "snapshot-current", "label": "Plan a safety snapshot of current app data"},
+        {"id": "plan-atomic-restore", "label": "Plan contained atomic restoration"},
+        {"id": "plan-post-restore-check", "label": "Plan post-restore schema and startup checks"}
+      ],
+      "requiredEvidence": ["explicitly selected backup", "verified manifest", "compatible schema versions", "current-data safety snapshot", "post-restore verification"],
+      "blockers": ["backup selection disabled", "archive reading disabled", "manifest verification disabled", "restore writes disabled"],
+      "preservation": {"existingDataPreserved": true, "userDataDeletionAllowed": false}
+    },
+    {
+      "id": "update",
+      "label": "Update Makers Anvil",
+      "summary": "Plan a signed version update while preserving app-owned data and rollback evidence.",
+      "steps": [
+        {"id": "read-current-version", "label": "Read the bundled application version"},
+        {"id": "plan-release-check", "label": "Plan official release metadata retrieval"},
+        {"id": "plan-signature-check", "label": "Plan package signature and digest verification"},
+        {"id": "plan-pre-update-backup", "label": "Plan a pre-update app-data backup"},
+        {"id": "plan-package-replacement", "label": "Plan installer-managed package replacement"},
+        {"id": "plan-rollback", "label": "Plan startup verification and rollback"}
+      ],
+      "requiredEvidence": ["official release metadata", "newer compatible version", "trusted signature", "package digest", "pre-update backup", "rollback proof"],
+      "blockers": ["network access disabled", "release metadata unavailable", "package download disabled", "installer execution disabled"],
+      "preservation": {"existingDataPreserved": true, "userDataDeletionAllowed": false}
+    },
+    {
+      "id": "uninstall",
+      "label": "Uninstall Makers Anvil",
+      "summary": "Plan installer-managed application removal with app-owned user data preserved by default.",
+      "steps": [
+        {"id": "detect-registration", "label": "Plan installed-package registration detection"},
+        {"id": "confirm-data-choice", "label": "Require an explicit preserve-or-remove data decision"},
+        {"id": "plan-application-removal", "label": "Plan installer-managed application removal"},
+        {"id": "plan-registration-check", "label": "Plan post-removal registration checks"},
+        {"id": "plan-data-check", "label": "Plan app-data preservation verification"}
+      ],
+      "requiredEvidence": ["installer registration", "explicit user confirmation", "application removal result", "user-data disposition proof"],
+      "blockers": ["installer registration not checked", "user confirmation not accepted", "software removal disabled", "user-data deletion disabled"],
+      "preservation": {"existingDataPreserved": true, "userDataDeletionAllowed": false}
+    },
+    {
+      "id": "repair",
+      "label": "Repair Makers Anvil",
+      "summary": "Plan verification and replacement of bundled application resources without changing app-owned user data.",
+      "steps": [
+        {"id": "check-bundled-core", "label": "Check required bundled resources"},
+        {"id": "plan-package-verification", "label": "Plan trusted package digest verification"},
+        {"id": "plan-resource-replacement", "label": "Plan installer-managed resource replacement"},
+        {"id": "plan-schema-check", "label": "Plan app-data schema compatibility checks"},
+        {"id": "plan-repair-smoke", "label": "Plan post-repair startup smoke"}
+      ],
+      "requiredEvidence": ["bundled resource inventory", "trusted package source", "trusted signature", "replacement result", "post-repair smoke"],
+      "blockers": ["trusted repair package unavailable", "package signature not verified", "resource replacement disabled", "installer execution disabled"],
+      "preservation": {"existingDataPreserved": true, "userDataDeletionAllowed": false}
+    }
+  ],
+  "actions": {
+    "previewEnabled": true,
+    "backupExecutionEnabled": false,
+    "restoreExecutionEnabled": false,
+    "updateExecutionEnabled": false,
+    "uninstallExecutionEnabled": false,
+    "repairExecutionEnabled": false,
+    "apiMutationEnabled": false,
+    "browserMutationEnabled": false
+  },
+  "safety": {
+    "fileContentRead": false,
+    "fileNameExposed": false,
+    "privatePathExposed": false,
+    "networkAccessEnabled": false,
+    "archiveCreationEnabled": false,
+    "archiveReadEnabled": false,
+    "archiveExtractionEnabled": false,
+    "restoreWriteEnabled": false,
+    "packageDownloadEnabled": false,
+    "installerExecutionEnabled": false,
+    "softwareMutationEnabled": false,
+    "userDataDeletionEnabled": false,
+    "externalProcessEnabled": false
+  }
+}

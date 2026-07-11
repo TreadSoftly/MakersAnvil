@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-proof.schema.json",
+  "title": "Makers Anvil contained execution proof",
+  "type": "object",
+  "required": ["schemaVersion", "executionId", "claimState", "outcome", "generatedUtc", "sourceDigestMatched", "detectedFormat", "report", "executionLog", "fullRouteCompleted", "toolpathGenerated", "outputOpened"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.execution-proof.v1"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "claimState": {"enum": ["proven", "failed"]},
+    "outcome": {"enum": ["passed", "failed"]},
+    "generatedUtc": {"type": "string"},
+    "sourceDigestMatched": {"type": "boolean"},
+    "detectedFormat": {"enum": ["binary-stl", "ascii-stl", "unknown"]},
+    "report": {"$ref": "#/$defs/artifact"},
+    "executionLog": {"$ref": "#/$defs/artifact"},
+    "fullRouteCompleted": {"const": false},
+    "toolpathGenerated": {"const": false},
+    "outputOpened": {"const": false}
+  },
+  "$defs": {"artifact": {"type": "object", "required": ["logicalPath", "sha256"], "additionalProperties": false, "properties": {"logicalPath": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}}}
+}

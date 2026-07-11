@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/lifecycle-dry-run-catalog.schema.json",
+  "title": "Makers Anvil lifecycle dry-run catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "summary", "inventory", "bundledCore", "plans", "actions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.lifecycle-dry-run-catalog.v1"},
+    "claimState": {"enum": ["preview-only", "failed"]},
+    "mode": {"const": "read-only-lifecycle-planning"},
+    "summary": {
+      "type": "object",
+      "required": ["operationCount", "previewReadyCount", "executionReadyCount", "sourceFileCount", "sourceBytes"],
+      "additionalProperties": false,
+      "properties": {
+        "operationCount": {"const": 5}, "previewReadyCount": {"const": 5}, "executionReadyCount": {"const": 0},
+        "sourceFileCount": {"type": "integer", "minimum": 0}, "sourceBytes": {"type": "integer", "minimum": 0}
+      }
+    },
+    "inventory": {"$ref": "#/$defs/inventory"},
+    "bundledCore": {"$ref": "#/$defs/bundledCore"},
+    "plans": {"type": "array", "minItems": 5, "maxItems": 5, "items": {"$ref": "#/$defs/plan"}},
+    "actions": {"$ref": "lifecycle-dry-run-policy.schema.json#/$defs/actions"},
+    "safety": {"$ref": "lifecycle-dry-run-policy.schema.json#/$defs/safety"}
+  },
+  "$defs": {
+    "inventory": {
+      "type": "object",
+      "required": ["schemaVersion", "claimState", "contentRead", "namesExposed", "pathsExposed", "summary", "directories"],
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {"const": "makers-anvil.api.lifecycle-inventory.v1"},
+        "claimState": {"enum": ["proven", "failed"]},
+        "contentRead": {"const": false}, "namesExposed": {"const": false}, "pathsExposed": {"const": false},
+        "summary": {"type": "object"},
+        "directories": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"type": "object"}}
+      }
+    },
+    "bundledCore": {
+      "type": "object",
+      "required": ["claimState", "requiredResourceCount", "availableResourceCount", "contentRead", "privatePathExposed"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"enum": ["proven", "failed"]}, "requiredResourceCount": {"const": 4},
+        "availableResourceCount": {"type": "integer", "minimum": 0, "maximum": 4},
+        "contentRead": {"const": false}, "privatePathExposed": {"const": false}
+      }
+    },
+    "plan": {
+      "type": "object",
+      "required": ["id", "claimState", "operation", "currentEvidence", "steps", "requiredEvidence", "readiness", "preservation", "effects", "executionAction"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^lifecycle-dry-run-(backup|restore|update|uninstall|repair)$"},
+        "claimState": {"const": "preview-only"},
+        "operation": {"type": "object"}, "currentEvidence": {"type": "object"},
+        "steps": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+        "requiredEvidence": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "readiness": {"type": "object", "required": ["previewReady", "executionReady", "blockers"], "additionalProperties": false, "properties": {"previewReady": {"const": true}, "executionReady": {"const": false}, "blockers": {"type": "array", "minItems": 1, "items": {"type": "string"}}}},
+        "preservation": {"$ref": "lifecycle-dry-run-policy.schema.json#/$defs/preservation"},
+        "effects": {"$ref": "lifecycle-dry-run-policy.schema.json#/$defs/safety"},
+        "executionAction": {"type": "object", "required": ["claimState", "enabledInApi"], "additionalProperties": false, "properties": {"claimState": {"const": "blocked"}, "enabledInApi": {"const": false}}}
+      }
+    }
+  }
+}

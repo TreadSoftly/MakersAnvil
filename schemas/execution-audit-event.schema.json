@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-audit-event.schema.json",
+  "title": "Makers Anvil execution audit event",
+  "type": "object",
+  "required": ["schemaVersion", "id", "executionId", "sequence", "claimState", "timestampUtc", "eventType", "outcome", "summary", "referenceId"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.execution-audit-event.v1"},
+    "id": {"type": "string", "pattern": "^execution-audit-[a-f0-9]{32}$"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "claimState": {"const": "proven"},
+    "timestampUtc": {"type": "string"},
+    "eventType": {"enum": ["request-created", "authorization-recorded", "execution-started", "execution-cancelled", "execution-completed", "proof-recorded"]},
+    "outcome": {"enum": ["accepted", "running", "cancelled", "passed", "failed"]},
+    "summary": {"type": "string", "minLength": 1},
+    "referenceId": {"type": ["string", "null"]}
+  }
+}

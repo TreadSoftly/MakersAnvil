@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "makers-anvil.config.workbench-experience.v1",
+  "claimState": "staged",
+  "preferences": {
+    "defaults": {"density": "compact", "motion": "full", "contextHelp": true},
+    "densityOptions": ["compact", "comfortable"],
+    "motionOptions": ["full", "reduced"],
+    "runtimeFile": "settings/workbench-preferences.json"
+  },
+  "helpTopics": [
+    {"id": "intake", "title": "File intake", "summary": "Choose one supported file, review its metadata, then explicitly authorize an app-owned copy.", "boundary": "The source path is not stored; folders, archives, handoff, and automatic processing remain blocked."},
+    {"id": "capabilities", "title": "Capability lanes", "summary": "Compare supported input kinds with their planned route and detected tool family.", "boundary": "A preview-ready lane is not execution-ready and cannot launch a tool."},
+    {"id": "tools", "title": "Tool setup", "summary": "Read-only detection checks PATH and normal install locations without starting software.", "boundary": "Install, update, repair, uninstall, and launch actions remain blocked."},
+    {"id": "workflow", "title": "Workflow preview", "summary": "Current metadata is mapped into route, output, gate, and job plans.", "boundary": "Plans create no command, process, output, or selected-file handoff."},
+    {"id": "proof", "title": "Output proof", "summary": "Expected artifacts and evidence requirements stay beside the selected work plan.", "boundary": "Nothing is called complete until a real artifact and its required proof exist."},
+    {"id": "settings", "title": "Workbench settings", "summary": "Density, motion, and contextual help are stored in the operating system user-data location.", "boundary": "Settings contain no personal path, source checkout location, file content, or tool action."}
+  ],
+  "activity": {
+    "directory": "logs/activity",
+    "recentLimit": 30,
+    "allowedEventTypes": ["intake-authorized", "intake-copied", "preferences-updated"]
+  },
+  "safety": {
+    "sourcePathStored": false,
+    "personalDataStored": false,
+    "arbitraryEventAccepted": false,
+    "routeExecutionEnabled": false,
+    "toolLaunchEnabled": false,
+    "outputOpenEnabled": false,
+    "softwareChangeEnabled": false
+  }
+}

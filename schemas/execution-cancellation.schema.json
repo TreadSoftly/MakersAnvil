@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/execution-cancellation.schema.json",
+  "title": "Makers Anvil execution cancellation",
+  "type": "object",
+  "required": ["schemaVersion", "executionId", "claimState", "state", "requestId", "requestedUtc", "observedUtc", "cooperative", "processSignalSent"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.execution-cancellation.v1"},
+    "executionId": {"type": "string", "pattern": "^execution-[a-f0-9]{32}$"},
+    "claimState": {"enum": ["staged", "proven"]},
+    "state": {"enum": ["not-requested", "requested", "observed"]},
+    "requestId": {"type": ["string", "null"]},
+    "requestedUtc": {"type": ["string", "null"]},
+    "observedUtc": {"type": ["string", "null"]},
+    "cooperative": {"const": true},
+    "processSignalSent": {"const": false}
+  }
+}

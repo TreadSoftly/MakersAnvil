@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/job-workspace-policy.schema.json",
+  "title": "Makers Anvil contained job workspace policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "scope", "storage", "localActions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.job-workspace-policy.v1"},
+    "claimState": {"const": "staged"},
+    "mode": {"const": "contained-local-preparation"},
+    "scope": {
+      "type": "object",
+      "required": ["routeId", "maxPreparedJobsPerRequest"],
+      "additionalProperties": false,
+      "properties": {
+        "routeId": {"const": "mesh-to-toolpath"},
+        "maxPreparedJobsPerRequest": {"const": 1}
+      }
+    },
+    "storage": {
+      "type": "object",
+      "required": ["jobsDirectory", "manifestFileName", "cancellationFileName", "workspaceDirectories"],
+      "additionalProperties": false,
+      "properties": {
+        "jobsDirectory": {"const": "jobs"},
+        "manifestFileName": {"const": "job.json"},
+        "cancellationFileName": {"const": "cancellation.json"},
+        "workspaceDirectories": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {"enum": ["control", "working", "logs", "outputs"]}
+        }
+      }
+    },
+    "localActions": {
+      "type": "object",
+      "required": ["preparationEnabled", "cancellationRequestEnabled", "apiMutationEnabled", "browserMutationEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "preparationEnabled": {"const": true},
+        "cancellationRequestEnabled": {"const": true},
+        "apiMutationEnabled": {"const": false},
+        "browserMutationEnabled": {"const": false}
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  },
+  "$defs": {
+    "safety": {
+      "type": "object",
+      "required": ["executableRequestPersisted", "authorizationAccepted", "sourcePathStored", "sourceContentStored", "selectedFileHandedOff", "outputPathResolved", "commandConstructed", "processStarted", "processSignalSent", "toolLaunched", "userFileWritten", "outputArtifactWritten", "auditEventWritten", "proofCaptured"],
+      "additionalProperties": false,
+      "properties": {
+        "executableRequestPersisted": {"const": false},
+        "authorizationAccepted": {"const": false},
+        "sourcePathStored": {"const": false},
+        "sourceContentStored": {"const": false},
+        "selectedFileHandedOff": {"const": false},
+        "outputPathResolved": {"const": false},
+        "commandConstructed": {"const": false},
+        "processStarted": {"const": false},
+        "processSignalSent": {"const": false},
+        "toolLaunched": {"const": false},
+        "userFileWritten": {"const": false},
+        "outputArtifactWritten": {"const": false},
+        "auditEventWritten": {"const": false},
+        "proofCaptured": {"const": false}
+      }
+    }
+  }
+}

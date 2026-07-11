@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-policy.schema.json",
+  "title": "Makers Anvil authorized local intake policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "recordsDirectory", "filesDirectory", "authorizationsDirectory", "maxFileBytes", "authorizationLifetimeSeconds", "uploadAllowedKinds", "fileKinds", "capabilities", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.config.intake-policy.v2" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "mode": { "const": "authorized-local-copy" },
+    "recordsDirectory": { "const": "intake/records" },
+    "filesDirectory": { "const": "intake/files" },
+    "authorizationsDirectory": { "const": "intake/authorizations" },
+    "maxFileBytes": { "type": "integer", "minimum": 1, "maximum": 1073741824 },
+    "authorizationLifetimeSeconds": { "type": "integer", "minimum": 60, "maximum": 3600 },
+    "uploadAllowedKinds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["mesh", "cad", "image", "toolpath", "document"] }
+    },
+    "fileKinds": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "extensions"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "extensions": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^\\.[a-z0-9]+$" }
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "required": ["apiMutationEnabled", "browserFilePickerEnabled", "explicitAuthorizationRequired", "appOwnedCopyEnabled", "dragDropEnabled", "clipboardPasteEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "apiMutationEnabled": { "const": true },
+        "browserFilePickerEnabled": { "const": true },
+        "explicitAuthorizationRequired": { "const": true },
+        "appOwnedCopyEnabled": { "const": true },
+        "dragDropEnabled": { "const": true },
+        "clipboardPasteEnabled": { "const": true }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["sourcePathStored", "sourceFileMoved", "sourceFileDeleted", "folderImportEnabled", "archiveUploadEnabled", "archiveExtractionEnabled", "selectedFileHandoffEnabled", "routeExecutionEnabled", "toolLaunchEnabled", "contentTypeVerified", "malwareScanEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "sourcePathStored": { "const": false },
+        "sourceFileMoved": { "const": false },
+        "sourceFileDeleted": { "const": false },
+        "folderImportEnabled": { "const": false },
+        "archiveUploadEnabled": { "const": false },
+        "archiveExtractionEnabled": { "const": false },
+        "selectedFileHandoffEnabled": { "const": false },
+        "routeExecutionEnabled": { "const": false },
+        "toolLaunchEnabled": { "const": false },
+        "contentTypeVerified": { "const": false },
+        "malwareScanEnabled": { "const": false }
+      }
+    }
+  }
+}

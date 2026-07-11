@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "makers-anvil.previous-app-migration.v1",
+  "claimState": "staged",
+  "referenceRoot": "Previous Working MA For References/MAKERS ANVIL",
+  "runtimeDependency": false,
+  "sourceCodeModified": false,
+  "learningArtifactsGenerated": true,
+  "audit": {
+    "totalFileCount": 85952,
+    "totalBytes": 3744850136,
+    "firstPartyGuideSourceCount": 29,
+    "firstPartyGuideLineCount": 14611,
+    "pythonTestsPassed": 32,
+    "frontendTestsPassed": 20
+  },
+  "excludedFromProduct": [
+    ".venv",
+    "node_modules",
+    "dist",
+    "build caches",
+    "logs",
+    "ingress/runtime records",
+    "project outputs",
+    "screenshots",
+    "personal paths",
+    "source-adjacent runtime storage"
+  ],
+  "capabilities": [
+    {"id": "workbench-layout", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx", "reason": "PASS-023 promotes the accepted rail, source board, tools, workflow, proof, settings, responsive layout, and motion as the product frontend."},
+    {"id": "command-search", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx", "reason": "The promoted command search keeps navigation local and delegates allowed actions through the portable adapter."},
+    {"id": "native-desktop-window", "decision": "rebuild", "status": "staged", "destination": "backend/src/makers_anvil_backend/desktop.py", "reason": "One owned pywebview window now wraps the current portable core."},
+    {"id": "windows-one-file", "decision": "rebuild", "status": "staged", "destination": "scripts/build_windows_exe.py", "reason": "PyInstaller plan bundles one frontend/core without source-tree dependency."},
+    {"id": "context-help", "decision": "adopted", "status": "staged", "destination": "frontend/src/components/ContextHelp.tsx", "reason": "The reviewed accessible previous-app contextual-help component is now current product source."},
+    {"id": "capability-lanes", "decision": "migrate", "status": "staged", "destination": "backend capability matrix and frontend lane renderer", "reason": "PASS-019 derives normalized lanes from current intake, route, output, and tool contracts."},
+    {"id": "file-upload-drop-paste", "decision": "adopted", "status": "staged", "destination": "frontend/src/api.ts and authorized intake service", "reason": "Picker, drop, and paste now share one one-file explicit authorization and app-owned copy; multi-file, paths, folders, archives, and immediate legacy upload remain blocked."},
+    {"id": "selected-image-preview", "decision": "adopted", "status": "staged", "destination": "intake preview service and promoted media board", "reason": "PASS-024 displays only authorized app-owned raster bytes after containment, size, digest, extension, and signature verification."},
+    {"id": "event-history", "decision": "rebuild", "status": "staged", "destination": "backend activity log and frontend recent-activity renderer", "reason": "PASS-019 replaces source-tree JSONL with fixed create-only events in portable app-owned user data."},
+    {"id": "route-execution", "decision": "rebuild", "status": "staged", "destination": "contained execution service and promoted history controls", "reason": "PASS-026 exposes built-in STL preflight lifecycle, selected proof, and cooperative cancellation; full route and external-process execution remain blocked."},
+    {"id": "tool-launch", "decision": "rebuild", "status": "staged", "destination": "tool_version.py, ToolDetectionService, ToolLaunchService, and promoted launch-review dialog", "reason": "PASS-027 replaces legacy private-path launch setup with metadata version proof and path-free tool-only confirmation review; confirmation persistence and process launch remain blocked."},
+    {"id": "output-open", "decision": "rebuild", "status": "staged", "destination": "verified in-app artifact viewer", "reason": "PASS-025 reads only fixed hashed report/proof JSON inside Makers Anvil; arbitrary host file opening remains blocked."},
+    {"id": "source-adjacent-workspace", "decision": "reject", "status": "blocked", "destination": "none", "reason": "Runtime data must use portable OS user-data locations."},
+    {"id": "legacy-monoliths", "decision": "adopted", "status": "staged", "destination": "frontend/src/App.tsx and frontend/src/styles.css", "reason": "The user-selected working experience is authoritative; later splits must preserve tested behavior and appearance while reducing file size incrementally."}
+  ],
+  "safety": {
+    "referenceRuntimeImported": false,
+    "generatedDependenciesImported": false,
+    "personalPathImported": false,
+    "legacyProcessExecutionEnabled": false,
+    "legacyFileMutationEnabled": false,
+    "referenceDeleted": false
+  }
+}

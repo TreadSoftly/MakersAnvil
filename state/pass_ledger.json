@@ -1,0 +1,390 @@
+{
+  "schemaVersion": "makers-anvil.status.pass-ledger.v1",
+  "claimState": "staged",
+  "passes": [
+    {
+      "id": "PASS-001",
+      "title": "clean product foundation and read-only local app shell",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_001_REPORT.md",
+      "proof": [
+        "project verifier passed",
+        "pytest passed",
+        "local HTTP smoke passed",
+        "browser smoke passed",
+        "GitHub CI passed after workflow fixes"
+      ]
+    },
+    {
+      "id": "PASS-002",
+      "title": "workspace state and durable status records",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_002_REPORT.md",
+      "proof": [
+        "durable status JSON added",
+        "pass ledger JSON added",
+        "workspace-status API added",
+        "pass-ledger API added",
+        "frontend status panel added"
+      ]
+    },
+    {
+      "id": "PASS-003",
+      "title": "workspace data directory and safe local settings",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_003_REPORT.md",
+      "proof": [
+        "default local settings added",
+        "workspace layout API added",
+        "workspace init script added",
+        "frontend local workspace panel added",
+        "unsafe actions remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-004",
+      "title": "safe runtime file intake staging",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_004_REPORT.md",
+      "proof": [
+        "metadata-only intake policy added",
+        "intake record schema added",
+        "read-only intake policy and catalog APIs added",
+        "local metadata staging script added",
+        "frontend intake status panel added",
+        "source paths, contents, and unsafe actions remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-005",
+      "title": "portable runtime paths and relocation safety",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_005_REPORT.md",
+      "proof": [
+        "committed source contains no personal machine paths",
+        "runtime data is independent from source location",
+        "Windows local app data path policy added",
+        "macOS Application Support path policy added",
+        "Linux XDG data path policy added",
+        "absolute environment override is supported",
+        "resolved personal paths are not exposed through API or UI",
+        "relocated checkout verification added"
+      ]
+    },
+    {
+      "id": "PASS-006",
+      "title": "durable explainability and handoff contract",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_006_REPORT.md",
+      "proof": [
+        "every tracked file has a source-manifest entry",
+        "every Python module and public component has a docstring",
+        "frontend and workflow files have purpose comments",
+        "start guide, architecture guide, file map, and explanation standard added",
+        "continue protocol requires explanation maintenance",
+        "explainability coverage is machine-verified"
+      ]
+    },
+    {
+      "id": "PASS-007",
+      "title": "metadata-derived route preview foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_007_REPORT.md",
+      "proof": [
+        "committed route catalog defines one deterministic candidate per recognized intake kind",
+        "route preview service consumes validated metadata without reopening source files",
+        "read-only route preview API and composed app state added",
+        "dashboard route preview panel and candidate-step rendering added",
+        "route, tool, archive, source-open, and output actions remain disabled",
+        "route preview service, API, verifier, and browser regression coverage added"
+      ]
+    },
+    {
+      "id": "PASS-008",
+      "title": "output bundle and proof preview panels",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_008_REPORT.md",
+      "proof": [
+        "committed output policy covers every configured route exactly once",
+        "output service derives bundle, artifact, and proof plans from coherent route previews",
+        "read-only output preview API and composed app state added",
+        "dashboard output bundle and proof panels added",
+        "logical destinations replace resolved filesystem paths",
+        "output creation, opening, proof capture, route execution, and tool launch remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-009",
+      "title": "path-redacted tool detection foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_009_REPORT.md",
+      "proof": [
+        "committed tool catalog defines six maker tools across Windows, macOS, and Linux",
+        "detector checks PATH and narrowly scoped standard locations without process execution",
+        "read-only tool detection API and composed app state added",
+        "dashboard tool inventory and family coverage added",
+        "resolved installation paths and version claims remain withheld",
+        "launch and all software-change actions remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-010",
+      "title": "semantic tool dry-run planning",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_010_REPORT.md",
+      "proof": [
+        "committed dry-run policy covers every configured route with family-compatible tool preferences",
+        "planning service joins route, output, and tool evidence without resolving paths",
+        "read-only tool dry-run API and composed app state added",
+        "dashboard dry-run summaries and plan rows added",
+        "semantic references replace private source and output paths",
+        "command construction, handoff, process execution, tool launch, and filesystem writes remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-011",
+      "title": "single-route execution gate foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_011_REPORT.md",
+      "proof": [
+        "committed policy allowlists only mesh-to-toolpath with one disabled future concurrency slot",
+        "ten required gates cover scope, planning, authorization, containment, compatibility, control, logging, and proof",
+        "read-only execution gate API and composed app state added",
+        "dashboard gate progress and evidence matrix added",
+        "out-of-scope plans are counted but never evaluated for execution",
+        "execution requests, authorization, path resolution, commands, processes, writes, logs, cancellation, and proof remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-012",
+      "title": "execution request and audit preview foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_012_REPORT.md",
+      "proof": [
+        "committed request policy remains scoped to mesh-to-toolpath and enables no effects",
+        "deterministic logical intent joins coherent dry-run plans and gate evaluations",
+        "explicit authorization fields remain required but unaccepted with no actor or timestamp",
+        "six required append-only audit event types are modeled while no event is written",
+        "read-only execution request preview API and composed app state added",
+        "dashboard request, authorization, audit, and blocked execution status added",
+        "request persistence, authorization acceptance, audit writes, paths, commands, processes, tools, outputs, and proof remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-013",
+      "title": "contained job workspace and cancellation record foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_013_REPORT.md",
+      "proof": [
+        "committed job policy permits only explicit local preparation and cancellation-request scripts",
+        "prepared jobs use deterministic ids and contained app-owned control, working, logs, and outputs directories",
+        "job manifests retain logical references and withhold private filesystem paths",
+        "cancellation requests are idempotent and never claim a process signal or stopped process",
+        "read-only job policy, catalog API, composed app state, and dashboard panel added",
+        "malformed, weakened, traversing, and symlinked runtime records fail closed",
+        "authorization, commands, processes, tools, user files, output artifacts, audit events, and proof remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-014",
+      "title": "previous-app design assimilation and source explanation remediation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_014_REPORT.md",
+      "proof": [
+        "the ignored previous working app was studied as visual and workflow evidence without becoming product source",
+        "accepted and rejected prototype patterns are preserved in a tracked reference study",
+        "all comment-capable source files carry structured purpose, caller, data-flow, side-effect, safety, failure, and proof context",
+        "a file-by-file source walkthrough connects code, contracts, scripts, tests, and durable truth",
+        "the explainability checker enforces structured module and asset headers plus component documentation",
+        "runtime behavior and completion percentage remain unchanged because this remediation pass enables no new application action"
+      ]
+    },
+    {
+      "id": "PASS-015",
+      "title": "preview-first maker workbench shell and responsive dashboard foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_015_REPORT.md",
+      "proof": [
+        "the first screen is a dense maker workbench with intake, selected input, tools, workflow, and output proof zones",
+        "persistent rail navigation, quick-jump search, and Work Flow, Plans, and Dev tabs operate entirely in the browser",
+        "all existing API render targets remain unique and connected to the new shell",
+        "selected input and expected output summaries render untrusted metadata through text nodes",
+        "desktop workbench geometry has no page overflow and mobile reflow has no horizontal overflow",
+        "upload, file handoff, authorization, commands, processes, tools, outputs, and package actions remain disabled"
+      ]
+    },
+    {
+      "id": "PASS-016",
+      "title": "complete instructional source and line-by-line learning layer",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_016_REPORT.md",
+      "proof": [
+        "every Python component contains all nine required teaching fields",
+        "every top-level JavaScript function contains matching detailed JSDoc",
+        "every CSS rule and semantic HTML block has a nearby purpose, mechanism, example, and safety explanation",
+        "the generated guide explains every physical line in implementation, automation, configuration, schema, state, and workflow source",
+        "exact source hashes and line totals make stale or incomplete instructional coverage fail the verifier",
+        "runtime behavior and completion percentage remain unchanged because this remediation pass enables no application action"
+      ]
+    },
+    {
+      "id": "PASS-017",
+      "title": "previous-app unification and Windows desktop executable foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_017_REPORT.md",
+      "proof": [
+        "the previous working app is inventoried through an explicit no-duplicate capability migration registry",
+        "29 selected first-party previous-app files have exact local coverage for all 14,611 physical lines",
+        "legacy dependencies, generated outputs, logs, paths, source storage, process behavior, and monoliths remain outside product source",
+        "one secured native pywebview window owns one ephemeral loopback session over the existing frontend and API",
+        "source and PyInstaller resource roots resolve without current-directory, username, desktop, cloud-folder, or drive assumptions",
+        "the deterministic Windows one-file plan creates MakersAnvil.exe with a headless bundled-resource/API smoke mode",
+        "file upload, route execution, tool launch, output opening, installation, signing, release, and clean-machine claims remain blocked"
+      ]
+    },
+    {
+      "id": "PASS-018",
+      "title": "explicit authorization and portable native/browser intake foundation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_018_REPORT.md",
+      "proof": [
+        "one same-origin browser session uses one opaque process-local request token and exposes no source path",
+        "explicit consent binds one reviewed allowlisted file to a short-lived one-time authorization",
+        "exact-length bounded streaming creates a SHA-256-identified app-owned quarantine copy through atomic replacement",
+        "partial transfer, replay, expired consent, cross-origin evidence, bad tokens, wrong media, archives, folders, and unsupported files fail closed",
+        "the workbench provides choose, review, authorize, cancel, progress, success, and error states without drag-drop or paste",
+        "only two POST endpoints are enabled while route execution, tool launch, selected-file handoff, extraction, output actions, and software changes remain blocked",
+        "source, browser, native-window, packaged-binary, schema, explainability, pytest, and GitHub CI proof cover the bounded intake path"
+      ]
+    },
+    {
+      "id": "PASS-019",
+      "title": "modular previous-app capability, help, event, and settings migration",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_019_REPORT.md",
+      "proof": [
+        "five capability lanes derive current input, route, output, and tool truth without execution readiness",
+        "one accessible contextual-help module supplies reviewed purpose and safety boundaries for major workbench surfaces",
+        "density, motion, and help preferences persist atomically under portable app-owned user data through the shared local guard",
+        "completed intake and preference actions create fixed redacted create-only activity events with no arbitrary browser event endpoint",
+        "legacy dependencies, monoliths, personal paths, source-adjacent storage, direct processes, broad intake, and output opening remain excluded",
+        "source schemas, focused service tests, complete line explanations, browser/native/package proof, and cross-platform CI cover the pass"
+      ]
+    },
+    {
+      "id": "PASS-020",
+      "title": "contained built-in STL preflight with cancellation, audit, and output proof",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_020_REPORT.md",
+      "proof": [
+        "one explicitly authorized app-owned STL can enter one built-in in-process structural preflight",
+        "bounded streaming proves byte size, SHA-256, and binary or ASCII STL structure without retaining source content",
+        "one concurrency slot and cooperative cancellation prevent overlapping work and require no process signal",
+        "fixed append-only audit events cover request, authorization, start, cancellation or completion, and proof",
+        "report, log, proof, and terminal records use portable app-owned storage and expose only logical paths",
+        "guarded API and workbench actions remain limited to authorize, run, and cancel for this partial operation",
+        "full routes, slicing, G-code, arbitrary commands, external processes/tools, output opening, and software changes remain blocked"
+      ]
+    },
+    {
+      "id": "PASS-021",
+      "title": "backup, restore, update, uninstall, and repair dry-run lifecycle contracts",
+      "claimState": "preview-only",
+      "reportPath": "docs/passes/PASS_021_REPORT.md",
+      "proof": [
+        "five ordered lifecycle operations are defined through strict schema-backed policy and read-only API records",
+        "backup source inventory returns only bounded app-owned file counts and byte totals without content, names, or private paths",
+        "temporary and backup directories are excluded from backup sources and scan entry count is globally capped",
+        "every plan preserves existing app data, forbids user-data deletion, declares proof requirements, and remains execution-blocked",
+        "archive, restore, network, package, installer, software mutation, process, and deletion effects remain false",
+        "the workbench renders lifecycle evidence and blockers without any lifecycle command control",
+        "focused no-write, fail-closed, API, frontend, schema, package, and cross-platform verification cover the pass"
+      ]
+    },
+    {
+      "id": "PASS-022",
+      "title": "Windows installer foundation, upgrade and removal gates, and clean-machine test harness",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_022_REPORT.md",
+      "proof": [
+        "MSIX is selected through a strict Windows x64 per-user installer policy without building or installing a package",
+        "nine readiness gates separate three proven foundation choices from six unproven release and machine proofs",
+        "provisional package identity cannot become locked until publisher and signing evidence exist",
+        "upgrade and removal contracts preserve portable app-owned user data while downgrade, purge, and execution remain disabled",
+        "six ordered clean-machine scenarios cover install, launch, upgrade, repair, removal, and reinstall with zero runs and zero evidence",
+        "three GET-only APIs and one inspection-only CLI expose the same blocked release truth",
+        "registry, certificate store, package registration, software mutation, processes, publication, and user-data deletion remain false"
+      ]
+    },
+    {
+      "id": "PASS-023",
+      "title": "previous working application promotion and portable API adaptation",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_023_REPORT.md",
+      "proof": [
+        "the previous working React source, reviewed tool icons, visual system, navigation, workflows, and motion are the one current product frontend",
+        "the promoted frontend compiles to frontend/dist and is served by browser, native desktop, and Windows executable runtime-resource paths",
+        "a typed adapter maps current path-redacted state and guarded mutations without importing the legacy Python backend or private paths",
+        "picker, drop, and paste gestures share one exact one-file authorization and app-owned quarantine-copy path",
+        "legacy tool launch, selected-file handoff, output opening, intake-folder opening, and arbitrary route calls remain visibly blocked",
+        "twenty React interaction tests plus Python, HTTP, native, package, schema, purity, and explainability gates cover the promoted application"
+      ]
+    },
+    {
+      "id": "PASS-024",
+      "title": "verified app-owned raster previews in the promoted workbench",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_024_REPORT.md",
+      "proof": [
+        "authorized app-owned raster records receive generated same-origin preview URLs in the promoted selected-media board",
+        "each read revalidates record shape, storage containment, byte ceiling, exact length, SHA-256, extension, and binary raster signature",
+        "responses use generated filenames plus no-store, no-sniff, and same-origin headers without original names or physical paths",
+        "metadata-only, active, non-raster, archive, oversized, missing, symlinked, tampered, and signature-mismatched content fails closed",
+        "the current live app-owned PNG passed the endpoint with 222982 verified bytes and image/png transport",
+        "service, API, loopback HTTP, frontend adapter, React, native, package, portability, purity, and cross-platform CI proof cover the pass"
+      ]
+    },
+    {
+      "id": "PASS-025",
+      "title": "verified contained proof and report viewer",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_025_REPORT.md",
+      "proof": [
+        "completed and failed preflights map to report and proof actions in the promoted latest-job surface",
+        "dynamic reads accept only generated execution ids plus closed report or proof kinds and derive fixed private filenames",
+        "terminal records, complete proof/report shape, logical references, size, and SHA-256 bindings are revalidated on every read",
+        "verified JSON renders in a responsive accessible in-app dialog with no physical path, OS open, process, or tool effect",
+        "unready, unknown, missing, symlinked, malformed, oversized, altered, and redirected artifacts fail closed",
+        "service, API, adapter, React, schema, native smoke, package, purity, explainability, and cross-platform CI cover the pass"
+      ]
+    },
+    {
+      "id": "PASS-026",
+      "title": "contained execution history and cooperative cancellation controls",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_026_REPORT.md",
+      "proof": [
+        "all valid contained executions map to newest-first path-redacted history rows with lifecycle, cancellation, audit, and proof truth",
+        "history report and proof commands target the selected generated execution rather than only the latest run",
+        "the generated execution id reaches the workbench before Run completes so a threaded request can be cancelled cooperatively",
+        "cancel rechecks live nonterminal catalog state, action availability, generated id syntax, and same-origin process token before a bodyless POST",
+        "requested cancellation disables replay and remains explicitly distinct from an operating-system process signal or process-stop claim",
+        "adapter and React tests plus existing service/API cancellation tests cover mapping, identity timing, commands, rejection, and false-signal behavior"
+      ]
+    },
+    {
+      "id": "PASS-027",
+      "title": "metadata tool version proof and launch confirmation review",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_027_REPORT.md",
+      "proof": [
+        "Windows VERSIONINFO and macOS app-bundle metadata readers provide bounded file/product versions without starting a process or running a version command",
+        "tool detection validates closed metadata evidence and exposes no resolved executable path",
+        "strict launch policy requires detected presence plus proven version before a tool-only confirmation review becomes ready",
+        "launch bindings exclude selected files, arguments, commands, private paths, accepted confirmation, persistence, and process execution",
+        "the promoted workbench renders version evidence and one accessible review dialog containing only close controls and explicit blockers",
+        "focused service, API, schema, adapter, React, Windows metadata, package, explainability, and cross-platform verification cover the pass"
+      ]
+    }
+  ]
+}

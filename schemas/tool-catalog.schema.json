@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-catalog.schema.json",
+  "title": "Makers Anvil tool detection catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "providers", "tools", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "platform": {"enum": ["windows", "macos", "linux"]},
+    "safety": {
+      "type": "object",
+      "required": ["processExecuted", "versionCommandExecuted", "registryRead", "filesystemWritten", "toolLaunched", "softwareChanged"],
+      "additionalProperties": false,
+      "properties": {
+        "processExecuted": {"const": false},
+        "versionCommandExecuted": {"const": false},
+        "registryRead": {"const": false},
+        "filesystemWritten": {"const": false},
+        "toolLaunched": {"const": false},
+        "softwareChanged": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.config.tool-catalog.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "read-only-presence"},
+    "providers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "platform", "rootKind"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "platform": {"$ref": "#/$defs/platform"},
+          "rootKind": {"enum": ["environment", "fixed"]},
+          "environmentVariable": {"type": "string", "minLength": 1},
+          "fixedRoot": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "publisher", "families", "pathCommands", "candidates"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "publisher": {"type": "string", "minLength": 1},
+          "families": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^[a-z0-9-]+$"}},
+          "pathCommands": {
+            "type": "object",
+            "required": ["windows", "macos", "linux"],
+            "additionalProperties": false,
+            "properties": {
+              "windows": {"type": "array", "items": {"type": "string"}},
+              "macos": {"type": "array", "items": {"type": "string"}},
+              "linux": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["id", "platform", "provider", "pattern"],
+              "additionalProperties": false,
+              "properties": {
+                "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+                "platform": {"$ref": "#/$defs/platform"},
+                "provider": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+                "pattern": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "safety": {"$ref": "#/$defs/safety"}
+  }
+}

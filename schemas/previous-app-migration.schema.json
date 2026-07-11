@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/previous-app-migration.schema.json",
+  "title": "Makers Anvil previous app migration registry",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "referenceRoot", "runtimeDependency", "sourceCodeModified", "learningArtifactsGenerated", "audit", "excludedFromProduct", "capabilities", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.previous-app-migration.v1"},
+    "claimState": {"const": "staged"},
+    "referenceRoot": {"const": "Previous Working MA For References/MAKERS ANVIL"},
+    "runtimeDependency": {"const": false},
+    "sourceCodeModified": {"const": false},
+    "learningArtifactsGenerated": {"const": true},
+    "audit": {
+      "type": "object",
+      "required": ["totalFileCount", "totalBytes", "firstPartyGuideSourceCount", "firstPartyGuideLineCount", "pythonTestsPassed", "frontendTestsPassed"],
+      "additionalProperties": false,
+      "properties": {
+        "totalFileCount": {"type": "integer", "minimum": 1},
+        "totalBytes": {"type": "integer", "minimum": 1},
+        "firstPartyGuideSourceCount": {"type": "integer", "minimum": 1},
+        "firstPartyGuideLineCount": {"type": "integer", "minimum": 1},
+        "pythonTestsPassed": {"type": "integer", "minimum": 1},
+        "frontendTestsPassed": {"type": "integer", "minimum": 1}
+      }
+    },
+    "excludedFromProduct": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "decision", "status", "destination", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "decision": {"enum": ["adopted", "migrate", "rebuild", "reject"]},
+          "status": {"enum": ["planned", "staged", "blocked", "proven"]},
+          "destination": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 12}
+        }
+      }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["referenceRuntimeImported", "generatedDependenciesImported", "personalPathImported", "legacyProcessExecutionEnabled", "legacyFileMutationEnabled", "referenceDeleted"],
+      "additionalProperties": false,
+      "properties": {
+        "referenceRuntimeImported": {"const": false},
+        "generatedDependenciesImported": {"const": false},
+        "personalPathImported": {"const": false},
+        "legacyProcessExecutionEnabled": {"const": false},
+        "legacyFileMutationEnabled": {"const": false},
+        "referenceDeleted": {"const": false}
+      }
+    }
+  }
+}

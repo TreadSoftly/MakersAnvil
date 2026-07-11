@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-authorization.schema.json",
+  "title": "Makers Anvil one-file intake authorization",
+  "type": "object",
+  "required": ["schemaVersion", "id", "intakeId", "claimState", "scope", "createdUtc", "expiresUtc", "accepted", "acceptedUtc", "consumed", "consumedUtc", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.runtime.intake-authorization.v1" },
+    "id": { "type": "string", "pattern": "^intake-auth-[a-f0-9]{32}$" },
+    "intakeId": { "type": "string", "pattern": "^intake-[a-f0-9]{32}$" },
+    "claimState": { "const": "staged" },
+    "scope": { "const": "copy-one-file-into-app-storage" },
+    "createdUtc": { "type": "string", "format": "date-time" },
+    "expiresUtc": { "type": "string", "format": "date-time" },
+    "accepted": { "const": true },
+    "acceptedUtc": { "type": "string", "format": "date-time" },
+    "consumed": { "type": "boolean" },
+    "consumedUtc": { "type": ["string", "null"], "format": "date-time" },
+    "source": {
+      "type": "object",
+      "required": ["displayName", "extension", "kind", "sizeBytes", "modifiedUtc"],
+      "additionalProperties": false,
+      "properties": {
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "extension": { "type": "string", "pattern": "^\\.[a-z0-9]+$" },
+        "kind": { "enum": ["mesh", "cad", "image", "toolpath", "document"] },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "modifiedUtc": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

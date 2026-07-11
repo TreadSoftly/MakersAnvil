@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/job-cancellation-record.schema.json",
+  "title": "Makers Anvil job cancellation request record",
+  "type": "object",
+  "required": ["schemaVersion", "jobId", "claimState", "state", "requestId", "requestedAt", "processSignalSent", "processStopped"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.job-cancellation.v1"},
+    "jobId": {"type": "string", "pattern": "^job-[a-f0-9]{24}$"},
+    "claimState": {"const": "staged"},
+    "state": {"enum": ["not-requested", "requested"]},
+    "requestId": {"type": ["string", "null"], "pattern": "^cancel-[a-f0-9]{32}$"},
+    "requestedAt": {"type": ["string", "null"], "format": "date-time"},
+    "processSignalSent": {"const": false},
+    "processStopped": {"const": false}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state": {"const": "not-requested"}}},
+      "then": {"properties": {"requestId": {"type": "null"}, "requestedAt": {"type": "null"}}}
+    },
+    {
+      "if": {"properties": {"state": {"const": "requested"}}},
+      "then": {"properties": {"requestId": {"type": "string"}, "requestedAt": {"type": "string", "format": "date-time"}}}
+    }
+  ]
+}

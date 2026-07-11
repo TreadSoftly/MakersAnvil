@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/job-workspace-record.schema.json",
+  "title": "Makers Anvil prepared job workspace record",
+  "type": "object",
+  "required": ["schemaVersion", "id", "claimState", "createdUtc", "requestPreviewId", "route", "operation", "intent", "authorization", "lifecycle", "workspace", "cancellationRecord", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.job-workspace.v1"},
+    "id": {"type": "string", "pattern": "^job-[a-f0-9]{24}$"},
+    "claimState": {"const": "staged"},
+    "createdUtc": {"type": "string", "format": "date-time"},
+    "requestPreviewId": {"type": "string", "pattern": "^execution-request-preview-[A-Za-z0-9._-]+$"},
+    "route": {"$ref": "#/$defs/idLabel"},
+    "operation": {"$ref": "#/$defs/idLabel"},
+    "intent": {"$ref": "#/$defs/intent"},
+    "authorization": {
+      "type": "object",
+      "required": ["required", "accepted"],
+      "additionalProperties": false,
+      "properties": {"required": {"const": true}, "accepted": {"const": false}}
+    },
+    "lifecycle": {
+      "type": "object",
+      "required": ["state", "processId", "startedAt", "completedAt"],
+      "additionalProperties": false,
+      "properties": {
+        "state": {"const": "prepared"},
+        "processId": {"type": "null"},
+        "startedAt": {"type": "null"},
+        "completedAt": {"type": "null"}
+      }
+    },
+    "workspace": {
+      "type": "object",
+      "required": ["logicalRoot", "absolutePathExposed", "directories"],
+      "additionalProperties": false,
+      "properties": {
+        "logicalRoot": {"type": "string", "pattern": "^makers-anvil-data://user/jobs/job-[a-f0-9]{24}$"},
+        "absolutePathExposed": {"const": false},
+        "directories": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "required": ["id", "logicalPath"],
+            "additionalProperties": false,
+            "properties": {
+              "id": {"enum": ["control", "working", "logs", "outputs"]},
+              "logicalPath": {"type": "string", "pattern": "^makers-anvil-data://user/jobs/job-[a-f0-9]{24}/(control|working|logs|outputs)$"}
+            }
+          }
+        }
+      }
+    },
+    "cancellationRecord": {"type": "string", "pattern": "^makers-anvil-data://user/jobs/job-[a-f0-9]{24}/control/cancellation\\.json$"},
+    "safety": {"$ref": "job-workspace-policy.schema.json#/$defs/safety"}
+  },
+  "$defs": {
+    "idLabel": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {"id": {"type": "string"}, "label": {"type": "string"}}
+    },
+    "intent": {
+      "type": "object",
+      "required": ["source", "output", "tool"],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "object",
+          "required": ["intakeId", "logicalReference"],
+          "additionalProperties": false,
+          "properties": {
+            "intakeId": {"type": "string"},
+            "logicalReference": {"type": "string", "pattern": "^makers-anvil-intake://records/"}
+          }
+        },
+        "output": {
+          "type": "object",
+          "required": ["bundleId", "logicalDirectory"],
+          "additionalProperties": false,
+          "properties": {
+            "bundleId": {"type": "string"},
+            "logicalDirectory": {"type": "string", "pattern": "^makers-anvil-data://user/outputs/"}
+          }
+        },
+        "tool": {
+          "anyOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "required": ["id", "label", "claimState"],
+              "additionalProperties": false,
+              "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "claimState": {"const": "detected"}}
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/app-state.schema.json",
+  "title": "Makers Anvil app state",
+  "type": "object",
+  "required": ["schemaVersion", "appName", "apiBuild", "claimState", "completion", "currentPass", "sourceTruth", "workspaceConfig", "intakeCatalog", "routePreview", "outputProof", "toolDetection", "toolLaunchCatalog", "toolDryRun", "executionGates", "executionRequestPreview", "jobWorkspaceCatalog", "containedExecutions", "lifecycleDryRuns", "windowsInstaller", "cleanMachineHarness", "capabilityMatrix", "capabilities", "blockedActions"],
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.api.state.v1" },
+    "appName": { "const": "Makers Anvil" },
+    "apiBuild": { "type": "string" },
+    "claimState": { "$ref": "claim-state.schema.json" },
+    "completion": {
+      "type": "object",
+      "additionalProperties": { "type": "number", "minimum": 0, "maximum": 100 }
+    },
+    "currentPass": {
+      "type": "object",
+      "required": ["id", "title", "claimState"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "claimState": { "$ref": "claim-state.schema.json" }
+      }
+    },
+    "sourceTruth": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "workspaceConfig": {
+      "type": "object",
+      "required": ["runtimeLocation"],
+      "properties": {
+        "runtimeLocation": { "$ref": "runtime-location.schema.json" }
+      }
+    },
+    "intakeCatalog": {
+      "type": "object"
+    },
+    "routePreview": {"$ref": "route-preview.schema.json"},
+    "outputProof": {"$ref": "output-proof.schema.json"},
+    "toolDetection": {"$ref": "tool-detection.schema.json"},
+    "toolLaunchCatalog": {"$ref": "tool-launch-catalog.schema.json"},
+    "toolDryRun": {"$ref": "tool-dry-run.schema.json"},
+    "executionGates": {"$ref": "execution-gates.schema.json"},
+    "executionRequestPreview": {"$ref": "execution-request-preview.schema.json"},
+    "jobWorkspaceCatalog": {"$ref": "job-workspace-catalog.schema.json"},
+    "containedExecutions": {"$ref": "contained-execution-catalog.schema.json"},
+    "lifecycleDryRuns": {"$ref": "lifecycle-dry-run-catalog.schema.json"},
+    "windowsInstaller": {"$ref": "windows-installer-readiness.schema.json"},
+    "cleanMachineHarness": {"$ref": "clean-machine-harness.schema.json"},
+    "capabilityMatrix": {"$ref": "capability-matrix.schema.json"},
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "claimState", "summary", "actionsEnabled"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "claimState": { "$ref": "claim-state.schema.json" },
+          "summary": { "type": "string" },
+          "actionsEnabled": { "type": "boolean" }
+        }
+      }
+    },
+    "blockedActions": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

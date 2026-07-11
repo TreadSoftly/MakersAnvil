@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-detection.schema.json",
+  "title": "Makers Anvil read-only tool detection",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "platform", "summary", "familyCoverage", "tools", "safety", "actions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.tool-detection.v1"},
+    "claimState": {"$ref": "claim-state.schema.json"},
+    "mode": {"const": "read-only-presence"},
+    "platform": {
+      "type": "object",
+      "required": ["id", "claimState"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"enum": ["windows", "macos", "linux", "unknown"]},
+        "claimState": {"$ref": "claim-state.schema.json"}
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["toolCount", "detectedCount", "notDetectedCount"],
+      "additionalProperties": false,
+      "properties": {
+        "toolCount": {"type": "integer", "minimum": 0},
+        "detectedCount": {"type": "integer", "minimum": 0},
+        "notDetectedCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "familyCoverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "detectedToolCount", "claimState"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "detectedToolCount": {"type": "integer", "minimum": 0},
+          "claimState": {"$ref": "claim-state.schema.json"}
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "publisher", "families", "claimState", "detection", "version", "actionsEnabled"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string"},
+          "label": {"type": "string"},
+          "publisher": {"type": "string"},
+          "families": {"type": "array", "items": {"type": "string"}},
+          "claimState": {"$ref": "claim-state.schema.json"},
+          "detection": {
+            "type": "object",
+            "required": ["installed", "method", "candidateId", "executableName", "absolutePathExposed"],
+            "additionalProperties": false,
+            "properties": {
+              "installed": {"type": "boolean"},
+              "method": {"enum": ["path-command", "standard-location", "none"]},
+              "candidateId": {"type": ["string", "null"]},
+              "executableName": {"type": ["string", "null"]},
+              "absolutePathExposed": {"const": false}
+            }
+          },
+          "version": {
+            "type": "object",
+            "required": ["claimState", "value", "fileVersion", "productVersion", "evidenceMethod", "commandExecuted", "absolutePathExposed"],
+            "additionalProperties": false,
+            "properties": {
+              "claimState": {"enum": ["proven", "not proven"]},
+              "value": {"type": ["string", "null"]},
+              "fileVersion": {"type": ["string", "null"]},
+              "productVersion": {"type": ["string", "null"]},
+              "evidenceMethod": {"enum": ["windows-version-resource", "macos-bundle-info", "none"]},
+              "commandExecuted": {"const": false},
+              "absolutePathExposed": {"const": false}
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "claimState": {"const": "proven"},
+                  "value": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "fileVersion": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "productVersion": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "evidenceMethod": {"enum": ["windows-version-resource", "macos-bundle-info"]}
+                }
+              },
+              {
+                "properties": {
+                  "claimState": {"const": "not proven"},
+                  "value": {"const": null},
+                  "fileVersion": {"const": null},
+                  "productVersion": {"const": null},
+                  "evidenceMethod": {"const": "none"}
+                }
+              }
+            ]
+          },
+          "actionsEnabled": {"const": false}
+        }
+      }
+    },
+    "safety": {"$ref": "tool-catalog.schema.json#/$defs/safety"},
+    "actions": {
+      "type": "object",
+      "required": ["launch", "install", "update", "uninstall", "repair"],
+      "additionalProperties": false,
+      "properties": {
+        "launch": {"$ref": "#/$defs/blockedAction"},
+        "install": {"$ref": "#/$defs/blockedAction"},
+        "update": {"$ref": "#/$defs/blockedAction"},
+        "uninstall": {"$ref": "#/$defs/blockedAction"},
+        "repair": {"$ref": "#/$defs/blockedAction"}
+      }
+    }
+  },
+  "$defs": {
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  }
+}

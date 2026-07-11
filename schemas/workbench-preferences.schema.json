@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/workbench-preferences.schema.json",
+  "title": "Makers Anvil persisted workbench preferences",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "claimState", "density", "motion", "contextHelp", "updatedUtc"],
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.runtime.workbench-preferences.v1"}, "claimState": {"const": "staged"},
+    "density": {"enum": ["compact", "comfortable"]}, "motion": {"enum": ["full", "reduced"]}, "contextHelp": {"type": "boolean"},
+    "updatedUtc": {"type": "string", "format": "date-time"}
+  }
+}

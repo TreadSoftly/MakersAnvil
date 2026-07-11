@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/intake-preview-policy.schema.json",
+  "title": "Makers Anvil authorized intake preview policy",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "endpointTemplate", "maxPreviewBytes", "allowedExtensions", "safety"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": "makers-anvil.config.intake-preview.v1" },
+    "claimState": { "const": "staged" },
+    "mode": { "const": "verified-app-owned-raster" },
+    "endpointTemplate": { "const": "/api/intake/previews/{intakeId}" },
+    "maxPreviewBytes": { "type": "integer", "minimum": 1, "maximum": 26214400 },
+    "allowedExtensions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": [".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tif", ".tiff", ".webp"] }
+    },
+    "safety": {
+      "type": "object",
+      "required": ["readOnly", "authorizedRecordRequired", "appOwnedContentRequired", "sizeAndDigestReverified", "rasterSignatureRequired", "sourcePathExposed", "activeContentAllowed", "archiveReadEnabled", "selectedFileHandoffEnabled", "externalProcessEnabled"],
+      "additionalProperties": false,
+      "properties": {
+        "readOnly": { "const": true },
+        "authorizedRecordRequired": { "const": true },
+        "appOwnedContentRequired": { "const": true },
+        "sizeAndDigestReverified": { "const": true },
+        "rasterSignatureRequired": { "const": true },
+        "sourcePathExposed": { "const": false },
+        "activeContentAllowed": { "const": false },
+        "archiveReadEnabled": { "const": false },
+        "selectedFileHandoffEnabled": { "const": false },
+        "externalProcessEnabled": { "const": false }
+      }
+    }
+  }
+}
