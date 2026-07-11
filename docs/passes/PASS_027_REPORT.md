@@ -3,9 +3,9 @@
 ## Status
 
 - Pass: `PASS-027 - metadata tool version proof and launch confirmation review`
-- Claim: locally proven; hosted CI not yet proven at this local checkpoint
+- Claim: locally and hosted-CI proven
 - Completion date: `2026-07-11`
-- Branch: `codex/pass-001-clean-foundation`
+- Branch and product commit: `codex/pass-001-clean-foundation` at `869e568`
 
 ## Objective
 
@@ -78,6 +78,7 @@ Prove maker-tool versions from operating-system metadata without starting the to
 - Fresh pinned PyInstaller 6.21.0/pywebview 6.2.1 build: passed after the system Python correctly reported those package dependencies absent; `uv run` supplied an isolated pinned build environment.
 - Packaged `MakersAnvil.exe --smoke`: passed locally and from a generated relocated copy launched with `C:\WINDOWS` as its working directory; the generated temp copy was removed after process release.
 - Windows executable: 14,159,660 bytes; SHA-256 `ee99fe5221866b774e4b92df617098520ec2db437a63f93cfa80793905d320ff`.
+- GitHub Actions run `29156508141`: Windows verification, Ubuntu verification, macOS verification, and Windows executable build/smoke/upload all passed.
 
 ## Runtime And Visual Proof
 
@@ -98,9 +99,9 @@ No user file, maker tool, external process, registry key, package, archive, runt
 ## GitHub And CI
 
 - Branch: `codex/pass-001-clean-foundation`.
-- Commit/push: not yet created at this local checkpoint.
-- Pull request: existing draft PR #1.
-- Hosted Windows, Ubuntu, macOS, and Windows executable checks: not yet run for PASS-027 at this local checkpoint.
+- Product commit: `869e568 add metadata tool version and launch review`; pushed to `origin/codex/pass-001-clean-foundation`.
+- Pull request: draft [#1](https://github.com/TreadSoftly/MakersAnvil/pull/1), titled `[codex] Build Makers Anvil through PASS-027`.
+- GitHub Actions run `29156508141`: `Verify on windows-latest`, `Verify on ubuntu-latest`, `Verify on macos-latest`, and `Build Windows executable` all completed successfully.
 
 ## Next Pass
 
