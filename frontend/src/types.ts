@@ -125,6 +125,7 @@ export interface RouteCard {
 }
 
 export interface ToolHealth {
+  toolId?: string;
   tool: string;
   role: string;
   health: "detected" | "manual" | "candidate" | "blocked" | "missing";
@@ -137,6 +138,13 @@ export interface ToolHealth {
   probeStatus: string;
   sourceReference: string;
   blockedClaims: string;
+  versionValue?: string | null;
+  versionClaimState?: string;
+  versionEvidenceMethod?: string;
+  launchReviewReady?: boolean;
+  confirmationRequired?: boolean;
+  confirmationAccepted?: boolean;
+  launchReviewBlockers?: string[];
 }
 
 export interface ToolHandoff {

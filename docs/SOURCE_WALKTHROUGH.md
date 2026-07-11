@@ -51,7 +51,9 @@ For image display, follow `api.adaptFiles()` -> generated `/api/intake/previews/
 | `backend/src/makers_anvil_backend/services/intake_preview.py` | Revalidates bounded authorized raster bytes for same-origin selected-media display. | `tests/test_intake_preview.py`, preview policy/schema |
 | `backend/src/makers_anvil_backend/services/route_preview.py` | Maps intake kinds to non-executing work candidates. | `tests/test_route_preview.py` |
 | `backend/src/makers_anvil_backend/services/output_proof.py` | Plans logical artifacts and required proof without writing output. | `tests/test_output_proof.py` |
-| `backend/src/makers_anvil_backend/services/tool_detection.py` | Detects tool presence while withholding paths and avoiding processes. | `tests/test_tool_detection.py` |
+| `backend/src/makers_anvil_backend/services/tool_version.py` | Reads bounded Windows PE or macOS app-bundle version metadata without executing the target. | `tests/test_tool_version.py` |
+| `backend/src/makers_anvil_backend/services/tool_detection.py` | Detects tool presence, validates metadata version evidence, and withholds resolved paths. | `tests/test_tool_detection.py` |
+| `backend/src/makers_anvil_backend/services/tool_launch.py` | Builds version-bound tool-only confirmation previews with no accepted consent or launch action. | `tests/test_tool_launch.py`, tool-launch schemas |
 | `backend/src/makers_anvil_backend/services/tool_dry_run.py` | Builds semantic plans with no runnable command or file handoff. | `tests/test_tool_dry_run.py` |
 | `backend/src/makers_anvil_backend/services/execution_gate.py` | Evaluates planning and operational evidence for one route. | `tests/test_execution_gate.py` |
 | `backend/src/makers_anvil_backend/services/execution_request.py` | Previews intent, unaccepted consent, and required audit lifecycle. | `tests/test_execution_request.py` |
@@ -70,9 +72,9 @@ Package-marker `__init__.py` files only establish namespaces. Their headers expl
 | --- | --- | --- |
 | `frontend/index.html` | Minimal trusted React mount document and local product identity metadata. | One root -> module entry -> local favicon/manifest. |
 | `frontend/src/main.tsx` | Creates the one StrictMode React tree. | Root lookup -> App mount -> shared styles. |
-| `frontend/src/App.tsx` | Promoted rail, source board, tools, workflows, execution history/cancel, proof, help, and settings. | State/actions -> workbench regions -> component helpers -> presentation helpers. |
-| `frontend/src/api.ts` | Current-state/history adaptation, guarded intake/preflight/cancel, selected artifact reads, activity, and blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
-| `frontend/src/api.test.ts` | Current-record to view-model preview URL and privacy proof. | Authorized image fixture -> generated URL -> metadata-only fallback. |
+| `frontend/src/App.tsx` | Promoted rail, source board, versioned tool review, workflows, execution history/cancel, proof, help, and settings. | State/actions -> workbench regions -> review/artifact dialogs -> presentation helpers. |
+| `frontend/src/api.ts` | Tool version/review and current-state/history adaptation, guarded intake/preflight/cancel, selected artifact reads, activity, and blockers. | JSON guard -> adapters -> reads -> allowed mutations -> blocked legacy actions. |
+| `frontend/src/api.test.ts` | Current-record to view-model version/review, preview URL, history, and privacy proof. | Path-redacted fixtures -> conservative adapter fields -> guarded request assertions. |
 | `frontend/src/components/ContextHelp.tsx` | Accessible viewport-contained help dialog with Escape close and focus restoration. | Position -> listeners -> dialog portal. |
 | `frontend/src/components/ModeTabs.tsx` | Keyboard-operable Work Flow, Plans, and Dev selection. | ARIA tabs -> arrow/Home/End movement -> tab panels. |
 | `frontend/src/components/StatusPill.tsx` | Conservative status-to-tone presentation that retains original text. | Normalize -> choose tone -> render. |

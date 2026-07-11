@@ -7,14 +7,14 @@
     "sourceRoot": "."
   },
   "currentPass": {
-    "id": "PASS-026",
-    "title": "contained execution history and cooperative cancellation controls",
+    "id": "PASS-027",
+    "title": "metadata tool version proof and launch confirmation review",
     "claimState": "staged",
-    "reportPath": "docs/passes/PASS_026_REPORT.md"
+    "reportPath": "docs/passes/PASS_027_REPORT.md"
   },
   "trackPercentages": {
-    "realApp": 87.5,
-    "windowsLocal": 90.0,
+    "realApp": 89.5,
+    "windowsLocal": 92.0,
     "macLinux": 0.0,
     "webHosted": 0.0,
     "packagedRelease": 30.0,
@@ -46,6 +46,9 @@
     "containedArtifactSchemaPath": "schemas/contained-artifact.schema.json",
     "lifecycleDryRunPolicyPath": "config/lifecycle_dry_run_policy.json",
     "lifecycleDryRunCatalogSchemaPath": "schemas/lifecycle-dry-run-catalog.schema.json"
+    ,"toolLaunchPolicyPath": "config/tool_launch_policy.json"
+    ,"toolLaunchPolicySchemaPath": "schemas/tool-launch-policy.schema.json"
+    ,"toolLaunchCatalogSchemaPath": "schemas/tool-launch-catalog.schema.json"
     ,"windowsInstallerPolicyPath": "config/windows_installer_policy.json"
     ,"cleanMachineScenariosPath": "config/clean_machine_scenarios.json"
     ,"windowsInstallerReadinessSchemaPath": "schemas/windows-installer-readiness.schema.json"
@@ -161,6 +164,13 @@
     ,"Authorization exposes generated execution identity before the threaded Run request completes, making existing cooperative cancellation usable during work."
     ,"Cancellation rechecks current catalog state and action availability, requires the same process-local request token, sends a bodyless fixed-endpoint request, disables replay after a request, and rejects invalid or terminal ids."
     ,"Cancelled runs are reported distinctly from failed preflight proof and continue to record processSignalSent false."
+    ,"Detected Windows executables can prove numeric file and product versions through read-only VERSIONINFO metadata without a version command, registry read, code load, or process start."
+    ,"Detected macOS app executables can prove bounded bundle versions through the containing Info.plist without using LaunchServices or starting the application."
+    ,"Tool version responses expose only closed metadata values and evidence methods while resolved executable paths remain private and commandExecuted stays false."
+    ,"A strict launch policy requires detected presence plus proven metadata version before one tool becomes confirmation-review ready."
+    ,"Launch review binds only tool id, executable name, metadata version, evidence method, and tool-only mode; selected files, arguments, commands, paths, accepted confirmation, persistence, and process launch remain absent."
+    ,"The promoted workbench renders an accessible viewport-contained launch-review dialog with only close controls and explicit blockers."
+    ,"The current Windows machine reports zero of six catalog tools detected, so no live installed-tool version or review-ready launch is claimed for this device."
   ],
   "blockedOrNotProven": [
     "full route execution beyond built-in STL preflight",
@@ -168,7 +178,10 @@
     "arbitrary operating-system output open action",
     "proof capture beyond contained STL preflight",
     "external tool launch",
-    "tool version proof",
+    "live installed-tool version evidence on this device (zero catalog tools detected during PASS-027)",
+    "Linux tool version metadata proof",
+    "executable publisher signature and trust proof",
+    "launch confirmation acceptance and persistence",
     "runnable tool command construction",
     "execution request persistence",
     "execution authorization beyond contained STL preflight",
@@ -193,8 +206,8 @@
     "browser-hosted runtime proof"
   ],
   "nextPass": {
-    "id": "PASS-027",
-    "title": "allowlisted tool version proof and launch-confirmation foundation",
+    "id": "PASS-028",
+    "title": "short-lived tool-only launch authorization, executable identity gate, and allowlisted process adapter",
     "claimState": "planned"
   }
 }

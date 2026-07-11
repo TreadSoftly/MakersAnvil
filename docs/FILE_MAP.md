@@ -15,11 +15,11 @@ Contains repository automation. The CI workflow runs the verifier and tests on W
 
 ## `backend/`
 
-Contains the Python application package. `server.py` owns loopback HTTP serving, `api/` owns route mapping, `domain/` owns shared vocabulary, and `services/` owns focused business and filesystem rules.
+Contains the Python application package. `server.py` owns loopback HTTP serving, `api/` owns route mapping, `domain/` owns shared vocabulary, and `services/` owns focused business and filesystem rules. Tool readiness is split across private metadata reading (`tool_version.py`), path-redacted detection (`tool_detection.py`), and command-free launch review (`tool_launch.py`).
 
 ## `frontend/`
 
-Contains the promoted React/TypeScript workbench and reviewed local assets. Vite compiles `src/` and `public/` into ignored `dist/`, which is the one browser, native-window, and Windows-package resource tree. The API adapter permits guarded intake, contained preflight, and verified raster reads while legacy machine-specific actions remain blocked.
+Contains the promoted React/TypeScript workbench and reviewed local assets. Vite compiles `src/` and `public/` into ignored `dist/`, which is the one browser, native-window, and Windows-package resource tree. The API adapter permits guarded intake, contained preflight, verified raster reads, and path-free tool launch review while legacy machine-specific actions remain blocked.
 
 ## `config/`
 
@@ -27,7 +27,7 @@ Contains safe committed defaults. These files describe policy; resolved personal
 
 ## `schemas/`
 
-Contains JSON Schema contracts for API, state, settings, intake, planning, contained execution, lifecycle dry runs, Windows installer readiness, clean-machine scenarios, runtime location, and source-manifest records.
+Contains JSON Schema contracts for API, state, settings, intake, planning, tool version/launch review, contained execution, lifecycle dry runs, Windows installer readiness, clean-machine scenarios, runtime location, and source-manifest records.
 
 ## `state/`
 
@@ -39,7 +39,7 @@ Contains explicit developer and local-user entrypoints. Scripts resolve the repo
 
 ## `tests/`
 
-Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, contained preflight, lifecycle no-write planning, installer/clean-machine no-execution gates, runtime containment, portability, source purity, documentation governance, and verifier integrity.
+Contains executable behavior examples. Tests cover API safety, intake authorization/streaming/privacy/rollback, metadata-only tool versions, command-free launch review, contained preflight, lifecycle no-write planning, installer/clean-machine no-execution gates, runtime containment, portability, source purity, documentation governance, and verifier integrity.
 
 ## `docs/`
 

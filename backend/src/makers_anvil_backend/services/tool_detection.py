@@ -1,9 +1,9 @@
-"""Purpose: Report path-redacted presence evidence for known maker tools.
+"""Purpose: Report path-redacted presence and metadata version evidence for known maker tools.
 
 Used by: ``AppStateService`` before semantic tool selection and dashboard render.
-Inputs: Tool catalog, platform identity, PATH lookup, and standard candidates.
-Outputs: Tool/family summaries with detection method but no resolved path.
-Side effects: Filesystem existence checks only; no process or version command runs.
+Inputs: Tool catalog, platform identity, PATH lookup, standard candidates, and metadata reader.
+Outputs: Tool/family summaries with detection/version evidence but no resolved path.
+Side effects: Filesystem and OS metadata reads only; no process or version command runs.
 Safety: Detection cannot launch, install, update, repair, or expose private paths.
 Failure behavior: Unknown platforms and missing tools remain not proven.
 Related proof: ``tests/test_tool_detection.py`` and tool schemas.
@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import sys
 from collections.abc import Callable, Iterable
@@ -21,6 +22,7 @@ from typing import Any
 
 
 from makers_anvil_backend.runtime_resources import application_root
+from makers_anvil_backend.services.tool_version import ToolVersionEvidence, read_tool_version
 
 
 ROOT = application_root()
@@ -35,6 +37,9 @@ TOOL_SAFETY_FLAGS = {
 }
 PathLookup = Callable[[str, str | None], str | None]
 GlobLookup = Callable[[Path, str], Iterable[Path]]
+VersionLookup = Callable[[Path, str], ToolVersionEvidence | None]
+VERSION_EVIDENCE_METHODS = {"windows-version-resource", "macos-bundle-info"}
+VERSION_VALUE = re.compile(r"^[0-9A-Za-z][0-9A-Za-z._+\-]{0,63}$")
 
 
 class ToolDetectionError(ValueError):
@@ -71,10 +76,11 @@ class ToolDetectionService:
         environ: dict[str, str] | None = None,
         path_lookup: PathLookup | None = None,
         glob_lookup: GlobLookup | None = None,
+        version_lookup: VersionLookup | None = None,
     ) -> None:
         """Purpose: Capture platform and lookup adapters without executing any detected command.
 
-        Inputs: Caller-supplied ``root``, ``platform_name``, ``environ``, ``path_lookup``, ``glob_lookup`` values from the signature.
+        Inputs: Caller-supplied root, platform, environment, path/glob adapters, and metadata version adapter.
         Outputs: The initialized instance state; Python constructors return ``None``.
         How it works: It checks conditions.
         Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
@@ -89,6 +95,7 @@ class ToolDetectionService:
         self.environ = dict(os.environ if environ is None else environ)
         self.path_lookup = path_lookup or (lambda command, path: shutil.which(command, path=path))
         self.glob_lookup = glob_lookup or (lambda provider_root, pattern: provider_root.glob(pattern))
+        self.version_lookup = version_lookup or read_tool_version
         self.catalog_path = self.root / "config" / "tool_catalog.json"
 
     def tool_catalog(self) -> dict[str, Any]:
@@ -180,12 +187,12 @@ class ToolDetectionService:
         tool: dict[str, Any],
         providers: dict[str, dict[str, Any]],
     ) -> dict[str, Any]:
-        """Purpose: Return one tool result without retaining or returning a resolved path.
+        """Purpose: Return one tool result after private metadata proof and path redaction.
 
         Inputs: Caller-supplied ``tool``, ``providers`` values from the signature.
         Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
-        How it works: It checks conditions, then iterates over bounded records, then handles expected failures explicitly, then returns the resulting contract value.
-        Side effects: No side effect is implied beyond calls visible in the body; external effects must remain explicit and tested.
+        How it works: Detects one private target, reads metadata, then emits only closed public fields.
+        Side effects: Reads bounded file metadata through the injected adapter; starts no process.
         Failure behavior: Unexpected exceptions propagate to the caller so missing evidence is never converted into a success claim.
         Safety: Detection cannot launch, install, update, repair, or expose private paths.
         Example: Call ``result = instance._detect_tool(...)`` with values satisfying the documented inputs.
@@ -200,6 +207,7 @@ class ToolDetectionService:
                     "method": "path-command",
                     "candidateId": f"path-command:{command}",
                     "executableName": Path(resolved).name,
+                    "resolvedPath": Path(resolved),
                 }
                 break
 
@@ -220,10 +228,12 @@ class ToolDetectionService:
                         "method": "standard-location",
                         "candidateId": candidate["id"],
                         "executableName": installed.name,
+                        "resolvedPath": installed,
                     }
                     break
 
         installed = match is not None
+        version = self._version_evidence(match["resolvedPath"] if match else None)
         return {
             "id": tool["id"],
             "label": tool["label"],
@@ -237,12 +247,53 @@ class ToolDetectionService:
                 "executableName": match["executableName"] if match else None,
                 "absolutePathExposed": False,
             },
-            "version": {
-                "claimState": "not proven",
-                "value": None,
-                "commandExecuted": False,
-            },
+            "version": version,
             "actionsEnabled": False,
+        }
+
+    def _version_evidence(self, resolved_path: Path | None) -> dict[str, Any]:
+        """Purpose: Convert private OS metadata into one closed path-free version contract.
+
+        Inputs: Privately resolved allowlisted executable path or ``None``.
+        Outputs: Proven file/product versions or an explicit not-proven record.
+        How it works: Calls the metadata adapter and validates every returned key/value.
+        Side effects: The default adapter may read PE or app-bundle metadata only.
+        Failure behavior: Missing, unreadable, malformed, or unsupported evidence stays not proven.
+        Safety: The public result cannot expose a path, run a command, or imply publisher trust.
+        Example: A PE product version yields a proven value with ``commandExecuted: false``.
+        Related proof: ``tests/test_tool_detection.py`` and ``tests/test_tool_version.py``.
+        """
+
+        not_proven = {
+            "claimState": "not proven",
+            "value": None,
+            "fileVersion": None,
+            "productVersion": None,
+            "evidenceMethod": "none",
+            "commandExecuted": False,
+            "absolutePathExposed": False,
+        }
+        if resolved_path is None:
+            return not_proven
+        try:
+            evidence = self.version_lookup(resolved_path, self.platform_name)
+        except (OSError, ValueError):
+            return not_proven
+        required = {"value", "fileVersion", "productVersion", "evidenceMethod"}
+        if not isinstance(evidence, dict) or set(evidence) != required:
+            return not_proven
+        if evidence.get("evidenceMethod") not in VERSION_EVIDENCE_METHODS:
+            return not_proven
+        if any(
+            not isinstance(evidence.get(field), str) or not VERSION_VALUE.fullmatch(evidence[field])
+            for field in ("value", "fileVersion", "productVersion")
+        ):
+            return not_proven
+        return {
+            "claimState": "proven",
+            **evidence,
+            "commandExecuted": False,
+            "absolutePathExposed": False,
         }
 
     def _provider_root(self, provider: dict[str, Any]) -> Path | None:

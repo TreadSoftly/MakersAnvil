@@ -36,6 +36,8 @@ def test_health_exposes_only_bounded_local_mutations() -> None:
     assert response.body["containedArtifactViewerEnabled"] is True
     assert response.body["containedExecutionHistoryEnabled"] is True
     assert response.body["cooperativeCancellationUiEnabled"] is True
+    assert response.body["toolVersionMetadataEnabled"] is True
+    assert response.body["toolLaunchReviewEnabled"] is True
     assert response.body["windowsInstallerFoundationEnabled"] is True
     assert response.body["cleanMachineExecutionEnabled"] is False
     assert response.body["routeExecutionEnabled"] is False
@@ -58,8 +60,8 @@ def test_state_limits_actions_to_intake_and_preferences() -> None:
     response = MakersAnvilApi().handle("GET", "/api/state")
 
     assert response.status == 200
-    assert response.body["completion"]["realApp"] == 87.5
-    assert response.body["currentPass"]["id"] == "PASS-026"
+    assert response.body["completion"]["realApp"] == 89.5
+    assert response.body["currentPass"]["id"] == "PASS-027"
     assert response.body["completion"]["packagedRelease"] == 30.0
     assert response.body["completion"]["cleanMachineProof"] == 5.0
     enabled_capabilities = [capability["id"] for capability in response.body["capabilities"] if capability["actionsEnabled"]]
@@ -250,11 +252,11 @@ def test_workspace_status_endpoints_are_read_only_truth() -> None:
     ledger = api.handle("GET", "/api/passes/ledger")
 
     assert workspace.status == 200
-    assert workspace.body["currentPass"]["id"] == "PASS-026"
+    assert workspace.body["currentPass"]["id"] == "PASS-027"
     assert workspace.body["sourceTruth"]["statusPath"] == "state/current_status.json"
     assert workspace.body["referencePolicy"]["runtimeDependency"] is False
     assert ledger.status == 200
-    assert ledger.body["passes"][-1]["id"] == "PASS-026"
+    assert ledger.body["passes"][-1]["id"] == "PASS-027"
 
 
 def test_workspace_config_keeps_unsafe_actions_disabled() -> None:
@@ -374,7 +376,7 @@ def test_output_preview_has_no_files_or_completed_proof() -> None:
 
 
 def test_tool_detection_is_path_redacted_and_non_executing() -> None:
-    """Purpose: Tool detection reports presence evidence without versions, paths, or actions.
+    """Purpose: Tool detection reports metadata versions without paths, commands, or actions.
 
     Inputs: No explicit parameters; the test builds its own isolated example state.
     Outputs: No application value; passing assertions prove the named behavior.
@@ -396,9 +398,41 @@ def test_tool_detection_is_path_redacted_and_non_executing() -> None:
     assert all(value is False for value in response.body["safety"].values())
     assert all(action["enabledInApi"] is False for action in response.body["actions"].values())
     assert all(tool["detection"]["absolutePathExposed"] is False for tool in response.body["tools"])
-    assert all(tool["version"]["claimState"] == "not proven" for tool in response.body["tools"])
+    assert all(tool["version"]["claimState"] in {"proven", "not proven"} for tool in response.body["tools"])
+    assert all(tool["version"]["commandExecuted"] is False for tool in response.body["tools"])
+    assert all(tool["version"]["absolutePathExposed"] is False for tool in response.body["tools"])
     assert all(tool["actionsEnabled"] is False for tool in response.body["tools"])
     assert state.body["toolDetection"]["schemaVersion"] == "makers-anvil.api.tool-detection.v1"
+
+
+def test_tool_launch_preview_binds_version_but_enables_no_launch() -> None:
+    """Purpose: Launch review exposes only path-free tool/version confirmation previews.
+
+    Inputs: Default composed API and fixed launch-preview GET route.
+    Outputs: Assertions for binding privacy, unaccepted consent, and blocked process actions.
+    How it works: Reads the standalone catalog and compares it with composed app state.
+    Side effects: Performs read-only tool presence and metadata checks.
+    Failure behavior: Any path, selected file, argument, confirmation, or launch widening fails.
+    Safety: Review is GET-only; confirm and launch endpoints remain absent.
+    Example: A versioned installed tool may be review-ready but never launchable.
+    Related proof: ``tests/test_tool_launch.py`` and tool-launch schemas.
+    """
+
+    api = MakersAnvilApi()
+    response = api.handle("GET", "/api/tools/launches/preview")
+    state = api.handle("GET", "/api/state")
+
+    assert response.status == 200
+    assert response.body["mode"] == "confirmation-preview-only"
+    assert response.body["actions"]["review"]["enabledInApi"] is True
+    assert response.body["actions"]["confirm"]["enabledInApi"] is False
+    assert response.body["actions"]["launch"]["enabledInApi"] is False
+    assert all(value is False for value in response.body["safety"].values())
+    assert all(tool["confirmation"]["accepted"] is False for tool in response.body["tools"])
+    assert all(tool["binding"]["absolutePathExposed"] is False for tool in response.body["tools"])
+    assert all(tool["binding"]["selectedFileIncluded"] is False for tool in response.body["tools"])
+    assert all(tool["binding"]["argumentsIncluded"] is False for tool in response.body["tools"])
+    assert state.body["toolLaunchCatalog"] == response.body
 
 
 def test_tool_dry_run_is_semantic_only_and_execution_blocked() -> None:

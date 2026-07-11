@@ -2,7 +2,7 @@
  * Purpose: Preserve the previous app's accepted workbench behavior while proving current portable safety boundaries.
  * Used by: Vitest locally and the repository CI frontend verification job.
  * Inputs: Deterministic AppState fixtures, browser events, and same-origin API response mocks.
- * Outputs: Twenty-two interaction assertions covering layout, navigation, intake, tools, plans, proof, history, cancellation, and failures.
+ * Outputs: Twenty-three interaction assertions covering layout, navigation, intake, tools, plans, proof, history, cancellation, and failures.
  * Side effects: Uses jsdom and mocked fetch only; no real user file, process, server, or path is touched.
  * Safety: Unsafe legacy tool/output/path calls are expected to stay visibly blocked.
  * Failure behavior: Any missing workflow, changed accessible label, or weakened guard fails the suite.
@@ -110,6 +110,17 @@ function fixture(overrides: Partial<AppState> = {}): AppState {
         launchReason: "Ready to open from the dashboard.",
         probeStatus: "completed",
         sourceReference: "SRC-TEST-BLENDER",
+        versionValue: "4.5.0.0",
+        versionClaimState: "proven",
+        versionEvidenceMethod: "windows-version-resource",
+        launchReviewReady: true,
+        confirmationRequired: true,
+        confirmationAccepted: false,
+        launchReviewBlockers: [
+          "Version metadata does not prove publisher signature or executable trust.",
+          "Explicit launch confirmation has not been accepted or persisted.",
+          "External tool process launch is not enabled in the API.",
+        ],
       },
       {
         tool: "MeshLab",
@@ -512,6 +523,25 @@ describe("Makers Anvil control panel", () => {
     expect(screen.getByText(/Open tool - Visual reference scenes/i)).toBeInTheDocument();
     await user.click(screen.getByText(/Open tool - Visual reference scenes/i));
     expect(await screen.findByText(/Tool launch is blocked until an allowlisted portable launch adapter is proven/i)).toBeInTheDocument();
+  });
+
+  test("reviews a version-bound tool launch without rendering confirmation or launch commands", async () => {
+    const user = userEvent.setup();
+    mockFetch(fixture());
+    render(<App />);
+
+    await user.click(await screen.findByRole("button", { name: "Review Blender launch" }));
+    const dialog = screen.getByRole("dialog", { name: "Review Blender launch" });
+
+    expect(within(dialog).getByText("4.5.0.0")).toBeInTheDocument();
+    expect(within(dialog).getByText("windows version resource")).toBeInTheDocument();
+    expect(within(dialog).getAllByText("not included")).toHaveLength(2);
+    expect(within(dialog).getByText("not accepted")).toBeInTheDocument();
+    expect(within(dialog).getByText("Version metadata does not prove publisher signature or executable trust.")).toBeInTheDocument();
+    expect(within(dialog).getByText("External tool process launch is not enabled in the API.")).toBeInTheDocument();
+    expect(within(dialog).getAllByRole("button")).toHaveLength(2);
+    await user.click(within(dialog).getByRole("button", { name: "Close review" }));
+    expect(screen.queryByRole("dialog", { name: "Review Blender launch" })).not.toBeInTheDocument();
   });
 
   test("opens the latest native work output from the selected handoff", async () => {

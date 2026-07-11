@@ -371,6 +371,20 @@
         "requested cancellation disables replay and remains explicitly distinct from an operating-system process signal or process-stop claim",
         "adapter and React tests plus existing service/API cancellation tests cover mapping, identity timing, commands, rejection, and false-signal behavior"
       ]
+    },
+    {
+      "id": "PASS-027",
+      "title": "metadata tool version proof and launch confirmation review",
+      "claimState": "staged",
+      "reportPath": "docs/passes/PASS_027_REPORT.md",
+      "proof": [
+        "Windows VERSIONINFO and macOS app-bundle metadata readers provide bounded file/product versions without starting a process or running a version command",
+        "tool detection validates closed metadata evidence and exposes no resolved executable path",
+        "strict launch policy requires detected presence plus proven version before a tool-only confirmation review becomes ready",
+        "launch bindings exclude selected files, arguments, commands, private paths, accepted confirmation, persistence, and process execution",
+        "the promoted workbench renders version evidence and one accessible review dialog containing only close controls and explicit blockers",
+        "focused service, API, schema, adapter, React, Windows metadata, package, explainability, and cross-platform verification cover the pass"
+      ]
     }
   ]
 }

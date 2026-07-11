@@ -25,10 +25,11 @@ def build_detector(
     platform_name: str,
     environ: dict[str, str],
     path_lookup=None,
+    version_lookup=None,
 ) -> ToolDetectionService:
     """Purpose: Build an isolated detector using the committed catalog and injected machine state.
 
-    Inputs: Caller-supplied ``root``, ``platform_name``, ``environ``, ``path_lookup`` values from the signature.
+    Inputs: Caller-supplied root, platform, environment, path, and metadata adapters.
     Outputs: Returns ``ToolDetectionService``, or raises before returning when validation fails.
     How it works: It returns the resulting contract value.
     Side effects: May create isolated temporary fixtures supplied by pytest; it must not change real user data.
@@ -44,7 +45,13 @@ def build_detector(
         PROJECT_ROOT.joinpath("config", "tool_catalog.json").read_text(encoding="utf-8"),
         encoding="utf-8",
     )
-    return ToolDetectionService(root, platform_name, environ, path_lookup=path_lookup)
+    return ToolDetectionService(
+        root,
+        platform_name,
+        environ,
+        path_lookup=path_lookup,
+        version_lookup=version_lookup,
+    )
 
 
 def test_windows_standard_location_detects_blender_without_exposing_path(tmp_path: Path) -> None:
@@ -82,7 +89,15 @@ def test_windows_standard_location_detects_blender_without_exposing_path(tmp_pat
         "executableName": "blender.exe",
         "absolutePathExposed": False,
     }
-    assert blender["version"] == {"claimState": "not proven", "value": None, "commandExecuted": False}
+    assert blender["version"] == {
+        "claimState": "not proven",
+        "value": None,
+        "fileVersion": None,
+        "productVersion": None,
+        "evidenceMethod": "none",
+        "commandExecuted": False,
+        "absolutePathExposed": False,
+    }
     assert str(program_files.resolve()) not in json.dumps(result)
     assert executable.read_bytes() == b"not executed"
 
@@ -115,6 +130,67 @@ def test_path_command_detection_redacts_lookup_result(tmp_path: Path) -> None:
     assert blender["detection"]["executableName"] == "blender"
     assert private_match not in json.dumps(result)
     assert result["safety"]["processExecuted"] is False
+
+
+def test_windows_metadata_version_is_proven_without_path_or_command(tmp_path: Path) -> None:
+    """Purpose: Prove injected PE metadata becomes a closed path-redacted version record.
+
+    Inputs: Isolated PATH detection plus a deterministic metadata-reader adapter.
+    Outputs: Assertions for version value, evidence method, and false command/path flags.
+    How it works: The adapter records the private input while returning fixed metadata.
+    Side effects: Creates no executable and starts no process; only in-memory calls occur.
+    Failure behavior: A missing proof field or leaked private path fails the test.
+    Safety: The public catalog cannot contain the adapter's resolved installation path.
+    Example: Blender ``4.5.0.0`` is proven from VERSIONINFO, not ``--version``.
+    Related proof: ``services/tool_detection.py`` and ``services/tool_version.py``.
+    """
+
+    private_match = tmp_path / "private-bin" / "blender.exe"
+    observed: list[tuple[Path, str]] = []
+
+    def version_lookup(path: Path, platform_name: str):
+        """Purpose: Return deterministic version metadata while recording private inputs.
+
+        Inputs: Private detected path and normalized platform id.
+        Outputs: One valid Windows version-evidence mapping.
+        How it works: Appends the call for assertion, then returns fixed metadata.
+        Side effects: Mutates only the test-local ``observed`` list.
+        Failure behavior: Unexpected arguments remain visible in the final assertion.
+        Safety: Does not open, execute, write, or serialize the private target.
+        Example: The detector calls this once for the Blender match.
+        Related proof: The enclosing test.
+        """
+
+        observed.append((path, platform_name))
+        return {
+            "value": "4.5.0.0",
+            "fileVersion": "4.5.0.0",
+            "productVersion": "4.5.0.0",
+            "evidenceMethod": "windows-version-resource",
+        }
+
+    detector = build_detector(
+        tmp_path / "source",
+        "win32",
+        {"PATH": "injected-path"},
+        path_lookup=lambda command, path: str(private_match) if command == "blender.exe" else None,
+        version_lookup=version_lookup,
+    )
+
+    result = detector.detection_catalog()
+    blender = next(tool for tool in result["tools"] if tool["id"] == "blender")
+
+    assert observed[0] == (private_match, "windows")
+    assert blender["version"] == {
+        "claimState": "proven",
+        "value": "4.5.0.0",
+        "fileVersion": "4.5.0.0",
+        "productVersion": "4.5.0.0",
+        "evidenceMethod": "windows-version-resource",
+        "commandExecuted": False,
+        "absolutePathExposed": False,
+    }
+    assert str(private_match) not in json.dumps(result)
 
 
 def test_unknown_platform_returns_no_invented_detections(tmp_path: Path) -> None:

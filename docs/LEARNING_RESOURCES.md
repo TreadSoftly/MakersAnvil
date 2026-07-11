@@ -79,9 +79,9 @@ Local study path:
 1. `frontend/src/App.tsx` for the promoted semantic regions and interaction flow.
 2. `frontend/src/api.ts` for portable state adaptation and guarded mutations.
 3. `frontend/src/styles.css` for the accepted visual system, motion, and responsive layout.
-4. `frontend/src/App.test.tsx` and `frontend/src/api.test.ts` for twenty-two executable workflow, adapter, preview, and safety examples.
-4. Browser smoke tests and screenshots recorded in the current pass report.
-5. `context-help.js`, `capability-lanes.js`, `workbench-experience.js`, `contained-execution.js`, and `lifecycle-dry-runs.js` for focused interaction modules.
+4. `frontend/src/App.test.tsx` and `frontend/src/api.test.ts` for twenty-nine executable workflow, adapter, preview, and safety examples.
+5. Browser smoke tests and screenshots recorded in the current pass report.
+6. Focused backend services and React components for capability, help, experience, contained execution, lifecycle, and tool-launch review behavior.
 
 References:
 
@@ -90,6 +90,26 @@ References:
 - Web accessibility introduction: <https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Accessibility/What_is_accessibility>
 - WAI-ARIA dialog keyboard and focus guidance: <https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/>
 - MDN reduced-motion media feature: <https://developer.mozilla.org/docs/Web/CSS/@media/prefers-reduced-motion>
+
+## Tool Version Metadata And Launch Review
+
+Local study path:
+
+1. `services/tool_version.py` for metadata-only Windows and macOS readers.
+2. `services/tool_detection.py` for private target resolution, evidence validation, and public redaction.
+3. `config/tool_launch_policy.json` and matching schemas for the exact tool-only, unaccepted-confirmation boundary.
+4. `services/tool_launch.py` for review-ready joins and mandatory blockers.
+5. `tests/test_tool_version.py`, `tests/test_tool_detection.py`, and `tests/test_tool_launch.py` for executable examples.
+6. `frontend/src/api.ts` and `ToolLaunchReview` in `frontend/src/App.tsx` for path-free presentation.
+
+References:
+
+- Microsoft Win32 version information: <https://learn.microsoft.com/en-us/windows/win32/menurc/version-information>
+- Microsoft `VerQueryValueW`: <https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew>
+- Apple `CFBundleVersion`: <https://developer.apple.com/documentation/bundleresources/information-property-list/cfbundleversion>
+- Apple information property-list files: <https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/AboutInformationPropertyListFiles.html>
+
+These sources explain the operating-system metadata formats. Makers Anvil's local policy, schemas, tests, and pass evidence determine whether the application may use the result. Metadata version proof is not signature, publisher, compatibility, or execution proof.
 
 ## Lifecycle Planning And Preservation
 

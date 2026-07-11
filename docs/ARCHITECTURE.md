@@ -14,7 +14,7 @@ Beginner-facing labels use source files, work plans, workflow, preview, tools, o
 
 ### Browser UI
 
-`frontend/` contains the promoted React/TypeScript application, reviewed tool icons, accepted industrial styling, and Vite build. `frontend/src/api.ts` maps current path-redacted backend records into the workbench and permits only guarded one-file intake plus the contained STL preflight. Picker, drop, and paste share that intake path. Rail navigation, quick-jump search, tool carousel, and Work Flow/Plans/Dev tabs preserve the accepted previous-app experience without importing its Python backend or private paths.
+`frontend/` contains the promoted React/TypeScript application, reviewed tool icons, accepted industrial styling, and Vite build. `frontend/src/api.ts` maps current path-redacted backend records into the workbench and permits only guarded one-file intake plus the contained STL preflight. Picker, drop, and paste share that intake path. Rail navigation, quick-jump search, tool carousel, version-bound launch review, and Work Flow/Plans/Dev tabs preserve the accepted previous-app experience without importing its Python backend or private paths. Launch review is presentation over GET evidence; it has no confirmation or launch command.
 
 Authorized image preview is a separate read-only boundary. The browser receives only `/api/intake/previews/<generated-id>`; the service reloads the authorized record, privately resolves generated storage, caps bytes, rechecks size and SHA-256, and accepts only matching raster signatures. The server supplies a generated inline name and no-store/no-sniff/same-origin headers. This does not prove general content type, malware safety, output opening, or selected-file handoff.
 
@@ -36,7 +36,9 @@ Authorized image preview is a separate read-only boundary. The browser receives 
 - `AuthorizedIntakeService` verifies same-origin process tokens, creates one-time short-lived consent records, streams exact bytes in bounded chunks, hashes content, atomically publishes a generated-name quarantine copy, and rolls back failed transfers.
 - `RoutePreviewService` maps validated intake metadata to deterministic candidate steps without reopening files or enabling actions.
 - `OutputProofService` maps route previews to expected artifacts and required evidence without creating, opening, or proving outputs.
-- `ToolDetectionService` checks PATH and narrow platform locations while withholding resolved paths and executing nothing.
+- `ToolVersionService` is implemented as focused functions in `tool_version.py`; it reads numeric Windows VERSIONINFO or macOS `Info.plist` version keys without loading or starting the executable.
+- `ToolDetectionService` checks PATH and narrow platform locations, privately asks the metadata reader for a version, validates closed evidence, and withholds resolved paths.
+- `ToolLaunchService` joins detected plus proven-version evidence into tool-only confirmation previews while confirmation acceptance, persistence, commands, arguments, selected-file handoff, and process launch remain disabled.
 - `ToolDryRunService` joins route, output, and tool evidence into semantic invocation plans without constructing commands, resolving paths, handing off files, or executing processes.
 - `ExecutionGateService` evaluates ten required evidence classes for one allowlisted route while authorization and execution remain disabled.
 - `ExecutionRequestService` joins coherent dry-run and gate snapshots into path-free intent, unaccepted authorization fields, and an empty audit plan without persistence.
@@ -69,7 +71,8 @@ Browser
   -> committed config/state plus app-owned runtime metadata
   -> RoutePreviewService derives non-executing candidate steps
   -> OutputProofService derives non-writing bundle and proof plans
-  -> ToolDetectionService derives path-redacted presence evidence
+  -> ToolDetectionService derives path-redacted presence and metadata version evidence
+  -> ToolLaunchService derives version-bound confirmation review with no action endpoint
   -> ToolDryRunService derives semantic, non-runnable invocation plans
   -> ExecutionGateService separates satisfied planning evidence from blocked operational gates
   -> ExecutionRequestService models logical intent, required consent, and required audit events without saving them
@@ -115,7 +118,7 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 - Authorization is process-local, same-origin, short-lived, one-file, exact-metadata, exact-length, and one-time.
 - Runtime records live in OS user-data storage or an explicit absolute override, never beside the source checkout.
 - Resolved source and home paths are not returned by APIs.
-- Route execution, external tool launch, installers, archive extraction, folder import, packaging, and clean-machine claims remain blocked until separate proof gates pass.
+- Route execution, external tool launch, launch-confirmation acceptance, installers, archive extraction, folder import, packaging, and clean-machine claims remain blocked until separate proof gates pass.
 - Lifecycle previews read only bounded metadata, preserve app data, exclude backup/tmp sources, and cannot create/read archives, restore, use the network, download packages, execute installers, mutate software, start processes, or delete data.
 - The Windows installer foundation is a separate read-only layer over the executable payload. It selects MSIX, requires a stable identity and trusted signature, preserves portable user data across upgrade/removal, and exposes nine gates without building or registering a package.
 - Clean-machine proof is a six-scenario harness, not a label. Fresh install, first launch, upgrade, repair, removal, and reinstall each remain `not-run` with empty evidence until executed in an isolated Windows environment.
@@ -129,4 +132,4 @@ PASS-013 adds two bounded examples of this flow: job preparation creates empty a
 5. Add UI rendering after the API shape is stable.
 6. Update architecture, source manifest, status, pass report, and verifier gates in the same pass.
 
-Route, output/proof, tool-presence, dry-run, execution-gate, execution-request, lifecycle, installer, and clean-machine records are read-only planning evidence. Intake authorization permits only an app-owned quarantine copy. Contained execution authorization applies only to the built-in STL structural preflight. Prepared jobs, lifecycle plans, installer gates, and machine scenarios remain non-executable.
+Route, output/proof, tool-presence/version, launch-review, dry-run, execution-gate, execution-request, lifecycle, installer, and clean-machine records are read-only planning evidence. A proven metadata version identifies a file resource, not publisher authenticity or safe execution. Intake authorization permits only an app-owned quarantine copy. Contained execution authorization applies only to the built-in STL structural preflight. Prepared jobs, launch reviews, lifecycle plans, installer gates, and machine scenarios remain non-executable.

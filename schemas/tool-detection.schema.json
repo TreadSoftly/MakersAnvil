@@ -67,13 +67,37 @@
           },
           "version": {
             "type": "object",
-            "required": ["claimState", "value", "commandExecuted"],
+            "required": ["claimState", "value", "fileVersion", "productVersion", "evidenceMethod", "commandExecuted", "absolutePathExposed"],
             "additionalProperties": false,
             "properties": {
-              "claimState": {"const": "not proven"},
-              "value": {"const": null},
-              "commandExecuted": {"const": false}
-            }
+              "claimState": {"enum": ["proven", "not proven"]},
+              "value": {"type": ["string", "null"]},
+              "fileVersion": {"type": ["string", "null"]},
+              "productVersion": {"type": ["string", "null"]},
+              "evidenceMethod": {"enum": ["windows-version-resource", "macos-bundle-info", "none"]},
+              "commandExecuted": {"const": false},
+              "absolutePathExposed": {"const": false}
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "claimState": {"const": "proven"},
+                  "value": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "fileVersion": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "productVersion": {"type": "string", "minLength": 1, "maxLength": 64},
+                  "evidenceMethod": {"enum": ["windows-version-resource", "macos-bundle-info"]}
+                }
+              },
+              {
+                "properties": {
+                  "claimState": {"const": "not proven"},
+                  "value": {"const": null},
+                  "fileVersion": {"const": null},
+                  "productVersion": {"const": null},
+                  "evidenceMethod": {"const": "none"}
+                }
+              }
+            ]
           },
           "actionsEnabled": {"const": false}
         }

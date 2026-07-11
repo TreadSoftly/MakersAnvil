@@ -97,6 +97,39 @@ describe("portable API adapter", () => {
     expect(state.intake.files[0].pathDisplay).toBe("makers-anvil-data://user/intake");
   });
 
+  test("maps version-bound launch review without enabling tool launch", async () => {
+    const current: Record<string, any> = currentStateFixture(true);
+    current.toolDetection = {
+      tools: [{
+        id: "blender", label: "Blender", families: ["cad-modeler"], claimState: "detected",
+        detection: { installed: true },
+        version: { claimState: "proven", value: "4.5.0.0", evidenceMethod: "windows-version-resource" },
+      }],
+    };
+    current.toolLaunchCatalog = {
+      tools: [{
+        id: "blender", reviewReady: true,
+        confirmation: { required: true, accepted: false },
+        blockedReasons: ["Version metadata does not prove publisher signature or executable trust.", "Explicit launch confirmation has not been accepted or persisted.", "External tool process launch is not enabled in the API."],
+      }],
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify(current), { status: 200, headers: { "Content-Type": "application/json" } })),
+    );
+
+    const state = await getState();
+    const blender = state.tools[0];
+
+    expect(blender).toMatchObject({
+      toolId: "blender", tool: "Blender", launchable: false, launchReviewReady: true,
+      versionValue: "4.5.0.0", versionClaimState: "proven", versionEvidenceMethod: "windows-version-resource",
+      confirmationRequired: true, confirmationAccepted: false,
+    });
+    expect(blender.blockedClaims).toContain("External tool process launch is not enabled");
+    expect(JSON.stringify(blender)).not.toContain("C:" + "\\Users\\");
+  });
+
   test("maps proof-bearing execution outputs and fetches a closed report endpoint", async () => {
     const current: Record<string, any> = currentStateFixture(true);
     const executionId = "execution-0123456789abcdef0123456789abcdef";

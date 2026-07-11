@@ -28,6 +28,7 @@ from makers_anvil_backend.services.output_proof import OutputProofService
 from makers_anvil_backend.services.route_preview import RoutePreviewService
 from makers_anvil_backend.services.tool_detection import ToolDetectionService
 from makers_anvil_backend.services.tool_dry_run import ToolDryRunService
+from makers_anvil_backend.services.tool_launch import ToolLaunchService
 from makers_anvil_backend.services.workspace_config import WorkspaceConfigService
 from makers_anvil_backend.services.workspace_status import WorkspaceStatusService
 from makers_anvil_backend.services.workbench_experience import WorkbenchExperienceService
@@ -47,7 +48,7 @@ class AppStateService:
     Related proof: ``tests/test_api.py`` and ``schemas/app-state.schema.json``.
     """
 
-    api_build = "makers-anvil-real-pass-026-execution-history-cancellation"
+    api_build = "makers-anvil-real-pass-027-tool-version-launch-review"
 
     def __init__(
         self,
@@ -59,6 +60,7 @@ class AppStateService:
         route_preview: RoutePreviewService | None = None,
         output_proof: OutputProofService | None = None,
         tool_detection: ToolDetectionService | None = None,
+        tool_launch: ToolLaunchService | None = None,
         tool_dry_run: ToolDryRunService | None = None,
         execution_gate: ExecutionGateService | None = None,
         execution_request: ExecutionRequestService | None = None,
@@ -93,6 +95,10 @@ class AppStateService:
             workspace_config=self._workspace_config,
         )
         self._tool_detection = tool_detection or ToolDetectionService()
+        self._tool_launch = tool_launch or ToolLaunchService(
+            root=self._tool_detection.root,
+            tool_detection=self._tool_detection,
+        )
         self._tool_dry_run = tool_dry_run or ToolDryRunService(
             route_preview=self._route_preview,
             output_proof=self._output_proof,
@@ -158,6 +164,8 @@ class AppStateService:
             "containedArtifactViewerEnabled": True,
             "containedExecutionHistoryEnabled": True,
             "cooperativeCancellationUiEnabled": True,
+            "toolVersionMetadataEnabled": True,
+            "toolLaunchReviewEnabled": True,
             "lifecycleDryRunEnabled": True,
             "windowsInstallerFoundationEnabled": True,
             "cleanMachineExecutionEnabled": False,
@@ -183,6 +191,7 @@ class AppStateService:
         route_preview = self._route_preview.preview_catalog(intake_catalog)
         output_proof = self._output_proof.preview_catalog(route_preview)
         tool_detection = self._tool_detection.detection_catalog()
+        tool_launch_catalog = self._tool_launch.catalog(tool_detection)
         tool_dry_run = self._tool_dry_run.plan_catalog(route_preview, output_proof, tool_detection)
         execution_gates = self._execution_gate.gate_catalog(tool_dry_run)
         capability_matrix = self._capability_matrix.matrix(intake_catalog, route_preview, output_proof, tool_detection)
@@ -200,6 +209,7 @@ class AppStateService:
             "routePreview": route_preview,
             "outputProof": output_proof,
             "toolDetection": tool_detection,
+            "toolLaunchCatalog": tool_launch_catalog,
             "toolDryRun": tool_dry_run,
             "executionGates": execution_gates,
             "executionRequestPreview": self._execution_request.preview_catalog(tool_dry_run, execution_gates),
@@ -509,7 +519,7 @@ class AppStateService:
         return self._output_proof.preview_catalog()
 
     def tool_detection(self) -> dict[str, Any]:
-        """Purpose: Return path-redacted tool presence without executing or changing software.
+        """Purpose: Return path-redacted tool presence and metadata version evidence.
 
         Inputs: No caller-supplied values beyond an implicit instance/class when present.
         Outputs: Returns ``dict[str, Any]``, or raises before returning when validation fails.
@@ -522,6 +532,22 @@ class AppStateService:
         """
 
         return self._tool_detection.detection_catalog()
+
+    def tool_launch_preview(self) -> dict[str, Any]:
+        """Purpose: Return version-bound tool-only confirmation review records.
+
+        Inputs: No caller values; the service reads current allowlisted detection truth.
+        Outputs: Path-free review catalog with confirmation and launch still blocked.
+        How it works: Joins one coherent detection snapshot to strict launch policy.
+        Side effects: Reads bounded tool metadata and policy only; writes nothing.
+        Failure behavior: Invalid policy fails closed and missing evidence blocks review.
+        Safety: No command, selected file, consent persistence, process, or path is exposed.
+        Example: Call ``result = instance.tool_launch_preview()`` for the GET endpoint.
+        Related proof: ``tests/test_api.py`` and ``tests/test_tool_launch.py``.
+        """
+
+        detection = self._tool_detection.detection_catalog()
+        return self._tool_launch.catalog(detection)
 
     def tool_dry_run(self) -> dict[str, Any]:
         """Purpose: Return semantic route/tool/output plans with every action still blocked.
@@ -906,7 +932,14 @@ class AppStateService:
                 "id": "tool-detection",
                 "label": "Tool detection",
                 "claimState": "staged",
-                "summary": "Known maker tools are checked through PATH and standard locations without execution or path exposure.",
+                "summary": "Known maker tools are checked through PATH and standard locations; Windows/macOS metadata may prove versions without execution or path exposure.",
+                "actionsEnabled": False,
+            },
+            {
+                "id": "tool-launch-review",
+                "label": "Tool launch review",
+                "claimState": "preview-only",
+                "summary": "Detected versioned tools receive path-free tool-only confirmation previews while consent submission and process launch remain blocked.",
                 "actionsEnabled": False,
             },
             {
@@ -962,7 +995,7 @@ class AppStateService:
                 "id": "tool-launch",
                 "label": "Tool launch",
                 "claimState": "blocked",
-                "summary": "External tools cannot launch until tool-specific proof gates exist.",
+                "summary": "External tools cannot launch until explicit confirmation persistence and a contained allowlisted process adapter pass separate proof.",
                 "actionsEnabled": False,
             },
             {

@@ -92,6 +92,7 @@ class MakersAnvilApi:
             "/api/routes/preview": self._state_service.route_preview,
             "/api/outputs/preview": self._state_service.output_proof,
             "/api/tools/detection": self._state_service.tool_detection,
+            "/api/tools/launches/preview": self._state_service.tool_launch_preview,
             "/api/tools/dry-run": self._state_service.tool_dry_run,
             "/api/execution/gates": self._state_service.execution_gates,
             "/api/execution/requests/preview": self._state_service.execution_request_preview,

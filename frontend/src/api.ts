@@ -140,23 +140,55 @@ const TOOL_ICON: Record<string, string> = {
   orcaslicer: "/tool-icons/orcaslicer.png",
 };
 
-/** Reuse the prior tool carousel while sourcing only current path-redacted presence evidence. */
+/**
+ * Purpose: Adapt path-redacted tool detection and launch-review evidence for the promoted carousel.
+ * Inputs: Current backend state containing toolDetection and toolLaunchCatalog records.
+ * Outputs: ToolHealth rows with metadata versions, review readiness, and blocked launch truth.
+ * How it works: Joins records by stable tool id and maps only bounded public fields.
+ * Side effects: None; this function transforms one in-memory API snapshot.
+ * Failure behavior: Missing evidence produces conservative missing/not-proven presentation.
+ * Safety: Physical paths, commands, arguments, selected-file handoff, and launch remain absent.
+ * Example: Proven Blender metadata displays version review while launchable remains false.
+ * Related proof: api.test.ts adapter coverage and App.test.tsx launch-review interaction.
+ */
 function adaptTools(current: JsonRecord): ToolHealth[] {
   const tools = Array.isArray(current.toolDetection?.tools) ? current.toolDetection.tools : [];
-  return tools.map((tool: JsonRecord) => ({
-    tool: String(tool.label || tool.id || "Unknown tool"),
-    role: Array.isArray(tool.families) ? tool.families.join(", ") : "maker tool",
-    health: tool.detection?.installed ? "detected" : "missing",
-    iconUrl: TOOL_ICON[String(tool.id || "")] || "",
-    launchable: false,
-    launchKind: "blocked",
-    launchPathDisplay: "private path not exposed",
-    launchReason: "Detection is read-only. Tool launch requires a separately proven adapter.",
-    automationStatus: "not proven",
-    probeStatus: String(tool.claimState || "not proven"),
-    sourceReference: "current portable tool catalog",
-    blockedClaims: "No executable path, version command, selected-file handoff, or process launch is enabled.",
-  }));
+  const launchPreviews = Array.isArray(current.toolLaunchCatalog?.tools) ? current.toolLaunchCatalog.tools : [];
+  return tools.map((tool: JsonRecord) => {
+    const toolId = String(tool.id || "");
+    const version = tool.version || {};
+    const review = launchPreviews.find((item: JsonRecord) => item.id === toolId) || {};
+    const versionProven = version.claimState === "proven" && typeof version.value === "string";
+    const reviewReady = review.reviewReady === true;
+    return {
+      toolId,
+      tool: String(tool.label || tool.id || "Unknown tool"),
+      role: Array.isArray(tool.families) ? tool.families.join(", ") : "maker tool",
+      health: tool.detection?.installed ? "detected" : "missing",
+      iconUrl: TOOL_ICON[toolId] || "",
+      launchable: false,
+      launchKind: reviewReady ? "tool-only review" : "blocked",
+      launchPathDisplay: "private path not exposed",
+      launchReason: reviewReady
+        ? `Version ${version.value} is proven from operating-system metadata. Review is ready; confirmation and launch remain blocked.`
+        : tool.detection?.installed
+          ? "The tool is detected, but metadata version proof is required before launch review."
+          : "The allowlisted tool is not detected on this device.",
+      automationStatus: "launch blocked",
+      probeStatus: versionProven ? `version ${version.value} proven` : String(tool.claimState || "not proven"),
+      sourceReference: versionProven ? String(version.evidenceMethod || "metadata evidence") : "current portable tool catalog",
+      blockedClaims: Array.isArray(review.blockedReasons)
+        ? review.blockedReasons.join(" ")
+        : "No executable path, selected-file handoff, confirmation mutation, or process launch is enabled.",
+      versionValue: versionProven ? String(version.value) : null,
+      versionClaimState: String(version.claimState || "not proven"),
+      versionEvidenceMethod: String(version.evidenceMethod || "none"),
+      launchReviewReady: reviewReady,
+      confirmationRequired: review.confirmation?.required === true,
+      confirmationAccepted: review.confirmation?.accepted === true,
+      launchReviewBlockers: Array.isArray(review.blockedReasons) ? review.blockedReasons.map(String) : [],
+    } as ToolHealth;
+  });
 }
 
 /** Join current capability lanes to prior tool-handoff cards without inventing launch readiness. */

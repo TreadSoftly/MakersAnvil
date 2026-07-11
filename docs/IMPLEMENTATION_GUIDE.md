@@ -81,7 +81,9 @@ The ignored previous application is governed through `docs/PREVIOUS_APP_MERGER_A
 | `AuthorizedIntakeService` | reviewed metadata, same-origin token context, and exact byte stream | one-time authorization plus hashed quarantine record | generated destinations, bounded chunks, atomic publish, rollback, no source modification |
 | `RoutePreviewService` | validated intake snapshot | deterministic route candidates | never reopen or execute source files |
 | `OutputProofService` | route snapshot and workspace policy | logical artifact/proof plan | never create or open outputs |
-| `ToolDetectionService` | tool catalog and platform environment | path-redacted presence evidence | never execute version/tool commands |
+| `tool_version.py` | private detected executable and platform id | bounded file/product metadata version or no evidence | read PE/app-bundle metadata only; never start or expose the target |
+| `ToolDetectionService` | tool catalog, platform environment, and version adapter | path-redacted presence plus metadata version evidence | validate closed evidence; never execute version/tool commands |
+| `ToolLaunchService` | strict launch policy plus coherent detection snapshot | version-bound tool-only confirmation reviews | no accepted consent, command, argument, selected file, path, process, or launch |
 | `ToolDryRunService` | route, output, and detection snapshots | semantic non-runnable plans | no command strings or file handoff |
 | `ExecutionGateService` | dry-run snapshot and gate policy | planning evidence and blocked operational gates | no authorization or process behavior |
 | `ExecutionRequestService` | coherent dry-run and gate snapshots | logical intent, consent fields, and audit plan | no persistence, accepted consent, or process behavior |
@@ -109,7 +111,19 @@ Skipping a link makes a capability incomplete even if one isolated file works.
 
 ## Frontend Flow
 
-`frontend/src/App.tsx` renders the promoted rail, command search, source board, reviewed intake controls, tool carousel, Work Flow/Plans/Dev deck, proof inspector, settings, and gated future surfaces. `frontend/src/api.ts` adapts current read contracts plus guarded one-file intake and contained preflight; all legacy machine-specific actions throw visible blockers. `frontend/src/styles.css` preserves the accepted responsive appearance, motion, and reduced-motion behavior. Vite compiles these sources to `frontend/dist` for the local server, native window, and Windows executable.
+`frontend/src/App.tsx` renders the promoted rail, command search, source board, reviewed intake controls, tool carousel, version-bound launch-review dialog, Work Flow/Plans/Dev deck, proof inspector, settings, and gated future surfaces. `frontend/src/api.ts` joins tool detection to launch-review records by stable id, keeps `launchable` false, and adapts guarded one-file intake plus contained preflight. All legacy machine-specific actions still throw visible blockers. `frontend/src/styles.css` preserves the accepted responsive appearance, motion, viewport-bound dialogs, and reduced-motion behavior. Vite compiles these sources to `frontend/dist` for the local server, native window, and Windows executable.
+
+Tool version and launch-review flow:
+
+1. `ToolDetectionService` privately resolves only catalog allowlisted PATH or standard-location candidates.
+2. `tool_version.py` reads a Windows fixed file-version resource or the nearest macOS app bundle `Info.plist`; Linux remains not proven rather than using a command or path-name guess.
+3. The detector validates short version strings and returns no resolved path. `commandExecuted` and `absolutePathExposed` stay false.
+4. `ToolLaunchService` requires both detected presence and proven version metadata before setting `reviewReady`.
+5. The binding contains only tool id, executable name, version, evidence method, and `tool-only` mode. Selected file and arguments are constant false.
+6. `GET /api/tools/launches/preview` and `/api/state.toolLaunchCatalog` expose the same review records.
+7. The frontend may open a read-only review dialog. There is no confirmation POST, launch POST, executable target, command construction, or process adapter in PASS-027.
+
+Metadata version evidence proves what the local file resource reports. It does not prove a trusted publisher signature, malware safety, workflow compatibility, output correctness, or that starting the executable is safe.
 
 For selected-image display, `frontend/src/api.ts` assigns a generated preview URL only when an image record has authorized storage and integrity proof. `IntakePreviewService` then revalidates the record and private content on every GET before the server returns raster bytes. Do not reuse this endpoint for arbitrary files, outputs, SVG, HTML, archives, downloads, or operating-system opening.
 

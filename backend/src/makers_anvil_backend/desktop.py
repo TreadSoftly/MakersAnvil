@@ -192,8 +192,8 @@ def run_package_smoke() -> int:
             health_response.status == 200
             and state_response.status == 200
             and payload.get("apiBuild", "").startswith("makers-anvil-real-pass-")
-            and state.get("currentPass", {}).get("id") == "PASS-026"
-            and state.get("completion", {}).get("realApp") == 87.5
+            and state.get("currentPass", {}).get("id") == "PASS-027"
+            and state.get("completion", {}).get("realApp") == 89.5
             and payload.get("lifecycleDryRunEnabled") is True
             and payload.get("windowsInstallerFoundationEnabled") is True
             and payload.get("cleanMachineExecutionEnabled") is False
@@ -202,7 +202,10 @@ def run_package_smoke() -> int:
             and payload.get("containedArtifactViewerEnabled") is True
             and payload.get("containedExecutionHistoryEnabled") is True
             and payload.get("cooperativeCancellationUiEnabled") is True
+            and payload.get("toolVersionMetadataEnabled") is True
+            and payload.get("toolLaunchReviewEnabled") is True
             and payload.get("routeExecutionEnabled") is False
+            and payload.get("toolLaunchEnabled") is False
         )
         result = {
             "schemaVersion": "makers-anvil.desktop-smoke.v1",
@@ -214,6 +217,8 @@ def run_package_smoke() -> int:
             "mutatingActionsEnabled": payload.get("mutatingActionsEnabled"),
             "enabledMutationScopes": payload.get("enabledMutationScopes"),
             "routeExecutionEnabled": payload.get("routeExecutionEnabled"),
+            "toolLaunchReviewEnabled": payload.get("toolLaunchReviewEnabled"),
+            "toolLaunchEnabled": payload.get("toolLaunchEnabled"),
         }
         # Windowed PyInstaller binaries intentionally have no stdout. The exit
         # code remains CI's proof signal, while source/console runs retain JSON.

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "makers-anvil.config.tool-launch-policy.v1",
+  "claimState": "staged",
+  "mode": "confirmation-preview-only",
+  "scope": {
+    "launchMode": "tool-only",
+    "requireDetectedTool": true,
+    "requireVersionProof": true,
+    "selectedFileAllowed": false,
+    "argumentsAllowed": false
+  },
+  "confirmation": {
+    "required": true,
+    "accepted": false,
+    "persisted": false,
+    "endpointEnabled": false
+  },
+  "actions": {
+    "reviewEnabledInApi": true,
+    "confirmEnabledInApi": false,
+    "launchEnabledInApi": false
+  },
+  "safety": {
+    "processExecuted": false,
+    "toolLaunched": false,
+    "commandConstructed": false,
+    "argumentsConstructed": false,
+    "selectedFileHandedOff": false,
+    "absolutePathExposed": false,
+    "filesystemWritten": false,
+    "confirmationPersisted": false
+  }
+}

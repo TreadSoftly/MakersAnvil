@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.makers-anvil.local/tool-launch-catalog.schema.json",
+  "title": "Makers Anvil tool launch confirmation preview catalog",
+  "type": "object",
+  "required": ["schemaVersion", "claimState", "mode", "summary", "tools", "actions", "safety"],
+  "additionalProperties": false,
+  "$defs": {
+    "blockedAction": {
+      "type": "object",
+      "required": ["claimState", "enabledInApi"],
+      "additionalProperties": false,
+      "properties": {
+        "claimState": {"const": "blocked"},
+        "enabledInApi": {"const": false}
+      }
+    }
+  },
+  "properties": {
+    "schemaVersion": {"const": "makers-anvil.api.tool-launch-catalog.v1"},
+    "claimState": {"enum": ["preview-only", "blocked"]},
+    "mode": {"const": "confirmation-preview-only"},
+    "summary": {
+      "type": "object",
+      "required": ["toolCount", "reviewReadyCount", "blockedCount"],
+      "additionalProperties": false,
+      "properties": {
+        "toolCount": {"type": "integer", "minimum": 0},
+        "reviewReadyCount": {"type": "integer", "minimum": 0},
+        "blockedCount": {"type": "integer", "minimum": 0}
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "claimState", "reviewReady", "binding", "confirmation", "blockedReasons"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+          "label": {"type": "string", "minLength": 1},
+          "claimState": {"enum": ["preview-only", "blocked"]},
+          "reviewReady": {"type": "boolean"},
+          "binding": {
+            "type": "object",
+            "required": ["toolId", "executableName", "version", "versionEvidenceMethod", "launchMode", "selectedFileIncluded", "argumentsIncluded", "absolutePathExposed"],
+            "additionalProperties": false,
+            "properties": {
+              "toolId": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+              "executableName": {"type": ["string", "null"]},
+              "version": {"type": ["string", "null"]},
+              "versionEvidenceMethod": {"enum": ["windows-version-resource", "macos-bundle-info", "none"]},
+              "launchMode": {"const": "tool-only"},
+              "selectedFileIncluded": {"const": false},
+              "argumentsIncluded": {"const": false},
+              "absolutePathExposed": {"const": false}
+            }
+          },
+          "confirmation": {
+            "type": "object",
+            "required": ["required", "accepted", "persisted", "endpointEnabled"],
+            "additionalProperties": false,
+            "properties": {
+              "required": {"const": true},
+              "accepted": {"const": false},
+              "persisted": {"const": false},
+              "endpointEnabled": {"const": false}
+            }
+          },
+          "blockedReasons": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "actions": {
+      "type": "object",
+      "required": ["review", "confirm", "launch"],
+      "additionalProperties": false,
+      "properties": {
+        "review": {
+          "type": "object",
+          "required": ["claimState", "enabledInApi", "method", "endpoint"],
+          "additionalProperties": false,
+          "properties": {
+            "claimState": {"const": "preview-only"},
+            "enabledInApi": {"const": true},
+            "method": {"const": "GET"},
+            "endpoint": {"const": "/api/tools/launches/preview"}
+          }
+        },
+        "confirm": {"$ref": "#/$defs/blockedAction"},
+        "launch": {"$ref": "#/$defs/blockedAction"}
+      }
+    },
+    "safety": {"$ref": "tool-launch-policy.schema.json#/$defs/safety"}
+  }
+}

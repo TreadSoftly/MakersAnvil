@@ -2,12 +2,12 @@
 
 ## Current Pass
 
-PASS-026 - Contained execution history and cooperative cancellation controls.
+PASS-027 - Metadata tool version proof and launch confirmation review.
 
 ## Track Percentages
 
-- Real app completion: `87.5000%`
-- Windows local app: `90.0000%`
+- Real app completion: `89.5000%`
+- Windows local app: `92.0000%`
 - macOS/Linux app: `0.0000%`
 - Browser-hosted app: `0.0000%`
 - Packaged release: `30.0000%`
@@ -46,11 +46,13 @@ PASS-026 - Contained execution history and cooperative cancellation controls.
 - Output creation, opening, proof capture, route execution, and tool launch remain disabled.
 - Browser output and proof rows render metadata through text nodes and stack responsively on narrow screens.
 - Read-only `GET /api/tools/detection` checks six known maker tools through PATH and narrow standard-location candidates.
-- Detection returns platform, tool family, method, and executable name without returning resolved installation paths.
-- No tool process or version command is executed; no registry data is read and no filesystem data is written.
-- Missing candidates and tool versions remain not proven rather than being guessed.
+- Detection returns platform, tool family, method, executable name, and validated metadata version evidence without returning resolved installation paths.
+- Windows versions come from numeric VERSIONINFO fields and macOS versions come from bounded app-bundle `Info.plist` keys; no version command, registry read, executable code load, or process start occurs.
+- Missing candidates, unsupported Linux metadata, malformed values, and absent resources remain not proven rather than being guessed from labels or paths.
+- Read-only `GET /api/tools/launches/preview` requires detected presence plus proven version before a path-free tool-only confirmation review becomes ready.
+- Launch review includes no selected file, argument, command, private path, accepted/persisted confirmation, or process action.
 - Launch, install, update, uninstall, and repair actions remain blocked.
-- Browser tool inventory and family coverage render without executable controls.
+- Browser tool inventory and family coverage render metadata versions and an accessible close-only launch-review dialog when evidence is ready.
 - Read-only `GET /api/tools/dry-run` joins route previews, logical output bundles, and path-redacted tool evidence.
 - Dry-run policy covers every configured route and only prefers tools that advertise the required family.
 - Dry-run invocation plans expose semantic operations, logical source/output references, and explicit blockers without executable paths.
@@ -100,6 +102,7 @@ PASS-026 - Contained execution history and cooperative cancellation controls.
 - PASS-024 restores selected-image display through a generated same-origin URL only after authorized-record, containment, size, SHA-256, extension, and raster-signature checks. Active content, paths, altered bytes, and non-images fail closed.
 - PASS-025 maps terminal contained preflights into report/proof actions, revalidates the exact record, shape, fixed artifact identity, size, and SHA-256 on every read, and renders the JSON inside an accessible workbench dialog without an OS open, private path, process, or tool effect.
 - PASS-026 maps the complete valid preflight catalog into compact path-redacted history, targets proof reads by generated execution id, exposes active identity before Run completes, and adds token-guarded cooperative cancellation without process signaling or process-stop claims.
+- PASS-027 reads Windows/macOS tool versions through operating-system metadata only, validates and redacts that evidence, composes version-bound tool-only confirmation previews, and renders a close-only launch review while every external process action remains blocked. The current Windows machine detects zero of six catalog tools, so it claims no live installed-tool version.
 
 ## Blocked Or Not Proven
 
@@ -108,7 +111,10 @@ PASS-026 - Contained execution history and cooperative cancellation controls.
 - Arbitrary operating-system output open actions.
 - Proof capture beyond the contained STL preflight.
 - External tool launch.
-- Tool version proof.
+- Live installed-tool version evidence on this device; zero catalog tools were detected during PASS-027.
+- Linux tool version metadata proof.
+- Executable publisher signature and trust proof.
+- Launch confirmation acceptance and persistence.
 - Runnable tool command construction.
 - Execution request persistence.
 - Execution authorization beyond the contained STL preflight.
@@ -127,4 +133,4 @@ PASS-026 - Contained execution history and cooperative cancellation controls.
 
 ## Next Pass
 
-PASS-027 - Allowlisted tool version proof and launch-confirmation foundation.
+PASS-028 - Short-lived tool-only launch authorization, executable identity gates, and an allowlisted process adapter, with selected-file handoff and arbitrary commands still blocked.

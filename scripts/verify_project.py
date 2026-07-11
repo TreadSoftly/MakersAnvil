@@ -54,6 +54,8 @@ REQUIRED_FILES = [
     "backend/src/makers_anvil_backend/services/runtime_paths.py",
     "backend/src/makers_anvil_backend/services/tool_detection.py",
     "backend/src/makers_anvil_backend/services/tool_dry_run.py",
+    "backend/src/makers_anvil_backend/services/tool_launch.py",
+    "backend/src/makers_anvil_backend/services/tool_version.py",
     "backend/src/makers_anvil_backend/services/workbench_experience.py",
     "backend/src/makers_anvil_backend/services/windows_installer.py",
     "backend/src/makers_anvil_backend/services/workspace_config.py",
@@ -70,6 +72,7 @@ REQUIRED_FILES = [
     "config/route_catalog.json",
     "config/tool_catalog.json",
     "config/tool_dry_run_policy.json",
+    "config/tool_launch_policy.json",
     "config/workbench_experience.json",
     "config/windows_installer_policy.json",
     "config/clean_machine_scenarios.json",
@@ -122,6 +125,8 @@ REQUIRED_FILES = [
     "schemas/tool-detection.schema.json",
     "schemas/tool-dry-run-policy.schema.json",
     "schemas/tool-dry-run.schema.json",
+    "schemas/tool-launch-catalog.schema.json",
+    "schemas/tool-launch-policy.schema.json",
     "schemas/stl-preflight-report.schema.json",
     "schemas/workbench-experience-policy.schema.json",
     "schemas/workbench-experience.schema.json",
@@ -182,6 +187,7 @@ REQUIRED_FILES = [
     "docs/passes/PASS_024_REPORT.md",
     "docs/passes/PASS_025_REPORT.md",
     "docs/passes/PASS_026_REPORT.md",
+    "docs/passes/PASS_027_REPORT.md",
     "schemas/learning-coverage.schema.json",
     "schemas/previous-app-migration.schema.json",
     "schemas/windows-package-plan.schema.json",
@@ -194,6 +200,8 @@ REQUIRED_FILES = [
     "tests/test_server.py",
     "tests/test_windows_packaging.py",
     "tests/test_windows_installer.py",
+    "tests/test_tool_launch.py",
+    "tests/test_tool_version.py",
 ]
 
 REFERENCE_FOLDERS = [
@@ -335,6 +343,7 @@ def check_api() -> list[str]:
     route_preview = api.handle("GET", "/api/routes/preview")
     output_proof = api.handle("GET", "/api/outputs/preview")
     tool_detection = api.handle("GET", "/api/tools/detection")
+    tool_launch = api.handle("GET", "/api/tools/launches/preview")
     tool_dry_run = api.handle("GET", "/api/tools/dry-run")
     execution_gates = api.handle("GET", "/api/execution/gates")
     execution_request = api.handle("GET", "/api/execution/requests/preview")
@@ -366,6 +375,8 @@ def check_api() -> list[str]:
         errors.append("GET /api/health does not expose the verified contained artifact viewer")
     if health.body.get("containedExecutionHistoryEnabled") is not True or health.body.get("cooperativeCancellationUiEnabled") is not True:
         errors.append("GET /api/health does not expose contained execution history and cancellation UI")
+    if health.body.get("toolVersionMetadataEnabled") is not True or health.body.get("toolLaunchReviewEnabled") is not True:
+        errors.append("GET /api/health does not expose metadata version and launch-review capability")
     if health.body.get("lifecycleDryRunEnabled") is not True:
         errors.append("GET /api/health does not expose read-only lifecycle planning")
     if health.body.get("windowsInstallerFoundationEnabled") is not True or health.body.get("cleanMachineExecutionEnabled") is not False:
@@ -381,14 +392,14 @@ def check_api() -> list[str]:
     ]
     if enabled_capabilities != ["file-intake", "workbench-preferences", "contained-stl-preflight"]:
         errors.append("GET /api/state does not limit actions to intake, preferences, and contained STL preflight")
-    if state.body.get("currentPass", {}).get("id") != "PASS-026":
-        errors.append("GET /api/state does not report PASS-026")
+    if state.body.get("currentPass", {}).get("id") != "PASS-027":
+        errors.append("GET /api/state does not report PASS-027")
     if state.body.get("capabilityMatrix") != capability_matrix.body:
         errors.append("GET /api/state capability matrix differs from its focused route")
-    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-026":
-        errors.append("GET /api/workspace/status does not report PASS-026")
-    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-026":
-        errors.append("GET /api/passes/ledger does not report PASS-026 as latest")
+    if workspace.status != 200 or workspace.body.get("currentPass", {}).get("id") != "PASS-027":
+        errors.append("GET /api/workspace/status does not report PASS-027")
+    if ledger.status != 200 or ledger.body.get("passes", [{}])[-1].get("id") != "PASS-027":
+        errors.append("GET /api/passes/ledger does not report PASS-027 as latest")
     desktop_capability = next(
         (item for item in state.body.get("capabilities", []) if item.get("id") == "desktop-shell"),
         None,
@@ -498,10 +509,28 @@ def check_api() -> list[str]:
         errors.append("one or more detected tools unexpectedly enable actions")
     if any(tool.get("detection", {}).get("absolutePathExposed") for tool in tool_detection.body.get("tools", [])):
         errors.append("tool detection unexpectedly exposes an absolute path")
-    if any(tool.get("version", {}).get("claimState") != "not proven" for tool in tool_detection.body.get("tools", [])):
-        errors.append("tool detection unexpectedly claims version proof")
+    if any(tool.get("version", {}).get("claimState") not in {"proven", "not proven"} for tool in tool_detection.body.get("tools", [])):
+        errors.append("tool detection returns an unsupported version claim")
+    if any(tool.get("version", {}).get("commandExecuted") is not False for tool in tool_detection.body.get("tools", [])):
+        errors.append("tool detection unexpectedly runs a version command")
+    if any(tool.get("version", {}).get("absolutePathExposed") is not False for tool in tool_detection.body.get("tools", [])):
+        errors.append("tool version evidence unexpectedly exposes an absolute path")
     if state.body.get("toolDetection", {}).get("mode") != "read-only-presence":
         errors.append("GET /api/state does not include tool detection status")
+    if tool_launch.status != 200 or tool_launch.body.get("mode") != "confirmation-preview-only":
+        errors.append("GET /api/tools/launches/preview does not report preview-only mode")
+    if tool_launch.body.get("actions", {}).get("review", {}).get("enabledInApi") is not True:
+        errors.append("tool launch catalog does not expose its GET-only review action")
+    if any(tool_launch.body.get("actions", {}).get(action, {}).get("enabledInApi") for action in ("confirm", "launch")):
+        errors.append("tool launch catalog unexpectedly enables confirmation or launch")
+    if any(tool_launch.body.get("safety", {}).values()):
+        errors.append("tool launch catalog unexpectedly constructs, persists, exposes, writes, or executes")
+    if any(item.get("confirmation", {}).get("accepted") is not False for item in tool_launch.body.get("tools", [])):
+        errors.append("tool launch catalog unexpectedly accepts confirmation")
+    if any(item.get("binding", {}).get("selectedFileIncluded") is not False or item.get("binding", {}).get("argumentsIncluded") is not False or item.get("binding", {}).get("absolutePathExposed") is not False for item in tool_launch.body.get("tools", [])):
+        errors.append("tool launch catalog unexpectedly includes a file, argument, or path")
+    if state.body.get("toolLaunchCatalog") != tool_launch.body:
+        errors.append("GET /api/state tool launch catalog differs from its focused route")
     if tool_dry_run.status != 200 or tool_dry_run.body.get("mode") != "semantic-invocation-read-only":
         errors.append("GET /api/tools/dry-run does not report semantic read-only mode")
     if any(tool_dry_run.body.get("safety", {}).values()):
@@ -644,6 +673,7 @@ def check_status_records() -> list[str]:
     route_catalog = json.loads((ROOT / "config" / "route_catalog.json").read_text(encoding="utf-8"))
     output_policy = json.loads((ROOT / "config" / "output_policy.json").read_text(encoding="utf-8"))
     tool_catalog = json.loads((ROOT / "config" / "tool_catalog.json").read_text(encoding="utf-8"))
+    tool_launch_policy = json.loads((ROOT / "config" / "tool_launch_policy.json").read_text(encoding="utf-8"))
     dry_run_policy = json.loads((ROOT / "config" / "tool_dry_run_policy.json").read_text(encoding="utf-8"))
     execution_gate_policy = json.loads((ROOT / "config" / "execution_gate_policy.json").read_text(encoding="utf-8"))
     execution_request_policy = json.loads((ROOT / "config" / "execution_request_policy.json").read_text(encoding="utf-8"))
@@ -655,14 +685,14 @@ def check_status_records() -> list[str]:
     experience_policy = json.loads((ROOT / "config" / "workbench_experience.json").read_text(encoding="utf-8"))
     migration = json.loads((ROOT / "state" / "previous_app_migration.json").read_text(encoding="utf-8"))
     windows_plan = package_plan()
-    if status.get("currentPass", {}).get("id") != "PASS-026":
-        errors.append("current status does not report PASS-026")
-    if status.get("trackPercentages", {}).get("realApp") != 87.5:
-        errors.append("real app completion is not 87.5 for PASS-026")
+    if status.get("currentPass", {}).get("id") != "PASS-027":
+        errors.append("current status does not report PASS-027")
+    if status.get("trackPercentages", {}).get("realApp") != 89.5:
+        errors.append("real app completion is not 89.5 for PASS-027")
     if status.get("referencePolicy", {}).get("runtimeDependency") is not False:
         errors.append("reference policy must keep runtimeDependency false")
-    if ledger.get("passes", [{}])[-1].get("id") != "PASS-026":
-        errors.append("pass ledger latest pass is not PASS-026")
+    if ledger.get("passes", [{}])[-1].get("id") != "PASS-027":
+        errors.append("pass ledger latest pass is not PASS-027")
     if migration.get("runtimeDependency") is not False:
         errors.append("previous app migration registry unexpectedly creates a runtime dependency")
     if any(migration.get("safety", {}).values()):
@@ -770,6 +800,16 @@ def check_status_records() -> list[str]:
         errors.append("tool catalog is not read-only presence detection")
     if any(tool_catalog.get("safety", {}).values()):
         errors.append("tool catalog unexpectedly claims a process or software action")
+    if tool_launch_policy.get("mode") != "confirmation-preview-only":
+        errors.append("tool launch policy is not confirmation-preview-only")
+    if tool_launch_policy.get("scope") != {"launchMode": "tool-only", "requireDetectedTool": True, "requireVersionProof": True, "selectedFileAllowed": False, "argumentsAllowed": False}:
+        errors.append("tool launch policy scope is broader or narrower than PASS-027")
+    if tool_launch_policy.get("confirmation") != {"required": True, "accepted": False, "persisted": False, "endpointEnabled": False}:
+        errors.append("tool launch policy confirmation is not required and unaccepted")
+    if tool_launch_policy.get("actions") != {"reviewEnabledInApi": True, "confirmEnabledInApi": False, "launchEnabledInApi": False}:
+        errors.append("tool launch policy unexpectedly enables confirmation or launch")
+    if any(tool_launch_policy.get("safety", {}).values()):
+        errors.append("tool launch policy unexpectedly enables an execution-side effect")
     if dry_run_policy.get("mode") != "semantic-invocation-read-only":
         errors.append("tool dry-run policy is not semantic read-only planning")
     if any(dry_run_policy.get("safety", {}).values()):

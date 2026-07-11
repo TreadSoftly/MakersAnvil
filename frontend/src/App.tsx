@@ -120,6 +120,7 @@ export function App() {
   const [railExpanded, setRailExpanded] = useState(false);
   const [selectedToolName, setSelectedToolName] = useState("");
   const [viewedArtifact, setViewedArtifact] = useState<ContainedArtifact | null>(null);
+  const [launchReviewTool, setLaunchReviewTool] = useState<ToolHealth | null>(null);
   const [activeExecution, setActiveExecution] = useState<ActiveExecution | null>(null);
   const [cancellingExecutionId, setCancellingExecutionId] = useState("");
   const filePickerRef = useRef<HTMLInputElement | null>(null);
@@ -165,6 +166,15 @@ export function App() {
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [viewedArtifact]);
+
+  useEffect(() => {
+    if (!launchReviewTool) return undefined;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLaunchReviewTool(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [launchReviewTool]);
 
   async function refreshEvents() {
     const response = await getRecentEvents(25);
@@ -485,6 +495,15 @@ export function App() {
     recordAction("tool_selected", { tool: name }, "info", "tool");
   }
 
+  function handleLaunchReview(tool: ToolHealth) {
+    if (!tool.launchReviewReady) {
+      setNotice(`${displayToolName(tool.tool)} does not yet have detected version evidence for launch review.`);
+      return;
+    }
+    setLaunchReviewTool(tool);
+    recordAction("tool_launch_review_opened", { tool: tool.tool, version: tool.versionValue || "not proven" }, "info", "tool");
+  }
+
   const toolSummary = useMemo(() => summarizeTools(state), [state]);
   const searchResults = useMemo(() => buildSearchResults(state, searchQuery), [state, searchQuery]);
 
@@ -667,6 +686,7 @@ export function App() {
           </div>
         )}
         {viewedArtifact && <ArtifactViewer artifact={viewedArtifact} onClose={() => setViewedArtifact(null)} />}
+        {launchReviewTool && <ToolLaunchReview tool={launchReviewTool} onClose={() => setLaunchReviewTool(null)} />}
         {previewTarget && previewRoute && (
           <RunPreview
             route={previewRoute}
@@ -717,6 +737,7 @@ export function App() {
               toolHandoffs={state.toolHandoffs}
               busy={busy}
               onToolOpen={handleToolOpen}
+              onLaunchReview={handleLaunchReview}
               onToolOutputOpen={handleToolOutputOpen}
               selectedToolName={selectedTool?.tool || ""}
               onSelectTool={handleSelectTool}
@@ -1615,6 +1636,17 @@ function RoutePreviewStrip({ selectedRoute }: { selectedRoute: string }) {
   );
 }
 
+/**
+ * Purpose: Render one compact carousel for tool evidence, handoff previews, and safe launch review.
+ * Inputs: Adapted tools, selected work context, busy state, and command callbacks.
+ * Outputs: Stable tool card with version proof, preview modes, and bounded actions.
+ * How it works: Orders tools by route, keeps one selection, and delegates explicit clicks.
+ * Side effects: Selection and button clicks invoke caller callbacks; rendering is read-only.
+ * Failure behavior: Empty tools render no active card and unavailable actions remain text-only.
+ * Safety: Launch review is separate from launch; no path, command, file argument, or process is created.
+ * Example: A versioned detected Blender shows Review launch while Open remains absent.
+ * Related proof: App.test.tsx tool carousel and launch-review dialog tests.
+ */
 function ToolDock({
   tools,
   summary,
@@ -1624,6 +1656,7 @@ function ToolDock({
   toolHandoffs,
   busy,
   onToolOpen,
+  onLaunchReview,
   onToolOutputOpen,
   selectedToolName,
   onSelectTool,
@@ -1637,6 +1670,7 @@ function ToolDock({
   toolHandoffs: ToolHandoff[];
   busy: boolean;
   onToolOpen: (tool: ToolHealth) => void;
+  onLaunchReview: (tool: ToolHealth) => void;
   onToolOutputOpen: (tool: string, outputKey: string) => void;
   selectedToolName: string;
   onSelectTool: (name: string) => void;
@@ -1708,6 +1742,10 @@ function ToolDock({
                   <small>{formatStatusLabel(activeTool.probeStatus)}</small>
                 </span>
                 <span>
+                  <strong>Version</strong>
+                  <small>{activeTool.versionValue || "not proven"}</small>
+                </span>
+                <span>
                   <strong>Source</strong>
                   <small>{activeTool.sourceReference}</small>
                 </span>
@@ -1756,6 +1794,18 @@ function ToolDock({
                 </div>
               )}
               <div className="tool-carousel-actions">
+                {activeTool.launchReviewReady && (
+                  <button
+                    className="primary-button compact"
+                    type="button"
+                    onClick={() => onLaunchReview(activeTool)}
+                    disabled={busy}
+                    aria-label={`Review ${displayToolName(activeTool.tool)} launch`}
+                  >
+                    <Eye size={15} aria-hidden="true" />
+                    Review launch
+                  </button>
+                )}
                 {activeTool.launchable ? (
                   <button
                     className="primary-button compact"
@@ -2007,6 +2057,59 @@ function ArtifactViewer({ artifact, onClose }: { artifact: ContainedArtifact; on
           <div><dt>Mode</dt><dd>in-app read only</dd></div>
         </dl>
         <pre aria-label={`${artifact.title} JSON`}>{JSON.stringify(artifact.content, null, 2)}</pre>
+      </section>
+    </div>
+  );
+}
+
+/**
+ * Purpose: Show exactly what a future external-tool confirmation would bind before any action exists.
+ * Inputs: One review-ready path-redacted ToolHealth record and close callback.
+ * Outputs: Accessible modal with tool/version, excluded inputs, and current blockers.
+ * How it works: Renders immutable adapter evidence and provides only a close command.
+ * Side effects: Closing changes parent presentation state; no API request is sent.
+ * Failure behavior: Optional fields fall back to not-proven labels instead of invented truth.
+ * Safety: No confirm, launch, path, command, argument, or selected-file control is rendered.
+ * Example: Blender 4.5 shows Tool only, No selected file, No arguments, and Launch blocked.
+ * Related proof: App.test.tsx launch-review interaction and tool-launch backend schemas.
+ */
+function ToolLaunchReview({ tool, onClose }: { tool: ToolHealth; onClose: () => void }) {
+  const blockers = tool.launchReviewBlockers?.length
+    ? tool.launchReviewBlockers
+    : ["Explicit launch confirmation and external process launch are not enabled."];
+  return (
+    <div className="artifact-viewer-backdrop" role="presentation" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+      <section className="tool-launch-review" role="dialog" aria-modal="true" aria-labelledby="tool-launch-review-title">
+        <header>
+          <span className="artifact-viewer-heading">
+            <Wrench size={22} aria-hidden="true" />
+            <span>
+              <strong id="tool-launch-review-title">Review {displayToolName(tool.tool)} launch</strong>
+              <small>Confirmation preview only</small>
+            </span>
+          </span>
+          <button className="icon-button" type="button" aria-label="Close tool launch review" onClick={onClose} autoFocus>
+            <X size={18} aria-hidden="true" />
+          </button>
+        </header>
+        <dl className="tool-launch-review-facts">
+          <div><dt>Version</dt><dd>{tool.versionValue || "not proven"}</dd></div>
+          <div><dt>Evidence</dt><dd>{formatStatusLabel(tool.versionEvidenceMethod || "none").replaceAll("-", " ")}</dd></div>
+          <div><dt>Mode</dt><dd>tool only</dd></div>
+          <div><dt>Selected file</dt><dd>not included</dd></div>
+          <div><dt>Arguments</dt><dd>not included</dd></div>
+          <div><dt>Confirmation</dt><dd>{tool.confirmationAccepted ? "accepted" : "not accepted"}</dd></div>
+          <div><dt>External process</dt><dd>blocked</dd></div>
+        </dl>
+        <div className="tool-launch-review-boundary" role="note" aria-label="Launch blockers">
+          <strong>What still blocks launch</strong>
+          <ul>
+            {blockers.map((blocker) => <li key={blocker}>{blocker}</li>)}
+          </ul>
+        </div>
+        <footer>
+          <button className="secondary-button" type="button" onClick={onClose}>Close review</button>
+        </footer>
       </section>
     </div>
   );

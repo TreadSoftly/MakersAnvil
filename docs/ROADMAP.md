@@ -27,6 +27,9 @@
 23. Promote the previous working React application and adapt it to portable current services.
 24. Restore selected-image parity through verified app-owned raster previews.
 25. Add a contained in-app proof/report viewer before any operating-system output-open adapter.
+26. Add contained execution history and cooperative cancellation controls.
+27. Add metadata-only tool version evidence and version-bound launch-confirmation review.
+28. Add short-lived explicit tool-only launch authorization, executable identity gates, and an allowlisted process adapter with no selected-file handoff.
 
 ## Planned Later
 
